@@ -18,7 +18,7 @@ func NewWorkCategoryRepository(db *pgxpool.Pool) *WorkCategoryRepository {
 
 func (r *WorkCategoryRepository) GetAll(ctx context.Context) ([]models.WorkCategory, error) {
 	query := `
-		SELECT id, name, description, status, createdBy, createdAt, updatedAt
+		SELECT id, name, description, status
 		FROM workCategories
 		ORDER BY createdAt DESC
 	`
@@ -32,10 +32,7 @@ func (r *WorkCategoryRepository) GetAll(ctx context.Context) ([]models.WorkCateg
 	var categories []models.WorkCategory
 	for rows.Next() {
 		var c models.WorkCategory
-		err := rows.Scan(
-			&c.ID, &c.Name, &c.Description, &c.Status,
-			&c.CreatedBy, &c.CreatedAt, &c.UpdatedAt,
-		)
+		err := rows.Scan(&c.ID, &c.Name, &c.Description, &c.Status)
 		if err != nil {
 			return nil, err
 		}
@@ -47,7 +44,7 @@ func (r *WorkCategoryRepository) GetAll(ctx context.Context) ([]models.WorkCateg
 
 func (r *WorkCategoryRepository) GetByID(ctx context.Context, id int64) (*models.WorkCategory, error) {
 	query := `
-		SELECT id, name, description, status, createdBy, createdAt, updatedAt
+		SELECT id, name, description, status, createdBy, createdAt
 		FROM workCategories
 		WHERE id = $1
 	`
@@ -55,7 +52,7 @@ func (r *WorkCategoryRepository) GetByID(ctx context.Context, id int64) (*models
 	var c models.WorkCategory
 	err := r.db.QueryRow(ctx, query, id).Scan(
 		&c.ID, &c.Name, &c.Description, &c.Status,
-		&c.CreatedBy, &c.CreatedAt, &c.UpdatedAt,
+		&c.CreatedBy, &c.CreatedAt,
 	)
 
 	if err != nil {
@@ -69,12 +66,12 @@ func (r *WorkCategoryRepository) Create(ctx context.Context, category *models.Wo
 	query := `
 		INSERT INTO workCategories (name, description, status, createdBy)
 		VALUES ($1, $2, $3, $4)
-		RETURNING id, createdAt, updatedAt
+		RETURNING id, createdAt
 	`
 
 	err := r.db.QueryRow(ctx, query,
 		category.Name, category.Description, category.Status, category.CreatedBy,
-	).Scan(&category.ID, &category.CreatedAt, &category.UpdatedAt)
+	).Scan(&category.ID, &category.CreatedAt)
 
 	if err != nil {
 		return nil, err
@@ -88,14 +85,14 @@ func (r *WorkCategoryRepository) Update(ctx context.Context, id int64, category 
 		UPDATE workCategories
 		SET name = $1, description = $2, status = $3
 		WHERE id = $4
-		RETURNING id, name, description, status, createdBy, createdAt, updatedAt
+		RETURNING id, name, description, status, createdBy, createdAt
 	`
 
 	err := r.db.QueryRow(ctx, query,
 		category.Name, category.Description, category.Status, id,
 	).Scan(
 		&category.ID, &category.Name, &category.Description, &category.Status,
-		&category.CreatedBy, &category.CreatedAt, &category.UpdatedAt,
+		&category.CreatedBy, &category.CreatedAt,
 	)
 
 	if err != nil {

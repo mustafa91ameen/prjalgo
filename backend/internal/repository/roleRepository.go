@@ -18,7 +18,7 @@ func NewRoleRepository(db *pgxpool.Pool) *RoleRepository {
 
 func (r *RoleRepository) GetAll(ctx context.Context) ([]models.Role, error) {
 	query := `
-		SELECT id, name, description, createdAt, updatedAt
+		SELECT id, name, description, createdAt
 		FROM roles
 		ORDER BY createdAt DESC
 	`
@@ -32,10 +32,7 @@ func (r *RoleRepository) GetAll(ctx context.Context) ([]models.Role, error) {
 	var roles []models.Role
 	for rows.Next() {
 		var role models.Role
-		err := rows.Scan(
-			&role.ID, &role.Name, &role.Description,
-			&role.CreatedAt, &role.UpdatedAt,
-		)
+		err := rows.Scan(&role.ID, &role.Name, &role.Description, &role.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -47,15 +44,14 @@ func (r *RoleRepository) GetAll(ctx context.Context) ([]models.Role, error) {
 
 func (r *RoleRepository) GetByID(ctx context.Context, id int64) (*models.Role, error) {
 	query := `
-		SELECT id, name, description, createdAt, updatedAt
+		SELECT id, name, description, createdAt
 		FROM roles
 		WHERE id = $1
 	`
 
 	var role models.Role
 	err := r.db.QueryRow(ctx, query, id).Scan(
-		&role.ID, &role.Name, &role.Description,
-		&role.CreatedAt, &role.UpdatedAt,
+		&role.ID, &role.Name, &role.Description, &role.CreatedAt,
 	)
 
 	if err != nil {
@@ -69,12 +65,12 @@ func (r *RoleRepository) Create(ctx context.Context, role *models.Role) (*models
 	query := `
 		INSERT INTO roles (name, description)
 		VALUES ($1, $2)
-		RETURNING id, createdAt, updatedAt
+		RETURNING id, createdAt
 	`
 
 	err := r.db.QueryRow(ctx, query,
 		role.Name, role.Description,
-	).Scan(&role.ID, &role.CreatedAt, &role.UpdatedAt)
+	).Scan(&role.ID, &role.CreatedAt)
 
 	if err != nil {
 		return nil, err
@@ -88,15 +84,12 @@ func (r *RoleRepository) Update(ctx context.Context, id int64, role *models.Role
 		UPDATE roles
 		SET name = $1, description = $2
 		WHERE id = $3
-		RETURNING id, name, description, createdAt, updatedAt
+		RETURNING id, name, description, createdAt
 	`
 
 	err := r.db.QueryRow(ctx, query,
 		role.Name, role.Description, id,
-	).Scan(
-		&role.ID, &role.Name, &role.Description,
-		&role.CreatedAt, &role.UpdatedAt,
-	)
+	).Scan(&role.ID, &role.Name, &role.Description, &role.CreatedAt)
 
 	if err != nil {
 		return nil, err

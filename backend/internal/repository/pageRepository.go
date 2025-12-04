@@ -18,7 +18,7 @@ func NewPageRepository(db *pgxpool.Pool) *PageRepository {
 
 func (r *PageRepository) GetAll(ctx context.Context) ([]models.Page, error) {
 	query := `
-		SELECT id, name, icon, route, status, createdAt, updatedAt
+		SELECT id, name, icon, route, status, createdAt
 		FROM pages
 		ORDER BY createdAt DESC
 	`
@@ -32,10 +32,7 @@ func (r *PageRepository) GetAll(ctx context.Context) ([]models.Page, error) {
 	var pages []models.Page
 	for rows.Next() {
 		var p models.Page
-		err := rows.Scan(
-			&p.ID, &p.Name, &p.Icon, &p.Route, &p.Status,
-			&p.CreatedAt, &p.UpdatedAt,
-		)
+		err := rows.Scan(&p.ID, &p.Name, &p.Icon, &p.Route, &p.Status, &p.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -47,15 +44,14 @@ func (r *PageRepository) GetAll(ctx context.Context) ([]models.Page, error) {
 
 func (r *PageRepository) GetByID(ctx context.Context, id int64) (*models.Page, error) {
 	query := `
-		SELECT id, name, icon, route, status, createdAt, updatedAt
+		SELECT id, name, icon, route, status, createdAt
 		FROM pages
 		WHERE id = $1
 	`
 
 	var p models.Page
 	err := r.db.QueryRow(ctx, query, id).Scan(
-		&p.ID, &p.Name, &p.Icon, &p.Route, &p.Status,
-		&p.CreatedAt, &p.UpdatedAt,
+		&p.ID, &p.Name, &p.Icon, &p.Route, &p.Status, &p.CreatedAt,
 	)
 
 	if err != nil {
@@ -67,7 +63,7 @@ func (r *PageRepository) GetByID(ctx context.Context, id int64) (*models.Page, e
 
 func (r *PageRepository) GetActivePages(ctx context.Context) ([]models.Page, error) {
 	query := `
-		SELECT id, name, icon, route, status, createdAt, updatedAt
+		SELECT id, name, icon, route, status, createdAt
 		FROM pages
 		WHERE status = 'active'
 		ORDER BY createdAt DESC
@@ -82,10 +78,7 @@ func (r *PageRepository) GetActivePages(ctx context.Context) ([]models.Page, err
 	var pages []models.Page
 	for rows.Next() {
 		var p models.Page
-		err := rows.Scan(
-			&p.ID, &p.Name, &p.Icon, &p.Route, &p.Status,
-			&p.CreatedAt, &p.UpdatedAt,
-		)
+		err := rows.Scan(&p.ID, &p.Name, &p.Icon, &p.Route, &p.Status, &p.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -99,12 +92,12 @@ func (r *PageRepository) Create(ctx context.Context, page *models.Page) (*models
 	query := `
 		INSERT INTO pages (name, icon, route, status)
 		VALUES ($1, $2, $3, $4)
-		RETURNING id, createdAt, updatedAt
+		RETURNING id, createdAt
 	`
 
 	err := r.db.QueryRow(ctx, query,
 		page.Name, page.Icon, page.Route, page.Status,
-	).Scan(&page.ID, &page.CreatedAt, &page.UpdatedAt)
+	).Scan(&page.ID, &page.CreatedAt)
 
 	if err != nil {
 		return nil, err
@@ -118,15 +111,12 @@ func (r *PageRepository) Update(ctx context.Context, id int64, page *models.Page
 		UPDATE pages
 		SET name = $1, icon = $2, route = $3, status = $4
 		WHERE id = $5
-		RETURNING id, name, icon, route, status, createdAt, updatedAt
+		RETURNING id, name, icon, route, status, createdAt
 	`
 
 	err := r.db.QueryRow(ctx, query,
 		page.Name, page.Icon, page.Route, page.Status, id,
-	).Scan(
-		&page.ID, &page.Name, &page.Icon, &page.Route, &page.Status,
-		&page.CreatedAt, &page.UpdatedAt,
-	)
+	).Scan(&page.ID, &page.Name, &page.Icon, &page.Route, &page.Status, &page.CreatedAt)
 
 	if err != nil {
 		return nil, err

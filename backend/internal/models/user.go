@@ -7,10 +7,10 @@ type User struct {
 	Username  string     `json:"username" db:"username"`
 	Email     string     `json:"email" db:"email"`
 	Password  string     `json:"-" db:"password"`
-	FullName  *string    `json:"fullName" db:"fullname"`
-	Phone     *string    `json:"phone" db:"phone"`
+	FullName  string     `json:"fullName" db:"fullname"`
+	Phone     string     `json:"phone" db:"phone"`
 	Avatar    *string    `json:"avatar" db:"avatar"`
-	JobTitle  *string    `json:"jobTitle" db:"jobtitle"`
+	JobTitle  string     `json:"jobTitle" db:"jobtitle"`
 	Status    *string    `json:"status" db:"status"`
 	LastLogin *time.Time `json:"lastLogin" db:"lastlogin"`
 	CreatedAt time.Time  `json:"createdAt" db:"createdat"`

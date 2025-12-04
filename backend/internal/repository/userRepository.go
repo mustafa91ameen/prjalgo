@@ -18,8 +18,8 @@ func NewUserRepository(db *pgxpool.Pool) *UserRepository {
 
 func (r *UserRepository) GetAll(ctx context.Context) ([]models.User, error) {
 	query := `
-		SELECT id, username, email, password, fullName, phone, avatar,
-		       jobTitle, status, lastLogin, createdAt, updatedAt
+		SELECT id, username, email, fullName, phone, avatar,
+		       jobTitle, status, lastLogin
 		FROM users
 		ORDER BY createdAt DESC
 	`
@@ -34,9 +34,8 @@ func (r *UserRepository) GetAll(ctx context.Context) ([]models.User, error) {
 	for rows.Next() {
 		var u models.User
 		err := rows.Scan(
-			&u.ID, &u.Username, &u.Email, &u.Password, &u.FullName,
+			&u.ID, &u.Username, &u.Email, &u.FullName,
 			&u.Phone, &u.Avatar, &u.JobTitle, &u.Status, &u.LastLogin,
-			&u.CreatedAt, &u.UpdatedAt,
 		)
 		if err != nil {
 			return nil, err
@@ -72,17 +71,17 @@ func (r *UserRepository) Update(ctx context.Context, id int64, user *models.User
 		SET username = $1, email = $2, fullName = $3, phone = $4,
 		    avatar = $5, jobTitle = $6, status = $7
 		WHERE id = $8
-		RETURNING id, username, email, password, fullName, phone, avatar,
-		          jobTitle, status, lastLogin, createdAt, updatedAt
+		RETURNING id, username, email, fullName, phone, avatar,
+		          jobTitle, status, lastLogin, createdAt
 	`
 
 	err := r.db.QueryRow(ctx, query,
 		user.Username, user.Email, user.FullName, user.Phone,
 		user.Avatar, user.JobTitle, user.Status, id,
 	).Scan(
-		&user.ID, &user.Username, &user.Email, &user.Password, &user.FullName,
-		&user.Phone, &user.Avatar, &user.JobTitle, &user.Status, &user.LastLogin,
-		&user.CreatedAt, &user.UpdatedAt,
+		&user.ID, &user.Username, &user.Email, &user.FullName,
+		&user.Phone, &user.Avatar, &user.JobTitle, &user.Status,
+		&user.LastLogin, &user.CreatedAt,
 	)
 
 	if err != nil {
@@ -94,17 +93,17 @@ func (r *UserRepository) Update(ctx context.Context, id int64, user *models.User
 
 func (r *UserRepository) GetByID(ctx context.Context, id int64) (*models.User, error) {
 	query := `
-		SELECT id, username, email, password, fullName, phone, avatar,
-		       jobTitle, status, lastLogin, createdAt, updatedAt
+		SELECT id, username, email, fullName, phone, avatar,
+		       jobTitle, status, lastLogin, createdAt
 		FROM users
 		WHERE id = $1
 	`
 
 	var user models.User
 	err := r.db.QueryRow(ctx, query, id).Scan(
-		&user.ID, &user.Username, &user.Email, &user.Password, &user.FullName,
-		&user.Phone, &user.Avatar, &user.JobTitle, &user.Status, &user.LastLogin,
-		&user.CreatedAt, &user.UpdatedAt,
+		&user.ID, &user.Username, &user.Email, &user.FullName,
+		&user.Phone, &user.Avatar, &user.JobTitle, &user.Status,
+		&user.LastLogin, &user.CreatedAt,
 	)
 
 	if err != nil {
@@ -121,7 +120,7 @@ func (r *UserRepository) Delete(ctx context.Context, id int64) error {
 		return err
 	}
 	if result.RowsAffected() == 0 {
-		return pgx.ErrNoRows  // or a custom ErrNotFound
+		return pgx.ErrNoRows
 	}
 	return nil
 }

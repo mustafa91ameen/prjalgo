@@ -18,7 +18,8 @@ func NewWorkDayLaborRepository(db *pgxpool.Pool) *WorkDayLaborRepository {
 
 func (r *WorkDayLaborRepository) GetAll(ctx context.Context) ([]models.WorkDayLabor, error) {
 	query := `
-		SELECT id, workDayId, workerName, jobTitle, phone, address, quantity, cost, notes, createdAt, updatedAt
+		SELECT id, workDayId, workerName, jobTitle, phone, address,
+		       quantity, cost, notes, createdAt
 		FROM workDayLabor
 		ORDER BY createdAt DESC
 	`
@@ -34,7 +35,7 @@ func (r *WorkDayLaborRepository) GetAll(ctx context.Context) ([]models.WorkDayLa
 		var l models.WorkDayLabor
 		err := rows.Scan(
 			&l.ID, &l.WorkDayID, &l.WorkerName, &l.JobTitle, &l.Phone,
-			&l.Address, &l.Quantity, &l.Cost, &l.Notes, &l.CreatedAt, &l.UpdatedAt,
+			&l.Address, &l.Quantity, &l.Cost, &l.Notes, &l.CreatedAt,
 		)
 		if err != nil {
 			return nil, err
@@ -47,7 +48,8 @@ func (r *WorkDayLaborRepository) GetAll(ctx context.Context) ([]models.WorkDayLa
 
 func (r *WorkDayLaborRepository) GetByID(ctx context.Context, id int64) (*models.WorkDayLabor, error) {
 	query := `
-		SELECT id, workDayId, workerName, jobTitle, phone, address, quantity, cost, notes, createdAt, updatedAt
+		SELECT id, workDayId, workerName, jobTitle, phone, address,
+		       quantity, cost, notes, createdAt
 		FROM workDayLabor
 		WHERE id = $1
 	`
@@ -55,7 +57,7 @@ func (r *WorkDayLaborRepository) GetByID(ctx context.Context, id int64) (*models
 	var l models.WorkDayLabor
 	err := r.db.QueryRow(ctx, query, id).Scan(
 		&l.ID, &l.WorkDayID, &l.WorkerName, &l.JobTitle, &l.Phone,
-		&l.Address, &l.Quantity, &l.Cost, &l.Notes, &l.CreatedAt, &l.UpdatedAt,
+		&l.Address, &l.Quantity, &l.Cost, &l.Notes, &l.CreatedAt,
 	)
 
 	if err != nil {
@@ -67,7 +69,8 @@ func (r *WorkDayLaborRepository) GetByID(ctx context.Context, id int64) (*models
 
 func (r *WorkDayLaborRepository) GetByWorkDayID(ctx context.Context, workDayID int64) ([]models.WorkDayLabor, error) {
 	query := `
-		SELECT id, workDayId, workerName, jobTitle, phone, address, quantity, cost, notes, createdAt, updatedAt
+		SELECT id, workDayId, workerName, jobTitle, phone, address,
+		       quantity, cost, notes, createdAt
 		FROM workDayLabor
 		WHERE workDayId = $1
 		ORDER BY createdAt DESC
@@ -84,7 +87,7 @@ func (r *WorkDayLaborRepository) GetByWorkDayID(ctx context.Context, workDayID i
 		var l models.WorkDayLabor
 		err := rows.Scan(
 			&l.ID, &l.WorkDayID, &l.WorkerName, &l.JobTitle, &l.Phone,
-			&l.Address, &l.Quantity, &l.Cost, &l.Notes, &l.CreatedAt, &l.UpdatedAt,
+			&l.Address, &l.Quantity, &l.Cost, &l.Notes, &l.CreatedAt,
 		)
 		if err != nil {
 			return nil, err
@@ -99,13 +102,13 @@ func (r *WorkDayLaborRepository) Create(ctx context.Context, labor *models.WorkD
 	query := `
 		INSERT INTO workDayLabor (workDayId, workerName, jobTitle, phone, address, quantity, cost, notes)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-		RETURNING id, createdAt, updatedAt
+		RETURNING id, createdAt
 	`
 
 	err := r.db.QueryRow(ctx, query,
 		labor.WorkDayID, labor.WorkerName, labor.JobTitle, labor.Phone,
 		labor.Address, labor.Quantity, labor.Cost, labor.Notes,
-	).Scan(&labor.ID, &labor.CreatedAt, &labor.UpdatedAt)
+	).Scan(&labor.ID, &labor.CreatedAt)
 
 	if err != nil {
 		return nil, err
@@ -117,17 +120,19 @@ func (r *WorkDayLaborRepository) Create(ctx context.Context, labor *models.WorkD
 func (r *WorkDayLaborRepository) Update(ctx context.Context, id int64, labor *models.WorkDayLabor) (*models.WorkDayLabor, error) {
 	query := `
 		UPDATE workDayLabor
-		SET workDayId = $1, workerName = $2, jobTitle = $3, phone = $4, address = $5, quantity = $6, cost = $7, notes = $8
-		WHERE id = $9
-		RETURNING id, workDayId, workerName, jobTitle, phone, address, quantity, cost, notes, createdAt, updatedAt
+		SET workerName = $1, jobTitle = $2, phone = $3, address = $4,
+		    quantity = $5, cost = $6, notes = $7
+		WHERE id = $8
+		RETURNING id, workDayId, workerName, jobTitle, phone, address,
+		          quantity, cost, notes, createdAt
 	`
 
 	err := r.db.QueryRow(ctx, query,
-		labor.WorkDayID, labor.WorkerName, labor.JobTitle, labor.Phone,
+		labor.WorkerName, labor.JobTitle, labor.Phone,
 		labor.Address, labor.Quantity, labor.Cost, labor.Notes, id,
 	).Scan(
 		&labor.ID, &labor.WorkDayID, &labor.WorkerName, &labor.JobTitle, &labor.Phone,
-		&labor.Address, &labor.Quantity, &labor.Cost, &labor.Notes, &labor.CreatedAt, &labor.UpdatedAt,
+		&labor.Address, &labor.Quantity, &labor.Cost, &labor.Notes, &labor.CreatedAt,
 	)
 
 	if err != nil {

@@ -18,7 +18,7 @@ func NewWorkDayEquipmentRepository(db *pgxpool.Pool) *WorkDayEquipmentRepository
 
 func (r *WorkDayEquipmentRepository) GetAll(ctx context.Context) ([]models.WorkDayEquipment, error) {
 	query := `
-		SELECT id, workDayId, equipmentName, quantity, cost, notes, createdAt, updatedAt
+		SELECT id, workDayId, equipmentName, quantity, cost, notes, createdAt
 		FROM workDayEquipment
 		ORDER BY createdAt DESC
 	`
@@ -34,7 +34,7 @@ func (r *WorkDayEquipmentRepository) GetAll(ctx context.Context) ([]models.WorkD
 		var e models.WorkDayEquipment
 		err := rows.Scan(
 			&e.ID, &e.WorkDayID, &e.EquipmentName, &e.Quantity,
-			&e.Cost, &e.Notes, &e.CreatedAt, &e.UpdatedAt,
+			&e.Cost, &e.Notes, &e.CreatedAt,
 		)
 		if err != nil {
 			return nil, err
@@ -47,7 +47,7 @@ func (r *WorkDayEquipmentRepository) GetAll(ctx context.Context) ([]models.WorkD
 
 func (r *WorkDayEquipmentRepository) GetByID(ctx context.Context, id int64) (*models.WorkDayEquipment, error) {
 	query := `
-		SELECT id, workDayId, equipmentName, quantity, cost, notes, createdAt, updatedAt
+		SELECT id, workDayId, equipmentName, quantity, cost, notes, createdAt
 		FROM workDayEquipment
 		WHERE id = $1
 	`
@@ -55,7 +55,7 @@ func (r *WorkDayEquipmentRepository) GetByID(ctx context.Context, id int64) (*mo
 	var e models.WorkDayEquipment
 	err := r.db.QueryRow(ctx, query, id).Scan(
 		&e.ID, &e.WorkDayID, &e.EquipmentName, &e.Quantity,
-		&e.Cost, &e.Notes, &e.CreatedAt, &e.UpdatedAt,
+		&e.Cost, &e.Notes, &e.CreatedAt,
 	)
 
 	if err != nil {
@@ -67,7 +67,7 @@ func (r *WorkDayEquipmentRepository) GetByID(ctx context.Context, id int64) (*mo
 
 func (r *WorkDayEquipmentRepository) GetByWorkDayID(ctx context.Context, workDayID int64) ([]models.WorkDayEquipment, error) {
 	query := `
-		SELECT id, workDayId, equipmentName, quantity, cost, notes, createdAt, updatedAt
+		SELECT id, workDayId, equipmentName, quantity, cost, notes, createdAt
 		FROM workDayEquipment
 		WHERE workDayId = $1
 		ORDER BY createdAt DESC
@@ -84,7 +84,7 @@ func (r *WorkDayEquipmentRepository) GetByWorkDayID(ctx context.Context, workDay
 		var e models.WorkDayEquipment
 		err := rows.Scan(
 			&e.ID, &e.WorkDayID, &e.EquipmentName, &e.Quantity,
-			&e.Cost, &e.Notes, &e.CreatedAt, &e.UpdatedAt,
+			&e.Cost, &e.Notes, &e.CreatedAt,
 		)
 		if err != nil {
 			return nil, err
@@ -99,13 +99,13 @@ func (r *WorkDayEquipmentRepository) Create(ctx context.Context, equipment *mode
 	query := `
 		INSERT INTO workDayEquipment (workDayId, equipmentName, quantity, cost, notes)
 		VALUES ($1, $2, $3, $4, $5)
-		RETURNING id, createdAt, updatedAt
+		RETURNING id, createdAt
 	`
 
 	err := r.db.QueryRow(ctx, query,
 		equipment.WorkDayID, equipment.EquipmentName, equipment.Quantity,
 		equipment.Cost, equipment.Notes,
-	).Scan(&equipment.ID, &equipment.CreatedAt, &equipment.UpdatedAt)
+	).Scan(&equipment.ID, &equipment.CreatedAt)
 
 	if err != nil {
 		return nil, err
@@ -117,17 +117,17 @@ func (r *WorkDayEquipmentRepository) Create(ctx context.Context, equipment *mode
 func (r *WorkDayEquipmentRepository) Update(ctx context.Context, id int64, equipment *models.WorkDayEquipment) (*models.WorkDayEquipment, error) {
 	query := `
 		UPDATE workDayEquipment
-		SET workDayId = $1, equipmentName = $2, quantity = $3, cost = $4, notes = $5
-		WHERE id = $6
-		RETURNING id, workDayId, equipmentName, quantity, cost, notes, createdAt, updatedAt
+		SET equipmentName = $1, quantity = $2, cost = $3, notes = $4
+		WHERE id = $5
+		RETURNING id, workDayId, equipmentName, quantity, cost, notes, createdAt
 	`
 
 	err := r.db.QueryRow(ctx, query,
-		equipment.WorkDayID, equipment.EquipmentName, equipment.Quantity,
+		equipment.EquipmentName, equipment.Quantity,
 		equipment.Cost, equipment.Notes, id,
 	).Scan(
 		&equipment.ID, &equipment.WorkDayID, &equipment.EquipmentName, &equipment.Quantity,
-		&equipment.Cost, &equipment.Notes, &equipment.CreatedAt, &equipment.UpdatedAt,
+		&equipment.Cost, &equipment.Notes, &equipment.CreatedAt,
 	)
 
 	if err != nil {

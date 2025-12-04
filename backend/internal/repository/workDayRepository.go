@@ -18,8 +18,7 @@ func NewWorkDayRepository(db *pgxpool.Pool) *WorkDayRepository {
 
 func (r *WorkDayRepository) GetAll(ctx context.Context) ([]models.WorkDay, error) {
 	query := `
-		SELECT id, projectId, workSubCategoryId, workDate, description,
-		       status, totalCost, notes, createdBy, createdAt, updatedAt
+		SELECT id, projectId, workSubCategoryId, workDate, status, totalCost
 		FROM workDays
 		ORDER BY createdAt DESC
 	`
@@ -34,8 +33,8 @@ func (r *WorkDayRepository) GetAll(ctx context.Context) ([]models.WorkDay, error
 	for rows.Next() {
 		var w models.WorkDay
 		err := rows.Scan(
-			&w.ID, &w.ProjectID, &w.WorkSubCategoryID, &w.WorkDate, &w.Description,
-			&w.Status, &w.TotalCost, &w.Notes, &w.CreatedBy, &w.CreatedAt, &w.UpdatedAt,
+			&w.ID, &w.ProjectID, &w.WorkSubCategoryID, &w.WorkDate,
+			&w.Status, &w.TotalCost,
 		)
 		if err != nil {
 			return nil, err
@@ -49,7 +48,7 @@ func (r *WorkDayRepository) GetAll(ctx context.Context) ([]models.WorkDay, error
 func (r *WorkDayRepository) GetByID(ctx context.Context, id int64) (*models.WorkDay, error) {
 	query := `
 		SELECT id, projectId, workSubCategoryId, workDate, description,
-		       status, totalCost, notes, createdBy, createdAt, updatedAt
+		       status, totalCost, notes, createdBy, createdAt
 		FROM workDays
 		WHERE id = $1
 	`
@@ -57,7 +56,7 @@ func (r *WorkDayRepository) GetByID(ctx context.Context, id int64) (*models.Work
 	var w models.WorkDay
 	err := r.db.QueryRow(ctx, query, id).Scan(
 		&w.ID, &w.ProjectID, &w.WorkSubCategoryID, &w.WorkDate, &w.Description,
-		&w.Status, &w.TotalCost, &w.Notes, &w.CreatedBy, &w.CreatedAt, &w.UpdatedAt,
+		&w.Status, &w.TotalCost, &w.Notes, &w.CreatedBy, &w.CreatedAt,
 	)
 
 	if err != nil {
@@ -69,8 +68,7 @@ func (r *WorkDayRepository) GetByID(ctx context.Context, id int64) (*models.Work
 
 func (r *WorkDayRepository) GetByProjectID(ctx context.Context, projectID int64) ([]models.WorkDay, error) {
 	query := `
-		SELECT id, projectId, workSubCategoryId, workDate, description,
-		       status, totalCost, notes, createdBy, createdAt, updatedAt
+		SELECT id, projectId, workSubCategoryId, workDate, status, totalCost
 		FROM workDays
 		WHERE projectId = $1
 		ORDER BY workDate DESC
@@ -86,8 +84,8 @@ func (r *WorkDayRepository) GetByProjectID(ctx context.Context, projectID int64)
 	for rows.Next() {
 		var w models.WorkDay
 		err := rows.Scan(
-			&w.ID, &w.ProjectID, &w.WorkSubCategoryID, &w.WorkDate, &w.Description,
-			&w.Status, &w.TotalCost, &w.Notes, &w.CreatedBy, &w.CreatedAt, &w.UpdatedAt,
+			&w.ID, &w.ProjectID, &w.WorkSubCategoryID, &w.WorkDate,
+			&w.Status, &w.TotalCost,
 		)
 		if err != nil {
 			return nil, err
@@ -103,13 +101,13 @@ func (r *WorkDayRepository) Create(ctx context.Context, workDay *models.WorkDay)
 		INSERT INTO workDays (projectId, workSubCategoryId, workDate, description,
 		                      status, totalCost, notes, createdBy)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-		RETURNING id, createdAt, updatedAt
+		RETURNING id, createdAt
 	`
 
 	err := r.db.QueryRow(ctx, query,
 		workDay.ProjectID, workDay.WorkSubCategoryID, workDay.WorkDate, workDay.Description,
 		workDay.Status, workDay.TotalCost, workDay.Notes, workDay.CreatedBy,
-	).Scan(&workDay.ID, &workDay.CreatedAt, &workDay.UpdatedAt)
+	).Scan(&workDay.ID, &workDay.CreatedAt)
 
 	if err != nil {
 		return nil, err
@@ -121,20 +119,20 @@ func (r *WorkDayRepository) Create(ctx context.Context, workDay *models.WorkDay)
 func (r *WorkDayRepository) Update(ctx context.Context, id int64, workDay *models.WorkDay) (*models.WorkDay, error) {
 	query := `
 		UPDATE workDays
-		SET projectId = $1, workSubCategoryId = $2, workDate = $3, description = $4,
-		    status = $5, totalCost = $6, notes = $7
-		WHERE id = $8
+		SET workSubCategoryId = $1, workDate = $2, description = $3,
+		    status = $4, totalCost = $5, notes = $6
+		WHERE id = $7
 		RETURNING id, projectId, workSubCategoryId, workDate, description,
-		          status, totalCost, notes, createdBy, createdAt, updatedAt
+		          status, totalCost, notes, createdBy, createdAt
 	`
 
 	err := r.db.QueryRow(ctx, query,
-		workDay.ProjectID, workDay.WorkSubCategoryID, workDay.WorkDate, workDay.Description,
+		workDay.WorkSubCategoryID, workDay.WorkDate, workDay.Description,
 		workDay.Status, workDay.TotalCost, workDay.Notes, id,
 	).Scan(
 		&workDay.ID, &workDay.ProjectID, &workDay.WorkSubCategoryID, &workDay.WorkDate,
 		&workDay.Description, &workDay.Status, &workDay.TotalCost, &workDay.Notes,
-		&workDay.CreatedBy, &workDay.CreatedAt, &workDay.UpdatedAt,
+		&workDay.CreatedBy, &workDay.CreatedAt,
 	)
 
 	if err != nil {

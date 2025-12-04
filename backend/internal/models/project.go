@@ -11,8 +11,8 @@ type Project struct {
 	Location           *string    `json:"location" db:"location"`
 	StartDate          *time.Time `json:"startDate" db:"startdate"`
 	Duration           *int       `json:"duration" db:"duration"`
-	WarningCost        *float64   `json:"warningCost" db:"warningcost"`
-	TotalCost          *float64   `json:"totalCost" db:"totalcost"`
+	WarningCost        float64    `json:"warningCost" db:"warningcost"`
+	TotalCost          float64    `json:"totalCost" db:"totalcost"`
 	Status             string     `json:"status" db:"status"`
 	ProgressPercentage float64    `json:"progressPercentage" db:"progresspercentage"`
 	Notes              *string    `json:"notes" db:"notes"`

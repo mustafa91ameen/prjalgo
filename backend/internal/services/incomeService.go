@@ -1,0 +1,145 @@
+package services
+
+import (
+	"context"
+	"errors"
+
+	"github.com/jackc/pgx/v5"
+	"github.com/mustafaameen91/project-managment/backend/internal/dtos"
+	"github.com/mustafaameen91/project-managment/backend/internal/models"
+	"github.com/mustafaameen91/project-managment/backend/internal/repository"
+)
+
+var (
+	ErrIncomeNotFound = errors.New("income not found")
+)
+
+type IncomeService struct {
+	incomeRepo *repository.IncomeRepository
+}
+
+func NewIncomeService(incomeRepo *repository.IncomeRepository) *IncomeService {
+	return &IncomeService{
+		incomeRepo: incomeRepo,
+	}
+}
+
+func (s *IncomeService) GetAll(ctx context.Context) ([]dtos.IncomeSummary, error) {
+	incomes, err := s.incomeRepo.GetAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]dtos.IncomeSummary, len(incomes))
+	for i, inc := range incomes {
+		result[i] = toIncomeSummaryDTO(inc)
+	}
+	return result, nil
+}
+
+func (s *IncomeService) GetByID(ctx context.Context, id int64) (*dtos.Income, error) {
+	income, err := s.incomeRepo.GetByID(ctx, id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, ErrIncomeNotFound
+		}
+		return nil, err
+	}
+	dto := toIncomeDTO(income)
+	return &dto, nil
+}
+
+func (s *IncomeService) Create(ctx context.Context, req dtos.CreateIncome) (*dtos.Income, error) {
+	income := &models.Income{
+		Name:       req.Name,
+		Amount:     req.Amount,
+		Type:       req.Type,
+		IncomeDate: req.IncomeDate,
+		Status:     req.Status,
+		Notes:      req.Notes,
+		CreatedBy:  req.CreatedBy,
+	}
+
+	created, err := s.incomeRepo.Create(ctx, income)
+	if err != nil {
+		return nil, err
+	}
+
+	dto := toIncomeDTO(created)
+	return &dto, nil
+}
+
+func (s *IncomeService) Update(ctx context.Context, id int64, req dtos.UpdateIncome) (*dtos.Income, error) {
+	existing, err := s.incomeRepo.GetByID(ctx, id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, ErrIncomeNotFound
+		}
+		return nil, err
+	}
+
+	// Apply partial updates
+	if req.Name != nil {
+		existing.Name = *req.Name
+	}
+	if req.Amount != nil {
+		existing.Amount = *req.Amount
+	}
+	if req.Type != nil {
+		existing.Type = req.Type
+	}
+	if req.IncomeDate != nil {
+		existing.IncomeDate = *req.IncomeDate
+	}
+	if req.Status != nil {
+		existing.Status = req.Status
+	}
+	if req.Notes != nil {
+		existing.Notes = req.Notes
+	}
+
+	updated, err := s.incomeRepo.Update(ctx, id, existing)
+	if err != nil {
+		return nil, err
+	}
+
+	dto := toIncomeDTO(updated)
+	return &dto, nil
+}
+
+func (s *IncomeService) Delete(ctx context.Context, id int64) error {
+	err := s.incomeRepo.Delete(ctx, id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return ErrIncomeNotFound
+		}
+		return err
+	}
+	return nil
+}
+
+// DTO conversion helpers
+func toIncomeSummaryDTO(i models.Income) dtos.IncomeSummary {
+	return dtos.IncomeSummary{
+		ID:         i.ID,
+		Name:       i.Name,
+		Amount:     i.Amount,
+		Type:       i.Type,
+		IncomeDate: i.IncomeDate,
+		Status:     i.Status,
+	}
+}
+
+func toIncomeDTO(i *models.Income) dtos.Income {
+	return dtos.Income{
+		ID:         i.ID,
+		Name:       i.Name,
+		Amount:     i.Amount,
+		Type:       i.Type,
+		IncomeDate: i.IncomeDate,
+		Status:     i.Status,
+		Notes:      i.Notes,
+		CreatedBy:  i.CreatedBy,
+		CreatedAt:  i.CreatedAt,
+	}
+}

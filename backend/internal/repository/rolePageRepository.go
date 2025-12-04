@@ -32,9 +32,7 @@ func (r *RolePageRepository) GetAll(ctx context.Context) ([]models.RolePage, err
 	var rolePages []models.RolePage
 	for rows.Next() {
 		var rp models.RolePage
-		err := rows.Scan(
-			&rp.ID, &rp.RoleID, &rp.PageID, &rp.Permissions, &rp.CreatedAt,
-		)
+		err := rows.Scan(&rp.ID, &rp.RoleID, &rp.PageID, &rp.Permissions, &rp.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -80,9 +78,7 @@ func (r *RolePageRepository) GetByRoleID(ctx context.Context, roleID int64) ([]m
 	var rolePages []models.RolePage
 	for rows.Next() {
 		var rp models.RolePage
-		err := rows.Scan(
-			&rp.ID, &rp.RoleID, &rp.PageID, &rp.Permissions, &rp.CreatedAt,
-		)
+		err := rows.Scan(&rp.ID, &rp.RoleID, &rp.PageID, &rp.Permissions, &rp.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -113,14 +109,12 @@ func (r *RolePageRepository) Create(ctx context.Context, rolePage *models.RolePa
 func (r *RolePageRepository) Update(ctx context.Context, id int64, rolePage *models.RolePage) (*models.RolePage, error) {
 	query := `
 		UPDATE rolePages
-		SET roleId = $1, pageId = $2, permissions = $3
-		WHERE id = $4
+		SET permissions = $1
+		WHERE id = $2
 		RETURNING id, roleId, pageId, permissions, createdAt
 	`
 
-	err := r.db.QueryRow(ctx, query,
-		rolePage.RoleID, rolePage.PageID, rolePage.Permissions, id,
-	).Scan(
+	err := r.db.QueryRow(ctx, query, rolePage.Permissions, id).Scan(
 		&rolePage.ID, &rolePage.RoleID, &rolePage.PageID,
 		&rolePage.Permissions, &rolePage.CreatedAt,
 	)

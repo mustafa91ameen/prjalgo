@@ -18,7 +18,7 @@ func NewWorkDayMaterialRepository(db *pgxpool.Pool) *WorkDayMaterialRepository {
 
 func (r *WorkDayMaterialRepository) GetAll(ctx context.Context) ([]models.WorkDayMaterial, error) {
 	query := `
-		SELECT id, workDayId, materialName, quantity, cost, notes, createdAt, updatedAt
+		SELECT id, workDayId, materialName, quantity, cost, notes, createdAt
 		FROM workDayMaterials
 		ORDER BY createdAt DESC
 	`
@@ -34,7 +34,7 @@ func (r *WorkDayMaterialRepository) GetAll(ctx context.Context) ([]models.WorkDa
 		var m models.WorkDayMaterial
 		err := rows.Scan(
 			&m.ID, &m.WorkDayID, &m.MaterialName, &m.Quantity,
-			&m.Cost, &m.Notes, &m.CreatedAt, &m.UpdatedAt,
+			&m.Cost, &m.Notes, &m.CreatedAt,
 		)
 		if err != nil {
 			return nil, err
@@ -47,7 +47,7 @@ func (r *WorkDayMaterialRepository) GetAll(ctx context.Context) ([]models.WorkDa
 
 func (r *WorkDayMaterialRepository) GetByID(ctx context.Context, id int64) (*models.WorkDayMaterial, error) {
 	query := `
-		SELECT id, workDayId, materialName, quantity, cost, notes, createdAt, updatedAt
+		SELECT id, workDayId, materialName, quantity, cost, notes, createdAt
 		FROM workDayMaterials
 		WHERE id = $1
 	`
@@ -55,7 +55,7 @@ func (r *WorkDayMaterialRepository) GetByID(ctx context.Context, id int64) (*mod
 	var m models.WorkDayMaterial
 	err := r.db.QueryRow(ctx, query, id).Scan(
 		&m.ID, &m.WorkDayID, &m.MaterialName, &m.Quantity,
-		&m.Cost, &m.Notes, &m.CreatedAt, &m.UpdatedAt,
+		&m.Cost, &m.Notes, &m.CreatedAt,
 	)
 
 	if err != nil {
@@ -67,7 +67,7 @@ func (r *WorkDayMaterialRepository) GetByID(ctx context.Context, id int64) (*mod
 
 func (r *WorkDayMaterialRepository) GetByWorkDayID(ctx context.Context, workDayID int64) ([]models.WorkDayMaterial, error) {
 	query := `
-		SELECT id, workDayId, materialName, quantity, cost, notes, createdAt, updatedAt
+		SELECT id, workDayId, materialName, quantity, cost, notes, createdAt
 		FROM workDayMaterials
 		WHERE workDayId = $1
 		ORDER BY createdAt DESC
@@ -84,7 +84,7 @@ func (r *WorkDayMaterialRepository) GetByWorkDayID(ctx context.Context, workDayI
 		var m models.WorkDayMaterial
 		err := rows.Scan(
 			&m.ID, &m.WorkDayID, &m.MaterialName, &m.Quantity,
-			&m.Cost, &m.Notes, &m.CreatedAt, &m.UpdatedAt,
+			&m.Cost, &m.Notes, &m.CreatedAt,
 		)
 		if err != nil {
 			return nil, err
@@ -99,13 +99,13 @@ func (r *WorkDayMaterialRepository) Create(ctx context.Context, material *models
 	query := `
 		INSERT INTO workDayMaterials (workDayId, materialName, quantity, cost, notes)
 		VALUES ($1, $2, $3, $4, $5)
-		RETURNING id, createdAt, updatedAt
+		RETURNING id, createdAt
 	`
 
 	err := r.db.QueryRow(ctx, query,
 		material.WorkDayID, material.MaterialName, material.Quantity,
 		material.Cost, material.Notes,
-	).Scan(&material.ID, &material.CreatedAt, &material.UpdatedAt)
+	).Scan(&material.ID, &material.CreatedAt)
 
 	if err != nil {
 		return nil, err
@@ -117,17 +117,17 @@ func (r *WorkDayMaterialRepository) Create(ctx context.Context, material *models
 func (r *WorkDayMaterialRepository) Update(ctx context.Context, id int64, material *models.WorkDayMaterial) (*models.WorkDayMaterial, error) {
 	query := `
 		UPDATE workDayMaterials
-		SET workDayId = $1, materialName = $2, quantity = $3, cost = $4, notes = $5
-		WHERE id = $6
-		RETURNING id, workDayId, materialName, quantity, cost, notes, createdAt, updatedAt
+		SET materialName = $1, quantity = $2, cost = $3, notes = $4
+		WHERE id = $5
+		RETURNING id, workDayId, materialName, quantity, cost, notes, createdAt
 	`
 
 	err := r.db.QueryRow(ctx, query,
-		material.WorkDayID, material.MaterialName, material.Quantity,
+		material.MaterialName, material.Quantity,
 		material.Cost, material.Notes, id,
 	).Scan(
 		&material.ID, &material.WorkDayID, &material.MaterialName, &material.Quantity,
-		&material.Cost, &material.Notes, &material.CreatedAt, &material.UpdatedAt,
+		&material.Cost, &material.Notes, &material.CreatedAt,
 	)
 
 	if err != nil {
