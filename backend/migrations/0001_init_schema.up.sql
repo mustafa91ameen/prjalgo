@@ -153,7 +153,6 @@ CREATE TABLE workDayEquipment (
     id SERIAL PRIMARY KEY,
     workDayId INTEGER NOT NULL REFERENCES workDays(id) ON DELETE CASCADE,
     equipmentName VARCHAR(255) NOT NULL,
-    equipmentType VARCHAR(255),
     quantity DECIMAL(15, 2) NOT NULL DEFAULT 1,
     cost DECIMAL(15, 2) NOT NULL DEFAULT 0,
     notes TEXT,

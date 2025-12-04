@@ -45,7 +45,6 @@ type WorkDayEquipment struct {
 	ID            int64     `json:"id" db:"id"`
 	WorkDayID     int64     `json:"workDayId" db:"workdayid"`
 	EquipmentName string    `json:"equipmentName" db:"equipmentname"`
-	EquipmentType *string   `json:"equipmentType" db:"equipmenttype"`
 	Quantity      float64   `json:"quantity" db:"quantity"`
 	Cost          float64   `json:"cost" db:"cost"`
 	Notes         *string   `json:"notes" db:"notes"`
