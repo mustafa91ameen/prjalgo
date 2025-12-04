@@ -15,10 +15,10 @@ var (
 )
 
 type WorkSubCategoryService struct {
-	subCategoryRepo *repository.WorkSubCategoryRepository
+	subCategoryRepo repository.WorkSubCategoryRepositoryInterface
 }
 
-func NewWorkSubCategoryService(subCategoryRepo *repository.WorkSubCategoryRepository) *WorkSubCategoryService {
+func NewWorkSubCategoryService(subCategoryRepo repository.WorkSubCategoryRepositoryInterface) *WorkSubCategoryService {
 	return &WorkSubCategoryService{
 		subCategoryRepo: subCategoryRepo,
 	}

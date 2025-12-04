@@ -15,10 +15,10 @@ var (
 )
 
 type WorkDayLaborService struct {
-	laborRepo *repository.WorkDayLaborRepository
+	laborRepo repository.WorkDayLaborRepositoryInterface
 }
 
-func NewWorkDayLaborService(laborRepo *repository.WorkDayLaborRepository) *WorkDayLaborService {
+func NewWorkDayLaborService(laborRepo repository.WorkDayLaborRepositoryInterface) *WorkDayLaborService {
 	return &WorkDayLaborService{
 		laborRepo: laborRepo,
 	}

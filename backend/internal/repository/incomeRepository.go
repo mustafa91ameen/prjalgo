@@ -8,6 +8,14 @@ import (
 	"github.com/mustafaameen91/project-managment/backend/internal/models"
 )
 
+type IncomeRepositoryInterface interface {
+	GetAll(ctx context.Context) ([]models.Income, error)
+	GetByID(ctx context.Context, id int64) (*models.Income, error)
+	Create(ctx context.Context, income *models.Income) (*models.Income, error)
+	Update(ctx context.Context, id int64, income *models.Income) (*models.Income, error)
+	Delete(ctx context.Context, id int64) error
+}
+
 type IncomeRepository struct {
 	db *pgxpool.Pool
 }

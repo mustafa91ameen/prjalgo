@@ -15,10 +15,10 @@ var (
 )
 
 type DebtorService struct {
-	debtorRepo *repository.DebtorRepository
+	debtorRepo repository.DebtorRepositoryInterface
 }
 
-func NewDebtorService(debtorRepo *repository.DebtorRepository) *DebtorService {
+func NewDebtorService(debtorRepo repository.DebtorRepositoryInterface) *DebtorService {
 	return &DebtorService{
 		debtorRepo: debtorRepo,
 	}

@@ -8,6 +8,15 @@ import (
 	"github.com/mustafaameen91/project-managment/backend/internal/models"
 )
 
+type ExpenseRepositoryInterface interface {
+	GetAll(ctx context.Context) ([]models.Expense, error)
+	GetByID(ctx context.Context, id int64) (*models.Expense, error)
+	GetByProjectID(ctx context.Context, projectID int64) ([]models.Expense, error)
+	Create(ctx context.Context, expense *models.Expense) (*models.Expense, error)
+	Update(ctx context.Context, id int64, expense *models.Expense) (*models.Expense, error)
+	Delete(ctx context.Context, id int64) error
+}
+
 type ExpenseRepository struct {
 	db *pgxpool.Pool
 }

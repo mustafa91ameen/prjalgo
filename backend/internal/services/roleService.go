@@ -15,10 +15,10 @@ var (
 )
 
 type RoleService struct {
-	roleRepo *repository.RoleRepository
+	roleRepo repository.RoleRepositoryInterface
 }
 
-func NewRoleService(roleRepo *repository.RoleRepository) *RoleService {
+func NewRoleService(roleRepo repository.RoleRepositoryInterface) *RoleService {
 	return &RoleService{
 		roleRepo: roleRepo,
 	}

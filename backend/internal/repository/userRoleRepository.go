@@ -8,6 +8,14 @@ import (
 	"github.com/mustafaameen91/project-managment/backend/internal/models"
 )
 
+type UserRoleRepositoryInterface interface {
+	GetAll(ctx context.Context) ([]models.UserRole, error)
+	GetByID(ctx context.Context, id int64) (*models.UserRole, error)
+	GetByUserID(ctx context.Context, userID int64) ([]models.UserRole, error)
+	Create(ctx context.Context, userRole *models.UserRole) (*models.UserRole, error)
+	Delete(ctx context.Context, id int64) error
+}
+
 type UserRoleRepository struct {
 	db *pgxpool.Pool
 }

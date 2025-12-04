@@ -8,6 +8,14 @@ import (
 	"github.com/mustafaameen91/project-managment/backend/internal/models"
 )
 
+type ProjectRepositoryInterface interface {
+	GetAll(ctx context.Context) ([]models.Project, error)
+	GetByID(ctx context.Context, id int64) (*models.Project, error)
+	Create(ctx context.Context, project *models.Project) (*models.Project, error)
+	Update(ctx context.Context, id int64, project *models.Project) (*models.Project, error)
+	Delete(ctx context.Context, id int64) error
+}
+
 type ProjectRepository struct {
 	db *pgxpool.Pool
 }
@@ -19,7 +27,7 @@ func NewProjectRepository(db *pgxpool.Pool) *ProjectRepository {
 func (r *ProjectRepository) GetAll(ctx context.Context) ([]models.Project, error) {
 	query := `
 		SELECT id, name, type, clientPhone, location, startDate,
-		       warningCost, totalCost, status, progressPercentage
+		       status, progressPercentage, warningCost, totalCost
 		FROM projects
 		ORDER BY createdAt DESC
 	`
@@ -34,9 +42,9 @@ func (r *ProjectRepository) GetAll(ctx context.Context) ([]models.Project, error
 	for rows.Next() {
 		var p models.Project
 		err := rows.Scan(
-			&p.ID, &p.Name, &p.Type, &p.ClientPhone,
-			&p.Location, &p.StartDate, &p.WarningCost,
-			&p.TotalCost, &p.Status, &p.ProgressPercentage,
+			&p.ID, &p.Name, &p.Type, &p.ClientPhone, &p.Location,
+			&p.StartDate, &p.Status, &p.ProgressPercentage,
+			&p.WarningCost, &p.TotalCost,
 		)
 		if err != nil {
 			return nil, err
@@ -58,10 +66,9 @@ func (r *ProjectRepository) GetByID(ctx context.Context, id int64) (*models.Proj
 
 	var p models.Project
 	err := r.db.QueryRow(ctx, query, id).Scan(
-		&p.ID, &p.Name, &p.Type, &p.Description, &p.ClientPhone,
-		&p.Location, &p.StartDate, &p.Duration, &p.WarningCost,
-		&p.TotalCost, &p.Status, &p.ProgressPercentage, &p.Notes,
-		&p.CreatedBy, &p.CreatedAt,
+		&p.ID, &p.Name, &p.Type, &p.Description, &p.ClientPhone, &p.Location,
+		&p.StartDate, &p.Duration, &p.WarningCost, &p.TotalCost, &p.Status,
+		&p.ProgressPercentage, &p.Notes, &p.CreatedBy, &p.CreatedAt,
 	)
 
 	if err != nil {
@@ -73,19 +80,19 @@ func (r *ProjectRepository) GetByID(ctx context.Context, id int64) (*models.Proj
 
 func (r *ProjectRepository) Create(ctx context.Context, project *models.Project) (*models.Project, error) {
 	query := `
-		INSERT INTO projects (name, type, description, clientPhone, location, startDate,
-		                      duration, warningCost, totalCost, status, progressPercentage,
-		                      notes, createdBy)
+		INSERT INTO projects (name, type, description, clientPhone, location,
+		                      startDate, duration, warningCost, totalCost, status,
+		                      progressPercentage, notes, createdBy)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
-		RETURNING id, createdAt, updatedAt
+		RETURNING id, createdAt
 	`
 
 	err := r.db.QueryRow(ctx, query,
 		project.Name, project.Type, project.Description, project.ClientPhone,
 		project.Location, project.StartDate, project.Duration, project.WarningCost,
-		project.TotalCost, project.Status, project.ProgressPercentage, project.Notes,
-		project.CreatedBy,
-	).Scan(&project.ID, &project.CreatedAt, &project.UpdatedAt)
+		project.TotalCost, project.Status, project.ProgressPercentage,
+		project.Notes, project.CreatedBy,
+	).Scan(&project.ID, &project.CreatedAt)
 
 	if err != nil {
 		return nil, err
@@ -98,8 +105,8 @@ func (r *ProjectRepository) Update(ctx context.Context, id int64, project *model
 	query := `
 		UPDATE projects
 		SET name = $1, type = $2, description = $3, clientPhone = $4, location = $5,
-		    startDate = $6, duration = $7, warningCost = $8, totalCost = $9,
-		    status = $10, progressPercentage = $11, notes = $12
+		    startDate = $6, duration = $7, warningCost = $8, totalCost = $9, status = $10,
+		    progressPercentage = $11, notes = $12
 		WHERE id = $13
 		RETURNING id, name, type, description, clientPhone, location, startDate,
 		          duration, warningCost, totalCost, status, progressPercentage,
@@ -109,12 +116,13 @@ func (r *ProjectRepository) Update(ctx context.Context, id int64, project *model
 	err := r.db.QueryRow(ctx, query,
 		project.Name, project.Type, project.Description, project.ClientPhone,
 		project.Location, project.StartDate, project.Duration, project.WarningCost,
-		project.TotalCost, project.Status, project.ProgressPercentage, project.Notes, id,
+		project.TotalCost, project.Status, project.ProgressPercentage,
+		project.Notes, id,
 	).Scan(
-		&project.ID, &project.Name, &project.Type, &project.Description, &project.ClientPhone,
-		&project.Location, &project.StartDate, &project.Duration, &project.WarningCost,
-		&project.TotalCost, &project.Status, &project.ProgressPercentage, &project.Notes,
-		&project.CreatedBy, &project.CreatedAt,
+		&project.ID, &project.Name, &project.Type, &project.Description,
+		&project.ClientPhone, &project.Location, &project.StartDate, &project.Duration,
+		&project.WarningCost, &project.TotalCost, &project.Status, &project.ProgressPercentage,
+		&project.Notes, &project.CreatedBy, &project.CreatedAt,
 	)
 
 	if err != nil {

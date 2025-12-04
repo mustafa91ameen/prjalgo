@@ -8,6 +8,15 @@ import (
 	"github.com/mustafaameen91/project-managment/backend/internal/models"
 )
 
+type RolePageRepositoryInterface interface {
+	GetAll(ctx context.Context) ([]models.RolePage, error)
+	GetByID(ctx context.Context, id int64) (*models.RolePage, error)
+	GetByRoleID(ctx context.Context, roleID int64) ([]models.RolePage, error)
+	Create(ctx context.Context, rolePage *models.RolePage) (*models.RolePage, error)
+	Update(ctx context.Context, id int64, rolePage *models.RolePage) (*models.RolePage, error)
+	Delete(ctx context.Context, id int64) error
+}
+
 type RolePageRepository struct {
 	db *pgxpool.Pool
 }

@@ -15,10 +15,10 @@ var (
 )
 
 type WorkDayMaterialService struct {
-	materialRepo *repository.WorkDayMaterialRepository
+	materialRepo repository.WorkDayMaterialRepositoryInterface
 }
 
-func NewWorkDayMaterialService(materialRepo *repository.WorkDayMaterialRepository) *WorkDayMaterialService {
+func NewWorkDayMaterialService(materialRepo repository.WorkDayMaterialRepositoryInterface) *WorkDayMaterialService {
 	return &WorkDayMaterialService{
 		materialRepo: materialRepo,
 	}

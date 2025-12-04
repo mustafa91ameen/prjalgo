@@ -8,6 +8,15 @@ import (
 	"github.com/mustafaameen91/project-managment/backend/internal/models"
 )
 
+type WorkDayRepositoryInterface interface {
+	GetAll(ctx context.Context) ([]models.WorkDay, error)
+	GetByID(ctx context.Context, id int64) (*models.WorkDay, error)
+	GetByProjectID(ctx context.Context, projectID int64) ([]models.WorkDay, error)
+	Create(ctx context.Context, workDay *models.WorkDay) (*models.WorkDay, error)
+	Update(ctx context.Context, id int64, workDay *models.WorkDay) (*models.WorkDay, error)
+	Delete(ctx context.Context, id int64) error
+}
+
 type WorkDayRepository struct {
 	db *pgxpool.Pool
 }

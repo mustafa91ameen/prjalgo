@@ -15,10 +15,10 @@ var (
 )
 
 type ExpenseService struct {
-	expenseRepo *repository.ExpenseRepository
+	expenseRepo repository.ExpenseRepositoryInterface
 }
 
-func NewExpenseService(expenseRepo *repository.ExpenseRepository) *ExpenseService {
+func NewExpenseService(expenseRepo repository.ExpenseRepositoryInterface) *ExpenseService {
 	return &ExpenseService{
 		expenseRepo: expenseRepo,
 	}

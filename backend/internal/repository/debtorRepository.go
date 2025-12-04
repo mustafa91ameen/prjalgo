@@ -8,6 +8,14 @@ import (
 	"github.com/mustafaameen91/project-managment/backend/internal/models"
 )
 
+type DebtorRepositoryInterface interface {
+	GetAll(ctx context.Context) ([]models.Debtor, error)
+	GetByID(ctx context.Context, id int64) (*models.Debtor, error)
+	Create(ctx context.Context, debtor *models.Debtor) (*models.Debtor, error)
+	Update(ctx context.Context, id int64, debtor *models.Debtor) (*models.Debtor, error)
+	Delete(ctx context.Context, id int64) error
+}
+
 type DebtorRepository struct {
 	db *pgxpool.Pool
 }

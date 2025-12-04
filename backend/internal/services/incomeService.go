@@ -15,10 +15,10 @@ var (
 )
 
 type IncomeService struct {
-	incomeRepo *repository.IncomeRepository
+	incomeRepo repository.IncomeRepositoryInterface
 }
 
-func NewIncomeService(incomeRepo *repository.IncomeRepository) *IncomeService {
+func NewIncomeService(incomeRepo repository.IncomeRepositoryInterface) *IncomeService {
 	return &IncomeService{
 		incomeRepo: incomeRepo,
 	}

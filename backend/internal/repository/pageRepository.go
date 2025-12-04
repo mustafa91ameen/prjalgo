@@ -8,6 +8,15 @@ import (
 	"github.com/mustafaameen91/project-managment/backend/internal/models"
 )
 
+type PageRepositoryInterface interface {
+	GetAll(ctx context.Context) ([]models.Page, error)
+	GetByID(ctx context.Context, id int64) (*models.Page, error)
+	GetActivePages(ctx context.Context) ([]models.Page, error)
+	Create(ctx context.Context, page *models.Page) (*models.Page, error)
+	Update(ctx context.Context, id int64, page *models.Page) (*models.Page, error)
+	Delete(ctx context.Context, id int64) error
+}
+
 type PageRepository struct {
 	db *pgxpool.Pool
 }

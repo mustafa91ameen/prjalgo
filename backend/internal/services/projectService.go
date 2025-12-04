@@ -15,10 +15,10 @@ var (
 )
 
 type ProjectService struct {
-	projectRepo *repository.ProjectRepository
+	projectRepo repository.ProjectRepositoryInterface
 }
 
-func NewProjectService(projectRepo *repository.ProjectRepository) *ProjectService {
+func NewProjectService(projectRepo repository.ProjectRepositoryInterface) *ProjectService {
 	return &ProjectService{
 		projectRepo: projectRepo,
 	}

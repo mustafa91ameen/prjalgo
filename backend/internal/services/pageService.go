@@ -15,10 +15,10 @@ var (
 )
 
 type PageService struct {
-	pageRepo *repository.PageRepository
+	pageRepo repository.PageRepositoryInterface
 }
 
-func NewPageService(pageRepo *repository.PageRepository) *PageService {
+func NewPageService(pageRepo repository.PageRepositoryInterface) *PageService {
 	return &PageService{
 		pageRepo: pageRepo,
 	}

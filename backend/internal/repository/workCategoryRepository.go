@@ -8,6 +8,14 @@ import (
 	"github.com/mustafaameen91/project-managment/backend/internal/models"
 )
 
+type WorkCategoryRepositoryInterface interface {
+	GetAll(ctx context.Context) ([]models.WorkCategory, error)
+	GetByID(ctx context.Context, id int64) (*models.WorkCategory, error)
+	Create(ctx context.Context, category *models.WorkCategory) (*models.WorkCategory, error)
+	Update(ctx context.Context, id int64, category *models.WorkCategory) (*models.WorkCategory, error)
+	Delete(ctx context.Context, id int64) error
+}
+
 type WorkCategoryRepository struct {
 	db *pgxpool.Pool
 }

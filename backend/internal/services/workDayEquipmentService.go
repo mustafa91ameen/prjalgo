@@ -15,10 +15,10 @@ var (
 )
 
 type WorkDayEquipmentService struct {
-	equipmentRepo *repository.WorkDayEquipmentRepository
+	equipmentRepo repository.WorkDayEquipmentRepositoryInterface
 }
 
-func NewWorkDayEquipmentService(equipmentRepo *repository.WorkDayEquipmentRepository) *WorkDayEquipmentService {
+func NewWorkDayEquipmentService(equipmentRepo repository.WorkDayEquipmentRepositoryInterface) *WorkDayEquipmentService {
 	return &WorkDayEquipmentService{
 		equipmentRepo: equipmentRepo,
 	}
