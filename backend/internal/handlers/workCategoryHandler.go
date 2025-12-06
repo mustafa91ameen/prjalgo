@@ -1,138 +1,124 @@
 package handlers
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
 	"strconv"
 
-	"github.com/go-playground/validator/v10"
+	"github.com/gin-gonic/gin"
 	"github.com/mustafaameen91/project-managment/backend/internal/dtos"
-	"github.com/mustafaameen91/project-managment/backend/internal/response"
 	"github.com/mustafaameen91/project-managment/backend/internal/services"
 )
 
 type WorkCategoryHandler struct {
 	categoryService *services.WorkCategoryService
-	validator       *validator.Validate
 }
 
 func NewWorkCategoryHandler(categoryService *services.WorkCategoryService) *WorkCategoryHandler {
 	return &WorkCategoryHandler{
 		categoryService: categoryService,
-		validator:       validator.New(),
 	}
 }
 
 // GetAll handles GET /work-categories
-func (h *WorkCategoryHandler) GetAll(w http.ResponseWriter, r *http.Request) {
-	categories, err := h.categoryService.GetAll(r.Context())
+func (h *WorkCategoryHandler) GetAll(c *gin.Context) {
+	categories, err := h.categoryService.GetAll(c.Request.Context())
 	if err != nil {
-		response.Error(w, http.StatusInternalServerError, "failed to fetch work categories")
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "failed to fetch work categories"})
 		return
 	}
 
-	response.Success(w, categories)
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": categories})
 }
 
-// GetByID handles GET /work-categories/{id}
-func (h *WorkCategoryHandler) GetByID(w http.ResponseWriter, r *http.Request) {
-	id, err := h.parseID(r, "id")
+// GetByID handles GET /work-categories/:id
+func (h *WorkCategoryHandler) GetByID(c *gin.Context) {
+	id, err := h.parseID(c, "id")
 	if err != nil {
-		response.Error(w, http.StatusBadRequest, "invalid work category id")
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "invalid work category id"})
 		return
 	}
 
-	category, err := h.categoryService.GetByID(r.Context(), id)
+	category, err := h.categoryService.GetByID(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, services.ErrWorkCategoryNotFound) {
-			response.Error(w, http.StatusNotFound, err.Error())
+			c.JSON(http.StatusNotFound, gin.H{"success": false, "error": err.Error()})
 			return
 		}
-		response.Error(w, http.StatusInternalServerError, "failed to fetch work category")
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "failed to fetch work category"})
 		return
 	}
 
-	response.Success(w, category)
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": category})
 }
 
 // Create handles POST /work-categories
-func (h *WorkCategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
+func (h *WorkCategoryHandler) Create(c *gin.Context) {
 	var req dtos.CreateWorkCategory
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		response.Error(w, http.StatusBadRequest, "invalid request body")
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
 		return
 	}
 
-	if err := h.validator.Struct(req); err != nil {
-		response.Error(w, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	category, err := h.categoryService.Create(r.Context(), req)
+	category, err := h.categoryService.Create(c.Request.Context(), req)
 	if err != nil {
-		response.Error(w, http.StatusInternalServerError, "failed to create work category")
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "failed to create work category"})
 		return
 	}
 
-	response.Created(w, category)
+	c.JSON(http.StatusCreated, gin.H{"success": true, "data": category})
 }
 
-// Update handles PUT /work-categories/{id}
-func (h *WorkCategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
-	id, err := h.parseID(r, "id")
+// Update handles PUT /work-categories/:id
+func (h *WorkCategoryHandler) Update(c *gin.Context) {
+	id, err := h.parseID(c, "id")
 	if err != nil {
-		response.Error(w, http.StatusBadRequest, "invalid work category id")
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "invalid work category id"})
 		return
 	}
 
 	var req dtos.UpdateWorkCategory
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		response.Error(w, http.StatusBadRequest, "invalid request body")
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
 		return
 	}
 
-	if err := h.validator.Struct(req); err != nil {
-		response.Error(w, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	category, err := h.categoryService.Update(r.Context(), id, req)
+	category, err := h.categoryService.Update(c.Request.Context(), id, req)
 	if err != nil {
 		if errors.Is(err, services.ErrWorkCategoryNotFound) {
-			response.Error(w, http.StatusNotFound, err.Error())
+			c.JSON(http.StatusNotFound, gin.H{"success": false, "error": err.Error()})
 			return
 		}
-		response.Error(w, http.StatusInternalServerError, "failed to update work category")
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "failed to update work category"})
 		return
 	}
 
-	response.Success(w, category)
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": category})
 }
 
-// Delete handles DELETE /work-categories/{id}
-func (h *WorkCategoryHandler) Delete(w http.ResponseWriter, r *http.Request) {
-	id, err := h.parseID(r, "id")
+// Delete handles DELETE /work-categories/:id
+func (h *WorkCategoryHandler) Delete(c *gin.Context) {
+	id, err := h.parseID(c, "id")
 	if err != nil {
-		response.Error(w, http.StatusBadRequest, "invalid work category id")
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "invalid work category id"})
 		return
 	}
 
-	err = h.categoryService.Delete(r.Context(), id)
+	err = h.categoryService.Delete(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, services.ErrWorkCategoryNotFound) {
-			response.Error(w, http.StatusNotFound, err.Error())
+			c.JSON(http.StatusNotFound, gin.H{"success": false, "error": err.Error()})
 			return
 		}
-		response.Error(w, http.StatusInternalServerError, "failed to delete work category")
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "failed to delete work category"})
 		return
 	}
 
-	response.Success(w, nil)
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": nil})
 }
 
 // parseID extracts an int64 ID from the URL path
-func (h *WorkCategoryHandler) parseID(r *http.Request, param string) (int64, error) {
-	idStr := r.PathValue(param)
+func (h *WorkCategoryHandler) parseID(c *gin.Context, param string) (int64, error) {
+	idStr := c.Param(param)
 	return strconv.ParseInt(idStr, 10, 64)
 }

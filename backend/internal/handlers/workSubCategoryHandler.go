@@ -1,155 +1,141 @@
 package handlers
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
 	"strconv"
 
-	"github.com/go-playground/validator/v10"
+	"github.com/gin-gonic/gin"
 	"github.com/mustafaameen91/project-managment/backend/internal/dtos"
-	"github.com/mustafaameen91/project-managment/backend/internal/response"
 	"github.com/mustafaameen91/project-managment/backend/internal/services"
 )
 
 type WorkSubCategoryHandler struct {
 	subCategoryService *services.WorkSubCategoryService
-	validator          *validator.Validate
 }
 
 func NewWorkSubCategoryHandler(subCategoryService *services.WorkSubCategoryService) *WorkSubCategoryHandler {
 	return &WorkSubCategoryHandler{
 		subCategoryService: subCategoryService,
-		validator:          validator.New(),
 	}
 }
 
 // GetAll handles GET /work-subcategories
-func (h *WorkSubCategoryHandler) GetAll(w http.ResponseWriter, r *http.Request) {
-	subCategories, err := h.subCategoryService.GetAll(r.Context())
+func (h *WorkSubCategoryHandler) GetAll(c *gin.Context) {
+	subCategories, err := h.subCategoryService.GetAll(c.Request.Context())
 	if err != nil {
-		response.Error(w, http.StatusInternalServerError, "failed to fetch work subcategories")
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "failed to fetch work subcategories"})
 		return
 	}
 
-	response.Success(w, subCategories)
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": subCategories})
 }
 
-// GetByID handles GET /work-subcategories/{id}
-func (h *WorkSubCategoryHandler) GetByID(w http.ResponseWriter, r *http.Request) {
-	id, err := h.parseID(r, "id")
+// GetByID handles GET /work-subcategories/:id
+func (h *WorkSubCategoryHandler) GetByID(c *gin.Context) {
+	id, err := h.parseID(c, "id")
 	if err != nil {
-		response.Error(w, http.StatusBadRequest, "invalid work subcategory id")
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "invalid work subcategory id"})
 		return
 	}
 
-	subCategory, err := h.subCategoryService.GetByID(r.Context(), id)
+	subCategory, err := h.subCategoryService.GetByID(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, services.ErrWorkSubCategoryNotFound) {
-			response.Error(w, http.StatusNotFound, err.Error())
+			c.JSON(http.StatusNotFound, gin.H{"success": false, "error": err.Error()})
 			return
 		}
-		response.Error(w, http.StatusInternalServerError, "failed to fetch work subcategory")
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "failed to fetch work subcategory"})
 		return
 	}
 
-	response.Success(w, subCategory)
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": subCategory})
 }
 
-// GetByCategoryID handles GET /work-categories/{categoryId}/subcategories
-func (h *WorkSubCategoryHandler) GetByCategoryID(w http.ResponseWriter, r *http.Request) {
-	categoryID, err := h.parseID(r, "categoryId")
+// GetByCategoryID handles GET /work-categories/:categoryId/subcategories
+func (h *WorkSubCategoryHandler) GetByCategoryID(c *gin.Context) {
+	categoryID, err := h.parseID(c, "categoryId")
 	if err != nil {
-		response.Error(w, http.StatusBadRequest, "invalid category id")
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "invalid category id"})
 		return
 	}
 
-	subCategories, err := h.subCategoryService.GetByCategoryID(r.Context(), categoryID)
+	subCategories, err := h.subCategoryService.GetByCategoryID(c.Request.Context(), categoryID)
 	if err != nil {
-		response.Error(w, http.StatusInternalServerError, "failed to fetch work subcategories")
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "failed to fetch work subcategories"})
 		return
 	}
 
-	response.Success(w, subCategories)
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": subCategories})
 }
 
 // Create handles POST /work-subcategories
-func (h *WorkSubCategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
+func (h *WorkSubCategoryHandler) Create(c *gin.Context) {
 	var req dtos.CreateWorkSubCategory
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		response.Error(w, http.StatusBadRequest, "invalid request body")
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
 		return
 	}
 
-	if err := h.validator.Struct(req); err != nil {
-		response.Error(w, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	subCategory, err := h.subCategoryService.Create(r.Context(), req)
+	subCategory, err := h.subCategoryService.Create(c.Request.Context(), req)
 	if err != nil {
-		response.Error(w, http.StatusInternalServerError, "failed to create work subcategory")
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "failed to create work subcategory"})
 		return
 	}
 
-	response.Created(w, subCategory)
+	c.JSON(http.StatusCreated, gin.H{"success": true, "data": subCategory})
 }
 
-// Update handles PUT /work-subcategories/{id}
-func (h *WorkSubCategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
-	id, err := h.parseID(r, "id")
+// Update handles PUT /work-subcategories/:id
+func (h *WorkSubCategoryHandler) Update(c *gin.Context) {
+	id, err := h.parseID(c, "id")
 	if err != nil {
-		response.Error(w, http.StatusBadRequest, "invalid work subcategory id")
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "invalid work subcategory id"})
 		return
 	}
 
 	var req dtos.UpdateWorkSubCategory
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		response.Error(w, http.StatusBadRequest, "invalid request body")
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
 		return
 	}
 
-	if err := h.validator.Struct(req); err != nil {
-		response.Error(w, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	subCategory, err := h.subCategoryService.Update(r.Context(), id, req)
+	subCategory, err := h.subCategoryService.Update(c.Request.Context(), id, req)
 	if err != nil {
 		if errors.Is(err, services.ErrWorkSubCategoryNotFound) {
-			response.Error(w, http.StatusNotFound, err.Error())
+			c.JSON(http.StatusNotFound, gin.H{"success": false, "error": err.Error()})
 			return
 		}
-		response.Error(w, http.StatusInternalServerError, "failed to update work subcategory")
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "failed to update work subcategory"})
 		return
 	}
 
-	response.Success(w, subCategory)
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": subCategory})
 }
 
-// Delete handles DELETE /work-subcategories/{id}
-func (h *WorkSubCategoryHandler) Delete(w http.ResponseWriter, r *http.Request) {
-	id, err := h.parseID(r, "id")
+// Delete handles DELETE /work-subcategories/:id
+func (h *WorkSubCategoryHandler) Delete(c *gin.Context) {
+	id, err := h.parseID(c, "id")
 	if err != nil {
-		response.Error(w, http.StatusBadRequest, "invalid work subcategory id")
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "invalid work subcategory id"})
 		return
 	}
 
-	err = h.subCategoryService.Delete(r.Context(), id)
+	err = h.subCategoryService.Delete(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, services.ErrWorkSubCategoryNotFound) {
-			response.Error(w, http.StatusNotFound, err.Error())
+			c.JSON(http.StatusNotFound, gin.H{"success": false, "error": err.Error()})
 			return
 		}
-		response.Error(w, http.StatusInternalServerError, "failed to delete work subcategory")
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "failed to delete work subcategory"})
 		return
 	}
 
-	response.Success(w, nil)
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": nil})
 }
 
 // parseID extracts an int64 ID from the URL path
-func (h *WorkSubCategoryHandler) parseID(r *http.Request, param string) (int64, error) {
-	idStr := r.PathValue(param)
+func (h *WorkSubCategoryHandler) parseID(c *gin.Context, param string) (int64, error) {
+	idStr := c.Param(param)
 	return strconv.ParseInt(idStr, 10, 64)
 }

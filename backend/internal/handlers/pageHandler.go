@@ -1,149 +1,135 @@
 package handlers
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
 	"strconv"
 
-	"github.com/go-playground/validator/v10"
+	"github.com/gin-gonic/gin"
 	"github.com/mustafaameen91/project-managment/backend/internal/dtos"
-	"github.com/mustafaameen91/project-managment/backend/internal/response"
 	"github.com/mustafaameen91/project-managment/backend/internal/services"
 )
 
 type PageHandler struct {
 	pageService *services.PageService
-	validator   *validator.Validate
 }
 
 func NewPageHandler(pageService *services.PageService) *PageHandler {
 	return &PageHandler{
 		pageService: pageService,
-		validator:   validator.New(),
 	}
 }
 
 // GetAll handles GET /pages
-func (h *PageHandler) GetAll(w http.ResponseWriter, r *http.Request) {
-	pages, err := h.pageService.GetAll(r.Context())
+func (h *PageHandler) GetAll(c *gin.Context) {
+	pages, err := h.pageService.GetAll(c.Request.Context())
 	if err != nil {
-		response.Error(w, http.StatusInternalServerError, "failed to fetch pages")
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "failed to fetch pages"})
 		return
 	}
 
-	response.Success(w, pages)
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": pages})
 }
 
-// GetByID handles GET /pages/{id}
-func (h *PageHandler) GetByID(w http.ResponseWriter, r *http.Request) {
-	id, err := h.parseID(r, "id")
+// GetByID handles GET /pages/:id
+func (h *PageHandler) GetByID(c *gin.Context) {
+	id, err := h.parseID(c, "id")
 	if err != nil {
-		response.Error(w, http.StatusBadRequest, "invalid page id")
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "invalid page id"})
 		return
 	}
 
-	page, err := h.pageService.GetByID(r.Context(), id)
+	page, err := h.pageService.GetByID(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, services.ErrPageNotFound) {
-			response.Error(w, http.StatusNotFound, err.Error())
+			c.JSON(http.StatusNotFound, gin.H{"success": false, "error": err.Error()})
 			return
 		}
-		response.Error(w, http.StatusInternalServerError, "failed to fetch page")
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "failed to fetch page"})
 		return
 	}
 
-	response.Success(w, page)
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": page})
 }
 
 // GetActivePages handles GET /pages/active
-func (h *PageHandler) GetActivePages(w http.ResponseWriter, r *http.Request) {
-	pages, err := h.pageService.GetActivePages(r.Context())
+func (h *PageHandler) GetActivePages(c *gin.Context) {
+	pages, err := h.pageService.GetActivePages(c.Request.Context())
 	if err != nil {
-		response.Error(w, http.StatusInternalServerError, "failed to fetch active pages")
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "failed to fetch active pages"})
 		return
 	}
 
-	response.Success(w, pages)
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": pages})
 }
 
 // Create handles POST /pages
-func (h *PageHandler) Create(w http.ResponseWriter, r *http.Request) {
+func (h *PageHandler) Create(c *gin.Context) {
 	var req dtos.CreatePage
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		response.Error(w, http.StatusBadRequest, "invalid request body")
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
 		return
 	}
 
-	if err := h.validator.Struct(req); err != nil {
-		response.Error(w, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	page, err := h.pageService.Create(r.Context(), req)
+	page, err := h.pageService.Create(c.Request.Context(), req)
 	if err != nil {
-		response.Error(w, http.StatusInternalServerError, "failed to create page")
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "failed to create page"})
 		return
 	}
 
-	response.Created(w, page)
+	c.JSON(http.StatusCreated, gin.H{"success": true, "data": page})
 }
 
-// Update handles PUT /pages/{id}
-func (h *PageHandler) Update(w http.ResponseWriter, r *http.Request) {
-	id, err := h.parseID(r, "id")
+// Update handles PUT /pages/:id
+func (h *PageHandler) Update(c *gin.Context) {
+	id, err := h.parseID(c, "id")
 	if err != nil {
-		response.Error(w, http.StatusBadRequest, "invalid page id")
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "invalid page id"})
 		return
 	}
 
 	var req dtos.UpdatePage
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		response.Error(w, http.StatusBadRequest, "invalid request body")
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
 		return
 	}
 
-	if err := h.validator.Struct(req); err != nil {
-		response.Error(w, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	page, err := h.pageService.Update(r.Context(), id, req)
+	page, err := h.pageService.Update(c.Request.Context(), id, req)
 	if err != nil {
 		if errors.Is(err, services.ErrPageNotFound) {
-			response.Error(w, http.StatusNotFound, err.Error())
+			c.JSON(http.StatusNotFound, gin.H{"success": false, "error": err.Error()})
 			return
 		}
-		response.Error(w, http.StatusInternalServerError, "failed to update page")
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "failed to update page"})
 		return
 	}
 
-	response.Success(w, page)
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": page})
 }
 
-// Delete handles DELETE /pages/{id}
-func (h *PageHandler) Delete(w http.ResponseWriter, r *http.Request) {
-	id, err := h.parseID(r, "id")
+// Delete handles DELETE /pages/:id
+func (h *PageHandler) Delete(c *gin.Context) {
+	id, err := h.parseID(c, "id")
 	if err != nil {
-		response.Error(w, http.StatusBadRequest, "invalid page id")
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "invalid page id"})
 		return
 	}
 
-	err = h.pageService.Delete(r.Context(), id)
+	err = h.pageService.Delete(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, services.ErrPageNotFound) {
-			response.Error(w, http.StatusNotFound, err.Error())
+			c.JSON(http.StatusNotFound, gin.H{"success": false, "error": err.Error()})
 			return
 		}
-		response.Error(w, http.StatusInternalServerError, "failed to delete page")
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "failed to delete page"})
 		return
 	}
 
-	response.Success(w, nil)
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": nil})
 }
 
 // parseID extracts an int64 ID from the URL path
-func (h *PageHandler) parseID(r *http.Request, param string) (int64, error) {
-	idStr := r.PathValue(param)
+func (h *PageHandler) parseID(c *gin.Context, param string) (int64, error) {
+	idStr := c.Param(param)
 	return strconv.ParseInt(idStr, 10, 64)
 }

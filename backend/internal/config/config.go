@@ -19,8 +19,9 @@ type Config struct {
 }
 
 func Load() *Config {
-	// Load .env file if it exists
-	godotenv.Load()
+	// Load .env file if it exists (try multiple paths)
+	_ = godotenv.Load()
+	_ = godotenv.Load("../../.env")
 
 	return &Config{
 		DBHost:     getEnv("DB_HOST", "localhost"),

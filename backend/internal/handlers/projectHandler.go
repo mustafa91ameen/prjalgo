@@ -1,138 +1,124 @@
 package handlers
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
 	"strconv"
 
-	"github.com/go-playground/validator/v10"
+	"github.com/gin-gonic/gin"
 	"github.com/mustafaameen91/project-managment/backend/internal/dtos"
-	"github.com/mustafaameen91/project-managment/backend/internal/response"
 	"github.com/mustafaameen91/project-managment/backend/internal/services"
 )
 
 type ProjectHandler struct {
 	projectService *services.ProjectService
-	validator      *validator.Validate
 }
 
 func NewProjectHandler(projectService *services.ProjectService) *ProjectHandler {
 	return &ProjectHandler{
 		projectService: projectService,
-		validator:      validator.New(),
 	}
 }
 
 // GetAll handles GET /projects
-func (h *ProjectHandler) GetAll(w http.ResponseWriter, r *http.Request) {
-	projects, err := h.projectService.GetAll(r.Context())
+func (h *ProjectHandler) GetAll(c *gin.Context) {
+	projects, err := h.projectService.GetAll(c.Request.Context())
 	if err != nil {
-		response.Error(w, http.StatusInternalServerError, "failed to fetch projects")
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "failed to fetch projects"})
 		return
 	}
 
-	response.Success(w, projects)
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": projects})
 }
 
-// GetByID handles GET /projects/{id}
-func (h *ProjectHandler) GetByID(w http.ResponseWriter, r *http.Request) {
-	id, err := h.parseID(r, "id")
+// GetByID handles GET /projects/:id
+func (h *ProjectHandler) GetByID(c *gin.Context) {
+	id, err := h.parseID(c, "id")
 	if err != nil {
-		response.Error(w, http.StatusBadRequest, "invalid project id")
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "invalid project id"})
 		return
 	}
 
-	project, err := h.projectService.GetByID(r.Context(), id)
+	project, err := h.projectService.GetByID(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, services.ErrProjectNotFound) {
-			response.Error(w, http.StatusNotFound, err.Error())
+			c.JSON(http.StatusNotFound, gin.H{"success": false, "error": err.Error()})
 			return
 		}
-		response.Error(w, http.StatusInternalServerError, "failed to fetch project")
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "failed to fetch project"})
 		return
 	}
 
-	response.Success(w, project)
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": project})
 }
 
 // Create handles POST /projects
-func (h *ProjectHandler) Create(w http.ResponseWriter, r *http.Request) {
+func (h *ProjectHandler) Create(c *gin.Context) {
 	var req dtos.CreateProject
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		response.Error(w, http.StatusBadRequest, "invalid request body")
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
 		return
 	}
 
-	if err := h.validator.Struct(req); err != nil {
-		response.Error(w, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	project, err := h.projectService.Create(r.Context(), req)
+	project, err := h.projectService.Create(c.Request.Context(), req)
 	if err != nil {
-		response.Error(w, http.StatusInternalServerError, "failed to create project")
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "failed to create project"})
 		return
 	}
 
-	response.Created(w, project)
+	c.JSON(http.StatusCreated, gin.H{"success": true, "data": project})
 }
 
-// Update handles PUT /projects/{id}
-func (h *ProjectHandler) Update(w http.ResponseWriter, r *http.Request) {
-	id, err := h.parseID(r, "id")
+// Update handles PUT /projects/:id
+func (h *ProjectHandler) Update(c *gin.Context) {
+	id, err := h.parseID(c, "id")
 	if err != nil {
-		response.Error(w, http.StatusBadRequest, "invalid project id")
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "invalid project id"})
 		return
 	}
 
 	var req dtos.UpdateProject
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		response.Error(w, http.StatusBadRequest, "invalid request body")
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
 		return
 	}
 
-	if err := h.validator.Struct(req); err != nil {
-		response.Error(w, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	project, err := h.projectService.Update(r.Context(), id, req)
+	project, err := h.projectService.Update(c.Request.Context(), id, req)
 	if err != nil {
 		if errors.Is(err, services.ErrProjectNotFound) {
-			response.Error(w, http.StatusNotFound, err.Error())
+			c.JSON(http.StatusNotFound, gin.H{"success": false, "error": err.Error()})
 			return
 		}
-		response.Error(w, http.StatusInternalServerError, "failed to update project")
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "failed to update project"})
 		return
 	}
 
-	response.Success(w, project)
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": project})
 }
 
-// Delete handles DELETE /projects/{id}
-func (h *ProjectHandler) Delete(w http.ResponseWriter, r *http.Request) {
-	id, err := h.parseID(r, "id")
+// Delete handles DELETE /projects/:id
+func (h *ProjectHandler) Delete(c *gin.Context) {
+	id, err := h.parseID(c, "id")
 	if err != nil {
-		response.Error(w, http.StatusBadRequest, "invalid project id")
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "invalid project id"})
 		return
 	}
 
-	err = h.projectService.Delete(r.Context(), id)
+	err = h.projectService.Delete(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, services.ErrProjectNotFound) {
-			response.Error(w, http.StatusNotFound, err.Error())
+			c.JSON(http.StatusNotFound, gin.H{"success": false, "error": err.Error()})
 			return
 		}
-		response.Error(w, http.StatusInternalServerError, "failed to delete project")
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "failed to delete project"})
 		return
 	}
 
-	response.Success(w, nil)
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": nil})
 }
 
 // parseID extracts an int64 ID from the URL path
-func (h *ProjectHandler) parseID(r *http.Request, param string) (int64, error) {
-	idStr := r.PathValue(param)
+func (h *ProjectHandler) parseID(c *gin.Context, param string) (int64, error) {
+	idStr := c.Param(param)
 	return strconv.ParseInt(idStr, 10, 64)
 }

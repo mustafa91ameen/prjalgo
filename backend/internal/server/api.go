@@ -4,29 +4,34 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/mustafaameen91/project-managment/backend/internal/container"
+	"github.com/mustafaameen91/project-managment/backend/internal/server/routes"
 )
 
 type Server struct {
-	port   string
-	router *gin.Engine
+	port      string
+	router    *gin.Engine
+	container *container.Container
 }
 
-func NewServer(port string) *Server {
-	router := gin.Default()
+func NewServer(port string, c *container.Container) *Server {
+	gin.SetMode(gin.ReleaseMode)
+	router := gin.New()
+	router.Use(gin.Recovery())
 
 	// Register middlewares
 	router.Use(CORSMiddleware())
 	router.Use(LoggingMiddleware())
 
 	return &Server{
-		port:   port,
-		router: router,
+		port:      port,
+		router:    router,
+		container: c,
 	}
 }
 
 func (s *Server) RegisterRoutes() {
-	// Register your routes here
-	// s.router.GET("/health", handlers.HealthCheck)
+	routes.RegisterRoutes(s.router, s.container)
 }
 
 func (s *Server) Router() *gin.Engine {
