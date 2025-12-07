@@ -22,7 +22,14 @@ func NewWorkDayEquipmentHandler(equipmentService *services.WorkDayEquipmentServi
 
 // GetAll handles GET /workday-equipment
 func (h *WorkDayEquipmentHandler) GetAll(c *gin.Context) {
-	equipments, err := h.equipmentService.GetAll(c.Request.Context())
+	var pagination dtos.PaginationQuery
+	if err := c.ShouldBindQuery(&pagination); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+	pagination.Normalize()
+
+	equipments, err := h.equipmentService.GetAll(c.Request.Context(), pagination.Limit, pagination.Offset())
 	if err != nil {
 		response.InternalError(c, "failed to fetch equipments")
 		return

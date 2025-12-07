@@ -24,17 +24,19 @@ func NewDebtorService(debtorRepo repository.DebtorRepositoryInterface) *DebtorSe
 	}
 }
 
-func (s *DebtorService) GetAll(ctx context.Context) ([]dtos.DebtorSummary, error) {
-	debtors, err := s.debtorRepo.GetAll(ctx)
+func (s *DebtorService) GetAll(ctx context.Context, limit, offset int) (dtos.PaginatedResponse[dtos.DebtorSummary], error) {
+	debtors, total, err := s.debtorRepo.GetAll(ctx, limit, offset)
 	if err != nil {
-		return nil, err
+		return dtos.PaginatedResponse[dtos.DebtorSummary]{}, err
 	}
 
 	result := make([]dtos.DebtorSummary, len(debtors))
 	for i, d := range debtors {
 		result[i] = toDebtorSummaryDTO(d)
 	}
-	return result, nil
+
+	page := (offset / limit) + 1
+	return dtos.NewPaginatedResponse(result, total, page, limit), nil
 }
 
 func (s *DebtorService) GetByID(ctx context.Context, id int64) (*dtos.Debtor, error) {

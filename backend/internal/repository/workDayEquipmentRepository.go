@@ -9,7 +9,7 @@ import (
 )
 
 type WorkDayEquipmentRepositoryInterface interface {
-	GetAll(ctx context.Context) ([]models.WorkDayEquipment, error)
+	GetAll(ctx context.Context, limit, offset int) ([]models.WorkDayEquipment, int64, error)
 	GetByID(ctx context.Context, id int64) (*models.WorkDayEquipment, error)
 	GetByWorkDayID(ctx context.Context, workDayID int64) ([]models.WorkDayEquipment, error)
 	Create(ctx context.Context, equipment *models.WorkDayEquipment) (*models.WorkDayEquipment, error)
@@ -25,16 +25,24 @@ func NewWorkDayEquipmentRepository(db *pgxpool.Pool) *WorkDayEquipmentRepository
 	return &WorkDayEquipmentRepository{db: db}
 }
 
-func (r *WorkDayEquipmentRepository) GetAll(ctx context.Context) ([]models.WorkDayEquipment, error) {
+func (r *WorkDayEquipmentRepository) GetAll(ctx context.Context, limit, offset int) ([]models.WorkDayEquipment, int64, error) {
+	// Get total count
+	var total int64
+	countQuery := `SELECT COUNT(*) FROM workDayEquipment`
+	if err := r.db.QueryRow(ctx, countQuery).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+
 	query := `
 		SELECT id, workDayId, equipmentName, quantity, cost, notes, createdAt
 		FROM workDayEquipment
 		ORDER BY createdAt DESC
+		LIMIT $1 OFFSET $2
 	`
 
-	rows, err := r.db.Query(ctx, query)
+	rows, err := r.db.Query(ctx, query, limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 
@@ -46,12 +54,12 @@ func (r *WorkDayEquipmentRepository) GetAll(ctx context.Context) ([]models.WorkD
 			&e.Cost, &e.Notes, &e.CreatedAt,
 		)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		equipments = append(equipments, e)
 	}
 
-	return equipments, rows.Err()
+	return equipments, total, rows.Err()
 }
 
 func (r *WorkDayEquipmentRepository) GetByID(ctx context.Context, id int64) (*models.WorkDayEquipment, error) {

@@ -15,7 +15,7 @@ type UserCredentials struct {
 }
 
 type UserRepositoryInterface interface {
-	GetAll(ctx context.Context) ([]models.User, error)
+	GetAll(ctx context.Context, limit, offset int) ([]models.User, int64, error)
 	GetByID(ctx context.Context, id int64) (*models.User, error)
 	GetCredentialsByUsername(ctx context.Context, username string) (*UserCredentials, error)
 	Create(ctx context.Context, user *models.User) (*models.User, error)
@@ -31,17 +31,25 @@ func NewUserRepository(db *pgxpool.Pool) *UserRepository {
 	return &UserRepository{db: db}
 }
 
-func (r *UserRepository) GetAll(ctx context.Context) ([]models.User, error) {
+func (r *UserRepository) GetAll(ctx context.Context, limit, offset int) ([]models.User, int64, error) {
+	// Get total count
+	var total int64
+	countQuery := `SELECT COUNT(*) FROM users`
+	if err := r.db.QueryRow(ctx, countQuery).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+
 	query := `
 		SELECT id, username, email, fullName, phone, avatar,
 		       jobTitle, status, lastLogin
 		FROM users
 		ORDER BY createdAt DESC
+		LIMIT $1 OFFSET $2
 	`
 
-	rows, err := r.db.Query(ctx, query)
+	rows, err := r.db.Query(ctx, query, limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 
@@ -53,12 +61,12 @@ func (r *UserRepository) GetAll(ctx context.Context) ([]models.User, error) {
 			&u.Phone, &u.Avatar, &u.JobTitle, &u.Status, &u.LastLogin,
 		)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		users = append(users, u)
 	}
 
-	return users, rows.Err()
+	return users, total, rows.Err()
 }
 
 func (r *UserRepository) Create(ctx context.Context, user *models.User) (*models.User, error) {

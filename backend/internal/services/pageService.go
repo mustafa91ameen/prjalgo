@@ -24,17 +24,19 @@ func NewPageService(pageRepo repository.PageRepositoryInterface) *PageService {
 	}
 }
 
-func (s *PageService) GetAll(ctx context.Context) ([]dtos.Page, error) {
-	pages, err := s.pageRepo.GetAll(ctx)
+func (s *PageService) GetAll(ctx context.Context, limit, offset int) (dtos.PaginatedResponse[dtos.Page], error) {
+	pages, total, err := s.pageRepo.GetAll(ctx, limit, offset)
 	if err != nil {
-		return nil, err
+		return dtos.PaginatedResponse[dtos.Page]{}, err
 	}
 
 	result := make([]dtos.Page, len(pages))
 	for i, p := range pages {
 		result[i] = toPageDTO(p)
 	}
-	return result, nil
+
+	page := (offset / limit) + 1
+	return dtos.NewPaginatedResponse(result, total, page, limit), nil
 }
 
 func (s *PageService) GetByID(ctx context.Context, id int64) (*dtos.Page, error) {

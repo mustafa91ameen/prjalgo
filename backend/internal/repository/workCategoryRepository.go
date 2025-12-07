@@ -9,7 +9,7 @@ import (
 )
 
 type WorkCategoryRepositoryInterface interface {
-	GetAll(ctx context.Context) ([]models.WorkCategory, error)
+	GetAll(ctx context.Context, limit, offset int) ([]models.WorkCategory, int64, error)
 	GetByID(ctx context.Context, id int64) (*models.WorkCategory, error)
 	Create(ctx context.Context, category *models.WorkCategory) (*models.WorkCategory, error)
 	Update(ctx context.Context, id int64, category *models.WorkCategory) (*models.WorkCategory, error)
@@ -24,16 +24,24 @@ func NewWorkCategoryRepository(db *pgxpool.Pool) *WorkCategoryRepository {
 	return &WorkCategoryRepository{db: db}
 }
 
-func (r *WorkCategoryRepository) GetAll(ctx context.Context) ([]models.WorkCategory, error) {
+func (r *WorkCategoryRepository) GetAll(ctx context.Context, limit, offset int) ([]models.WorkCategory, int64, error) {
+	// Get total count
+	var total int64
+	countQuery := `SELECT COUNT(*) FROM workCategories`
+	if err := r.db.QueryRow(ctx, countQuery).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+
 	query := `
 		SELECT id, name, description, status
 		FROM workCategories
 		ORDER BY createdAt DESC
+		LIMIT $1 OFFSET $2
 	`
 
-	rows, err := r.db.Query(ctx, query)
+	rows, err := r.db.Query(ctx, query, limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 
@@ -42,12 +50,12 @@ func (r *WorkCategoryRepository) GetAll(ctx context.Context) ([]models.WorkCateg
 		var c models.WorkCategory
 		err := rows.Scan(&c.ID, &c.Name, &c.Description, &c.Status)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		categories = append(categories, c)
 	}
 
-	return categories, rows.Err()
+	return categories, total, rows.Err()
 }
 
 func (r *WorkCategoryRepository) GetByID(ctx context.Context, id int64) (*models.WorkCategory, error) {

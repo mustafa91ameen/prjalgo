@@ -9,7 +9,7 @@ import (
 )
 
 type DebtorRepositoryInterface interface {
-	GetAll(ctx context.Context) ([]models.Debtor, error)
+	GetAll(ctx context.Context, limit, offset int) ([]models.Debtor, int64, error)
 	GetByID(ctx context.Context, id int64) (*models.Debtor, error)
 	Create(ctx context.Context, debtor *models.Debtor) (*models.Debtor, error)
 	Update(ctx context.Context, id int64, debtor *models.Debtor) (*models.Debtor, error)
@@ -24,16 +24,24 @@ func NewDebtorRepository(db *pgxpool.Pool) *DebtorRepository {
 	return &DebtorRepository{db: db}
 }
 
-func (r *DebtorRepository) GetAll(ctx context.Context) ([]models.Debtor, error) {
+func (r *DebtorRepository) GetAll(ctx context.Context, limit, offset int) ([]models.Debtor, int64, error) {
+	// Get total count
+	var total int64
+	countQuery := `SELECT COUNT(*) FROM debtors`
+	if err := r.db.QueryRow(ctx, countQuery).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+
 	query := `
 		SELECT id, name, email, phone, totalDebt, currency, dueDate, status
 		FROM debtors
 		ORDER BY createdAt DESC
+		LIMIT $1 OFFSET $2
 	`
 
-	rows, err := r.db.Query(ctx, query)
+	rows, err := r.db.Query(ctx, query, limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 
@@ -45,12 +53,12 @@ func (r *DebtorRepository) GetAll(ctx context.Context) ([]models.Debtor, error) 
 			&d.Currency, &d.DueDate, &d.Status,
 		)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		debtors = append(debtors, d)
 	}
 
-	return debtors, rows.Err()
+	return debtors, total, rows.Err()
 }
 
 func (r *DebtorRepository) GetByID(ctx context.Context, id int64) (*models.Debtor, error) {

@@ -22,7 +22,14 @@ func NewWorkSubCategoryHandler(subCategoryService *services.WorkSubCategoryServi
 
 // GetAll handles GET /work-subcategories
 func (h *WorkSubCategoryHandler) GetAll(c *gin.Context) {
-	subCategories, err := h.subCategoryService.GetAll(c.Request.Context())
+	var pagination dtos.PaginationQuery
+	if err := c.ShouldBindQuery(&pagination); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+	pagination.Normalize()
+
+	subCategories, err := h.subCategoryService.GetAll(c.Request.Context(), pagination.Limit, pagination.Offset())
 	if err != nil {
 		response.InternalError(c, "failed to fetch work subcategories")
 		return

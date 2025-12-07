@@ -14,7 +14,7 @@ type Role struct {
 
 // Request DTOs
 type CreateRole struct {
-	Name        string  `json:"name" validate:"required"`
+	Name        string  `json:"name" binding:"required"`
 	Description *string `json:"description"`
 }
 
@@ -37,9 +37,9 @@ type Page struct {
 
 // Request DTOs
 type CreatePage struct {
-	Name   string  `json:"name" validate:"required"`
+	Name   string  `json:"name" binding:"required"`
 	Icon   *string `json:"icon"`
-	Route  string  `json:"route" validate:"required"`
+	Route  string  `json:"route" binding:"required"`
 	Status *string `json:"status"`
 }
 
@@ -63,8 +63,8 @@ type RolePage struct {
 
 // Request DTOs
 type CreateRolePage struct {
-	RoleID      int64   `json:"roleId" validate:"required"`
-	PageID      int64   `json:"pageId" validate:"required"`
+	RoleID      int64   `json:"roleId" binding:"required"`
+	PageID      int64   `json:"pageId" binding:"required"`
 	Permissions *string `json:"permissions"`
 }
 
@@ -84,6 +84,6 @@ type UserRole struct {
 
 // Request DTO
 type CreateUserRole struct {
-	UserID int64 `json:"userId" validate:"required"`
-	RoleID int64 `json:"roleId" validate:"required"`
+	UserID int64 `json:"userId" binding:"required"`
+	RoleID int64 `json:"roleId" binding:"required"`
 }

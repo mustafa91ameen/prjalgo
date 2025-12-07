@@ -22,7 +22,14 @@ func NewRolePageHandler(rolePageService *services.RolePageService) *RolePageHand
 
 // GetAll handles GET /role-pages
 func (h *RolePageHandler) GetAll(c *gin.Context) {
-	rolePages, err := h.rolePageService.GetAll(c.Request.Context())
+	var pagination dtos.PaginationQuery
+	if err := c.ShouldBindQuery(&pagination); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+	pagination.Normalize()
+
+	rolePages, err := h.rolePageService.GetAll(c.Request.Context(), pagination.Limit, pagination.Offset())
 	if err != nil {
 		response.InternalError(c, "failed to fetch role pages")
 		return

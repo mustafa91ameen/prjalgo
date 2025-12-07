@@ -22,7 +22,14 @@ func NewDebtorHandler(debtorService *services.DebtorService) *DebtorHandler {
 
 // GetAll handles GET /debtors
 func (h *DebtorHandler) GetAll(c *gin.Context) {
-	debtors, err := h.debtorService.GetAll(c.Request.Context())
+	var pagination dtos.PaginationQuery
+	if err := c.ShouldBindQuery(&pagination); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+	pagination.Normalize()
+
+	debtors, err := h.debtorService.GetAll(c.Request.Context(), pagination.Limit, pagination.Offset())
 	if err != nil {
 		response.InternalError(c, "failed to fetch debtors")
 		return

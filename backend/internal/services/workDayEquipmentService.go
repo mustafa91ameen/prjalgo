@@ -24,17 +24,19 @@ func NewWorkDayEquipmentService(equipmentRepo repository.WorkDayEquipmentReposit
 	}
 }
 
-func (s *WorkDayEquipmentService) GetAll(ctx context.Context) ([]dtos.WorkDayEquipment, error) {
-	equipments, err := s.equipmentRepo.GetAll(ctx)
+func (s *WorkDayEquipmentService) GetAll(ctx context.Context, limit, offset int) (dtos.PaginatedResponse[dtos.WorkDayEquipment], error) {
+	equipments, total, err := s.equipmentRepo.GetAll(ctx, limit, offset)
 	if err != nil {
-		return nil, err
+		return dtos.PaginatedResponse[dtos.WorkDayEquipment]{}, err
 	}
 
 	result := make([]dtos.WorkDayEquipment, len(equipments))
 	for i, e := range equipments {
 		result[i] = toWorkDayEquipmentDTO(e)
 	}
-	return result, nil
+
+	page := (offset / limit) + 1
+	return dtos.NewPaginatedResponse(result, total, page, limit), nil
 }
 
 func (s *WorkDayEquipmentService) GetByWorkDayID(ctx context.Context, workDayID int64) ([]dtos.WorkDayEquipment, error) {

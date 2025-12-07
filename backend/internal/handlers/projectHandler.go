@@ -22,7 +22,14 @@ func NewProjectHandler(projectService *services.ProjectService) *ProjectHandler 
 
 // GetAll handles GET /projects
 func (h *ProjectHandler) GetAll(c *gin.Context) {
-	projects, err := h.projectService.GetAll(c.Request.Context())
+	var pagination dtos.PaginationQuery
+	if err := c.ShouldBindQuery(&pagination); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+	pagination.Normalize()
+
+	projects, err := h.projectService.GetAll(c.Request.Context(), pagination.Limit, pagination.Offset())
 	if err != nil {
 		response.InternalError(c, "failed to fetch projects")
 		return

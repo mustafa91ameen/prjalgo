@@ -22,7 +22,14 @@ func NewRoleHandler(roleService *services.RoleService) *RoleHandler {
 
 // GetAll handles GET /roles
 func (h *RoleHandler) GetAll(c *gin.Context) {
-	roles, err := h.roleService.GetAll(c.Request.Context())
+	var pagination dtos.PaginationQuery
+	if err := c.ShouldBindQuery(&pagination); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+	pagination.Normalize()
+
+	roles, err := h.roleService.GetAll(c.Request.Context(), pagination.Limit, pagination.Offset())
 	if err != nil {
 		response.InternalError(c, "failed to fetch roles")
 		return

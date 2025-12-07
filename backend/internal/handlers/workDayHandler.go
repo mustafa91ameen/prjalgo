@@ -22,7 +22,14 @@ func NewWorkDayHandler(workDayService *services.WorkDayService) *WorkDayHandler 
 
 // GetAll handles GET /workdays
 func (h *WorkDayHandler) GetAll(c *gin.Context) {
-	workDays, err := h.workDayService.GetAll(c.Request.Context())
+	var pagination dtos.PaginationQuery
+	if err := c.ShouldBindQuery(&pagination); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+	pagination.Normalize()
+
+	workDays, err := h.workDayService.GetAll(c.Request.Context(), pagination.Limit, pagination.Offset())
 	if err != nil {
 		response.InternalError(c, "failed to fetch work days")
 		return

@@ -29,17 +29,17 @@ type User struct {
 
 // Request DTOs
 type CreateUser struct {
-	Username string `json:"username" validate:"required"`
-	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required,min=8"`
-	FullName string `json:"fullName" validate:"required"`
-	Phone    string `json:"phone" validate:"required"`
-	JobTitle string `json:"jobTitle" validate:"required"`
+	Username string `json:"username" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=8"`
+	FullName string `json:"fullName" binding:"required"`
+	Phone    string `json:"phone" binding:"required"`
+	JobTitle string `json:"jobTitle" binding:"required"`
 }
 
 type UpdateUser struct {
 	Username *string `json:"username"`
-	Email    *string `json:"email" validate:"omitempty,email"`
+	Email    *string `json:"email" binding:"omitempty,email"`
 	FullName *string `json:"fullName"`
 	Phone    *string `json:"phone"`
 	Avatar   *string `json:"avatar"`

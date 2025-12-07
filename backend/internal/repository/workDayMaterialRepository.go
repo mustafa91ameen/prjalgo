@@ -9,7 +9,7 @@ import (
 )
 
 type WorkDayMaterialRepositoryInterface interface {
-	GetAll(ctx context.Context) ([]models.WorkDayMaterial, error)
+	GetAll(ctx context.Context, limit, offset int) ([]models.WorkDayMaterial, int64, error)
 	GetByID(ctx context.Context, id int64) (*models.WorkDayMaterial, error)
 	GetByWorkDayID(ctx context.Context, workDayID int64) ([]models.WorkDayMaterial, error)
 	Create(ctx context.Context, material *models.WorkDayMaterial) (*models.WorkDayMaterial, error)
@@ -25,16 +25,24 @@ func NewWorkDayMaterialRepository(db *pgxpool.Pool) *WorkDayMaterialRepository {
 	return &WorkDayMaterialRepository{db: db}
 }
 
-func (r *WorkDayMaterialRepository) GetAll(ctx context.Context) ([]models.WorkDayMaterial, error) {
+func (r *WorkDayMaterialRepository) GetAll(ctx context.Context, limit, offset int) ([]models.WorkDayMaterial, int64, error) {
+	// Get total count
+	var total int64
+	countQuery := `SELECT COUNT(*) FROM workDayMaterials`
+	if err := r.db.QueryRow(ctx, countQuery).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+
 	query := `
 		SELECT id, workDayId, materialName, quantity, cost, notes, createdAt
 		FROM workDayMaterials
 		ORDER BY createdAt DESC
+		LIMIT $1 OFFSET $2
 	`
 
-	rows, err := r.db.Query(ctx, query)
+	rows, err := r.db.Query(ctx, query, limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 
@@ -46,12 +54,12 @@ func (r *WorkDayMaterialRepository) GetAll(ctx context.Context) ([]models.WorkDa
 			&m.Cost, &m.Notes, &m.CreatedAt,
 		)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		materials = append(materials, m)
 	}
 
-	return materials, rows.Err()
+	return materials, total, rows.Err()
 }
 
 func (r *WorkDayMaterialRepository) GetByID(ctx context.Context, id int64) (*models.WorkDayMaterial, error) {

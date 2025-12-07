@@ -23,7 +23,14 @@ func NewUserHandler(userService *services.UserService) *UserHandler {
 
 // GetAll handles GET /users
 func (h *UserHandler) GetAll(c *gin.Context) {
-	users, err := h.userService.GetAll(c.Request.Context())
+	var pagination dtos.PaginationQuery
+	if err := c.ShouldBindQuery(&pagination); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+	pagination.Normalize()
+
+	users, err := h.userService.GetAll(c.Request.Context(), pagination.Limit, pagination.Offset())
 	if err != nil {
 		response.InternalError(c, "failed to fetch users")
 		return

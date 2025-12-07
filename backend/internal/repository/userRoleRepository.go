@@ -19,7 +19,7 @@ type UserPage struct {
 }
 
 type UserRoleRepositoryInterface interface {
-	GetAll(ctx context.Context) ([]models.UserRole, error)
+	GetAll(ctx context.Context, limit, offset int) ([]models.UserRole, int64, error)
 	GetByID(ctx context.Context, id int64) (*models.UserRole, error)
 	GetByUserID(ctx context.Context, userID int64) ([]models.UserRole, error)
 	GetUserPages(ctx context.Context, userID int64) ([]UserPage, error)
@@ -36,16 +36,24 @@ func NewUserRoleRepository(db *pgxpool.Pool) *UserRoleRepository {
 	return &UserRoleRepository{db: db}
 }
 
-func (r *UserRoleRepository) GetAll(ctx context.Context) ([]models.UserRole, error) {
+func (r *UserRoleRepository) GetAll(ctx context.Context, limit, offset int) ([]models.UserRole, int64, error) {
+	// Get total count
+	var total int64
+	countQuery := `SELECT COUNT(*) FROM userRoles`
+	if err := r.db.QueryRow(ctx, countQuery).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+
 	query := `
 		SELECT id, userId, roleId, createdAt
 		FROM userRoles
 		ORDER BY createdAt DESC
+		LIMIT $1 OFFSET $2
 	`
 
-	rows, err := r.db.Query(ctx, query)
+	rows, err := r.db.Query(ctx, query, limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 
@@ -54,12 +62,12 @@ func (r *UserRoleRepository) GetAll(ctx context.Context) ([]models.UserRole, err
 		var ur models.UserRole
 		err := rows.Scan(&ur.ID, &ur.UserID, &ur.RoleID, &ur.CreatedAt)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		userRoles = append(userRoles, ur)
 	}
 
-	return userRoles, rows.Err()
+	return userRoles, total, rows.Err()
 }
 
 func (r *UserRoleRepository) GetByID(ctx context.Context, id int64) (*models.UserRole, error) {

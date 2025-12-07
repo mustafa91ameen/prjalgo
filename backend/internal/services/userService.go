@@ -28,17 +28,19 @@ func NewUserService(userRepo repository.UserRepositoryInterface, userRoleRepo re
 	}
 }
 
-func (s *UserService) GetAll(ctx context.Context) ([]dtos.UserSummary, error) {
-	users, err := s.userRepo.GetAll(ctx)
+func (s *UserService) GetAll(ctx context.Context, limit, offset int) (dtos.PaginatedResponse[dtos.UserSummary], error) {
+	users, total, err := s.userRepo.GetAll(ctx, limit, offset)
 	if err != nil {
-		return nil, err
+		return dtos.PaginatedResponse[dtos.UserSummary]{}, err
 	}
 
 	result := make([]dtos.UserSummary, len(users))
 	for i, u := range users {
 		result[i] = toUserSummaryDTO(u)
 	}
-	return result, nil
+
+	page := (offset / limit) + 1
+	return dtos.NewPaginatedResponse(result, total, page, limit), nil
 }
 
 func (s *UserService) GetByID(ctx context.Context, id int64) (*dtos.User, error) {

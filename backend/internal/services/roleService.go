@@ -24,17 +24,19 @@ func NewRoleService(roleRepo repository.RoleRepositoryInterface) *RoleService {
 	}
 }
 
-func (s *RoleService) GetAll(ctx context.Context) ([]dtos.Role, error) {
-	roles, err := s.roleRepo.GetAll(ctx)
+func (s *RoleService) GetAll(ctx context.Context, limit, offset int) (dtos.PaginatedResponse[dtos.Role], error) {
+	roles, total, err := s.roleRepo.GetAll(ctx, limit, offset)
 	if err != nil {
-		return nil, err
+		return dtos.PaginatedResponse[dtos.Role]{}, err
 	}
 
 	result := make([]dtos.Role, len(roles))
 	for i, r := range roles {
 		result[i] = toRoleDTO(r)
 	}
-	return result, nil
+
+	page := (offset / limit) + 1
+	return dtos.NewPaginatedResponse(result, total, page, limit), nil
 }
 
 func (s *RoleService) GetByID(ctx context.Context, id int64) (*dtos.Role, error) {

@@ -32,11 +32,11 @@ type Debtor struct {
 
 // Request DTOs
 type CreateDebtor struct {
-	Name      string     `json:"name" validate:"required"`
-	Email     *string    `json:"email" validate:"omitempty,email"`
+	Name      string     `json:"name" binding:"required"`
+	Email     *string    `json:"email" binding:"omitempty,email"`
 	Phone     *string    `json:"phone"`
-	TotalDebt float64    `json:"totalDebt" validate:"required"`
-	Currency  string     `json:"currency" validate:"required"`
+	TotalDebt float64    `json:"totalDebt" binding:"required"`
+	Currency  string     `json:"currency" binding:"required"`
 	DueDate   *time.Time `json:"dueDate"`
 	Status    *string    `json:"status"`
 	Notes     *string    `json:"notes"`
@@ -45,7 +45,7 @@ type CreateDebtor struct {
 
 type UpdateDebtor struct {
 	Name      *string    `json:"name"`
-	Email     *string    `json:"email" validate:"omitempty,email"`
+	Email     *string    `json:"email" binding:"omitempty,email"`
 	Phone     *string    `json:"phone"`
 	TotalDebt *float64   `json:"totalDebt"`
 	Currency  *string    `json:"currency"`

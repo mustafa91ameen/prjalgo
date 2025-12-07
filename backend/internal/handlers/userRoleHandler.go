@@ -22,7 +22,14 @@ func NewUserRoleHandler(userRoleService *services.UserRoleService) *UserRoleHand
 
 // GetAll handles GET /user-roles
 func (h *UserRoleHandler) GetAll(c *gin.Context) {
-	userRoles, err := h.userRoleService.GetAll(c.Request.Context())
+	var pagination dtos.PaginationQuery
+	if err := c.ShouldBindQuery(&pagination); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+	pagination.Normalize()
+
+	userRoles, err := h.userRoleService.GetAll(c.Request.Context(), pagination.Limit, pagination.Offset())
 	if err != nil {
 		response.InternalError(c, "failed to fetch user roles")
 		return

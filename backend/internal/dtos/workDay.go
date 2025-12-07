@@ -29,9 +29,9 @@ type WorkDay struct {
 
 // Request DTOs
 type CreateWorkDay struct {
-	ProjectID         int64     `json:"projectId" validate:"required"`
+	ProjectID         int64     `json:"projectId" binding:"required"`
 	WorkSubCategoryID *int64    `json:"workSubCategoryId"`
-	WorkDate          time.Time `json:"workDate" validate:"required"`
+	WorkDate          time.Time `json:"workDate" binding:"required"`
 	Description       *string   `json:"description"`
 	Notes             *string   `json:"notes"`
 	CreatedBy         *int64    `json:"createdBy"`
@@ -61,10 +61,10 @@ type WorkDayMaterial struct {
 
 // Request DTOs
 type CreateWorkDayMaterial struct {
-	WorkDayID    int64   `json:"workDayId" validate:"required"`
-	MaterialName string  `json:"materialName" validate:"required"`
-	Quantity     float64 `json:"quantity" validate:"required"`
-	Cost         float64 `json:"cost" validate:"required"`
+	WorkDayID    int64   `json:"workDayId" binding:"required"`
+	MaterialName string  `json:"materialName" binding:"required"`
+	Quantity     float64 `json:"quantity" binding:"required"`
+	Cost         float64 `json:"cost" binding:"required"`
 	Notes        *string `json:"notes"`
 }
 
@@ -93,13 +93,13 @@ type WorkDayLabor struct {
 
 // Request DTOs
 type CreateWorkDayLabor struct {
-	WorkDayID  int64   `json:"workDayId" validate:"required"`
-	WorkerName string  `json:"workerName" validate:"required"`
+	WorkDayID  int64   `json:"workDayId" binding:"required"`
+	WorkerName string  `json:"workerName" binding:"required"`
 	JobTitle   *string `json:"jobTitle"`
 	Phone      *string `json:"phone"`
 	Address    *string `json:"address"`
-	Quantity   float64 `json:"quantity" validate:"required"`
-	Cost       float64 `json:"cost" validate:"required"`
+	Quantity   float64 `json:"quantity" binding:"required"`
+	Cost       float64 `json:"cost" binding:"required"`
 	Notes      *string `json:"notes"`
 }
 
@@ -128,10 +128,10 @@ type WorkDayEquipment struct {
 
 // Request DTOs
 type CreateWorkDayEquipment struct {
-	WorkDayID     int64   `json:"workDayId" validate:"required"`
-	EquipmentName string  `json:"equipmentName" validate:"required"`
-	Quantity      float64 `json:"quantity" validate:"required"`
-	Cost          float64 `json:"cost" validate:"required"`
+	WorkDayID     int64   `json:"workDayId" binding:"required"`
+	EquipmentName string  `json:"equipmentName" binding:"required"`
+	Quantity      float64 `json:"quantity" binding:"required"`
+	Cost          float64 `json:"cost" binding:"required"`
 	Notes         *string `json:"notes"`
 }
 

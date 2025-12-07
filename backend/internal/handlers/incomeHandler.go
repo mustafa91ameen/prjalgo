@@ -22,7 +22,14 @@ func NewIncomeHandler(incomeService *services.IncomeService) *IncomeHandler {
 
 // GetAll handles GET /incomes
 func (h *IncomeHandler) GetAll(c *gin.Context) {
-	incomes, err := h.incomeService.GetAll(c.Request.Context())
+	var pagination dtos.PaginationQuery
+	if err := c.ShouldBindQuery(&pagination); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+	pagination.Normalize()
+
+	incomes, err := h.incomeService.GetAll(c.Request.Context(), pagination.Limit, pagination.Offset())
 	if err != nil {
 		response.InternalError(c, "failed to fetch incomes")
 		return

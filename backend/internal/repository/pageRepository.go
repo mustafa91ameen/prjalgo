@@ -9,7 +9,7 @@ import (
 )
 
 type PageRepositoryInterface interface {
-	GetAll(ctx context.Context) ([]models.Page, error)
+	GetAll(ctx context.Context, limit, offset int) ([]models.Page, int64, error)
 	GetByID(ctx context.Context, id int64) (*models.Page, error)
 	GetActivePages(ctx context.Context) ([]models.Page, error)
 	Create(ctx context.Context, page *models.Page) (*models.Page, error)
@@ -25,16 +25,24 @@ func NewPageRepository(db *pgxpool.Pool) *PageRepository {
 	return &PageRepository{db: db}
 }
 
-func (r *PageRepository) GetAll(ctx context.Context) ([]models.Page, error) {
+func (r *PageRepository) GetAll(ctx context.Context, limit, offset int) ([]models.Page, int64, error) {
+	// Get total count
+	var total int64
+	countQuery := `SELECT COUNT(*) FROM pages`
+	if err := r.db.QueryRow(ctx, countQuery).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+
 	query := `
 		SELECT id, name, icon, route, status, createdAt
 		FROM pages
 		ORDER BY createdAt DESC
+		LIMIT $1 OFFSET $2
 	`
 
-	rows, err := r.db.Query(ctx, query)
+	rows, err := r.db.Query(ctx, query, limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 
@@ -43,12 +51,12 @@ func (r *PageRepository) GetAll(ctx context.Context) ([]models.Page, error) {
 		var p models.Page
 		err := rows.Scan(&p.ID, &p.Name, &p.Icon, &p.Route, &p.Status, &p.CreatedAt)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		pages = append(pages, p)
 	}
 
-	return pages, rows.Err()
+	return pages, total, rows.Err()
 }
 
 func (r *PageRepository) GetByID(ctx context.Context, id int64) (*models.Page, error) {

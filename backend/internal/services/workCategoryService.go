@@ -24,17 +24,19 @@ func NewWorkCategoryService(categoryRepo repository.WorkCategoryRepositoryInterf
 	}
 }
 
-func (s *WorkCategoryService) GetAll(ctx context.Context) ([]dtos.WorkCategorySummary, error) {
-	categories, err := s.categoryRepo.GetAll(ctx)
+func (s *WorkCategoryService) GetAll(ctx context.Context, limit, offset int) (dtos.PaginatedResponse[dtos.WorkCategorySummary], error) {
+	categories, total, err := s.categoryRepo.GetAll(ctx, limit, offset)
 	if err != nil {
-		return nil, err
+		return dtos.PaginatedResponse[dtos.WorkCategorySummary]{}, err
 	}
 
 	result := make([]dtos.WorkCategorySummary, len(categories))
 	for i, c := range categories {
 		result[i] = toWorkCategorySummaryDTO(c)
 	}
-	return result, nil
+
+	page := (offset / limit) + 1
+	return dtos.NewPaginatedResponse(result, total, page, limit), nil
 }
 
 func (s *WorkCategoryService) GetByID(ctx context.Context, id int64) (*dtos.WorkCategory, error) {

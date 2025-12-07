@@ -24,17 +24,19 @@ func NewWorkDayService(workDayRepo repository.WorkDayRepositoryInterface) *WorkD
 	}
 }
 
-func (s *WorkDayService) GetAll(ctx context.Context) ([]dtos.WorkDaySummary, error) {
-	workDays, err := s.workDayRepo.GetAll(ctx)
+func (s *WorkDayService) GetAll(ctx context.Context, limit, offset int) (dtos.PaginatedResponse[dtos.WorkDaySummary], error) {
+	workDays, total, err := s.workDayRepo.GetAll(ctx, limit, offset)
 	if err != nil {
-		return nil, err
+		return dtos.PaginatedResponse[dtos.WorkDaySummary]{}, err
 	}
 
 	result := make([]dtos.WorkDaySummary, len(workDays))
 	for i, w := range workDays {
 		result[i] = toWorkDaySummaryDTO(w)
 	}
-	return result, nil
+
+	page := (offset / limit) + 1
+	return dtos.NewPaginatedResponse(result, total, page, limit), nil
 }
 
 func (s *WorkDayService) GetByID(ctx context.Context, id int64) (*dtos.WorkDay, error) {

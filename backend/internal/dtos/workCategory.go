@@ -23,7 +23,7 @@ type WorkCategory struct {
 
 // Request DTOs
 type CreateWorkCategory struct {
-	Name        string  `json:"name" validate:"required"`
+	Name        string  `json:"name" binding:"required"`
 	Description *string `json:"description"`
 	Status      *string `json:"status"`
 	CreatedBy   *int64  `json:"createdBy"`
@@ -60,8 +60,8 @@ type WorkSubCategory struct {
 
 // Request DTOs
 type CreateWorkSubCategory struct {
-	CategoryID  int64    `json:"categoryId" validate:"required"`
-	Name        string   `json:"name" validate:"required"`
+	CategoryID  int64    `json:"categoryId" binding:"required"`
+	Name        string   `json:"name" binding:"required"`
 	Description *string  `json:"description"`
 	Percentage  *float64 `json:"percentage"`
 	Status      *string  `json:"status"`

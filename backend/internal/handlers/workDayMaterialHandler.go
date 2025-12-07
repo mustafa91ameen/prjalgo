@@ -22,7 +22,14 @@ func NewWorkDayMaterialHandler(materialService *services.WorkDayMaterialService)
 
 // GetAll handles GET /workday-materials
 func (h *WorkDayMaterialHandler) GetAll(c *gin.Context) {
-	materials, err := h.materialService.GetAll(c.Request.Context())
+	var pagination dtos.PaginationQuery
+	if err := c.ShouldBindQuery(&pagination); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+	pagination.Normalize()
+
+	materials, err := h.materialService.GetAll(c.Request.Context(), pagination.Limit, pagination.Offset())
 	if err != nil {
 		response.InternalError(c, "failed to fetch materials")
 		return

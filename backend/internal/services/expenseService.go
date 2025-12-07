@@ -24,17 +24,19 @@ func NewExpenseService(expenseRepo repository.ExpenseRepositoryInterface) *Expen
 	}
 }
 
-func (s *ExpenseService) GetAll(ctx context.Context) ([]dtos.ExpenseSummary, error) {
-	expenses, err := s.expenseRepo.GetAll(ctx)
+func (s *ExpenseService) GetAll(ctx context.Context, limit, offset int) (dtos.PaginatedResponse[dtos.ExpenseSummary], error) {
+	expenses, total, err := s.expenseRepo.GetAll(ctx, limit, offset)
 	if err != nil {
-		return nil, err
+		return dtos.PaginatedResponse[dtos.ExpenseSummary]{}, err
 	}
 
 	result := make([]dtos.ExpenseSummary, len(expenses))
 	for i, e := range expenses {
 		result[i] = toExpenseSummaryDTO(e)
 	}
-	return result, nil
+
+	page := (offset / limit) + 1
+	return dtos.NewPaginatedResponse(result, total, page, limit), nil
 }
 
 func (s *ExpenseService) GetByID(ctx context.Context, id int64) (*dtos.Expense, error) {

@@ -9,7 +9,7 @@ import (
 )
 
 type WorkDayLaborRepositoryInterface interface {
-	GetAll(ctx context.Context) ([]models.WorkDayLabor, error)
+	GetAll(ctx context.Context, limit, offset int) ([]models.WorkDayLabor, int64, error)
 	GetByID(ctx context.Context, id int64) (*models.WorkDayLabor, error)
 	GetByWorkDayID(ctx context.Context, workDayID int64) ([]models.WorkDayLabor, error)
 	Create(ctx context.Context, labor *models.WorkDayLabor) (*models.WorkDayLabor, error)
@@ -25,17 +25,25 @@ func NewWorkDayLaborRepository(db *pgxpool.Pool) *WorkDayLaborRepository {
 	return &WorkDayLaborRepository{db: db}
 }
 
-func (r *WorkDayLaborRepository) GetAll(ctx context.Context) ([]models.WorkDayLabor, error) {
+func (r *WorkDayLaborRepository) GetAll(ctx context.Context, limit, offset int) ([]models.WorkDayLabor, int64, error) {
+	// Get total count
+	var total int64
+	countQuery := `SELECT COUNT(*) FROM workDayLabor`
+	if err := r.db.QueryRow(ctx, countQuery).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+
 	query := `
 		SELECT id, workDayId, workerName, jobTitle, phone, address,
 		       quantity, cost, notes, createdAt
 		FROM workDayLabor
 		ORDER BY createdAt DESC
+		LIMIT $1 OFFSET $2
 	`
 
-	rows, err := r.db.Query(ctx, query)
+	rows, err := r.db.Query(ctx, query, limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 
@@ -47,12 +55,12 @@ func (r *WorkDayLaborRepository) GetAll(ctx context.Context) ([]models.WorkDayLa
 			&l.Address, &l.Quantity, &l.Cost, &l.Notes, &l.CreatedAt,
 		)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		labors = append(labors, l)
 	}
 
-	return labors, rows.Err()
+	return labors, total, rows.Err()
 }
 
 func (r *WorkDayLaborRepository) GetByID(ctx context.Context, id int64) (*models.WorkDayLabor, error) {

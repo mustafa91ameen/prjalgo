@@ -24,17 +24,19 @@ func NewWorkDayMaterialService(materialRepo repository.WorkDayMaterialRepository
 	}
 }
 
-func (s *WorkDayMaterialService) GetAll(ctx context.Context) ([]dtos.WorkDayMaterial, error) {
-	materials, err := s.materialRepo.GetAll(ctx)
+func (s *WorkDayMaterialService) GetAll(ctx context.Context, limit, offset int) (dtos.PaginatedResponse[dtos.WorkDayMaterial], error) {
+	materials, total, err := s.materialRepo.GetAll(ctx, limit, offset)
 	if err != nil {
-		return nil, err
+		return dtos.PaginatedResponse[dtos.WorkDayMaterial]{}, err
 	}
 
 	result := make([]dtos.WorkDayMaterial, len(materials))
 	for i, m := range materials {
 		result[i] = toWorkDayMaterialDTO(m)
 	}
-	return result, nil
+
+	page := (offset / limit) + 1
+	return dtos.NewPaginatedResponse(result, total, page, limit), nil
 }
 
 func (s *WorkDayMaterialService) GetByWorkDayID(ctx context.Context, workDayID int64) ([]dtos.WorkDayMaterial, error) {

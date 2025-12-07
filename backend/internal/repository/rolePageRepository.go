@@ -9,7 +9,7 @@ import (
 )
 
 type RolePageRepositoryInterface interface {
-	GetAll(ctx context.Context) ([]models.RolePage, error)
+	GetAll(ctx context.Context, limit, offset int) ([]models.RolePage, int64, error)
 	GetByID(ctx context.Context, id int64) (*models.RolePage, error)
 	GetByRoleID(ctx context.Context, roleID int64) ([]models.RolePage, error)
 	Create(ctx context.Context, rolePage *models.RolePage) (*models.RolePage, error)
@@ -25,16 +25,24 @@ func NewRolePageRepository(db *pgxpool.Pool) *RolePageRepository {
 	return &RolePageRepository{db: db}
 }
 
-func (r *RolePageRepository) GetAll(ctx context.Context) ([]models.RolePage, error) {
+func (r *RolePageRepository) GetAll(ctx context.Context, limit, offset int) ([]models.RolePage, int64, error) {
+	// Get total count
+	var total int64
+	countQuery := `SELECT COUNT(*) FROM rolePages`
+	if err := r.db.QueryRow(ctx, countQuery).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+
 	query := `
 		SELECT id, roleId, pageId, permissions, createdAt
 		FROM rolePages
 		ORDER BY createdAt DESC
+		LIMIT $1 OFFSET $2
 	`
 
-	rows, err := r.db.Query(ctx, query)
+	rows, err := r.db.Query(ctx, query, limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 
@@ -43,12 +51,12 @@ func (r *RolePageRepository) GetAll(ctx context.Context) ([]models.RolePage, err
 		var rp models.RolePage
 		err := rows.Scan(&rp.ID, &rp.RoleID, &rp.PageID, &rp.Permissions, &rp.CreatedAt)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		rolePages = append(rolePages, rp)
 	}
 
-	return rolePages, rows.Err()
+	return rolePages, total, rows.Err()
 }
 
 func (r *RolePageRepository) GetByID(ctx context.Context, id int64) (*models.RolePage, error) {

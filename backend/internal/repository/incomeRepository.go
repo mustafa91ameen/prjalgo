@@ -9,7 +9,7 @@ import (
 )
 
 type IncomeRepositoryInterface interface {
-	GetAll(ctx context.Context) ([]models.Income, error)
+	GetAll(ctx context.Context, limit, offset int) ([]models.Income, int64, error)
 	GetByID(ctx context.Context, id int64) (*models.Income, error)
 	Create(ctx context.Context, income *models.Income) (*models.Income, error)
 	Update(ctx context.Context, id int64, income *models.Income) (*models.Income, error)
@@ -24,16 +24,24 @@ func NewIncomeRepository(db *pgxpool.Pool) *IncomeRepository {
 	return &IncomeRepository{db: db}
 }
 
-func (r *IncomeRepository) GetAll(ctx context.Context) ([]models.Income, error) {
+func (r *IncomeRepository) GetAll(ctx context.Context, limit, offset int) ([]models.Income, int64, error) {
+	// Get total count
+	var total int64
+	countQuery := `SELECT COUNT(*) FROM income`
+	if err := r.db.QueryRow(ctx, countQuery).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+
 	query := `
 		SELECT id, name, amount, type, incomeDate, status
 		FROM income
 		ORDER BY createdAt DESC
+		LIMIT $1 OFFSET $2
 	`
 
-	rows, err := r.db.Query(ctx, query)
+	rows, err := r.db.Query(ctx, query, limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 
@@ -44,12 +52,12 @@ func (r *IncomeRepository) GetAll(ctx context.Context) ([]models.Income, error) 
 			&i.ID, &i.Name, &i.Amount, &i.Type, &i.IncomeDate, &i.Status,
 		)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		incomes = append(incomes, i)
 	}
 
-	return incomes, rows.Err()
+	return incomes, total, rows.Err()
 }
 
 func (r *IncomeRepository) GetByID(ctx context.Context, id int64) (*models.Income, error) {

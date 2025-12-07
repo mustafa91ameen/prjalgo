@@ -24,17 +24,19 @@ func NewProjectService(projectRepo repository.ProjectRepositoryInterface) *Proje
 	}
 }
 
-func (s *ProjectService) GetAll(ctx context.Context) ([]dtos.ProjectSummary, error) {
-	projects, err := s.projectRepo.GetAll(ctx)
+func (s *ProjectService) GetAll(ctx context.Context, limit, offset int) (dtos.PaginatedResponse[dtos.ProjectSummary], error) {
+	projects, total, err := s.projectRepo.GetAll(ctx, limit, offset)
 	if err != nil {
-		return nil, err
+		return dtos.PaginatedResponse[dtos.ProjectSummary]{}, err
 	}
 
 	result := make([]dtos.ProjectSummary, len(projects))
 	for i, p := range projects {
 		result[i] = toProjectSummaryDTO(p)
 	}
-	return result, nil
+
+	page := (offset / limit) + 1
+	return dtos.NewPaginatedResponse(result, total, page, limit), nil
 }
 
 func (s *ProjectService) GetByID(ctx context.Context, id int64) (*dtos.Project, error) {

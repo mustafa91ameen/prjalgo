@@ -22,7 +22,14 @@ func NewExpenseHandler(expenseService *services.ExpenseService) *ExpenseHandler 
 
 // GetAll handles GET /expenses
 func (h *ExpenseHandler) GetAll(c *gin.Context) {
-	expenses, err := h.expenseService.GetAll(c.Request.Context())
+	var pagination dtos.PaginationQuery
+	if err := c.ShouldBindQuery(&pagination); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+	pagination.Normalize()
+
+	expenses, err := h.expenseService.GetAll(c.Request.Context(), pagination.Limit, pagination.Offset())
 	if err != nil {
 		response.InternalError(c, "failed to fetch expenses")
 		return

@@ -9,7 +9,7 @@ import (
 )
 
 type ProjectRepositoryInterface interface {
-	GetAll(ctx context.Context) ([]models.Project, error)
+	GetAll(ctx context.Context, limit, offset int) ([]models.Project, int64, error)
 	GetByID(ctx context.Context, id int64) (*models.Project, error)
 	Create(ctx context.Context, project *models.Project) (*models.Project, error)
 	Update(ctx context.Context, id int64, project *models.Project) (*models.Project, error)
@@ -24,17 +24,25 @@ func NewProjectRepository(db *pgxpool.Pool) *ProjectRepository {
 	return &ProjectRepository{db: db}
 }
 
-func (r *ProjectRepository) GetAll(ctx context.Context) ([]models.Project, error) {
+func (r *ProjectRepository) GetAll(ctx context.Context, limit, offset int) ([]models.Project, int64, error) {
+	// Get total count
+	var total int64
+	countQuery := `SELECT COUNT(*) FROM projects`
+	if err := r.db.QueryRow(ctx, countQuery).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+
 	query := `
 		SELECT id, name, type, clientPhone, location, startDate,
 		       status, progressPercentage, warningCost, totalCost
 		FROM projects
 		ORDER BY createdAt DESC
+		LIMIT $1 OFFSET $2
 	`
 
-	rows, err := r.db.Query(ctx, query)
+	rows, err := r.db.Query(ctx, query, limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 
@@ -47,12 +55,12 @@ func (r *ProjectRepository) GetAll(ctx context.Context) ([]models.Project, error
 			&p.WarningCost, &p.TotalCost,
 		)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		projects = append(projects, p)
 	}
 
-	return projects, rows.Err()
+	return projects, total, rows.Err()
 }
 
 func (r *ProjectRepository) GetByID(ctx context.Context, id int64) (*models.Project, error) {

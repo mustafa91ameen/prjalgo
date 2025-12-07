@@ -34,10 +34,10 @@ type Expense struct {
 
 // Request DTOs
 type CreateExpense struct {
-	Name        string    `json:"name" validate:"required"`
-	Amount      float64   `json:"amount" validate:"required"`
+	Name        string    `json:"name" binding:"required"`
+	Amount      float64   `json:"amount" binding:"required"`
 	Type        *string   `json:"type"`
-	ExpenseDate time.Time `json:"expenseDate" validate:"required"`
+	ExpenseDate time.Time `json:"expenseDate" binding:"required"`
 	ProjectID   *int64    `json:"projectId"`
 	IsDebtor    bool      `json:"isDebtor"`
 	DebtorID    *int64    `json:"debtorId"`
@@ -84,10 +84,10 @@ type Income struct {
 
 // Request DTOs
 type CreateIncome struct {
-	Name       string    `json:"name" validate:"required"`
-	Amount     float64   `json:"amount" validate:"required"`
+	Name       string    `json:"name" binding:"required"`
+	Amount     float64   `json:"amount" binding:"required"`
 	Type       *string   `json:"type"`
-	IncomeDate time.Time `json:"incomeDate" validate:"required"`
+	IncomeDate time.Time `json:"incomeDate" binding:"required"`
 	Status     *string   `json:"status"`
 	Notes      *string   `json:"notes"`
 	CreatedBy  *int64    `json:"createdBy"`

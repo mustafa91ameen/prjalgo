@@ -9,7 +9,7 @@ import (
 )
 
 type ExpenseRepositoryInterface interface {
-	GetAll(ctx context.Context) ([]models.Expense, error)
+	GetAll(ctx context.Context, limit, offset int) ([]models.Expense, int64, error)
 	GetByID(ctx context.Context, id int64) (*models.Expense, error)
 	GetByProjectID(ctx context.Context, projectID int64) ([]models.Expense, error)
 	Create(ctx context.Context, expense *models.Expense) (*models.Expense, error)
@@ -25,16 +25,24 @@ func NewExpenseRepository(db *pgxpool.Pool) *ExpenseRepository {
 	return &ExpenseRepository{db: db}
 }
 
-func (r *ExpenseRepository) GetAll(ctx context.Context) ([]models.Expense, error) {
+func (r *ExpenseRepository) GetAll(ctx context.Context, limit, offset int) ([]models.Expense, int64, error) {
+	// Get total count
+	var total int64
+	countQuery := `SELECT COUNT(*) FROM expenses`
+	if err := r.db.QueryRow(ctx, countQuery).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+
 	query := `
 		SELECT id, name, amount, type, expenseDate, projectId, isDebtor, debtorId, status
 		FROM expenses
 		ORDER BY createdAt DESC
+		LIMIT $1 OFFSET $2
 	`
 
-	rows, err := r.db.Query(ctx, query)
+	rows, err := r.db.Query(ctx, query, limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 
@@ -46,12 +54,12 @@ func (r *ExpenseRepository) GetAll(ctx context.Context) ([]models.Expense, error
 			&e.ProjectID, &e.IsDebtor, &e.DebtorID, &e.Status,
 		)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		expenses = append(expenses, e)
 	}
 
-	return expenses, rows.Err()
+	return expenses, total, rows.Err()
 }
 
 func (r *ExpenseRepository) GetByID(ctx context.Context, id int64) (*models.Expense, error) {

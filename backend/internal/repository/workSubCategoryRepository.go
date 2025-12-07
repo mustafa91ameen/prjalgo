@@ -9,7 +9,7 @@ import (
 )
 
 type WorkSubCategoryRepositoryInterface interface {
-	GetAll(ctx context.Context) ([]models.WorkSubCategory, error)
+	GetAll(ctx context.Context, limit, offset int) ([]models.WorkSubCategory, int64, error)
 	GetByID(ctx context.Context, id int64) (*models.WorkSubCategory, error)
 	GetByCategoryID(ctx context.Context, categoryID int64) ([]models.WorkSubCategory, error)
 	Create(ctx context.Context, subCategory *models.WorkSubCategory) (*models.WorkSubCategory, error)
@@ -25,16 +25,24 @@ func NewWorkSubCategoryRepository(db *pgxpool.Pool) *WorkSubCategoryRepository {
 	return &WorkSubCategoryRepository{db: db}
 }
 
-func (r *WorkSubCategoryRepository) GetAll(ctx context.Context) ([]models.WorkSubCategory, error) {
+func (r *WorkSubCategoryRepository) GetAll(ctx context.Context, limit, offset int) ([]models.WorkSubCategory, int64, error) {
+	// Get total count
+	var total int64
+	countQuery := `SELECT COUNT(*) FROM workSubCategories`
+	if err := r.db.QueryRow(ctx, countQuery).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+
 	query := `
 		SELECT id, categoryId, name, description, percentage, status
 		FROM workSubCategories
 		ORDER BY createdAt DESC
+		LIMIT $1 OFFSET $2
 	`
 
-	rows, err := r.db.Query(ctx, query)
+	rows, err := r.db.Query(ctx, query, limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 
@@ -46,12 +54,12 @@ func (r *WorkSubCategoryRepository) GetAll(ctx context.Context) ([]models.WorkSu
 			&s.Percentage, &s.Status,
 		)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		subCategories = append(subCategories, s)
 	}
 
-	return subCategories, rows.Err()
+	return subCategories, total, rows.Err()
 }
 
 func (r *WorkSubCategoryRepository) GetByID(ctx context.Context, id int64) (*models.WorkSubCategory, error) {

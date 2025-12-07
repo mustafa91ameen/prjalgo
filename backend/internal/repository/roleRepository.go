@@ -9,7 +9,7 @@ import (
 )
 
 type RoleRepositoryInterface interface {
-	GetAll(ctx context.Context) ([]models.Role, error)
+	GetAll(ctx context.Context, limit, offset int) ([]models.Role, int64, error)
 	GetByID(ctx context.Context, id int64) (*models.Role, error)
 	Create(ctx context.Context, role *models.Role) (*models.Role, error)
 	Update(ctx context.Context, id int64, role *models.Role) (*models.Role, error)
@@ -24,16 +24,24 @@ func NewRoleRepository(db *pgxpool.Pool) *RoleRepository {
 	return &RoleRepository{db: db}
 }
 
-func (r *RoleRepository) GetAll(ctx context.Context) ([]models.Role, error) {
+func (r *RoleRepository) GetAll(ctx context.Context, limit, offset int) ([]models.Role, int64, error) {
+	// Get total count
+	var total int64
+	countQuery := `SELECT COUNT(*) FROM roles`
+	if err := r.db.QueryRow(ctx, countQuery).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+
 	query := `
 		SELECT id, name, description, createdAt
 		FROM roles
 		ORDER BY createdAt DESC
+		LIMIT $1 OFFSET $2
 	`
 
-	rows, err := r.db.Query(ctx, query)
+	rows, err := r.db.Query(ctx, query, limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 
@@ -42,12 +50,12 @@ func (r *RoleRepository) GetAll(ctx context.Context) ([]models.Role, error) {
 		var role models.Role
 		err := rows.Scan(&role.ID, &role.Name, &role.Description, &role.CreatedAt)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		roles = append(roles, role)
 	}
 
-	return roles, rows.Err()
+	return roles, total, rows.Err()
 }
 
 func (r *RoleRepository) GetByID(ctx context.Context, id int64) (*models.Role, error) {

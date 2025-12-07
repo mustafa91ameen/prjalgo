@@ -24,17 +24,19 @@ func NewRolePageService(rolePageRepo repository.RolePageRepositoryInterface) *Ro
 	}
 }
 
-func (s *RolePageService) GetAll(ctx context.Context) ([]dtos.RolePage, error) {
-	rolePages, err := s.rolePageRepo.GetAll(ctx)
+func (s *RolePageService) GetAll(ctx context.Context, limit, offset int) (dtos.PaginatedResponse[dtos.RolePage], error) {
+	rolePages, total, err := s.rolePageRepo.GetAll(ctx, limit, offset)
 	if err != nil {
-		return nil, err
+		return dtos.PaginatedResponse[dtos.RolePage]{}, err
 	}
 
 	result := make([]dtos.RolePage, len(rolePages))
 	for i, rp := range rolePages {
 		result[i] = toRolePageDTO(rp)
 	}
-	return result, nil
+
+	page := (offset / limit) + 1
+	return dtos.NewPaginatedResponse(result, total, page, limit), nil
 }
 
 func (s *RolePageService) GetByID(ctx context.Context, id int64) (*dtos.RolePage, error) {

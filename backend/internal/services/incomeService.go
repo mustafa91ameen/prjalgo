@@ -24,17 +24,19 @@ func NewIncomeService(incomeRepo repository.IncomeRepositoryInterface) *IncomeSe
 	}
 }
 
-func (s *IncomeService) GetAll(ctx context.Context) ([]dtos.IncomeSummary, error) {
-	incomes, err := s.incomeRepo.GetAll(ctx)
+func (s *IncomeService) GetAll(ctx context.Context, limit, offset int) (dtos.PaginatedResponse[dtos.IncomeSummary], error) {
+	incomes, total, err := s.incomeRepo.GetAll(ctx, limit, offset)
 	if err != nil {
-		return nil, err
+		return dtos.PaginatedResponse[dtos.IncomeSummary]{}, err
 	}
 
 	result := make([]dtos.IncomeSummary, len(incomes))
 	for i, inc := range incomes {
 		result[i] = toIncomeSummaryDTO(inc)
 	}
-	return result, nil
+
+	page := (offset / limit) + 1
+	return dtos.NewPaginatedResponse(result, total, page, limit), nil
 }
 
 func (s *IncomeService) GetByID(ctx context.Context, id int64) (*dtos.Income, error) {

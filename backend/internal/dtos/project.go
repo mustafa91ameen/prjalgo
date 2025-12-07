@@ -36,15 +36,15 @@ type Project struct {
 
 // Request DTOs
 type CreateProject struct {
-	Name        string     `json:"name" validate:"required"`
+	Name        string     `json:"name" binding:"required"`
 	Type        *string    `json:"type"`
 	Description *string    `json:"description"`
 	ClientPhone *string    `json:"clientPhone"`
 	Location    *string    `json:"location"`
 	StartDate   *time.Time `json:"startDate"`
 	Duration    *int       `json:"duration"`
-	WarningCost float64    `json:"warningCost" validate:"required"`
-	TotalCost   float64    `json:"totalCost" validate:"required"`
+	WarningCost float64    `json:"warningCost" binding:"required"`
+	TotalCost   float64    `json:"totalCost" binding:"required"`
 	Notes       *string    `json:"notes"`
 	CreatedBy   *int64     `json:"createdBy"`
 }
