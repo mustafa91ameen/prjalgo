@@ -24,7 +24,7 @@ func NewDebtorHandler(debtorService *services.DebtorService) *DebtorHandler {
 func (h *DebtorHandler) GetAll(c *gin.Context) {
 	var pagination dtos.PaginationQuery
 	if err := c.ShouldBindQuery(&pagination); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 	pagination.Normalize()
@@ -63,7 +63,7 @@ func (h *DebtorHandler) GetByID(c *gin.Context) {
 func (h *DebtorHandler) Create(c *gin.Context) {
 	var req dtos.CreateDebtor
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 
@@ -86,7 +86,7 @@ func (h *DebtorHandler) Update(c *gin.Context) {
 
 	var req dtos.UpdateDebtor
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 

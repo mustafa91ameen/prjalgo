@@ -24,7 +24,7 @@ func NewPageHandler(pageService *services.PageService) *PageHandler {
 func (h *PageHandler) GetAll(c *gin.Context) {
 	var pagination dtos.PaginationQuery
 	if err := c.ShouldBindQuery(&pagination); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 	pagination.Normalize()
@@ -74,7 +74,7 @@ func (h *PageHandler) GetActivePages(c *gin.Context) {
 func (h *PageHandler) Create(c *gin.Context) {
 	var req dtos.CreatePage
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 
@@ -97,7 +97,7 @@ func (h *PageHandler) Update(c *gin.Context) {
 
 	var req dtos.UpdatePage
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 

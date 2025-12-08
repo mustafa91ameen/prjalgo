@@ -24,7 +24,7 @@ func NewExpenseHandler(expenseService *services.ExpenseService) *ExpenseHandler 
 func (h *ExpenseHandler) GetAll(c *gin.Context) {
 	var pagination dtos.PaginationQuery
 	if err := c.ShouldBindQuery(&pagination); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 	pagination.Normalize()
@@ -80,7 +80,7 @@ func (h *ExpenseHandler) GetByProjectID(c *gin.Context) {
 func (h *ExpenseHandler) Create(c *gin.Context) {
 	var req dtos.CreateExpense
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 
@@ -103,7 +103,7 @@ func (h *ExpenseHandler) Update(c *gin.Context) {
 
 	var req dtos.UpdateExpense
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 

@@ -24,7 +24,7 @@ func NewRoleHandler(roleService *services.RoleService) *RoleHandler {
 func (h *RoleHandler) GetAll(c *gin.Context) {
 	var pagination dtos.PaginationQuery
 	if err := c.ShouldBindQuery(&pagination); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 	pagination.Normalize()
@@ -63,7 +63,7 @@ func (h *RoleHandler) GetByID(c *gin.Context) {
 func (h *RoleHandler) Create(c *gin.Context) {
 	var req dtos.CreateRole
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 
@@ -86,7 +86,7 @@ func (h *RoleHandler) Update(c *gin.Context) {
 
 	var req dtos.UpdateRole
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 

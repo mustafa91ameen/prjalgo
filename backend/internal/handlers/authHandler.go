@@ -33,7 +33,7 @@ type LogoutRequest struct {
 func (h *AuthHandler) Login(c *gin.Context) {
 	var req LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, "invalid request body")
+		response.ValidationError(c, err)
 		return
 	}
 
@@ -57,7 +57,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 func (h *AuthHandler) Refresh(c *gin.Context) {
 	var req RefreshRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, "invalid request body")
+		response.ValidationError(c, err)
 		return
 	}
 
@@ -79,7 +79,7 @@ func (h *AuthHandler) Refresh(c *gin.Context) {
 func (h *AuthHandler) Logout(c *gin.Context) {
 	var req LogoutRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, "invalid request body")
+		response.ValidationError(c, err)
 		return
 	}
 

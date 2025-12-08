@@ -1,9 +1,12 @@
 package response
 
 import (
+	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 func Success(c *gin.Context, data interface{}) {
@@ -32,4 +35,34 @@ func NotFound(c *gin.Context, message string) {
 
 func InternalError(c *gin.Context, message string) {
 	Error(c, http.StatusInternalServerError, message)
+}
+
+func ValidationError(c *gin.Context, err error) {
+	var ve validator.ValidationErrors
+	if errors.As(err, &ve) {
+		errs := make(map[string]string)
+		for _, e := range ve {
+			field := strings.ToLower(e.Field()[:1]) + e.Field()[1:] // camelCase
+			errs[field] = formatValidationMessage(e)
+		}
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "errors": errs})
+		return
+	}
+	BadRequest(c, err.Error())
+}
+
+func formatValidationMessage(e validator.FieldError) string {
+	field := strings.ToLower(e.Field()[:1]) + e.Field()[1:]
+	switch e.Tag() {
+	case "required":
+		return field + " is required"
+	case "email":
+		return field + " must be a valid email"
+	case "min":
+		return field + " must be at least " + e.Param() + " characters"
+	case "max":
+		return field + " must be at most " + e.Param() + " characters"
+	default:
+		return field + " is invalid"
+	}
 }

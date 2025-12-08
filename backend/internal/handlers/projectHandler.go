@@ -24,7 +24,7 @@ func NewProjectHandler(projectService *services.ProjectService) *ProjectHandler 
 func (h *ProjectHandler) GetAll(c *gin.Context) {
 	var pagination dtos.PaginationQuery
 	if err := c.ShouldBindQuery(&pagination); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 	pagination.Normalize()
@@ -63,7 +63,7 @@ func (h *ProjectHandler) GetByID(c *gin.Context) {
 func (h *ProjectHandler) Create(c *gin.Context) {
 	var req dtos.CreateProject
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 
@@ -86,7 +86,7 @@ func (h *ProjectHandler) Update(c *gin.Context) {
 
 	var req dtos.UpdateProject
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 

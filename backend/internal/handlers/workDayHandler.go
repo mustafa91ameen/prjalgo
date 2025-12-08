@@ -24,7 +24,7 @@ func NewWorkDayHandler(workDayService *services.WorkDayService) *WorkDayHandler 
 func (h *WorkDayHandler) GetAll(c *gin.Context) {
 	var pagination dtos.PaginationQuery
 	if err := c.ShouldBindQuery(&pagination); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 	pagination.Normalize()
@@ -80,7 +80,7 @@ func (h *WorkDayHandler) GetByProjectID(c *gin.Context) {
 func (h *WorkDayHandler) Create(c *gin.Context) {
 	var req dtos.CreateWorkDay
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 
@@ -103,7 +103,7 @@ func (h *WorkDayHandler) Update(c *gin.Context) {
 
 	var req dtos.UpdateWorkDay
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 

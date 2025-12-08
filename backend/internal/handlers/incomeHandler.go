@@ -24,7 +24,7 @@ func NewIncomeHandler(incomeService *services.IncomeService) *IncomeHandler {
 func (h *IncomeHandler) GetAll(c *gin.Context) {
 	var pagination dtos.PaginationQuery
 	if err := c.ShouldBindQuery(&pagination); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 	pagination.Normalize()
@@ -63,7 +63,7 @@ func (h *IncomeHandler) GetByID(c *gin.Context) {
 func (h *IncomeHandler) Create(c *gin.Context) {
 	var req dtos.CreateIncome
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 
@@ -86,7 +86,7 @@ func (h *IncomeHandler) Update(c *gin.Context) {
 
 	var req dtos.UpdateIncome
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 

@@ -24,7 +24,7 @@ func NewWorkDayEquipmentHandler(equipmentService *services.WorkDayEquipmentServi
 func (h *WorkDayEquipmentHandler) GetAll(c *gin.Context) {
 	var pagination dtos.PaginationQuery
 	if err := c.ShouldBindQuery(&pagination); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 	pagination.Normalize()
@@ -86,7 +86,7 @@ func (h *WorkDayEquipmentHandler) Create(c *gin.Context) {
 
 	var req dtos.CreateWorkDayEquipment
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 
@@ -112,7 +112,7 @@ func (h *WorkDayEquipmentHandler) Update(c *gin.Context) {
 
 	var req dtos.UpdateWorkDayEquipment
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 

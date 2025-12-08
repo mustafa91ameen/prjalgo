@@ -24,7 +24,7 @@ func NewRolePageHandler(rolePageService *services.RolePageService) *RolePageHand
 func (h *RolePageHandler) GetAll(c *gin.Context) {
 	var pagination dtos.PaginationQuery
 	if err := c.ShouldBindQuery(&pagination); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 	pagination.Normalize()
@@ -80,7 +80,7 @@ func (h *RolePageHandler) GetByRoleID(c *gin.Context) {
 func (h *RolePageHandler) Create(c *gin.Context) {
 	var req dtos.CreateRolePage
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 
@@ -103,7 +103,7 @@ func (h *RolePageHandler) Update(c *gin.Context) {
 
 	var req dtos.UpdateRolePage
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 

@@ -24,7 +24,7 @@ func NewUserRoleHandler(userRoleService *services.UserRoleService) *UserRoleHand
 func (h *UserRoleHandler) GetAll(c *gin.Context) {
 	var pagination dtos.PaginationQuery
 	if err := c.ShouldBindQuery(&pagination); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 	pagination.Normalize()
@@ -80,7 +80,7 @@ func (h *UserRoleHandler) GetByUserID(c *gin.Context) {
 func (h *UserRoleHandler) Create(c *gin.Context) {
 	var req dtos.CreateUserRole
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 

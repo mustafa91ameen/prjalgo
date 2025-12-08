@@ -26,7 +26,7 @@ func NewUserHandler(userService *services.UserService) *UserHandler {
 func (h *UserHandler) GetAll(c *gin.Context) {
 	var pagination dtos.PaginationQuery
 	if err := c.ShouldBindQuery(&pagination); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 	pagination.Normalize()
@@ -65,7 +65,7 @@ func (h *UserHandler) GetByID(c *gin.Context) {
 func (h *UserHandler) Create(c *gin.Context) {
 	var req dtos.CreateUser
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 
@@ -92,7 +92,7 @@ func (h *UserHandler) Update(c *gin.Context) {
 
 	var req dtos.UpdateUser
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 
@@ -140,7 +140,7 @@ func (h *UserHandler) UpdatePassword(c *gin.Context) {
 
 	var req dtos.UpdatePassword
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 
@@ -167,7 +167,7 @@ func (h *UserHandler) UpdateStatus(c *gin.Context) {
 
 	var req dtos.UpdateStatus
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 

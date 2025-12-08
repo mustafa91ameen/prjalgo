@@ -24,7 +24,7 @@ func NewWorkSubCategoryHandler(subCategoryService *services.WorkSubCategoryServi
 func (h *WorkSubCategoryHandler) GetAll(c *gin.Context) {
 	var pagination dtos.PaginationQuery
 	if err := c.ShouldBindQuery(&pagination); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 	pagination.Normalize()
@@ -80,7 +80,7 @@ func (h *WorkSubCategoryHandler) GetByCategoryID(c *gin.Context) {
 func (h *WorkSubCategoryHandler) Create(c *gin.Context) {
 	var req dtos.CreateWorkSubCategory
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 
@@ -103,7 +103,7 @@ func (h *WorkSubCategoryHandler) Update(c *gin.Context) {
 
 	var req dtos.UpdateWorkSubCategory
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.ValidationError(c, err)
 		return
 	}
 
