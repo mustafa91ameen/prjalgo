@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/mustafaameen91/project-managment/backend/internal/dtos"
@@ -127,6 +128,67 @@ func (h *UserHandler) Delete(c *gin.Context) {
 	}
 
 	response.Success(c, nil)
+}
+
+// UpdatePassword handles PUT /users/:id/password
+func (h *UserHandler) UpdatePassword(c *gin.Context) {
+	id, err := h.parseID(c, "id")
+	if err != nil {
+		response.BadRequest(c, "invalid user id")
+		return
+	}
+
+	var req dtos.UpdatePassword
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+
+	err = h.userService.UpdatePassword(c.Request.Context(), id, req.NewPassword)
+	if err != nil {
+		if errors.Is(err, services.ErrUserNotFound) {
+			response.NotFound(c, err.Error())
+			return
+		}
+		response.InternalError(c, "failed to update password")
+		return
+	}
+
+	response.Success(c, nil)
+}
+
+// UpdateStatus handles PATCH /users/:id/status
+func (h *UserHandler) UpdateStatus(c *gin.Context) {
+	id, err := h.parseID(c, "id")
+	if err != nil {
+		response.BadRequest(c, "invalid user id")
+		return
+	}
+
+	var req dtos.UpdateStatus
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+
+	// Normalize to lowercase
+	status := strings.ToLower(req.Status)
+	if status != "active" && status != "inactive" {
+		response.BadRequest(c, "status must be 'active' or 'inactive'")
+		return
+	}
+
+	err = h.userService.UpdateStatus(c.Request.Context(), id, status)
+	if err != nil {
+		if errors.Is(err, services.ErrUserNotFound) {
+			response.NotFound(c, err.Error())
+			return
+		}
+		response.InternalError(c, "failed to update status")
+		return
+	}
+
+	response.Success(c, gin.H{"status": status})
 }
 
 // parseID extracts an int64 ID from the URL path

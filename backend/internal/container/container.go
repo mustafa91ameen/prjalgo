@@ -53,9 +53,16 @@ func New(db *pgxpool.Pool, cfg *config.Config) *Container {
 	// Parse JWT expiry
 	jwtExpiry, _ := time.ParseDuration(cfg.JWTExpiry)
 	if jwtExpiry == 0 {
-		jwtExpiry = 24 * time.Hour
+		jwtExpiry = 15 * time.Minute
 	}
 	jwtManager := auth.NewJWTManager(cfg.JWTSecret, jwtExpiry)
+
+	// Parse refresh token expiry
+	refreshExpiry, _ := time.ParseDuration(cfg.RefreshTokenExpiry)
+	if refreshExpiry == 0 {
+		refreshExpiry = 7 * 24 * time.Hour
+	}
+
 	// Repositories
 	projectRepo := repository.NewProjectRepository(db)
 	workDayRepo := repository.NewWorkDayRepository(db)
@@ -72,6 +79,7 @@ func New(db *pgxpool.Pool, cfg *config.Config) *Container {
 	roleRepo := repository.NewRoleRepository(db)
 	pageRepo := repository.NewPageRepository(db)
 	rolePageRepo := repository.NewRolePageRepository(db)
+	refreshTokenRepo := repository.NewRefreshTokenRepository(db)
 
 	// Services
 	projectService := services.NewProjectService(projectRepo)
@@ -84,12 +92,12 @@ func New(db *pgxpool.Pool, cfg *config.Config) *Container {
 	expenseService := services.NewExpenseService(expenseRepo)
 	incomeService := services.NewIncomeService(incomeRepo)
 	debtorService := services.NewDebtorService(debtorRepo)
-	userService := services.NewUserService(userRepo, userRoleRepo)
+	userService := services.NewUserService(userRepo, userRoleRepo, refreshTokenRepo)
 	userRoleService := services.NewUserRoleService(userRoleRepo)
 	roleService := services.NewRoleService(roleRepo)
 	pageService := services.NewPageService(pageRepo)
 	rolePageService := services.NewRolePageService(rolePageRepo)
-	authService := services.NewAuthService(userRepo, userRoleRepo, jwtManager)
+	authService := services.NewAuthService(userRepo, userRoleRepo, refreshTokenRepo, jwtManager, refreshExpiry)
 
 	// Handlers
 	return &Container{

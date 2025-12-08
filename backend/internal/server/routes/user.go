@@ -19,6 +19,8 @@ func RegisterUserRoutes(rg *gin.RouterGroup, c *container.Container) {
 		users.POST("", usersAuthz("write"), c.UserHandler.Create)
 		users.PUT("/:id", usersAuthz("write"), c.UserHandler.Update)
 		users.DELETE("/:id", usersAuthz("delete"), c.UserHandler.Delete)
+		users.PUT("/:id/password", usersAuthz("updatePassword"), c.UserHandler.UpdatePassword)
+		users.PATCH("/:id/status", usersAuthz("updateStatus"), c.UserHandler.UpdateStatus)
 
 		// Nested route under user
 		users.GET("/:id/roles", usersAuthz("read"), c.UserRoleHandler.GetByUserID)

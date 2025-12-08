@@ -11,6 +11,8 @@ func RegisterAuthRoutes(router *gin.Engine, c *container.Container) {
 	authPublic := router.Group("/api/v1/auth")
 	{
 		authPublic.POST("/login", c.AuthHandler.Login)
+		authPublic.POST("/refresh", c.AuthHandler.Refresh)
+		authPublic.POST("/logout", c.AuthHandler.Logout)
 	}
 
 	// Protected routes (require JWT)

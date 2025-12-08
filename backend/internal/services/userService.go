@@ -17,14 +17,20 @@ var (
 )
 
 type UserService struct {
-	userRepo     repository.UserRepositoryInterface
-	userRoleRepo repository.UserRoleRepositoryInterface
+	userRepo         repository.UserRepositoryInterface
+	userRoleRepo     repository.UserRoleRepositoryInterface
+	refreshTokenRepo repository.RefreshTokenRepositoryInterface
 }
 
-func NewUserService(userRepo repository.UserRepositoryInterface, userRoleRepo repository.UserRoleRepositoryInterface) *UserService {
+func NewUserService(
+	userRepo repository.UserRepositoryInterface,
+	userRoleRepo repository.UserRoleRepositoryInterface,
+	refreshTokenRepo repository.RefreshTokenRepositoryInterface,
+) *UserService {
 	return &UserService{
-		userRepo:     userRepo,
-		userRoleRepo: userRoleRepo,
+		userRepo:         userRepo,
+		userRoleRepo:     userRoleRepo,
+		refreshTokenRepo: refreshTokenRepo,
 	}
 }
 
@@ -145,6 +151,45 @@ func (s *UserService) AssignRole(ctx context.Context, userID, roleID int64) (*mo
 
 func (s *UserService) RemoveRole(ctx context.Context, userRoleID int64) error {
 	return s.userRoleRepo.Delete(ctx, userRoleID)
+}
+
+func (s *UserService) UpdatePassword(ctx context.Context, id int64, newPassword string) error {
+	_, err := s.userRepo.GetByID(ctx, id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return ErrUserNotFound
+		}
+		return err
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	return s.userRepo.UpdatePassword(ctx, id, string(hashedPassword))
+}
+
+func (s *UserService) UpdateStatus(ctx context.Context, id int64, status string) error {
+	_, err := s.userRepo.GetByID(ctx, id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return ErrUserNotFound
+		}
+		return err
+	}
+
+	err = s.userRepo.UpdateStatus(ctx, id, status)
+	if err != nil {
+		return err
+	}
+
+	// Revoke all refresh tokens when user is deactivated
+	if status == "inactive" {
+		_ = s.refreshTokenRepo.RevokeAllByUserID(ctx, id)
+	}
+
+	return nil
 }
 
 // DTO conversion helpers

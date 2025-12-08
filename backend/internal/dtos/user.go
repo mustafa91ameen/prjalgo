@@ -46,3 +46,11 @@ type UpdateUser struct {
 	JobTitle *string `json:"jobTitle"`
 	Status   *string `json:"status"`
 }
+
+type UpdatePassword struct {
+	NewPassword string `json:"newPassword" binding:"required,min=8"`
+}
+
+type UpdateStatus struct {
+	Status string `json:"status" binding:"required"`
+}
