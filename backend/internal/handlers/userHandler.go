@@ -7,9 +7,9 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mustafaameen91/project-managment/backend/internal/dtos"
-	"github.com/mustafaameen91/project-managment/backend/internal/response"
-	"github.com/mustafaameen91/project-managment/backend/internal/services"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/dtos"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/response"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/services"
 )
 
 type UserHandler struct {

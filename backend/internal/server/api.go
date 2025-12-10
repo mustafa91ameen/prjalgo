@@ -4,8 +4,8 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mustafaameen91/project-managment/backend/internal/container"
-	"github.com/mustafaameen91/project-managment/backend/internal/server/routes"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/container"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/server/routes"
 )
 
 type Server struct {

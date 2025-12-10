@@ -4,11 +4,11 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/mustafaameen91/project-managment/backend/internal/auth"
-	"github.com/mustafaameen91/project-managment/backend/internal/config"
-	"github.com/mustafaameen91/project-managment/backend/internal/handlers"
-	"github.com/mustafaameen91/project-managment/backend/internal/repository"
-	"github.com/mustafaameen91/project-managment/backend/internal/services"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/auth"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/config"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/handlers"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/repository"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/services"
 )
 
 // Container holds all application dependencies

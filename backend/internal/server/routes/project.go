@@ -2,8 +2,8 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/mustafaameen91/project-managment/backend/internal/auth"
-	"github.com/mustafaameen91/project-managment/backend/internal/container"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/auth"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/container"
 )
 
 // RegisterProjectRoutes sets up /projects routes

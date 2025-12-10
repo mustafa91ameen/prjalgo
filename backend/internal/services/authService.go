@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/mustafaameen91/project-managment/backend/internal/auth"
-	"github.com/mustafaameen91/project-managment/backend/internal/repository"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/auth"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/repository"
 	"golang.org/x/crypto/bcrypt"
 )
 

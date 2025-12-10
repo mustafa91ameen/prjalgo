@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/mustafaameen91/project-managment/backend/internal/models"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/models"
 )
 
 type AuditLogRepositoryInterface interface {

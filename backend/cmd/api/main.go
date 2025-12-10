@@ -4,11 +4,11 @@ import (
 	"context"
 	"log"
 
-	"github.com/mustafaameen91/project-managment/backend/internal/config"
-	"github.com/mustafaameen91/project-managment/backend/internal/container"
-	"github.com/mustafaameen91/project-managment/backend/internal/db"
-	"github.com/mustafaameen91/project-managment/backend/internal/logger"
-	"github.com/mustafaameen91/project-managment/backend/internal/server"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/config"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/container"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/db"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/logger"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/server"
 )
 
 func main() {

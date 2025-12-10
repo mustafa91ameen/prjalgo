@@ -4,9 +4,9 @@ import (
 	"errors"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mustafaameen91/project-managment/backend/internal/auth"
-	"github.com/mustafaameen91/project-managment/backend/internal/response"
-	"github.com/mustafaameen91/project-managment/backend/internal/services"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/auth"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/response"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/services"
 )
 
 type AuthHandler struct {

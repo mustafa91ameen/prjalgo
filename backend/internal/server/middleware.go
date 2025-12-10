@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mustafaameen91/project-managment/backend/internal/logger"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/logger"
 )
 
 func LoggingMiddleware() gin.HandlerFunc {

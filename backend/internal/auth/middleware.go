@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mustafaameen91/project-managment/backend/internal/response"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/response"
 )
 
 const (

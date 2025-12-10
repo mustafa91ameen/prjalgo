@@ -3,9 +3,9 @@ package services
 import (
 	"context"
 
-	"github.com/mustafaameen91/project-managment/backend/internal/dtos"
-	"github.com/mustafaameen91/project-managment/backend/internal/models"
-	"github.com/mustafaameen91/project-managment/backend/internal/repository"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/dtos"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/models"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/repository"
 )
 
 type AuditLogService struct {
