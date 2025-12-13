@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -20,8 +21,10 @@ type RefreshTokenRepositoryInterface interface {
 	Create(ctx context.Context, userID int64, tokenHash string, expiresAt time.Time) (*RefreshToken, error)
 	GetByTokenHash(ctx context.Context, tokenHash string) (*RefreshToken, error)
 	UpdateTokenHash(ctx context.Context, id int64, newTokenHash string, expiresAt time.Time) error
+	UpdateTokenHashWithTx(ctx context.Context, tx pgx.Tx, id int64, newTokenHash string, expiresAt time.Time) error
 	Revoke(ctx context.Context, id int64) error
 	RevokeAllByUserID(ctx context.Context, userID int64) error
+	RevokeAllByUserIDWithTx(ctx context.Context, tx pgx.Tx, userID int64) error
 	DeleteExpired(ctx context.Context) error
 }
 
@@ -82,6 +85,17 @@ func (r *RefreshTokenRepository) UpdateTokenHash(ctx context.Context, id int64, 
 	return err
 }
 
+func (r *RefreshTokenRepository) UpdateTokenHashWithTx(ctx context.Context, tx pgx.Tx, id int64, newTokenHash string, expiresAt time.Time) error {
+	query := `
+		UPDATE refreshTokens
+		SET tokenHash = $1, expiresAt = $2
+		WHERE id = $3
+	`
+
+	_, err := tx.Exec(ctx, query, newTokenHash, expiresAt, id)
+	return err
+}
+
 func (r *RefreshTokenRepository) Revoke(ctx context.Context, id int64) error {
 	query := `UPDATE refreshTokens SET revoked = true WHERE id = $1`
 	_, err := r.db.Exec(ctx, query, id)
@@ -91,6 +105,12 @@ func (r *RefreshTokenRepository) Revoke(ctx context.Context, id int64) error {
 func (r *RefreshTokenRepository) RevokeAllByUserID(ctx context.Context, userID int64) error {
 	query := `UPDATE refreshTokens SET revoked = true WHERE userId = $1`
 	_, err := r.db.Exec(ctx, query, userID)
+	return err
+}
+
+func (r *RefreshTokenRepository) RevokeAllByUserIDWithTx(ctx context.Context, tx pgx.Tx, userID int64) error {
+	query := `UPDATE refreshTokens SET revoked = true WHERE userId = $1`
+	_, err := tx.Exec(ctx, query, userID)
 	return err
 }
 

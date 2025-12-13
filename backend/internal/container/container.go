@@ -89,7 +89,7 @@ func New(db *pgxpool.Pool, cfg *config.Config) *Container {
 
 	// Services
 	projectService := services.NewProjectService(projectRepo)
-	workDayService := services.NewWorkDayService(workDayRepo, projectRepo, workSubCategoryRepo)
+	workDayService := services.NewWorkDayService(db, workDayRepo, projectRepo, workSubCategoryRepo)
 	workDayMaterialService := services.NewWorkDayMaterialService(workDayMaterialRepo)
 	workDayLaborService := services.NewWorkDayLaborService(workDayLaborRepo)
 	workDayEquipmentService := services.NewWorkDayEquipmentService(workDayEquipmentRepo)
@@ -98,13 +98,13 @@ func New(db *pgxpool.Pool, cfg *config.Config) *Container {
 	expenseService := services.NewExpenseService(expenseRepo)
 	incomeService := services.NewIncomeService(incomeRepo)
 	debtorService := services.NewDebtorService(debtorRepo)
-	userService := services.NewUserService(userRepo, userRoleRepo, refreshTokenRepo)
+	userService := services.NewUserService(db, userRepo, userRoleRepo, refreshTokenRepo)
 	userRoleService := services.NewUserRoleService(userRoleRepo)
 	teamMemberService := services.NewTeamMemberService(teamMemberRepo)
 	roleService := services.NewRoleService(roleRepo)
 	pageService := services.NewPageService(pageRepo)
 	rolePageService := services.NewRolePageService(rolePageRepo)
-	authService := services.NewAuthService(userRepo, userRoleRepo, refreshTokenRepo, jwtManager, refreshExpiry)
+	authService := services.NewAuthService(db, userRepo, userRoleRepo, refreshTokenRepo, jwtManager, refreshExpiry)
 	auditLogService := services.NewAuditLogService(auditLogRepo)
 
 	// Handlers

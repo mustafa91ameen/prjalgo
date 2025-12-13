@@ -15,6 +15,7 @@ type ProjectRepositoryInterface interface {
 	Update(ctx context.Context, id int64, project *models.Project) (*models.Project, error)
 	Delete(ctx context.Context, id int64) error
 	UpdateProgressPercentage(ctx context.Context, id int64, percentageToAdd float64) error
+	UpdateProgressPercentageWithTx(ctx context.Context, tx pgx.Tx, id int64, percentageToAdd float64) error
 }
 
 type ProjectRepository struct {
@@ -156,6 +157,18 @@ func (r *ProjectRepository) Delete(ctx context.Context, id int64) error {
 func (r *ProjectRepository) UpdateProgressPercentage(ctx context.Context, id int64, percentageToAdd float64) error {
 	query := `UPDATE projects SET progressPercentage = progressPercentage + $1 WHERE id = $2`
 	result, err := r.db.Exec(ctx, query, percentageToAdd, id)
+	if err != nil {
+		return err
+	}
+	if result.RowsAffected() == 0 {
+		return pgx.ErrNoRows
+	}
+	return nil
+}
+
+func (r *ProjectRepository) UpdateProgressPercentageWithTx(ctx context.Context, tx pgx.Tx, id int64, percentageToAdd float64) error {
+	query := `UPDATE projects SET progressPercentage = progressPercentage + $1 WHERE id = $2`
+	result, err := tx.Exec(ctx, query, percentageToAdd, id)
 	if err != nil {
 		return err
 	}

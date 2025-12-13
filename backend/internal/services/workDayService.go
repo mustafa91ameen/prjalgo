@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/mustafa91ameen/prjalgo/backend/internal/dtos"
 	"github.com/mustafa91ameen/prjalgo/backend/internal/models"
 	"github.com/mustafa91ameen/prjalgo/backend/internal/repository"
@@ -17,17 +18,20 @@ var (
 )
 
 type WorkDayService struct {
+	db                  *pgxpool.Pool
 	workDayRepo         repository.WorkDayRepositoryInterface
 	projectRepo         repository.ProjectRepositoryInterface
 	workSubCategoryRepo repository.WorkSubCategoryRepositoryInterface
 }
 
 func NewWorkDayService(
+	db *pgxpool.Pool,
 	workDayRepo repository.WorkDayRepositoryInterface,
 	projectRepo repository.ProjectRepositoryInterface,
 	workSubCategoryRepo repository.WorkSubCategoryRepositoryInterface,
 ) *WorkDayService {
 	return &WorkDayService{
+		db:                  db,
 		workDayRepo:         workDayRepo,
 		projectRepo:         projectRepo,
 		workSubCategoryRepo: workSubCategoryRepo,
@@ -168,17 +172,24 @@ func (s *WorkDayService) Complete(ctx context.Context, id int64) (*dtos.WorkDay,
 	subCategory, err := s.workSubCategoryRepo.GetByID(ctx, *workDay.WorkSubCategoryID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, ErrWorkSubCategoryNotFound
+			return nil, errors.New("work sub category not found")
 		}
 		return nil, err
 	}
 
+	// Start transaction for atomic updates
+	tx, err := s.db.Begin(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback(ctx)
+
 	// Update project progress percentage if subcategory has a percentage
 	if subCategory.Percentage != nil && *subCategory.Percentage > 0 {
-		err = s.projectRepo.UpdateProgressPercentage(ctx, workDay.ProjectID, *subCategory.Percentage)
+		err = s.projectRepo.UpdateProgressPercentageWithTx(ctx, tx, workDay.ProjectID, *subCategory.Percentage)
 		if err != nil {
 			if errors.Is(err, pgx.ErrNoRows) {
-				return nil, ErrProjectNotFound
+				return nil, errors.New("project not found")
 			}
 			return nil, err
 		}
@@ -186,8 +197,13 @@ func (s *WorkDayService) Complete(ctx context.Context, id int64) (*dtos.WorkDay,
 
 	// Update work day status to completed
 	workDay.Status = "completed"
-	updated, err := s.workDayRepo.Update(ctx, id, workDay)
+	updated, err := s.workDayRepo.UpdateWithTx(ctx, tx, id, workDay)
 	if err != nil {
+		return nil, err
+	}
+
+	// Commit transaction
+	if err := tx.Commit(ctx); err != nil {
 		return nil, err
 	}
 

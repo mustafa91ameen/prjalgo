@@ -14,6 +14,7 @@ type WorkDayRepositoryInterface interface {
 	GetByProjectID(ctx context.Context, projectID int64) ([]models.WorkDay, error)
 	Create(ctx context.Context, workDay *models.WorkDay) (*models.WorkDay, error)
 	Update(ctx context.Context, id int64, workDay *models.WorkDay) (*models.WorkDay, error)
+	UpdateWithTx(ctx context.Context, tx pgx.Tx, id int64, workDay *models.WorkDay) (*models.WorkDay, error)
 	Delete(ctx context.Context, id int64) error
 }
 
@@ -144,6 +145,32 @@ func (r *WorkDayRepository) Update(ctx context.Context, id int64, workDay *model
 	`
 
 	err := r.db.QueryRow(ctx, query,
+		workDay.WorkSubCategoryID, workDay.WorkDate, workDay.Description,
+		workDay.Status, workDay.TotalCost, workDay.Notes, id,
+	).Scan(
+		&workDay.ID, &workDay.ProjectID, &workDay.WorkSubCategoryID, &workDay.WorkDate,
+		&workDay.Description, &workDay.Status, &workDay.TotalCost, &workDay.Notes,
+		&workDay.CreatedBy, &workDay.CreatedAt,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return workDay, nil
+}
+
+func (r *WorkDayRepository) UpdateWithTx(ctx context.Context, tx pgx.Tx, id int64, workDay *models.WorkDay) (*models.WorkDay, error) {
+	query := `
+		UPDATE workDays
+		SET workSubCategoryId = $1, workDate = $2, description = $3,
+		    status = $4, totalCost = $5, notes = $6
+		WHERE id = $7
+		RETURNING id, projectId, workSubCategoryId, workDate, description,
+		          status, totalCost, notes, createdBy, createdAt
+	`
+
+	err := tx.QueryRow(ctx, query,
 		workDay.WorkSubCategoryID, workDay.WorkDate, workDay.Description,
 		workDay.Status, workDay.TotalCost, workDay.Notes, id,
 	).Scan(

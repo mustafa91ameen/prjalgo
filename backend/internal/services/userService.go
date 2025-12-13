@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/mustafa91ameen/prjalgo/backend/internal/dtos"
 	"github.com/mustafa91ameen/prjalgo/backend/internal/models"
 	"github.com/mustafa91ameen/prjalgo/backend/internal/repository"
@@ -17,17 +18,20 @@ var (
 )
 
 type UserService struct {
+	db               *pgxpool.Pool
 	userRepo         repository.UserRepositoryInterface
 	userRoleRepo     repository.UserRoleRepositoryInterface
 	refreshTokenRepo repository.RefreshTokenRepositoryInterface
 }
 
 func NewUserService(
+	db *pgxpool.Pool,
 	userRepo repository.UserRepositoryInterface,
 	userRoleRepo repository.UserRoleRepositoryInterface,
 	refreshTokenRepo repository.RefreshTokenRepositoryInterface,
 ) *UserService {
 	return &UserService{
+		db:               db,
 		userRepo:         userRepo,
 		userRoleRepo:     userRoleRepo,
 		refreshTokenRepo: refreshTokenRepo,
@@ -181,14 +185,30 @@ func (s *UserService) UpdateStatus(ctx context.Context, id int64, status string)
 		return err
 	}
 
-	err = s.userRepo.UpdateStatus(ctx, id, status)
+	// Start transaction for atomic status update and token revocation
+	tx, err := s.db.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	// Update user status within transaction
+	err = s.userRepo.UpdateStatusWithTx(ctx, tx, id, status)
 	if err != nil {
 		return err
 	}
 
 	// Revoke all refresh tokens when user is deactivated
 	if status == "inactive" {
-		_ = s.refreshTokenRepo.RevokeAllByUserID(ctx, id)
+		err = s.refreshTokenRepo.RevokeAllByUserIDWithTx(ctx, tx, id)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Commit transaction
+	if err := tx.Commit(ctx); err != nil {
+		return err
 	}
 
 	return nil

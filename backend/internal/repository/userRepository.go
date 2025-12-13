@@ -23,6 +23,7 @@ type UserRepositoryInterface interface {
 	Update(ctx context.Context, id int64, user *models.User) (*models.User, error)
 	UpdatePassword(ctx context.Context, id int64, hashedPassword string) error
 	UpdateStatus(ctx context.Context, id int64, status string) error
+	UpdateStatusWithTx(ctx context.Context, tx pgx.Tx, id int64, status string) error
 	Delete(ctx context.Context, id int64) error
 }
 
@@ -166,6 +167,18 @@ func (r *UserRepository) UpdatePassword(ctx context.Context, id int64, hashedPas
 func (r *UserRepository) UpdateStatus(ctx context.Context, id int64, status string) error {
 	query := `UPDATE users SET status = $1 WHERE id = $2`
 	result, err := r.db.Exec(ctx, query, status, id)
+	if err != nil {
+		return err
+	}
+	if result.RowsAffected() == 0 {
+		return pgx.ErrNoRows
+	}
+	return nil
+}
+
+func (r *UserRepository) UpdateStatusWithTx(ctx context.Context, tx pgx.Tx, id int64, status string) error {
+	query := `UPDATE users SET status = $1 WHERE id = $2`
+	result, err := tx.Exec(ctx, query, status, id)
 	if err != nil {
 		return err
 	}

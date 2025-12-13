@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/mustafa91ameen/prjalgo/backend/internal/auth"
 	"github.com/mustafa91ameen/prjalgo/backend/internal/repository"
 	"golang.org/x/crypto/bcrypt"
@@ -23,6 +24,7 @@ var (
 )
 
 type AuthService struct {
+	db               *pgxpool.Pool
 	userRepo         *repository.UserRepository
 	userRoleRepo     *repository.UserRoleRepository
 	refreshTokenRepo *repository.RefreshTokenRepository
@@ -31,6 +33,7 @@ type AuthService struct {
 }
 
 func NewAuthService(
+	db *pgxpool.Pool,
 	userRepo *repository.UserRepository,
 	userRoleRepo *repository.UserRoleRepository,
 	refreshTokenRepo *repository.RefreshTokenRepository,
@@ -38,6 +41,7 @@ func NewAuthService(
 	refreshExpiry time.Duration,
 ) *AuthService {
 	return &AuthService{
+		db:               db,
 		userRepo:         userRepo,
 		userRoleRepo:     userRoleRepo,
 		refreshTokenRepo: refreshTokenRepo,
@@ -134,8 +138,21 @@ func (s *AuthService) RefreshToken(ctx context.Context, refreshToken string) (*L
 	newTokenHash := s.hashToken(newRefreshToken)
 	newExpiresAt := time.Now().Add(s.refreshExpiry)
 
-	err = s.refreshTokenRepo.UpdateTokenHash(ctx, storedToken.ID, newTokenHash, newExpiresAt)
+	// Start transaction for atomic token update
+	tx, err := s.db.Begin(ctx)
 	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback(ctx)
+
+	// Update token hash within transaction
+	err = s.refreshTokenRepo.UpdateTokenHashWithTx(ctx, tx, storedToken.ID, newTokenHash, newExpiresAt)
+	if err != nil {
+		return nil, err
+	}
+
+	// Commit transaction
+	if err := tx.Commit(ctx); err != nil {
 		return nil, err
 	}
 
