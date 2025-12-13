@@ -1,6 +1,8 @@
 package server
 
 import (
+	"context"
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -31,5 +33,30 @@ func CORSMiddleware() gin.HandlerFunc {
 			return
 		}
 		c.Next()
+	}
+}
+
+// TimeoutMiddleware adds a timeout to the request context for database queries
+// All database operations will respect this timeout and cancel if exceeded
+func TimeoutMiddleware(timeout time.Duration) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Create context with timeout
+		ctx, cancel := context.WithTimeout(c.Request.Context(), timeout)
+		defer cancel()
+
+		// Update request with new context
+		// All handlers and database queries will use this context
+		// If timeout is exceeded, database queries will automatically cancel
+		c.Request = c.Request.WithContext(ctx)
+
+		// Continue to next handler
+		c.Next()
+
+		// If timeout occurred and no response was written, send timeout error
+		if ctx.Err() == context.DeadlineExceeded && !c.Writer.Written() {
+			c.AbortWithStatusJSON(http.StatusRequestTimeout, gin.H{
+				"error": "Request timeout - database query took too long",
+			})
+		}
 	}
 }

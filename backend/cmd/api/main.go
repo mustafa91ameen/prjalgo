@@ -18,9 +18,9 @@ func main() {
 	// Load config from .env
 	cfg := config.Load()
 
-	// Connect to database
+	// Connect to database with retry logic
 	ctx := context.Background()
-	pool, err := db.Connect(ctx, cfg.DSN())
+	pool, err := db.Connect(ctx, cfg.DSN(), cfg.DBMaxRetries, cfg.DBRetryDelay)
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
@@ -32,7 +32,7 @@ func main() {
 	c := container.New(pool, cfg)
 
 	// Create and start server
-	srv := server.NewServer(cfg.ServerPort, c)
+	srv := server.NewServer(cfg.ServerPort, c, cfg)
 	srv.RegisterRoutes()
 
 	log.Printf("Server starting on port %s", cfg.ServerPort)

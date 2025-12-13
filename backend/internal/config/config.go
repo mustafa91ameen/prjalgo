@@ -3,6 +3,8 @@ package config
 import (
 	"fmt"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -18,12 +20,37 @@ type Config struct {
 	JWTSecret          string
 	JWTExpiry          string
 	RefreshTokenExpiry string
+	QueryTimeout       time.Duration
+	DBMaxRetries       int
+	DBRetryDelay       time.Duration
 }
 
 func Load() *Config {
 	// Load .env file if it exists (try multiple paths)
 	_ = godotenv.Load()
 	_ = godotenv.Load("../../.env")
+
+	// Parse query timeout (default: 10 seconds)
+	queryTimeoutStr := getEnv("QUERY_TIMEOUT", "10s")
+	queryTimeout, err := time.ParseDuration(queryTimeoutStr)
+	if err != nil || queryTimeout <= 0 {
+		queryTimeout = 10 * time.Second
+	}
+
+	// Parse retry delay (default: 2 seconds)
+	retryDelayStr := getEnv("DB_RETRY_DELAY", "2s")
+	retryDelay, err := time.ParseDuration(retryDelayStr)
+	if err != nil || retryDelay <= 0 {
+		retryDelay = 2 * time.Second
+	}
+
+	// Parse max retries (default: 5)
+	maxRetries := 5
+	if retriesStr := getEnv("DB_MAX_RETRIES", ""); retriesStr != "" {
+		if retries, err := parseInt(retriesStr); err == nil && retries > 0 {
+			maxRetries = retries
+		}
+	}
 
 	return &Config{
 		DBHost:             getEnv("DB_HOST", "localhost"),
@@ -36,6 +63,9 @@ func Load() *Config {
 		JWTSecret:          getEnv("JWT_SECRET", ""),
 		JWTExpiry:          getEnv("JWT_EXPIRY", "15m"),
 		RefreshTokenExpiry: getEnv("REFRESH_TOKEN_EXPIRY", "168h"),
+		QueryTimeout:       queryTimeout,
+		DBMaxRetries:       maxRetries,
+		DBRetryDelay:       retryDelay,
 	}
 }
 
@@ -49,4 +79,8 @@ func getEnv(key, fallback string) string {
 		return val
 	}
 	return fallback
+}
+
+func parseInt(s string) (int, error) {
+	return strconv.Atoi(s)
 }

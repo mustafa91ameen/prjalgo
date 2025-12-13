@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/config"
 	"github.com/mustafa91ameen/prjalgo/backend/internal/container"
 	"github.com/mustafa91ameen/prjalgo/backend/internal/server/routes"
 )
@@ -14,12 +15,13 @@ type Server struct {
 	container *container.Container
 }
 
-func NewServer(port string, c *container.Container) *Server {
+func NewServer(port string, c *container.Container, cfg *config.Config) *Server {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 	router.Use(gin.Recovery())
 
-	// Register middlewares
+	// Register middlewares (order matters - timeout should be early)
+	router.Use(TimeoutMiddleware(cfg.QueryTimeout))
 	router.Use(CORSMiddleware())
 	router.Use(LoggingMiddleware())
 
