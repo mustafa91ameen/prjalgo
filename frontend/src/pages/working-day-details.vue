@@ -31,11 +31,6 @@ onMounted(() => {
   // Get data from URL parameters
   workingDayId.value = route.query.id
   projectId.value = route.query.projectId
-  
-  console.log('=== WORKING DAY DETAILS PAGE LOADED ===')
-  console.log('Working day ID:', workingDayId.value)
-  console.log('Project ID:', projectId.value)
-  console.log('All query params:', route.query)
 })
 </script>
 

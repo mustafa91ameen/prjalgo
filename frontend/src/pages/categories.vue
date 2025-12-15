@@ -866,7 +866,6 @@ const saveSubCategory = () => {
 }
 
 const editSubCategory = (subCategory) => {
-  console.log('Editing sub category:', subCategory)
   isEditingSubCategory.value = true
   editingSubCategoryId.value = subCategory.id
   subCategoryForm.value = {
@@ -874,7 +873,6 @@ const editSubCategory = (subCategory) => {
     progress: subCategory.progress || 0
   }
   addSubCategoryDialog.value = true
-  console.log('Dialog opened, form:', subCategoryForm.value)
 }
 
 const deleteSubCategory = (subCategory) => {

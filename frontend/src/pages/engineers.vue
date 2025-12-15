@@ -671,7 +671,6 @@ const openAddEngineerDialog = () => {
 }
 
 const viewEngineer = (engineer) => {
-  console.log('View engineer:', engineer)
   selectedEngineer.value = engineer
   detailsDialog.value = true
 }

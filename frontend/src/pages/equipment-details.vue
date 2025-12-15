@@ -290,7 +290,6 @@ const goBack = () => {
 }
 
 const searchEquipment = () => {
-  console.log('البحث في الآليات:', equipmentSearch.value)
 }
 
 const openAddDialog = () => {
@@ -387,7 +386,6 @@ const deleteEquipment = (item) => {
 
 // Lifecycle
 onMounted(() => {
-  console.log('✅ صفحة تفاصيل الآليات تم تحميلها بنجاح!')
 })
 </script>
 

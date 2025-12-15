@@ -523,7 +523,6 @@ const totalValue = computed(() => {
 
 // دوال المخزون
 const searchInventory = () => {
-  console.log('البحث عن:', searchQuery.value)
 }
 
 const openAddItemDialog = () => {
@@ -572,7 +571,6 @@ const editItem = (item) => {
 }
 
 const viewItemDetails = (item) => {
-  console.log('عرض تفاصيل العنصر:', item)
   // يمكن إضافة نافذة عرض التفاصيل هنا
 }
 

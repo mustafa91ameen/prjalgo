@@ -1137,7 +1137,6 @@ const getStatusText = (status) => {
 }
 
 const applyFilters = () => {
-  console.log('تم تطبيق الفلاتر')
 }
 
 const viewUser = (user) => {
@@ -1219,10 +1218,8 @@ const saveNewUser = async () => {
     closeAddUserDialog()
 
     // عرض رسالة نجاح (يمكن استخدام مكتبة toast)
-    console.log('تم إضافة المستخدم بنجاح:', user)
 
   } catch (error) {
-    console.error('خطأ في إضافة المستخدم:', error)
   } finally {
     saving.value = false
   }
@@ -1258,10 +1255,8 @@ const saveEditUser = async () => {
     }
 
     closeEditUserDialog()
-    console.log('تم تحديث المستخدم بنجاح')
 
   } catch (error) {
-    console.error('خطأ في تحديث المستخدم:', error)
   } finally {
     editSaving.value = false
   }
@@ -1280,10 +1275,8 @@ const confirmResetPassword = async () => {
     await new Promise(resolve => setTimeout(resolve, 1500))
 
     closeResetPasswordDialog()
-    console.log('تم إعادة تعيين كلمة المرور بنجاح')
 
   } catch (error) {
-    console.error('خطأ في إعادة تعيين كلمة المرور:', error)
   } finally {
     resetLoading.value = false
   }
@@ -1308,10 +1301,8 @@ const confirmDeleteUser = async () => {
     }
 
     closeDeleteConfirmDialog()
-    console.log('تم حذف المستخدم بنجاح')
 
   } catch (error) {
-    console.error('خطأ في حذف المستخدم:', error)
   } finally {
     deleteLoading.value = false
   }

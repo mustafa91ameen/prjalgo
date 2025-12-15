@@ -341,7 +341,6 @@ const goBack = () => {
 }
 
 const searchLabor = () => {
-  console.log('البحث في العمال:', laborSearch.value)
 }
 
 const openAddDialog = () => {
@@ -450,7 +449,6 @@ const formatCurrency = (value) => {
 
 // Lifecycle
 onMounted(() => {
-  console.log('✅ صفحة تفاصيل الأيدي العاملة تم تحميلها بنجاح!')
 })
 </script>
 

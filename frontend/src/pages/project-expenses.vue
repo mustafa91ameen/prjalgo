@@ -357,6 +357,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { toast } from 'vue3-toastify'
 
 const route = useRoute()
 const router = useRouter()
@@ -526,12 +527,10 @@ const goBack = () => {
 }
 
 const viewExpenseDetails = (expense) => {
-  console.log('عرض تفاصيل المصروف:', expense)
-  alert(`تفاصيل المصروف:\n\nالنوع: ${getExpenseTypeLabel(expense.type)}\nالوصف: ${expense.description}\nالمبلغ: ${formatAmount(expense.amount)}\nالتاريخ: ${expense.date}\nالحالة: ${getStatusLabel(expense.status)}\nالملاحظات: ${expense.notes}`)
+  toast.info(`${getExpenseTypeLabel(expense.type)}: ${expense.description} - ${formatAmount(expense.amount)}`)
 }
 
 const editExpense = (expense) => {
-  console.log('تعديل المصروف:', expense)
   // يمكن إضافة منطق التعديل هنا
 }
 
@@ -545,7 +544,6 @@ const deleteExpense = (expense) => {
 }
 
 const addExpense = () => {
-  console.log('فتح نموذج إضافة مصروف جديد')
   addExpenseDialog.value = true
 }
 
@@ -581,28 +579,21 @@ const saveNewExpense = () => {
     
     // إضافة المصروف إلى القائمة
     projectExpenses.value.unshift(newExpenseItem)
-    
-    console.log('تم إضافة مصروف جديد:', newExpenseItem)
-    
+
     // إغلاق النموذج وإعادة تعيينه
     closeAddExpenseDialog()
     
-    // رسالة نجاح (يمكن استبدالها بـ snackbar)
-    alert('تم إضافة المصروف بنجاح!')
+    toast.success('تم إضافة المصروف بنجاح!')
   }
 }
 
 // Initialize component
 onMounted(() => {
-  console.log('تم تحميل صفحة مصاريف المشروع')
-  console.log('معاملات URL:', route.query)
-  
   // Get project data from route query parameters
   if (route.query.projectName) {
     projectName.value = route.query.projectName
-    console.log('اسم المشروع:', projectName.value)
   }
-  
+
   // Set project info from query parameters
   projectInfo.value = {
     startDate: route.query.startDate || '10/03/2022',
@@ -611,8 +602,6 @@ onMounted(() => {
     workLocation: route.query.workLocation || 'لعقوبة',
     notes: route.query.notes || 'لايوجد'
   }
-  
-  console.log('معلومات المشروع:', projectInfo.value)
 })
 </script>
 

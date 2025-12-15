@@ -305,6 +305,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { toast } from 'vue3-toastify'
 
 // متغيرات الحالة الأساسية
 const loading = ref(false)
@@ -450,13 +451,11 @@ const editType = (type) => {
 }
 
 const viewTypeDetails = (type) => {
-  console.log('عرض تفاصيل نوع المصروف:', type)
-  alert(`تفاصيل نوع المصروف:\n\nالاسم: ${type.name}\nالوصف: ${type.description}\nالحالة: ${type.status === 'active' ? 'نشط' : 'معطل'}\nإجمالي المصروفات: ${formatAmount(type.totalExpenses)}`)
+  toast.info(`${type.name}: ${type.description} - ${type.status === 'active' ? 'نشط' : 'معطل'} - ${formatAmount(type.totalExpenses)}`)
 }
 
 const toggleTypeStatus = (type) => {
   type.status = type.status === 'active' ? 'inactive' : 'active'
-  console.log(`تم ${type.status === 'active' ? 'تفعيل' : 'تعطيل'} نوع المصروف:`, type.name)
 }
 
 const deleteType = (type) => {
@@ -505,15 +504,13 @@ const saveType = () => {
       }
       expenseTypes.value.unshift(newType)
     }
-    
+
     closeTypeDialog()
-    console.log('تم حفظ نوع المصروف بنجاح')
   }
 }
 
 // تهيئة المكون
 onMounted(() => {
-  console.log('تم تحميل صفحة أنواع المصروفات')
 })
 </script>
 

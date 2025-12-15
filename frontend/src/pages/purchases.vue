@@ -550,7 +550,6 @@ const getStatusText = (status) => {
 }
 
 const searchPurchases = () => {
-  console.log('البحث عن:', searchQuery.value)
 }
 
 const openAddPurchaseDialog = () => {
@@ -597,7 +596,6 @@ const editPurchase = (item) => {
 }
 
 const viewPurchaseDetails = (item) => {
-  console.log('عرض تفاصيل الشراء:', item)
   // يمكن إضافة نافذة عرض التفاصيل هنا
 }
 
@@ -645,7 +643,6 @@ watch([() => purchaseForm.value.quantity, () => purchaseForm.value.unitPrice], (
 })
 
 onMounted(() => {
-  console.log('صفحة المشتريات جاهزة')
 })
 </script>
 

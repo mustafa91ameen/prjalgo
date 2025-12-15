@@ -1743,8 +1743,6 @@ const projects = ref([
   }
 ])
 
-console.log('Projects data loaded:', projects.value.length, 'projects')
-
 // قوائم الاختيار - تم حذف statusOptions المكرر
 
 const priorityOptions = [
@@ -1773,7 +1771,6 @@ const filterStatuses = [
 
 // الخصائص المحسوبة
 const totalProjects = computed(() => {
-  console.log('totalProjects computed:', projects.value.length)
   return projects.value.length
 })
 
@@ -1982,12 +1979,10 @@ const exportWorkingDaysToExcel = () => {
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
-    
+
     // إظهار رسالة نجاح
-    console.log('تم تصدير بيانات أيام العمل بنجاح')
-    
+
   } catch (error) {
-    console.error('خطأ في تصدير البيانات:', error)
   }
 }
 
@@ -2030,7 +2025,6 @@ const openAddProjectDialog = () => {
 }
 
 const viewProject = (project) => {
-  console.log('View project:', project)
 }
 
 const viewProjectDetails = (project) => {
@@ -2228,17 +2222,14 @@ const getRoleColor = (role) => {
 }
 
 const viewTeamMember = (member) => {
-  console.log('عرض عضو الفريق:', member)
   // TODO: إضافة نافذة عرض التفاصيل
 }
 
 const editTeamMember = (member) => {
-  console.log('تعديل عضو الفريق:', member)
   // TODO: إضافة نافذة التعديل
 }
 
 const deleteTeamMember = (member) => {
-  console.log('حذف عضو الفريق:', member)
   // TODO: إضافة تأكيد الحذف
 }
 
@@ -2270,9 +2261,6 @@ const saveTeamMember = () => {
 
 onMounted(() => {
   // Initialize data if needed
-  console.log('تم تحميل صفحة إدارة المشاريع')
-  console.log('عدد المشاريع:', projects.value.length)
-  console.log('المشاريع:', projects.value)
 })
 </script>
 

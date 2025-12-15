@@ -696,7 +696,6 @@ const closeTaskDialog = () => {
 
 const exportTasks = () => {
   // Export functionality
-  console.log('Exporting tasks...')
 }
 
 onMounted(() => {

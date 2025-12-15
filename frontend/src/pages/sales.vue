@@ -526,7 +526,6 @@ watch([() => saleForm.value.quantity, () => saleForm.value.unitPrice], () => {
 
 // دوال المبيعات
 const searchSales = () => {
-  console.log('البحث عن:', searchQuery.value)
 }
 
 const openAddSaleDialog = () => {
@@ -574,7 +573,6 @@ const editSale = (sale) => {
 }
 
 const viewSaleDetails = (sale) => {
-  console.log('عرض تفاصيل عملية البيع:', sale)
   // يمكن إضافة نافذة عرض التفاصيل هنا
 }
 

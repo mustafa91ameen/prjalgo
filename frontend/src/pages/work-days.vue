@@ -759,7 +759,6 @@ const deleteWorkDay = (item) => {
 }
 
 const toggleStatus = (item) => {
-  console.log('Toggle status:', item)
 }
 
 const saveWorkDay = async () => {

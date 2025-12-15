@@ -298,58 +298,75 @@ src/utils/
 
 ## Recommended Approach: Incremental (Option B)
 
-### Phase 0: Quick Cleanup (Before Refactoring)
+### Phase 0: Quick Cleanup (Before Refactoring) ✅ COMPLETED
 **Goal**: Clean up code quality issues first
+**Status**: ✅ Completed on 2025-12-15
 
-#### 1. Replace `alert()` with Toast Notifications
-- Use `vue3-toastify` (already installed)
-- Replace `alert()` with `toast.success()` / `toast.error()`
-- **Files to fix** (16 occurrences):
-  - `human-resources.vue` (11)
-  - `project-expenses.vue` (2)
-  - `work-day-details.vue` (2)
-  - `expense-types.vue` (1)
+#### 1. ✅ Replace `alert()` with Toast Notifications
+- Replaced all 16 `alert()` calls with `toast.success()` / `toast.error()` / `toast.warning()`
+- Files fixed: `human-resources.vue`, `project-expenses.vue`, `work-day-details.vue`, `expense-types.vue`
 
-#### 2. Remove `console.log` Statements
-- Remove all 75 occurrences across 23 files
-- Main files: `project-management.vue` (10), `project-expenses.vue` (8), `debtors.vue` (7)
+#### 2. ✅ Remove `console.log` Statements
+- Removed 74 `console.log` statements across 22 files
+- Kept 1 in `router/index.js` (legitimate error handling)
 
-#### 3. Setup Pinia Stores
-- Create `stores/` structure for centralized state management
-- Stores: `engineers.js`, `projects.js`, `expenses.js`, `users.js`
-- Share data across components instead of duplicating
+#### 3. ✅ Setup Pinia Stores
+- Created `stores/auth.js` with login/logout, token management, and permissions
+- Uses Setup Store syntax (Composition API) as per AI_RULES.md
 
-#### 4. Configure Global Error Handling
-- Setup `vue3-toastify` globally in `main.js`
-- Add global error handler for unexpected errors
-- Consistent error feedback across the app
+#### 4. ✅ Configure API Layer with Error Handling
+- Updated `api/client.js` with auth token injection, toast errors, 401 handling
+- Created `api/projects.js` with full CRUD + nested resources
 
-#### 5. Setup Testing (Vitest)
-- Install Vitest and Vue Test Utils
-- Add test configuration to `vite.config.mjs`
-- Create `tests/` folder structure
+#### 5. ✅ Setup Utils
+- Created `utils/formatters.js` with currency, date, number formatting functions
 
-**Deliverable**: Clean codebase ready for refactoring
+#### ⏳ Pending (Optional for Phase 0)
+- Setup Testing (Vitest) - deferred to later phase
+
+**Deliverable**: ✅ Clean codebase ready for refactoring
 
 ---
 
-### Phase 1: Foundation
+### Phase 1: Foundation ✅ COMPLETED
 **Goal**: Set up infrastructure
+**Status**: ✅ Completed on 2025-12-15
 
-1. ✅ Create `api/` folder structure
-   - Base HTTP client
-   - API modules (projects, debtors, etc.)
-   - Use env variables
+#### 1. ✅ Create `api/` folder structure
+- `api/client.js` - Base HTTP client with auth, error handling, 401 redirect
+- `api/auth.js` - Login, logout, refresh, getPages
+- `api/projects.js` - Projects CRUD + workdays, expenses, team members
+- `api/debtors.js` - Debtors CRUD
+- `api/expenses.js` - Expenses CRUD with filters
+- `api/income.js` - Income CRUD with filters
+- `api/users.js` - Users CRUD + password change, status update, roles
+- `api/teams.js` - Team members management
+- `api/workdays.js` - Workdays + materials + labor + equipment
+- `api/roles.js` - Roles + pages + role-pages (RBAC)
+- `api/categories.js` - Work categories & subcategories
+- `api/index.js` - Barrel export
 
-2. ✅ Create `composables/` folder
-   - Start with `useProjects.js`
-   - Extract reusable logic
+#### 2. ✅ Create `stores/` folder (Pinia Setup Stores)
+- `stores/auth.js` - Auth state, tokens, permissions (from Phase 0)
+- `stores/projects.js` - Projects state & CRUD
+- `stores/debtors.js` - Debtors state & CRUD
+- `stores/expenses.js` - Expenses state & CRUD with filters
+- `stores/users.js` - Users state & CRUD
+- `stores/ui.js` - Sidebar, loading, modals, dark mode, breadcrumbs
+- `stores/index.js` - Barrel export
 
-3. ✅ Create `utils/` folder
-   - Formatters (currency, date)
-   - Validators
+#### 3. ✅ Create `composables/` folder
+- `composables/usePermissions.js` - Permission checking (canRead, canWrite, canDelete)
+- `composables/useProjects.js` - Projects logic with permission checks
+- `composables/index.js` - Barrel export
 
-**Deliverable**: Infrastructure ready, no page changes yet
+#### 4. ✅ Complete `utils/` folder
+- `utils/formatters.js` - Currency, date, number formatting (from Phase 0)
+- `utils/validators.js` - Form validation helpers (required, email, phone, etc.)
+- `utils/constants.js` - Constants & enums (statuses, routes, modals, etc.)
+- `utils/index.js` - Barrel export
+
+**Deliverable**: ✅ Infrastructure ready, no page changes yet
 
 ---
 
@@ -510,5 +527,5 @@ api/: ~6 modules (50-100 lines each)
 
 ---
 
-**Last Updated**: 2025-12-15 (v2 - Added Setup Stores, storeToRefs, API error handling patterns)
-**Status**: Planning Phase
+**Last Updated**: 2025-12-15 (v4 - Phase 1 completed)
+**Status**: Phase 0 ✅ Complete | Phase 1 ✅ Complete | Phase 2 Ready to Start

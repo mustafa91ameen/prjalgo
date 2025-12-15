@@ -578,7 +578,6 @@ const totalCost = computed(() => {
 // دوال المصاريف الإدارية
 const searchExpenses = () => {
   // دالة البحث - يمكن إضافة منطق البحث المتقدم هنا
-  console.log('البحث عن:', expenseSearchQuery.value)
 }
 
 const openAddExpenseDialog = () => {
@@ -622,15 +621,11 @@ const editExpense = (expense) => {
 
 // دالة تعديل المشروع
 const editProject = (project) => {
-  console.log('تعديل المشروع:', project)
   // يمكن إضافة منطق التعديل هنا
 }
 
 // دالة عرض تفاصيل المشروع
 const viewProjectDetails = (project) => {
-  console.log('عرض تفاصيل المشروع:', project)
-  console.log('الانتقال إلى صفحة مصاريف المشروع...')
-  
   // توجيه إلى صفحة مصاريف المشروع
   router.push({
     path: '/project-expenses',
@@ -643,10 +638,6 @@ const viewProjectDetails = (project) => {
       workLocation: project.workLocation,
       notes: project.notes
     }
-  }).then(() => {
-    console.log('تم الانتقال بنجاح إلى صفحة مصاريف المشروع')
-  }).catch((error) => {
-    console.error('خطأ في الانتقال:', error)
   })
 }
 

@@ -333,11 +333,9 @@ const goBack = () => {
 }
 
 const searchMaterials = () => {
-  console.log('البحث في المواد:', materialsSearch.value)
 }
 
 const searchExpenses = () => {
-  console.log('البحث في المصاريف:', expensesSearch.value)
 }
 
 const openAddDialog = (material) => {
@@ -501,7 +499,6 @@ const deleteExpense = (item) => {
 
 // Lifecycle
 onMounted(() => {
-  console.log('✅ صفحة المواد والمصاريف تم تحميلها بنجاح!')
 })
 </script>
 

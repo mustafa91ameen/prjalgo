@@ -992,7 +992,6 @@ const refreshData = () => {
 
 const exportData = () => {
   // منطق التصدير
-  console.log('تصدير البيانات')
 }
 
 const resetFilters = () => {
@@ -1030,32 +1029,26 @@ const getPaymentMethodText = (method) => {
 
 const addDebt = () => {
   // منطق إضافة دين جديد
-  console.log('إضافة دين جديد')
 }
 
 const editDebt = (debt) => {
   // منطق تعديل الدين
-  console.log('تعديل الدين:', debt)
 }
 
 const deleteDebt = (debt) => {
   // منطق حذف الدين
-  console.log('حذف الدين:', debt)
 }
 
 const addPayment = () => {
   // منطق إضافة تسديد جديد
-  console.log('إضافة تسديد جديد')
 }
 
 const editPayment = (payment) => {
   // منطق تعديل التسديد
-  console.log('تعديل التسديد:', payment)
 }
 
 const deletePayment = (payment) => {
   // منطق حذف التسديد
-  console.log('حذف التسديد:', payment)
 }
 
 onMounted(() => {

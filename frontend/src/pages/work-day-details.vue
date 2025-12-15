@@ -306,6 +306,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { toast } from 'vue3-toastify'
 
 const router = useRouter()
 
@@ -378,8 +379,6 @@ const getOverallStatus = () => {
 }
 
 const showCategoryDetails = (category) => {
-  console.log('تم الضغط على:', category) // للتأكد من أن الدالة تعمل
-  
   if (category === 'materials-expenses') {
     // الانتقال إلى صفحة المواد والمصاريف
     router.push('/materials-expenses-details')
@@ -405,17 +404,16 @@ const showCategoryDetails = (category) => {
   // إضافة تأخير صغير للتأكد من التحديث
   setTimeout(() => {
     showCategoryDialog.value = true
-    console.log('النافذة المنبثقة:', showCategoryDialog.value) // للتأكد من التحديث
   }, 100)
 }
 
 const editWorkDay = () => {
-  alert('تم الضغط على: تعديل يوم العمل')
+  toast.info('تم الضغط على: تعديل يوم العمل')
 }
 
 const deleteWorkDay = () => {
   if (confirm('هل أنت متأكد من حذف يوم العمل؟')) {
-    alert('تم الضغط على: حذف يوم العمل')
+    toast.success('تم حذف يوم العمل')
   }
 }
 
@@ -428,9 +426,6 @@ watch(categoriesEnabled, () => {
 onMounted(() => {
   // تحميل حالة الكروت المحفوظة
   loadCategoriesState()
-  
-  console.log('✅ صفحة تفاصيل يوم العمل تم تحميلها بنجاح!')
-  console.log('جميع العناصر ظاهرة ومتاحة للاستخدام')
 })
 </script>
 

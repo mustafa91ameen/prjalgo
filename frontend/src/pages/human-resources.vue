@@ -1490,6 +1490,7 @@
 <script setup>
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
+import { toast } from 'vue3-toastify'
 
 // ========================================
 // متغيرات الحالة الأساسية
@@ -1886,7 +1887,6 @@ const getStatusText = (status) => {
 }
 
 const searchEmployees = () => {
-  console.log('البحث عن:', searchQuery.value)
 }
 
 const openAddEmployeeDialog = () => {
@@ -2039,10 +2039,9 @@ const registerFingerprint = async () => {
     employeeForm.value.fingerprint = fingerprintId
     employeeForm.value.fingerprintDate = fingerprintDate
     
-    alert('تم تسجيل البصمة بنجاح!')
+    toast.success('تم تسجيل البصمة بنجاح!')
   } catch (error) {
-    alert('حدث خطأ أثناء تسجيل البصمة. يرجى المحاولة مرة أخرى.')
-    console.error('Fingerprint registration error:', error)
+    toast.error('حدث خطأ أثناء تسجيل البصمة. يرجى المحاولة مرة أخرى.')
   } finally {
     loadingFingerprint.value = false
   }
@@ -2071,10 +2070,9 @@ const registerFingerprintFromDetails = async () => {
       employees.value[index].fingerprintDate = fingerprintDate
     }
     
-    alert('تم تسجيل البصمة بنجاح!')
+    toast.success('تم تسجيل البصمة بنجاح!')
   } catch (error) {
-    alert('حدث خطأ أثناء تسجيل البصمة. يرجى المحاولة مرة أخرى.')
-    console.error('Fingerprint registration error:', error)
+    toast.error('حدث خطأ أثناء تسجيل البصمة. يرجى المحاولة مرة أخرى.')
   } finally {
     loadingFingerprint.value = false
   }
@@ -2097,7 +2095,7 @@ const deleteFingerprint = () => {
     employees.value[index].fingerprintDate = null
   }
   
-  alert('تم حذف البصمة بنجاح')
+  toast.success('تم حذف البصمة بنجاح')
 }
 
 const openAddLeaveDialog = () => {
@@ -2126,7 +2124,7 @@ const closeLeaveDialog = () => {
 const saveLeave = () => {
   if (!selectedEmployeeDetails.value) return
   if (!leaveForm.value.startDate || !leaveForm.value.endDate || !leaveForm.value.type) {
-    alert('يرجى ملء جميع الحقول المطلوبة')
+    toast.warning('يرجى ملء جميع الحقول المطلوبة')
     return
   }
 
@@ -2183,7 +2181,7 @@ const closeAttendanceDialog = () => {
 const saveAttendance = () => {
   if (!selectedEmployeeDetails.value) return
   if (!attendanceForm.value.date || !attendanceForm.value.checkIn) {
-    alert('يرجى ملء جميع الحقول المطلوبة')
+    toast.warning('يرجى ملء جميع الحقول المطلوبة')
     return
   }
 
@@ -2244,7 +2242,7 @@ const closeEvaluationDialog = () => {
 const saveEvaluation = () => {
   if (!selectedEmployeeDetails.value) return
   if (!evaluationForm.value.date || !evaluationForm.value.evaluator) {
-    alert('يرجى ملء جميع الحقول المطلوبة')
+    toast.warning('يرجى ملء جميع الحقول المطلوبة')
     return
   }
 
@@ -2288,7 +2286,7 @@ const closeSkillDialog = () => {
 const saveSkill = () => {
   if (!selectedEmployeeDetails.value) return
   if (!skillForm.value.name) {
-    alert('يرجى إدخال اسم المهارة')
+    toast.warning('يرجى إدخال اسم المهارة')
     return
   }
 
@@ -2347,7 +2345,7 @@ const closeCertificateDialog = () => {
 const saveCertificate = () => {
   if (!selectedEmployeeDetails.value) return
   if (!certificateForm.value.name || !certificateForm.value.issuer || !certificateForm.value.date) {
-    alert('يرجى ملء جميع الحقول المطلوبة')
+    toast.warning('يرجى ملء جميع الحقول المطلوبة')
     return
   }
 
@@ -2415,7 +2413,7 @@ const closeSalaryDialog = () => {
 const saveSalary = () => {
   if (!selectedEmployeeDetails.value) return
   if (!salaryForm.value.month || !salaryForm.value.baseSalary) {
-    alert('يرجى ملء جميع الحقول المطلوبة')
+    toast.warning('يرجى ملء جميع الحقول المطلوبة')
     return
   }
 
@@ -2466,8 +2464,6 @@ watch(() => route.hash, (newHash) => {
 }, { immediate: true })
 
 onMounted(() => {
-  console.log('صفحة الموارد البشرية المتكاملة جاهزة')
-  
   // التحقق من وجود hash في الرابط للانتقال إلى تبويب البصمة
   const hash = route.hash || window.location.hash
   if (hash === '#fingerprint' || hash === '#بصمة') {

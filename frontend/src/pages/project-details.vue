@@ -319,7 +319,6 @@ const editWorkDays = () => {
 
 const deleteProject = () => {
   // Implement delete functionality
-  console.log('Delete project:', projectId.value)
   // After deletion, redirect to projects list
   router.push('/project-management')
 }

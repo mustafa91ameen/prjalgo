@@ -694,17 +694,14 @@ const viewMember = (member) => {
 
 const editMember = (member) => {
   // TODO: Implement edit functionality
-  console.log('Edit member:', member)
 }
 
 const resetPassword = (member) => {
   // TODO: Implement reset password functionality
-  console.log('Reset password for:', member)
 }
 
 const deleteMember = (member) => {
   // TODO: Implement delete functionality
-  console.log('Delete member:', member)
 }
 
 const closeAddMemberDialog = () => {
