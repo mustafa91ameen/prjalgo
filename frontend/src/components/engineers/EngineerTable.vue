@@ -190,10 +190,6 @@ const tableHeaders = [
 ]
 </script>
 
-<style>
-@import './styles/engineers.css';
-</style>
-
 <style scoped>
 .data-table-card {
   border-radius: 24px !important;

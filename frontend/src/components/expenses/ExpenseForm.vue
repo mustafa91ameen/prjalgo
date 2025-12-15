@@ -210,15 +210,6 @@ const statusOptions = [
   'مسودة'
 ]
 
-// Watch for expense changes (when editing)
-watch(() => props.expense, (newExpense) => {
-  if (newExpense) {
-    form.value = { ...newExpense }
-  } else {
-    resetForm()
-  }
-}, { immediate: true })
-
 // Reset form to default values
 const resetForm = () => {
   form.value = {
@@ -232,6 +223,15 @@ const resetForm = () => {
     notes: ''
   }
 }
+
+// Watch for expense changes (when editing)
+watch(() => props.expense, (newExpense) => {
+  if (newExpense) {
+    form.value = { ...newExpense }
+  } else {
+    resetForm()
+  }
+}, { immediate: true })
 
 // Close dialog
 const closeDialog = () => {
@@ -248,10 +248,6 @@ const saveExpense = () => {
   }
 }
 </script>
-
-<style>
-@import './styles/expenses.css';
-</style>
 
 <style scoped>
 .image-style-dialog {

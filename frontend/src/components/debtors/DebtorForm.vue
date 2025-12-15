@@ -150,14 +150,6 @@ const statusOptions = [
   { title: 'متأخر', value: 'overdue' }
 ]
 
-watch(() => props.debtor, (newDebtor) => {
-  if (newDebtor) {
-    form.value = { ...newDebtor }
-  } else {
-    resetForm()
-  }
-}, { immediate: true })
-
 const resetForm = () => {
   form.value = {
     name: '',
@@ -170,6 +162,14 @@ const resetForm = () => {
     notes: ''
   }
 }
+
+watch(() => props.debtor, (newDebtor) => {
+  if (newDebtor) {
+    form.value = { ...newDebtor }
+  } else {
+    resetForm()
+  }
+}, { immediate: true })
 
 const closeDialog = () => {
   dialogModel.value = false

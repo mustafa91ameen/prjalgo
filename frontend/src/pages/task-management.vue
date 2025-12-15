@@ -705,11 +705,7 @@ onMounted(() => {
 </script>
 
 
-<style>
-/* Import page styles */
-@import './styles/task-management.css';
-</style>
-
 <style scoped>
-/* Component-specific overrides (if any) */
+/* Import page styles - scoped to this component only */
+@import './styles/task-management.css';
 </style>

@@ -749,11 +749,7 @@ onMounted(() => {
 </script>
 
 
-<style>
-/* Import page styles */
-@import './styles/team-management.css';
-</style>
-
 <style scoped>
-/* Component-specific overrides (if any) */
+/* Import page styles - scoped to this component only */
+@import './styles/team-management.css';
 </style>

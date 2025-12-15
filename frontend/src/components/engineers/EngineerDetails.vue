@@ -159,10 +159,6 @@ const closeDialog = () => {
 }
 </script>
 
-<style>
-@import './styles/engineers.css';
-</style>
-
 <style scoped>
 .engineer-details-dialog .v-card {
   border-radius: 20px !important;

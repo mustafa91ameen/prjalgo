@@ -123,10 +123,6 @@ defineProps({
 defineEmits(['update:searchQuery', 'update:expenseType', 'update:status', 'search', 'add'])
 </script>
 
-<style>
-@import './styles/expenses.css';
-</style>
-
 <style scoped>
 .search-card {
   border-radius: 16px !important;

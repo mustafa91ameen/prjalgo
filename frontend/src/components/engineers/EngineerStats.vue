@@ -60,10 +60,6 @@ defineProps({
 })
 </script>
 
-<style>
-@import './styles/engineers.css';
-</style>
-
 <style scoped>
 .stats-row {
   width: 100%;

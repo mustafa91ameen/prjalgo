@@ -1,5 +1,5 @@
 <template>
-  <v-card class="filters-card mb-6" elevation="2">
+  <v-card class="filters-card mb-6 card-glow" elevation="2">
     <v-card-text class="pa-4">
       <v-row align="center" dense>
         <!-- Search Input -->
@@ -12,7 +12,7 @@
             density="comfortable"
             hide-details
             clearable
-            class="search-input"
+            class="search-input input-glow"
             @update:model-value="emitFilters"
           />
         </v-col>
@@ -27,7 +27,7 @@
             density="comfortable"
             hide-details
             clearable
-            class="filter-select"
+            class="filter-select input-glow"
             @update:model-value="emitFilters"
           />
         </v-col>
@@ -41,7 +41,7 @@
             variant="outlined"
             density="comfortable"
             hide-details
-            class="filter-select"
+            class="filter-select input-glow"
             @update:model-value="emitFilters"
           />
         </v-col>
@@ -54,7 +54,7 @@
             variant="elevated"
             prepend-icon="mdi-plus"
             @click="$emit('add-project')"
-            class="add-btn"
+            class="add-btn btn-glow"
           >
             إضافة مشروع
           </v-btn>

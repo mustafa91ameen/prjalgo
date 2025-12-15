@@ -912,11 +912,7 @@ watch(categories, saveToLocalStorage, { deep: true })
 </script>
 
 
-<style>
-/* Import page styles */
-@import './styles/categories.css';
-</style>
-
 <style scoped>
-/* Component-specific overrides (if any) */
+/* Import page styles - scoped to this component only */
+@import './styles/categories.css';
 </style>

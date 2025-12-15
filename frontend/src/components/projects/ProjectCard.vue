@@ -1,6 +1,6 @@
 <template>
   <v-card
-    class="project-card"
+    class="project-card card-glow hover-lift smooth-transition"
     elevation="4"
     hover
     min-height="400"

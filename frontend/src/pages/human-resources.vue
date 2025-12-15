@@ -364,11 +364,7 @@ onMounted(() => {
 })
 </script>
 
-<style>
-/* Import page styles */
-@import './styles/human-resources.css';
-</style>
-
 <style scoped>
-/* Component-specific overrides (if any) */
+/* Import page styles - scoped to this component only */
+@import './styles/human-resources.css';
 </style>

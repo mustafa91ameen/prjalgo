@@ -241,15 +241,6 @@ const localUser = ref({
   avatar: ''
 })
 
-// Watch for user prop changes
-watch(() => props.user, (newUser) => {
-  if (newUser && Object.keys(newUser).length > 0) {
-    localUser.value = { ...newUser }
-  } else {
-    resetForm()
-  }
-}, { immediate: true, deep: true })
-
 // Options
 const roleOptions = [
   { title: 'مدير عام', value: 'admin' },
@@ -321,6 +312,15 @@ const resetForm = () => {
   formValid.value = false
   showPassword.value = false
 }
+
+// Watch for user prop changes
+watch(() => props.user, (newUser) => {
+  if (newUser && Object.keys(newUser).length > 0) {
+    localUser.value = { ...newUser }
+  } else {
+    resetForm()
+  }
+}, { immediate: true, deep: true })
 
 const closeDialog = () => {
   emit('update:modelValue', false)

@@ -105,11 +105,7 @@ p, span, div, a, button, label {
   direction: rtl;
 }
 
-/* إصلاح اتجاه الأيقونات */
-.v-icon, 
-.mdi {
-  transform: scaleX(-1);
-}
+/* Note: Icon flip for RTL is handled in App.vue */
 
 /* ========================================
    3. إعدادات العناصر التفاعلية
@@ -242,11 +238,9 @@ p, span, div, a, button, label {
 }
 
 /* توحيد ألوان الشريط الجانبي - متناسق */
+/* Note: Sidebar background colors are now set in App.vue */
 .sidebar,
-.rtl-sidebar,
-.modern-sidebar,
-.v-navigation-drawer {
-  background: var(--gradient-primary) !important;
+.rtl-sidebar {
   box-shadow: 0 0 20px var(--shadow-light) !important;
 }
 
@@ -266,8 +260,8 @@ p, span, div, a, button, label {
    ======================================== */
 
 /* رأس الشريط الجانبي - تأثيرات عصرية */
+/* Note: Sidebar header background is set in App.vue */
 .sidebar-header {
-  background: var(--gradient-primary) !important;
   border-bottom: 1px solid var(--border-light) !important;
   padding: 24px;
   position: relative;
@@ -492,10 +486,10 @@ p, span, div, a, button, label {
    7. توحيد ألوان الصفحات
    ======================================== */
 
-/* توحيد ألوان المحتوى الرئيسي - نيلي */
+/* توحيد ألوان المحتوى الرئيسي */
+/* Note: Background colors are now set in individual page styles */
 .v-main,
 .v-content {
-  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%) !important;
   min-height: 100vh;
 }
 
@@ -529,8 +523,8 @@ p, span, div, a, button, label {
 }
 
 /* تحسين التباين العام */
+/* Note: Navigation drawer background is set in App.vue */
 .v-navigation-drawer {
-  background: var(--gradient-primary) !important;
   box-shadow: 0 0 20px var(--shadow-light) !important;
 }
 

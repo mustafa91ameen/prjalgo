@@ -211,7 +211,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import SimpleDialog from '@/components/SimpleDialog.vue'
 import MaterialForm from '@/components/MaterialForm.vue'
-import ExpenseForm from '@/components/ExpenseForm.vue'
+import ExpenseForm from '@/components/WorkdayExpenseForm.vue'
 
 const router = useRouter()
 
@@ -502,11 +502,7 @@ onMounted(() => {
 })
 </script>
 
-<style>
-/* Import shared page styles */
-@import './styles/materials-expenses.css';
-</style>
-
 <style scoped>
-/* Component-specific styles (if any) */
+/* Import page styles - scoped to this component only */
+@import './styles/materials-expenses.css';
 </style>

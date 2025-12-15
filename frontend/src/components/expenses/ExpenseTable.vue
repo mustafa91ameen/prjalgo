@@ -69,14 +69,26 @@
           <v-btn
             v-if="canEdit"
             size="small"
-            color="black"
+            color="warning"
             variant="text"
             @click="$emit('edit', item)"
             icon
             class="action-btn"
             title="تعديل"
           >
-            <v-icon size="16">mdi-dots-horizontal</v-icon>
+            <v-icon size="16">mdi-pencil</v-icon>
+          </v-btn>
+          <v-btn
+            v-if="canDelete"
+            size="small"
+            color="error"
+            variant="text"
+            @click="$emit('delete', item)"
+            icon
+            class="action-btn"
+            title="حذف"
+          >
+            <v-icon size="16">mdi-delete</v-icon>
           </v-btn>
         </div>
       </template>
@@ -101,10 +113,14 @@ defineProps({
   canEdit: {
     type: Boolean,
     default: true
+  },
+  canDelete: {
+    type: Boolean,
+    default: true
   }
 })
 
-defineEmits(['view', 'edit'])
+defineEmits(['view', 'edit', 'delete'])
 
 const tableHeaders = [
   { title: 'التسلسل', key: 'serial', sortable: false, align: 'center' },
@@ -117,10 +133,6 @@ const tableHeaders = [
   { title: 'الاجراءات', key: 'actions', sortable: false, align: 'center' }
 ]
 </script>
-
-<style>
-@import './styles/expenses.css';
-</style>
 
 <style scoped>
 .data-table-card {

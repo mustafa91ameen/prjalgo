@@ -153,12 +153,31 @@ watch(() => route.path, updateActiveMenuItem, { immediate: true })
 }
 
 /* ========================================
-   السايد بار العصري
+   السايد بار العصري - Protected from page CSS leaks
    ======================================== */
-.modern-sidebar {
-  background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+.modern-sidebar,
+.v-navigation-drawer.modern-sidebar,
+.v-application .modern-sidebar,
+.v-application .v-navigation-drawer.modern-sidebar,
+body .modern-sidebar,
+body .v-navigation-drawer.modern-sidebar {
+  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%) !important;
   border-left: none !important;
-  box-shadow: -4px 0 20px rgba(5, 150, 105, 0.3) !important;
+  box-shadow: -4px 0 20px rgba(37, 99, 235, 0.3) !important;
+  color: white !important;
+}
+
+/* Protect sidebar from page-level color overrides */
+.modern-sidebar *,
+.v-navigation-drawer.modern-sidebar *,
+body .modern-sidebar * {
+  color: white !important;
+  -webkit-text-fill-color: white !important;
+}
+
+.modern-sidebar .v-icon,
+.v-navigation-drawer.modern-sidebar .v-icon {
+  color: white !important;
 }
 
 .rtl-sidebar {
@@ -167,7 +186,7 @@ watch(() => route.path, updateActiveMenuItem, { immediate: true })
 }
 
 .sidebar-header {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.1) !important;
   backdrop-filter: blur(10px);
   border-radius: 0 0 20px 20px;
   margin: -16px -16px 16px -16px;
@@ -193,11 +212,35 @@ watch(() => route.path, updateActiveMenuItem, { immediate: true })
 
 .modern-sidebar .v-list-item-title {
   font-size: 0.95rem !important;
+  color: white !important;
+  -webkit-text-fill-color: white !important;
+}
+
+/* Override page-level CSS that leaks into sidebar */
+.modern-sidebar .v-list .v-list-item,
+.modern-sidebar .v-list .v-list-item *,
+.modern-sidebar .v-list .v-list-item .v-list-item__content,
+.modern-sidebar .v-list .v-list-item .v-list-item__title,
+.modern-sidebar .v-list-item,
+.modern-sidebar .v-list-item *,
+.modern-sidebar .v-list-item .v-list-item-title {
+  color: white !important;
+  -webkit-text-fill-color: white !important;
+  text-shadow: none !important;
+  font-weight: 500 !important;
+  font-size: 0.95rem !important;
+  animation: none !important;
+}
+
+.modern-sidebar .v-list-item:hover {
+  animation: none !important;
 }
 
 .modern-sidebar p,
 .modern-sidebar span {
   font-size: 0.9rem !important;
+  color: white !important;
+  -webkit-text-fill-color: white !important;
 }
 
 .modern-sidebar .text-h5 {
@@ -212,19 +255,43 @@ watch(() => route.path, updateActiveMenuItem, { immediate: true })
   font-size: 0.75rem !important;
 }
 
-.menu-item:hover {
-  background: rgba(5, 150, 105, 0.2) !important;
+.modern-sidebar .menu-item,
+.modern-sidebar .v-list-item.menu-item,
+body .modern-sidebar .menu-item {
+  background: transparent !important;
+}
+
+.modern-sidebar .menu-item:hover,
+.modern-sidebar .v-list-item.menu-item:hover,
+body .modern-sidebar .menu-item:hover {
+  background: rgba(37, 99, 235, 0.2) !important;
+  transform: translateX(-4px);
+  animation: none !important;
+}
+
+.modern-sidebar .active-menu-item,
+.modern-sidebar .v-list-item.active-menu-item,
+body .modern-sidebar .active-menu-item {
+  background: linear-gradient(135deg, #1d4ed8 0%, #6d28d9 100%) !important;
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
   transform: translateX(-4px);
 }
 
-.active-menu-item {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-  box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4);
-  transform: translateX(-4px);
-}
-
-.active-menu-item .v-list-item-title {
+.modern-sidebar .active-menu-item .v-list-item-title,
+body .modern-sidebar .active-menu-item .v-list-item-title {
   font-weight: 600 !important;
+  color: white !important;
+}
+
+/* Protect chips/badges in sidebar */
+.modern-sidebar .v-chip,
+body .modern-sidebar .v-chip {
+  color: white !important;
+}
+
+.modern-sidebar .v-chip .v-chip__content,
+body .modern-sidebar .v-chip .v-chip__content {
+  color: white !important;
 }
 
 /* شبكة المميزات */
@@ -295,8 +362,14 @@ watch(() => route.path, updateActiveMenuItem, { immediate: true })
   text-align: right;
 }
 
-/* إصلاح اتجاه الأيقونات */
-.v-icon {
+/* إصلاح اتجاه الأيقونات الاتجاهية فقط (السهام والشيفرونات) */
+/* Note: Don't flip all icons - only directional ones need flipping for RTL */
+.v-icon.mdi-chevron-left,
+.v-icon.mdi-chevron-right,
+.v-icon.mdi-arrow-left,
+.v-icon.mdi-arrow-right,
+.v-icon.mdi-menu-left,
+.v-icon.mdi-menu-right {
   transform: scaleX(-1);
 }
 
@@ -468,5 +541,57 @@ table thead tr th {
   font-size: 1.1rem !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
   letter-spacing: 0.5px !important;
+}
+
+/* ========================================
+   Main Content Area - Ensure proper colors
+   ======================================== */
+
+/* Ensure page content has proper colors */
+.v-main .data-page,
+.v-main .project-card,
+.v-main .stat-card {
+  color: inherit;
+}
+
+/* Allow page-specific text colors to work */
+.v-main .data-page .page-content-section p,
+.v-main .data-page .page-content-section span,
+.v-main .data-page .page-content-section h1,
+.v-main .data-page .page-content-section h2,
+.v-main .data-page .page-content-section h3,
+.v-main .data-page .page-content-section h4,
+.v-main .data-page .page-content-section h5,
+.v-main .data-page .page-content-section h6 {
+  -webkit-text-fill-color: unset;
+}
+
+/* ========================================
+   Toast Notifications RTL Support
+   ======================================== */
+.Toastify__toast-container {
+  direction: rtl !important;
+  z-index: 9999 !important;
+}
+
+.Toastify__toast {
+  direction: rtl !important;
+  font-family: 'Cairo', 'Tajawal', 'Noto Sans Arabic', 'Arial', sans-serif !important;
+}
+
+.Toastify__toast-body {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+/* Position toast on left for RTL */
+.Toastify__toast-container--top-right {
+  right: auto !important;
+  left: 1em !important;
+}
+
+.Toastify__toast-container--bottom-right {
+  right: auto !important;
+  left: 1em !important;
 }
 </style>

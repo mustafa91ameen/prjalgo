@@ -229,15 +229,6 @@ const form = ref({
   category: ''
 })
 
-// Watch for project changes (when editing)
-watch(() => props.project, (newProject) => {
-  if (newProject) {
-    form.value = { ...newProject }
-  } else {
-    resetForm()
-  }
-}, { immediate: true })
-
 // Reset form to default values
 const resetForm = () => {
   form.value = {
@@ -257,6 +248,15 @@ const resetForm = () => {
     category: ''
   }
 }
+
+// Watch for project changes (when editing)
+watch(() => props.project, (newProject) => {
+  if (newProject) {
+    form.value = { ...newProject }
+  } else {
+    resetForm()
+  }
+}, { immediate: true })
 
 // Close dialog
 const closeDialog = () => {

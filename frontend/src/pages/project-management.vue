@@ -1,7 +1,7 @@
 <template>
   <v-container class="fill-height data-page" fluid>
     <div class="fullscreen-content">
-      <!-- Header Section -->
+      <!-- Header Section - Compact rectangle with animation -->
       <div class="page-header glass-effect gradient-animation">
         <span class="page-icon star-twinkle">🏗️</span>
         <h1 class="page-title text-glow fade-in">
@@ -10,59 +10,14 @@
           <span class="title-decoration"></span>
         </h1>
         <p class="page-subtitle fade-in">نظام متكامل لإدارة وتتبع جميع المشاريع والمهام الهندسية</p>
-        <div class="page-main-title">
-          <h2 class="main-title">الصفحة الرئيسية للمشاريع</h2>
-          <p class="main-subtitle">مرحباً بك في نظام إدارة المشاريع الهندسية المتقدم</p>
-        </div>
-
-        <!-- Simple Title Section -->
-        <div class="simple-title-section">
-          <div class="title-container">
-            <v-icon size="48" color="primary" class="title-icon">mdi-folder-multiple-outline</v-icon>
-            <h2 class="simple-title">قائمة المشاريع المتاحة</h2>
-            <p class="simple-subtitle">استعرض وأدر جميع مشاريعك الهندسية من مكان واحد</p>
-            <div class="title-stats-simple">
-              <span class="stat-item">{{ totalProjects }} مشروع</span>
-              <span class="stat-separator">•</span>
-              <span class="stat-item">{{ activeProjects }} نشط</span>
-              <span class="stat-separator">•</span>
-              <span class="stat-item">{{ pendingProjects }} في الانتظار</span>
-              <span class="stat-separator">•</span>
-              <span class="stat-item">{{ averageProgress }}% متوسط التقدم</span>
-            </div>
-            <div class="title-actions">
-              <v-btn
-                :color="showTeamManagement ? 'success' : 'primary'"
-                :variant="showTeamManagement ? 'elevated' : 'outlined'"
-                size="large"
-                prepend-icon="mdi-account-group"
-                @click="showTeamManagement = !showTeamManagement"
-                class="team-toggle-btn"
-              >
-                {{ showTeamManagement ? 'إخفاء إدارة الفريق' : 'إدارة الفريق' }}
-              </v-btn>
-            </div>
-          </div>
-        </div>
-
-        <!-- Team Management Component -->
-        <TeamManagement
-          :show="showTeamManagement"
-          :team-members="teamMembers"
-          :loading="teamLoading"
-          @view-member="viewTeamMember"
-          @edit-member="editTeamMember"
-          @delete-member="deleteTeamMember"
-          @add-member="addTeamMember"
-        />
-
         <div class="page-badge">
-          <v-chip color="primary" variant="elevated" size="large">
+          <v-chip color="primary" variant="elevated" size="small">
             <v-icon start>mdi-star</v-icon>
             نظام إدارة متقدم
           </v-chip>
         </div>
       </div>
+
 
       <!-- Statistics Cards Component -->
       <ProjectStats
@@ -157,7 +112,6 @@ import {
   ProjectStats,
   ProjectCard,
   ProjectForm,
-  TeamManagement,
   DeleteConfirmDialog
 } from '@/components/projects'
 
@@ -178,10 +132,6 @@ const deleteDialog = ref(false)
 const isEditing = ref(false)
 const selectedProject = ref(null)
 
-// Team Management state (will be moved to separate store later)
-const showTeamManagement = ref(false)
-const teamLoading = ref(false)
-const teamMembers = ref([])
 
 // Computed properties from projects
 const totalProjects = computed(() => projects.value.length)
@@ -263,11 +213,7 @@ const addTeamMember = (newMember) => {
 }
 </script>
 
-<style>
-/* Import page styles */
-@import './styles/project-management.css';
-</style>
-
 <style scoped>
-/* Component-specific overrides (if any) */
+/* Import page styles - scoped to this component only */
+@import './styles/project-management.css';
 </style>

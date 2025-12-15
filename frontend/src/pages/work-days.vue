@@ -827,11 +827,7 @@ watch(workDaysData, saveToLocalStorage, { deep: true })
 
 
 
-<style>
-/* Import page styles */
-@import './styles/work-days.css';
-</style>
-
 <style scoped>
-/* Component-specific overrides (if any) */
+/* Import page styles - scoped to this component only */
+@import './styles/work-days.css';
 </style>

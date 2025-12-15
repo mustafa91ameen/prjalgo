@@ -148,6 +148,18 @@ const form = ref({
   specialization: ''
 })
 
+// Reset form to default values
+const resetForm = () => {
+  form.value = {
+    name: '',
+    password: '',
+    email: '',
+    phone: '',
+    specialization: ''
+  }
+  showPassword.value = false
+}
+
 // Watch for engineer changes (when editing)
 watch(() => props.engineer, (newEngineer) => {
   if (newEngineer) {
@@ -162,18 +174,6 @@ watch(() => props.engineer, (newEngineer) => {
     resetForm()
   }
 }, { immediate: true })
-
-// Reset form to default values
-const resetForm = () => {
-  form.value = {
-    name: '',
-    password: '',
-    email: '',
-    phone: '',
-    specialization: ''
-  }
-  showPassword.value = false
-}
 
 // Close dialog
 const closeDialog = () => {
@@ -190,10 +190,6 @@ const saveEngineer = () => {
   }
 }
 </script>
-
-<style>
-@import './styles/engineers.css';
-</style>
 
 <style scoped>
 .edit-dialog-card {

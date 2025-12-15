@@ -27,7 +27,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  
+
   gap: 1.5rem;
   text-align: center;
 }
@@ -75,6 +75,12 @@
   overflow: hidden;
   margin: 0;
   max-height: 180px;
+}
+
+/* Page content section - outside the animated header */
+.page-content-section {
+  width: 100%;
+  margin-top: 1.5rem;
 }
 
 .page-header::before {
@@ -125,6 +131,32 @@
 .title-icon:hover {
   transform: scale(1.2) rotate(10deg);
   filter: drop-shadow(0 6px 12px rgba(26, 35, 126, 0.5));
+}
+
+@keyframes twinkle {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .title-text {
@@ -268,7 +300,7 @@
 }
 
 .page-icon {
-  font-size: 3.5rem !important;
+  font-size: 3.5rem;
   margin-bottom: 0.8rem;
   display: block;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
@@ -276,7 +308,7 @@
 
 /* بطاقات الإحصائيات المحسنة */
 .stat-card {
-  background: linear-gradient(145deg, #9e7272 0%, #f8fafc 100%) !important;
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
   border-radius: 16px !important;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -742,7 +774,7 @@
   color: var(--text-dark-muted);
   font-size: 0.85rem;
 }
-  
+
 .details-actions {
   padding: 2rem 2.5rem !important;
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
@@ -885,9 +917,17 @@
 
 /* تأثير النقر */
 @keyframes buttonClick {
-  0% { transform: scale(1); }
-  50% { transform: scale(0.95); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(0.95);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 .close-details-btn:active,
@@ -953,18 +993,21 @@
 
 /* زر الإضافة */
 @keyframes buttonPulse {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
-    box-shadow: 
+    box-shadow:
       0 8px 24px rgba(79, 70, 229, 0.5),
       0 4px 12px rgba(99, 102, 241, 0.4),
       0 2px 6px rgba(129, 140, 248, 0.3),
       inset 0 2px 0 rgba(255, 255, 255, 0.3),
       inset 0 -2px 0 rgba(0, 0, 0, 0.1);
   }
+
   50% {
     transform: scale(1.02);
-    box-shadow: 
+    box-shadow:
       0 10px 28px rgba(79, 70, 229, 0.6),
       0 5px 14px rgba(99, 102, 241, 0.5),
       0 3px 8px rgba(129, 140, 248, 0.4),
@@ -974,9 +1017,12 @@
 }
 
 @keyframes buttonFloat {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-3px);
   }
@@ -986,18 +1032,23 @@
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }
 }
 
 @keyframes iconBounce {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0) scale(1);
   }
+
   50% {
     transform: translateY(-2px) scale(1.1);
   }
@@ -1005,17 +1056,17 @@
 
 .add-button,
 .add-button.v-btn {
-  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #818cf8 100%) !important;
-  background-size: 200% 200% !important;
-  color: #4b5563 !important;
-  font-weight: 800 !important;
-  text-transform: none !important;
+  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #818cf8 100%);
+  background-size: 200% 200%;
+  color: #4b5563;
+  font-weight: 800;
+  text-transform: none;
   border-radius: 16px !important;
   padding: 16px 32px !important;
   font-size: 1.1rem !important;
   font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
   min-width: 200px !important;
-  box-shadow: 
+  box-shadow:
     0 8px 24px rgba(79, 70, 229, 0.5),
     0 4px 12px rgba(99, 102, 241, 0.4),
     0 2px 6px rgba(129, 140, 248, 0.3),
@@ -1044,7 +1095,7 @@
   align-items: center !important;
   justify-content: center !important;
   gap: 10px !important;
-  text-shadow: 
+  text-shadow:
     0 2px 4px rgba(0, 0, 0, 0.4),
     0 1px 2px rgba(0, 0, 0, 0.3),
     0 0 20px rgba(255, 255, 255, 0.2) !important;
@@ -1140,23 +1191,23 @@
 
 .add-button:hover,
 .add-button.v-btn:hover {
-  background: linear-gradient(135deg, #6366f1 0%, #818cf8 50%, #a5b4fc 100%) !important;
-  background-size: 200% 200% !important;
-  box-shadow: 
+  background: linear-gradient(135deg, #6366f1 0%, #818cf8 50%, #a5b4fc 100%);
+  background-size: 200% 200%;
+  box-shadow:
     0 12px 32px rgba(79, 70, 229, 0.6),
     0 6px 16px rgba(99, 102, 241, 0.5),
     0 3px 8px rgba(129, 140, 248, 0.4),
     inset 0 2px 0 rgba(255, 255, 255, 0.5),
     inset 0 -2px 0 rgba(0, 0, 0, 0.15) !important;
-  transform: translateY(-4px) scale(1.05) !important;
-  border-color: rgba(255, 255, 255, 0.6) !important;
-  animation: buttonPulse 1.5s ease-in-out infinite, buttonFloat 2s ease-in-out infinite, buttonGradient 3s ease infinite !important;
+  transform: translateY(-4px) scale(1.05);
+  border-color: rgba(255, 255, 255, 0.6);
+  animation: buttonPulse 1.5s ease-in-out infinite, buttonFloat 2s ease-in-out infinite, buttonGradient 3s ease infinite;
 }
 
 .add-button:active,
 .add-button.v-btn:active {
   transform: translateY(-2px) scale(1.02) !important;
-  box-shadow: 
+  box-shadow:
     0 6px 20px rgba(79, 70, 229, 0.5),
     0 3px 10px rgba(99, 102, 241, 0.4),
     inset 0 2px 4px rgba(0, 0, 0, 0.2) !important;
@@ -1233,57 +1284,57 @@
   .data-page {
     padding: 1rem 0.5rem;
   }
-  
+
   .fullscreen-content {
     gap: 1.5rem;
   }
-  
+
   .stats-row {
     gap: 1.5rem;
     justify-content: center;
     flex-wrap: nowrap;
     padding: 0 1.5rem;
   }
-  
+
   .stat-card {
     height: 180px;
     flex: 0 0 200px;
     width: 200px;
   }
-  
+
   .stat-card h3 {
     font-size: 1.9rem !important;
   }
-  
+
   .stat-card .stat-icon .v-icon {
     font-size: 56px !important;
     width: 56px !important;
     height: 56px !important;
   }
-  
+
   .page-title {
     font-size: 2rem !important;
     padding: 0.8rem 1.5rem;
     gap: 0.8rem;
   }
-  
+
   .title-icon {
     font-size: 2.5rem;
   }
-  
+
   .title-text {
     font-size: 2rem;
   }
-  
+
   .page-subtitle {
     font-size: 1.1rem !important;
   }
-  
+
   .page-header {
     padding: 1.5rem 1rem;
     max-height: 160px;
   }
-  
+
   .page-icon {
     font-size: 3rem !important;
   }
@@ -1293,70 +1344,70 @@
   .data-page {
     padding: 0.5rem;
   }
-  
+
   .fullscreen-content {
     gap: 1rem;
   }
-  
+
   .main-title {
     font-size: 1.8rem !important;
     padding: 0.4rem 0.8rem;
   }
-  
+
   .main-subtitle {
     font-size: 1.1rem !important;
     padding: 0.2rem 0.6rem;
   }
-  
+
   .page-main-title {
     margin: 1.5rem 0;
     padding: 1rem 1.5rem;
   }
-  
+
   .stats-row {
     gap: 1rem;
     flex-wrap: nowrap;
     justify-content: center;
     padding: 0 1rem;
   }
-  
+
   .stat-card {
     height: 160px;
     flex: 0 0 180px;
     width: 180px;
   }
-  
+
   .stat-card h3 {
     font-size: 1.7rem !important;
   }
-  
+
   .stat-card .stat-icon .v-icon {
     font-size: 52px !important;
     width: 52px !important;
     height: 52px !important;
   }
-  
+
   .page-title {
     font-size: 2.2rem !important;
   }
-  
+
   .page-subtitle {
     font-size: 1rem !important;
   }
-  
+
   .page-header {
     padding: 1.5rem 1rem;
   }
-  
+
   .page-icon {
     font-size: 3.5rem !important;
   }
-  
+
   .add-button {
     padding: 10px 20px !important;
     font-size: 1rem !important;
   }
-  
+
 }
 
 /* شاشات صغيرة جداً */
@@ -1367,39 +1418,39 @@
     justify-content: center;
     padding: 0 0.5rem;
   }
-  
+
   .stat-card {
     height: 140px;
     flex: 0 0 160px;
     width: 160px;
   }
-  
+
   .stat-card h3 {
     font-size: 1.5rem !important;
   }
-  
+
   .stat-card .stat-icon .v-icon {
     font-size: 44px !important;
     width: 44px !important;
     height: 44px !important;
   }
-  
+
   .stat-card p {
     font-size: 0.85rem !important;
   }
-  
+
   .page-title {
     font-size: 1.8rem !important;
   }
-  
+
   .page-subtitle {
     font-size: 0.9rem !important;
   }
-  
+
   .page-header {
     padding: 1rem;
   }
-  
+
   .page-icon {
     font-size: 3rem !important;
   }
@@ -1410,44 +1461,44 @@
   .data-page {
     padding: 2rem;
   }
-  
+
   .fullscreen-content {
     gap: 3rem;
   }
-  
+
   .stats-row {
     gap: 2.5rem;
     padding: 0 3rem;
   }
-  
+
   .stat-card {
     height: 220px;
     flex: 0 0 240px;
     width: 240px;
   }
-  
+
   .stat-card h3 {
     font-size: 2.4rem !important;
   }
-  
+
   .stat-card .stat-icon .v-icon {
     font-size: 68px !important;
     width: 68px !important;
     height: 68px !important;
   }
-  
+
   .page-title {
     font-size: 3.5rem !important;
   }
-  
+
   .page-subtitle {
     font-size: 1.5rem !important;
   }
-  
+
   .page-header {
     padding: 4rem 2rem;
   }
-  
+
   .page-icon {
     font-size: 6rem !important;
   }
@@ -1596,7 +1647,7 @@
 /* تفاصيل المشروع */
 .project-details {
   display: flex;
-    flex-direction: column;
+  flex-direction: column;
   gap: 0.75rem;
 }
 
@@ -1719,11 +1770,11 @@
     gap: 0;
     padding: 0;
   }
-  
+
   .stats-row .v-col {
     padding: 6px !important;
   }
-  
+
   .stat-card {
     min-height: 120px !important;
     padding: 0.8rem !important;
@@ -1734,16 +1785,16 @@
   .stats-row .v-col {
     padding: 4px !important;
   }
-  
+
   .stat-card {
     min-height: 100px !important;
     padding: 0.6rem !important;
   }
-  
+
   .stat-card h3 {
     font-size: 1.5rem !important;
   }
-  
+
   .stat-card .v-icon {
     font-size: 40px !important;
     width: 40px !important;
@@ -1755,16 +1806,16 @@
   .stats-row .v-col {
     padding: 2px !important;
   }
-  
+
   .stat-card {
     min-height: 90px !important;
     padding: 0.5rem !important;
   }
-  
+
   .stat-card h3 {
     font-size: 1.2rem !important;
   }
-  
+
   .stat-card .v-icon {
     font-size: 32px !important;
     width: 32px !important;
@@ -1776,15 +1827,15 @@
   .project-card-title {
     padding: 1rem !important;
   }
-  
+
   .project-card-content {
     padding: 1rem !important;
   }
-  
+
   .project-card-actions {
     padding: 0.75rem 1rem !important;
   }
-  
+
   .project-name {
     font-size: 1rem !important;
   }
@@ -1795,26 +1846,26 @@
     flex-wrap: wrap;
     gap: 1rem;
   }
-  
+
   .detail-item {
     padding: 0.4rem;
   }
-  
+
   .detail-text {
     font-size: 0.8rem !important;
   }
-  
+
   .page-title {
     font-size: 1.8rem !important;
     padding: 0.6rem 1rem;
     gap: 0.6rem;
     flex-direction: column;
   }
-  
+
   .title-icon {
     font-size: 2rem;
   }
-  
+
   .title-text {
     font-size: 1.8rem;
   }
@@ -1868,7 +1919,7 @@
 
 .project-details {
   display: flex;
-    flex-direction: column;
+  flex-direction: column;
   gap: 0.75rem;
   margin-bottom: 1rem;
 }
@@ -1931,19 +1982,19 @@
   .project-card {
     min-height: 350px !important;
   }
-  
+
   .project-card-title {
     padding: 1rem !important;
   }
-  
+
   .project-card-content {
     padding: 1rem !important;
   }
-  
+
   .project-card-actions {
     padding: 0.75rem 1rem 1rem 1rem !important;
   }
-  
+
   .project-name {
     font-size: 1.1rem !important;
   }
@@ -2417,7 +2468,7 @@
   right: 0 !important;
   bottom: 0 !important;
   background: radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-              radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%) !important;
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%) !important;
   pointer-events: none !important;
 }
 
@@ -2769,24 +2820,51 @@
 
 /* الرسوم المتحركة */
 @keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 @keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 @keyframes glow {
-  0% { opacity: 0.5; transform: scale(1); }
-  100% { opacity: 0.8; transform: scale(1.1); }
+  0% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 @keyframes fadeInUp {
@@ -2794,6 +2872,7 @@
     opacity: 0;
     transform: translateY(30px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
@@ -2801,12 +2880,19 @@
 }
 
 @keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
+
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
     transform: translateY(0);
   }
+
   40% {
     transform: translateY(-10px);
   }
+
   60% {
     transform: translateY(-5px);
   }
@@ -2817,35 +2903,35 @@
   .ultra-dialog-header {
     padding: 2rem 1rem !important;
   }
-  
+
   .header-content {
     flex-direction: column !important;
     text-align: center !important;
     gap: 1rem !important;
   }
-  
+
   .ultra-dialog-title {
     font-size: 2rem !important;
   }
-  
+
   .ultra-form-container {
     padding: 1rem !important;
   }
-  
+
   .ultra-form-section {
     padding: 1.5rem !important;
   }
-  
+
   .ultra-form-grid {
     grid-template-columns: 1fr !important;
     gap: 1.5rem !important;
   }
-  
+
   .footer-content {
     flex-direction: column !important;
     gap: 1rem !important;
   }
-  
+
   .ultra-cancel-btn,
   .ultra-save-btn {
     width: 100% !important;
@@ -2886,7 +2972,7 @@
   right: 0 !important;
   bottom: 0 !important;
   background: radial-gradient(circle at 30% 70%, rgba(255, 255, 255, 0.15) 0%, transparent 60%),
-              radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 60%) !important;
+    radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 60%) !important;
   pointer-events: none !important;
 }
 
@@ -3375,19 +3461,39 @@
 
 /* الرسوم المتحركة الجديدة */
 @keyframes newGradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 @keyframes newShimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 @keyframes newPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.08); }
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.08);
+  }
 }
 
 /* ========================================
@@ -3423,7 +3529,7 @@
   right: 0 !important;
   bottom: 0 !important;
   background: radial-gradient(circle at 25% 75%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-              radial-gradient(circle at 75% 25%, rgba(255, 255, 255, 0.08) 0%, transparent 50%) !important;
+    radial-gradient(circle at 75% 25%, rgba(255, 255, 255, 0.08) 0%, transparent 50%) !important;
   pointer-events: none !important;
 }
 
@@ -3694,14 +3800,29 @@
 
 /* الرسوم المتحركة الجديدة */
 @keyframes superGradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 @keyframes superPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 /* CSS قوي جداً لضمان ظهور النص المكتوب */
@@ -3923,7 +4044,7 @@
   font-size: 0.75rem !important;
   font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
   min-width: 100px !important;
-  box-shadow: 
+  box-shadow:
     0 4px 16px rgba(0, 0, 0, 0.08),
     0 2px 8px rgba(156, 163, 175, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
@@ -3962,7 +4083,7 @@
   border-color: rgba(156, 163, 175, 0.5) !important;
   color: #374151 !important;
   transform: translateY(-2px) scale(1.02) !important;
-  box-shadow: 
+  box-shadow:
     0 6px 20px rgba(0, 0, 0, 0.12),
     0 3px 10px rgba(156, 163, 175, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 1) !important;
@@ -3979,7 +4100,7 @@
   font-size: 0.75rem !important;
   font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
   min-width: 140px !important;
-  box-shadow: 
+  box-shadow:
     0 4px 16px rgba(59, 130, 246, 0.4),
     0 2px 8px rgba(37, 99, 235, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
@@ -4022,7 +4143,7 @@
 .save-btn:hover,
 .save-btn.v-btn:hover {
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) !important;
-  box-shadow: 
+  box-shadow:
     0 8px 24px rgba(59, 130, 246, 0.5),
     0 4px 12px rgba(37, 99, 235, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
@@ -4930,7 +5051,7 @@
   z-index: 1;
 }
 
-.expense-table .v-data-table__th > * {
+.expense-table .v-data-table__th>* {
   position: relative;
   z-index: 3;
 }
@@ -4946,9 +5067,11 @@
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }
@@ -5240,7 +5363,9 @@
   letter-spacing: 0.3px !important;
   opacity: 1 !important;
 }
+
 الل
+
 /* CSS أكثر تحديداً لأسماء الحقول */
 .modern-search-field .v-field__outline .v-field__outline__start,
 .modern-search-field .v-field__outline .v-field__outline__end,
@@ -5428,23 +5553,51 @@
 
 /* Animations */
 @keyframes modernPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
 }
 
 @keyframes modernGlow {
-  0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
-  50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.2); }
+
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  50% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
 }
 
 @keyframes modernShimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 @keyframes modernBounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 /* Search and Filter Fields - General */
@@ -5650,7 +5803,7 @@
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6) !important;
     background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%) !important;
   }
-  
+
   .expense-table .v-data-table__th .v-data-table-header__content {
     font-size: 0.9rem !important;
     font-weight: 900 !important;
@@ -5665,7 +5818,7 @@
     font-weight: 900 !important;
     letter-spacing: 0.2px !important;
   }
-  
+
   .expense-table .v-data-table__th .v-data-table-header__content {
     font-size: 0.8rem !important;
     font-weight: 900 !important;
@@ -5682,11 +5835,13 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
+
 .v-dialog .v-card {
   box-shadow: 0 20px 40px rgba(30, 58, 138, 0.2) !important;
   border-radius: 12px !important;
@@ -5813,73 +5968,73 @@
   .form-sections {
     gap: 1.5rem;
   }
-  
+
   .form-section {
     padding: 1rem;
   }
-  
+
   .section-title {
     font-size: 1rem !important;
     margin-bottom: 1rem !important;
   }
-  
+
   .project-dialog-body {
     padding: 1rem !important;
   }
-  
+
   .project-dialog-actions {
     padding: 1rem !important;
   }
-  
+
   .modern-dialog-header {
     padding: 1.5rem !important;
   }
-  
+
   .header-content {
     flex-direction: column;
     text-align: center;
     gap: 0.75rem;
   }
-  
+
   .header-icon {
     width: 48px;
     height: 48px;
   }
-  
+
   .dialog-main-title {
     font-size: 1.25rem !important;
   }
-  
+
   .modern-dialog-actions {
     flex-direction: column;
     gap: 1rem;
     padding: 1rem !important;
   }
-  
+
   .actions-buttons {
     width: 100%;
     justify-content: center;
   }
-  
+
   .modern-cancel-btn,
   .modern-save-btn {
     flex: 1;
     min-width: auto !important;
   }
-  
+
   .ultra-form-row {
     flex-direction: column;
     gap: 0;
   }
-  
+
   .ultra-modern-header {
     padding: 1rem 1.5rem !important;
   }
-  
+
   .ultra-modern-actions {
     padding: 1rem 1.5rem !important;
   }
-  
+
   .compact-dialog-body {
     padding: 1rem !important;
   }
@@ -5989,9 +6144,12 @@
 
 /* Animations */
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.05);
   }
@@ -6002,20 +6160,20 @@
   .simple-title {
     font-size: 1.8rem !important;
   }
-  
+
   .simple-subtitle {
     font-size: 1rem !important;
   }
-  
+
   .title-stats-simple {
     gap: 0.5rem;
   }
-  
+
   .stat-item {
     font-size: 0.8rem;
     padding: 6px 12px;
   }
-  
+
   .simple-title-section {
     padding: 1.5rem 1rem;
   }
@@ -6085,7 +6243,7 @@
   .title-actions {
     margin-top: 1.5rem;
   }
-  
+
   .team-toggle-btn {
     width: 100%;
     max-width: 300px;
@@ -6104,6 +6262,7 @@
     opacity: 0;
     transform: translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -6236,20 +6395,20 @@
   .team-management-section {
     margin: 1rem 0;
   }
-  
+
   .team-section-header {
     padding: 1rem;
   }
-  
+
   .team-stats-row .v-col {
     margin-bottom: 1rem;
   }
-  
+
   .action-buttons {
     flex-direction: column;
     gap: 0.125rem;
   }
-  
+
   .member-info {
     text-align: center;
   }

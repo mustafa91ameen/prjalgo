@@ -430,15 +430,6 @@ const departments = [
   { title: 'الدعم الفني', value: 'الدعم الفني' }
 ]
 
-watch(() => props.employee, (newEmployee) => {
-  if (newEmployee) {
-    form.value = { ...newEmployee }
-  } else {
-    resetForm()
-  }
-  formTab.value = 'personal'
-}, { immediate: true })
-
 const resetForm = () => {
   form.value = {
     name: '',
@@ -467,6 +458,15 @@ const resetForm = () => {
   }
   formTab.value = 'personal'
 }
+
+watch(() => props.employee, (newEmployee) => {
+  if (newEmployee) {
+    form.value = { ...newEmployee }
+  } else {
+    resetForm()
+  }
+  formTab.value = 'personal'
+}, { immediate: true })
 
 const closeDialog = () => {
   dialogModel.value = false

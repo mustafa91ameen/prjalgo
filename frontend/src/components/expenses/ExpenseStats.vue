@@ -74,10 +74,6 @@ const formattedTotalCost = computed(() => {
 })
 </script>
 
-<style>
-@import './styles/expenses.css';
-</style>
-
 <style scoped>
 .stat-card {
   position: relative;

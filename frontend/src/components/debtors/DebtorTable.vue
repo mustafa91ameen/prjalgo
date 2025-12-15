@@ -10,7 +10,7 @@
       </div>
       <div class="d-flex align-center gap-2">
         <v-btn
-          v-if="canAdd"
+          v-if="canWrite"
           color="primary"
           size="default"
           prepend-icon="mdi-plus"
@@ -45,7 +45,7 @@
     >
       <!-- Name Column -->
       <template v-slot:item.name="{ item }">
-        <div class="d-flex align-center" style="cursor: pointer;" @click="$emit('view-debts', item)">
+        <div class="d-flex align-center" style="cursor: pointer;" @click="$emit('view-payments', item)">
           <v-avatar
             :color="getStatusColor(item.status)"
             size="32"
@@ -108,14 +108,14 @@
             @click="$emit('view', item)"
           />
           <v-btn
-            v-if="canEdit"
+            v-if="canWrite"
             icon="mdi-pencil"
             size="small"
             variant="text"
             @click="$emit('edit', item)"
           />
           <v-btn
-            v-if="canEdit && item.status !== 'paid'"
+            v-if="canWrite && item.status !== 'paid'"
             icon="mdi-credit-card"
             size="small"
             variant="text"
@@ -146,11 +146,7 @@ defineProps({
     type: Boolean,
     default: false
   },
-  canAdd: {
-    type: Boolean,
-    default: true
-  },
-  canEdit: {
+  canWrite: {
     type: Boolean,
     default: true
   },
@@ -160,7 +156,7 @@ defineProps({
   }
 })
 
-defineEmits(['add', 'view', 'edit', 'delete', 'mark-paid', 'view-debts', 'refresh', 'export'])
+defineEmits(['add', 'view', 'edit', 'delete', 'mark-paid', 'view-payments', 'refresh', 'export'])
 
 const tableHeaders = [
   { title: 'المديون', key: 'name', sortable: true },
