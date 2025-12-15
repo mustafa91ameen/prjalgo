@@ -1,0 +1,79 @@
+/**
+ * Expenses Components Styles
+ * Shared styles for expense components
+ */
+
+/* Card glow effect */
+.card-glow {
+  position: relative;
+  border-radius: 24px !important;
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-glow:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Smooth transitions */
+.smooth-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hover lift effect */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-8px);
+}
+
+/* Full width stats row */
+.full-width {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Icon glow */
+.icon-glow .v-icon {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+/* Data table styles */
+.data-table-card {
+  border-radius: 16px !important;
+  overflow: hidden;
+}
+
+/* Indigo title */
+.indigo-title {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
+  color: white !important;
+  font-weight: 700;
+}
+
+/* Form field */
+.form-field .v-field {
+  border-radius: 12px !important;
+}
+
+/* Project table */
+.project-table {
+  font-size: 0.95rem;
+}
+
+.project-table th {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
+  color: white !important;
+  font-weight: 700 !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .stats-row > .v-col {
+    margin-bottom: 1rem;
+  }
+}

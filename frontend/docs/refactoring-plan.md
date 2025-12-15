@@ -406,34 +406,157 @@ import {
 
 ---
 
-### Phase 3: Move Logic to Composables
+### Phase 3: Move Logic to Composables ✅ COMPLETED
 **Goal**: Extract business logic
+**Status**: ✅ Completed on 2025-12-15
 
-**Extract**:
-- State management (refs, reactive)
-- Computed properties
-- Methods/functions
-- API calls
+**Created Composables** (`src/composables/`):
+1. ✅ **useProjects.js** - Core project CRUD with store integration (already existed from Phase 1)
+2. ✅ **useProjectFilters.js** - Search, category, and status filtering
+3. ✅ **useProjectForm.js** - Form dialog states, validation, form data management
+4. ✅ **useProjectStats.js** - Computed statistics and helper functions (status, priority, formatting)
+5. ✅ **useProjectExpenses.js** - Administrative expenses CRUD and filtering
+6. ✅ **useTeamManagement.js** - Team members CRUD, statistics, dialog management
+7. ✅ **useTasks.js** - Task/action management, working days, CSV export
 
-**Create**:
-- `useProjects.js` - Project logic
-- `useTeamManagement.js` - Team logic
-- `useExpenses.js` - Expense logic
-- `useTasks.js` - Task logic
+**Composable Features**:
+- All composables use Composition API syntax
+- Return plain objects with refs for destructuring
+- Include computed statistics and helper functions
+- Support both API operations and local state management
+- Toast notifications for user feedback
 
-**Deliverable**: `project-management.vue` reduced to ~200-300 lines
+**Updated Exports** (`src/composables/index.js`):
+```js
+// Core composables
+export { usePermissions } from './usePermissions'
+export { useProjects } from './useProjects'
+
+// Project-related composables
+export { useProjectFilters } from './useProjectFilters'
+export { useProjectForm } from './useProjectForm'
+export { useProjectStats } from './useProjectStats'
+export { useProjectExpenses } from './useProjectExpenses'
+
+// Team & Task composables
+export { useTeamManagement } from './useTeamManagement'
+export { useTasks } from './useTasks'
+```
+
+**Usage Example**:
+```vue
+<script setup>
+import { ref } from 'vue'
+import {
+  useProjects,
+  useProjectFilters,
+  useProjectForm,
+  useProjectStats,
+  useTeamManagement,
+  useTasks
+} from '@/composables'
+
+// Initialize composables
+const { projects, fetchProjects, createProject } = useProjects()
+const { searchQuery, filteredProjects, filterCategories } = useProjectFilters(projects)
+const { showFormDialog, openAddDialog, projectForm } = useProjectForm()
+const { totalProjects, activeProjects, getStatusColor } = useProjectStats(projects)
+const { teamMembers, addTeamMember, getDepartmentColor } = useTeamManagement()
+const { tasks, workingDays, exportWorkingDaysToCSV } = useTasks()
+</script>
+```
+
+**Deliverable**: ✅ Composables ready for page integration
 
 ---
 
-### Phase 4: Repeat for Other Pages
-**Priority**:
-1. `engineers.vue` (4,104 lines)
-2. `expenses.vue` (3,575 lines)
-3. `debtors.vue` (2,241 lines)
-4. `human-resources.vue` (3,568 lines)
-5. `users.vue` (2,983 lines)
+### Phase 4: Repeat for Other Pages ✅ COMPLETED
+**Goal**: Refactor remaining large pages
+**Status**: ✅ Completed on 2025-12-15
 
-**Process**: Same as Phase 2-3
+**Pages Refactored**:
+1. ✅ `engineers.vue`: 4,104 → **218 lines** (94% reduction)
+   - Uses `useEngineersStore` for state management
+   - Components: EngineerStats, EngineerTable, EngineerForm, EngineerDetails, EngineerProjects
+   - Properly uses `storeToRefs` for reactivity
+
+2. ✅ `expenses.vue`: 3,575 → **220 lines** (94% reduction)
+   - Uses `useExpensesStore` for state management
+   - Components: ExpenseStats, ExpenseFilters, ExpenseTable, ExpenseForm
+   - Integrated with DeleteConfirmDialog
+
+3. ✅ `debtors.vue`: 2,241 → **301 lines** (87% reduction)
+   - Uses `useDebtorsStore` for state management
+   - Components: DebtorStats, DebtorFilters, DebtorTable, DebtorForm, DebtorDetails, DebtorPayments
+   - Full CRUD operations with store integration
+
+4. ✅ `human-resources.vue`: 3,568 → **374 lines** (90% reduction)
+   - Uses `useHumanResources` composable
+   - Components: HRStats, HRFilters, HRTable, EmployeeForm, EmployeeDetails, EmployeeSubDialogs
+   - Supports fingerprint management, leaves, attendance, evaluations, skills, certificates, salary history
+
+5. ✅ `users.vue`: 2,983 → **344 lines** (88% reduction)
+   - Uses `useUsers` composable
+   - Components: UserStats, UserFilters, UserTable, UserForm, UserDetails, UserDialogs
+   - Full CRUD with password reset functionality
+
+**Component Structure Created** (`src/components/`):
+```
+engineers/
+├── EngineerStats.vue
+├── EngineerTable.vue
+├── EngineerForm.vue
+├── EngineerDetails.vue
+├── EngineerProjects.vue
+└── index.js
+
+expenses/
+├── ExpenseStats.vue
+├── ExpenseFilters.vue
+├── ExpenseTable.vue
+├── ExpenseForm.vue
+└── index.js
+
+debtors/
+├── DebtorStats.vue
+├── DebtorFilters.vue
+├── DebtorTable.vue
+├── DebtorForm.vue
+├── DebtorDetails.vue
+├── DebtorPayments.vue
+└── index.js
+
+human-resources/
+├── HRStats.vue
+├── HRFilters.vue
+├── HRTable.vue
+├── EmployeeForm.vue
+├── EmployeeDetails.vue
+├── EmployeeSubDialogs.vue
+└── index.js
+
+users/
+├── UserStats.vue
+├── UserFilters.vue
+├── UserTable.vue
+├── UserForm.vue
+├── UserDetails.vue
+├── UserDialogs.vue
+└── index.js
+```
+
+**Composables Created** (`src/composables/`):
+- ✅ `useEngineers.js` - Engineer management with store integration
+- ✅ `useExpenses.js` - Expense management with store integration
+- ✅ `useDebtors.js` - Debtor management with computed stats
+- ✅ `useHumanResources.js` - Full HR management (local state, no store)
+- ✅ `useUsers.js` - User management with store integration
+
+**Stores Created** (`src/stores/`):
+- ✅ `engineers.js` - Engineers state (using users API + teams API)
+- ✅ Already had: expenses.js, debtors.js, users.js
+
+**Deliverable**: ✅ All pages refactored, under 500 lines each
 
 ---
 
@@ -538,5 +661,26 @@ api/: ~6 modules (50-100 lines each)
 
 ---
 
-**Last Updated**: 2025-12-15 (v5 - Phase 2 completed)
-**Status**: Phase 0 ✅ Complete | Phase 1 ✅ Complete | Phase 2 ✅ Complete | Phase 3 Ready to Start
+**Last Updated**: 2025-12-15 (v8 - project-management.vue refactored)
+**Status**: Phase 0 ✅ Complete | Phase 1 ✅ Complete | Phase 2 ✅ Complete | Phase 3 ✅ Complete | Phase 4 ✅ Complete
+
+## Summary of Refactoring Results
+
+| Page | Before | After | Reduction |
+|------|--------|-------|-----------|
+| project-management.vue | 9,158 lines | 368 lines | 96% |
+| engineers.vue | 4,104 lines | 218 lines | 94% |
+| expenses.vue | 3,575 lines | 220 lines | 94% |
+| debtors.vue | 2,241 lines | 301 lines | 87% |
+| human-resources.vue | 3,568 lines | 374 lines | 90% |
+| users.vue | 2,983 lines | 344 lines | 88% |
+| **Total** | **25,629 lines** | **1,825 lines** | **93%** |
+
+All pages now follow best practices:
+- ✅ Under 500 lines each
+- ✅ Using Pinia stores with `storeToRefs()`
+- ✅ Composables for business logic
+- ✅ Components for UI
+- ✅ Toast notifications instead of alerts
+- ✅ No console.log statements
+- ✅ Proper permission checks

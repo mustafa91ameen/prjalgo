@@ -1,0 +1,279 @@
+/* Human Resources Component Styles */
+
+/* Stats Cards */
+.stats-row {
+  width: 100%;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.stat-card {
+  position: relative;
+  border-radius: 24px !important;
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  border-radius: 24px 24px 0 0;
+}
+
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12) !important;
+}
+
+.stat-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon-glow .v-icon {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+.stat-number {
+  font-size: 2rem;
+}
+
+/* Average Salary Specific Styles */
+.average-salary-icon .v-icon {
+  color: #7c3aed !important;
+}
+
+.average-salary-value {
+  color: #7c3aed !important;
+}
+
+.average-salary-label {
+  color: #7c3aed !important;
+}
+
+/* Table Card */
+.data-table-card {
+  border-radius: 24px !important;
+  overflow: hidden;
+}
+
+.table-title {
+  padding: 16px 24px !important;
+}
+
+.indigo-title {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) !important;
+}
+
+.title-text {
+  color: white !important;
+  font-weight: 600;
+}
+
+/* Search & Filter Styles */
+.search-card {
+  border-radius: 20px !important;
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.search-field {
+  max-width: 500px;
+}
+
+/* Button Styles */
+.search-btn {
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+}
+
+.add-expense-btn {
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+
+.action-btn {
+  border-radius: 8px !important;
+}
+
+/* Table Text Styles */
+.project-name {
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.date-text {
+  color: #64748b;
+}
+
+.cost-text {
+  font-weight: 600;
+  color: #0d9488;
+}
+
+.serial-number {
+  font-weight: 600;
+  color: #64748b;
+}
+
+/* Chips */
+.category-chip {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
+  color: #1e40af !important;
+}
+
+.status-chip {
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%) !important;
+  color: #166534 !important;
+}
+
+/* Dialog Styles */
+.image-style-dialog {
+  border-radius: 20px !important;
+  overflow: hidden !important;
+}
+
+.details-dialog {
+  border-radius: 20px !important;
+  overflow: hidden !important;
+}
+
+/* Form Fields */
+.form-field {
+  margin-bottom: 8px;
+}
+
+/* Fingerprint Styles */
+.fingerprint-card {
+  border-radius: 16px !important;
+  border: 2px dashed #e2e8f0;
+}
+
+.fingerprint-title {
+  background: #f8fafc;
+  font-size: 1rem;
+}
+
+.fingerprint-chip {
+  width: 100%;
+  justify-content: center;
+}
+
+.fingerprint-registered {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+  color: white !important;
+}
+
+.fingerprint-pending {
+  background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%) !important;
+  color: white !important;
+}
+
+.fingerprint-btn {
+  border-radius: 12px !important;
+}
+
+.fingerprint-delete-btn {
+  border-radius: 12px !important;
+}
+
+.fingerprint-hint {
+  text-align: center;
+}
+
+/* Info Cards */
+.info-card {
+  border-radius: 16px !important;
+}
+
+.info-card-title {
+  background: #f8fafc;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.info-value {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+/* Section Titles */
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* Details Table */
+.details-table {
+  border-radius: 12px !important;
+}
+
+/* Rating Display */
+.rating-display {
+  display: flex;
+  align-items: center;
+}
+
+/* Certificate Item */
+.certificate-item {
+  padding: 12px;
+  border-radius: 8px;
+  background: #f8fafc;
+  margin-bottom: 8px;
+}
+
+/* Smooth Transitions */
+.smooth-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Card Glow Effect */
+.card-glow {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.card-glow:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* Black List for Dropdowns */
+.black-list .v-list-item-title {
+  color: #000000 !important;
+}

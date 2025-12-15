@@ -1,0 +1,279 @@
+/**
+ * Users Components Styles
+ * Extracted from users.vue for component-level styling
+ */
+
+/* Stats Container */
+.stats-container {
+  padding: 0 2rem;
+  margin-top: 1.5rem;
+}
+
+/* Filters Card */
+.filters-card {
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(67, 56, 202, 0.2);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  padding: 8px;
+}
+
+.filters-card .v-card-text {
+  background: transparent !important;
+  padding: 16px !important;
+}
+
+.filters-card .v-select,
+.filters-card .v-text-field {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-radius: 12px !important;
+}
+
+.filters-card .v-select .v-field__outline,
+.filters-card .v-text-field .v-field__outline {
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  border-width: 2px !important;
+}
+
+.filters-card .v-select .v-label,
+.filters-card .v-text-field .v-label {
+  color: rgba(255, 255, 255, 0.95) !important;
+  font-weight: 700 !important;
+}
+
+.filters-card .v-select .v-field__input,
+.filters-card .v-text-field .v-field__input {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+.filters-card .v-btn {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.3) 100%) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border: 2px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.filters-card .v-btn:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.4) 100%) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Users Table */
+.users-table {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+  background: #ffffff !important;
+  position: relative;
+  transition: all 0.4s ease;
+}
+
+.users-table .v-card-title {
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3) !important;
+  padding: 1.5rem !important;
+  position: relative !important;
+  color: #ffffff !important;
+}
+
+.users-table .v-card-title * {
+  color: #ffffff !important;
+}
+
+.users-table .v-card-title span {
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Action Buttons */
+.view-btn,
+.v-btn[data-action="view"] {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4) !important;
+  border: none !important;
+  margin: 0 2px;
+}
+
+.edit-btn,
+.v-btn[data-action="edit"] {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4) !important;
+  border: none !important;
+  margin: 0 2px;
+}
+
+.reset-btn,
+.v-btn[data-action="reset"] {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4) !important;
+  border: none !important;
+  margin: 0 2px;
+}
+
+.delete-btn,
+.v-btn[data-action="delete"] {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4) !important;
+  border: none !important;
+  margin: 0 2px;
+}
+
+/* Action Button Hover Effects */
+.view-btn:hover,
+.v-btn[data-action="view"]:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6) !important;
+}
+
+.edit-btn:hover,
+.v-btn[data-action="edit"]:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6) !important;
+}
+
+.reset-btn:hover,
+.v-btn[data-action="reset"]:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.6) !important;
+}
+
+.delete-btn:hover,
+.v-btn[data-action="delete"]:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.6) !important;
+}
+
+/* Dialog Styles */
+.dialog-header {
+  background: linear-gradient(135deg, rgba(71, 85, 105, 0.9) 0%, rgba(51, 65, 85, 0.8) 100%) !important;
+  color: #ffffff !important;
+  border-radius: 20px 20px 0 0 !important;
+  padding: 1.5rem 2rem !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dialog-title {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.dialog-title h2 {
+  color: white;
+  margin: 0;
+  font-weight: 700;
+}
+
+.close-btn {
+  color: white !important;
+}
+
+.dialog-content {
+  padding: 30px 24px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+}
+
+.dialog-actions {
+  padding: 20px 24px;
+  background: linear-gradient(135deg, rgba(71, 72, 135, 0.8) 0%, rgba(76, 86, 194, 0.7) 100%);
+  border-top: 2px solid rgba(210, 0, 171, 0.3);
+}
+
+/* Add User Dialog */
+.add-user-dialog {
+  background: linear-gradient(135deg, rgba(209, 155, 180, 0.95) 0%, rgba(67, 74, 178, 0.9) 100%);
+  backdrop-filter: blur(15px);
+  border: 2px solid rgba(210, 0, 171, 0.2);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.user-avatar-upload {
+  border: 3px solid rgba(219, 15, 172, 0.5);
+  box-shadow: 0 8px 25px rgba(219, 15, 172, 0.3);
+  transition: all 0.3s ease;
+}
+
+.user-avatar-upload:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 35px rgba(219, 15, 172, 0.5);
+}
+
+/* View User Dialog */
+.view-user-dialog .v-card,
+.edit-user-dialog .v-card,
+.reset-password-dialog .v-card,
+.delete-confirm-dialog .v-card {
+  background: linear-gradient(135deg, rgba(248, 250, 252, 0.98) 0%, rgba(241, 245, 249, 0.95) 100%) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.view-user-dialog .v-list-item-title,
+.view-user-dialog .v-list-item-subtitle {
+  color: #1a1a1a !important;
+}
+
+/* Form Field Styles */
+.add-user-dialog .v-text-field .v-field,
+.add-user-dialog .v-select .v-field,
+.add-user-dialog .v-textarea .v-field {
+  background: rgba(124, 93, 196, 0.9);
+  border-radius: 12px;
+  border: 1px solid rgba(219, 15, 172, 0.2);
+  transition: all 0.3s ease;
+}
+
+.add-user-dialog .v-text-field .v-field:hover,
+.add-user-dialog .v-select .v-field:hover,
+.add-user-dialog .v-textarea .v-field:hover {
+  border-color: rgba(219, 15, 172, 0.4);
+  box-shadow: 0 4px 15px rgba(219, 15, 172, 0.1);
+}
+
+/* Dropdown Labels */
+.add-user-dialog .v-label,
+.add-user-dialog .v-field__label {
+  color: #000000 !important;
+  font-weight: 800 !important;
+  font-size: 1rem !important;
+  opacity: 1 !important;
+  background: white !important;
+  padding: 0 8px !important;
+}
+
+/* Dropdown Select Styles */
+.black-dropdown-select :deep(.v-menu__content),
+.black-dropdown-select :deep(.v-overlay__content) {
+  background: white !important;
+  border: 2px solid #1a1a1a !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.black-dropdown-select :deep(.v-list-item) {
+  color: #000000 !important;
+  font-weight: 600 !important;
+  background: white !important;
+}
+
+.black-dropdown-select :deep(.v-list-item:hover) {
+  background: #f5f5f5 !important;
+}
+
+.black-dropdown-select :deep(.v-list-item--active) {
+  background: #1a1a1a !important;
+  color: white !important;
+}

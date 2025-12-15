@@ -1,0 +1,169 @@
+/**
+ * Engineers Components Styles
+ * Shared styles for engineer components
+ */
+
+/* Card glow effect */
+.card-glow {
+  position: relative;
+  border-radius: 24px !important;
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-glow:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Smooth transitions */
+.smooth-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hover lift effect */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-8px);
+}
+
+/* Button glow */
+.btn-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-glow:hover {
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4) !important;
+}
+
+/* Icon glow */
+.icon-glow {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+/* Light sweep animation */
+.light-sweep::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.light-sweep:hover::before {
+  left: 100%;
+}
+
+/* Data table card */
+.data-table-card {
+  border-radius: 24px !important;
+  overflow: hidden;
+}
+
+/* Form field enhanced */
+.form-field-enhanced {
+  border-radius: 12px !important;
+}
+
+.form-field-enhanced .v-field {
+  border-radius: 12px !important;
+}
+
+/* Dialog styles */
+.dialog-header {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
+  padding: 1.25rem 1.5rem;
+}
+
+.dialog-body {
+  padding: 1.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: #f8fafc;
+  border-top: 1px solid #e5e7eb;
+}
+
+.header-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+}
+
+/* Field groups */
+.field-group {
+  margin-bottom: 1rem;
+}
+
+.field-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+/* Custom input styling */
+.custom-input {
+  border-radius: 12px !important;
+}
+
+.custom-input .v-field {
+  border-radius: 12px !important;
+}
+
+/* Cancel button */
+.cancel-btn {
+  border-radius: 12px !important;
+  color: #6b7280 !important;
+}
+
+.cancel-btn:hover {
+  background: #f3f4f6 !important;
+}
+
+/* Save button */
+.save-btn {
+  border-radius: 12px !important;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+.save-btn:hover {
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4) !important;
+}
+
+/* Search field */
+.search-field-enhanced {
+  max-width: 500px;
+}
+
+.search-field-enhanced .v-field {
+  border-radius: 16px !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dialog-body {
+    max-height: 50vh;
+  }
+
+  .search-field-enhanced {
+    max-width: 100%;
+  }
+}
