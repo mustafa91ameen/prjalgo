@@ -98,17 +98,17 @@ defineEmits(['update:searchQuery', 'update:statusFilter', 'update:amountFilter',
 
 <style scoped>
 .search-filter-card {
-  border-radius: 16px !important;
+  border-radius: var(--radius-2xl) !important;
   background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
 }
 
 .search-field,
 .filter-field {
-  border-radius: 12px !important;
+  border-radius: var(--radius-xl) !important;
 }
 
 .reset-button {
-  height: 56px !important;
-  border-radius: 12px !important;
+  height: var(--space-14) !important;
+  border-radius: var(--radius-xl) !important;
 }
 </style>

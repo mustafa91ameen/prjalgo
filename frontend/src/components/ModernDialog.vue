@@ -138,8 +138,8 @@ const saveAction = () => {
 .close-header-btn {
   padding: 0.25rem !important;
   min-width: auto !important;
-  width: 32px !important;
-  height: 32px !important;
+  width: var(--space-8) !important;
+  height: var(--space-8) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -150,22 +150,22 @@ const saveAction = () => {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 16px;
+  gap: var(--space-4);
   padding: 1.25rem 1.5rem !important;
   background: #f8f9fa !important;
-  border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
+  border-top: var(--space-px) solid rgba(0, 0, 0, 0.05) !important;
 }
 
 .save-btn-dialog {
   font-weight: 700 !important;
   text-transform: none !important;
-  border-radius: 14px !important;
-  padding: 14px 32px !important;
+  border-radius: var(--radius-xl) !important;
+  padding: var(--space-3-5) 32px !important;
   background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
   color: #ffffff !important;
   font-size: var(--font-size-base) !important;
   font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  min-width: 140px !important;
+  min-width: var(--space-36) !important;
   box-shadow: 
     0 6px 20px rgba(59, 130, 246, 0.4),
     0 3px 10px rgba(37, 99, 235, 0.3),
@@ -180,12 +180,12 @@ const saveAction = () => {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  gap: 10px;
+  gap: var(--space-2-5);
 }
 
 .save-btn-dialog svg {
-  width: 20px !important;
-  height: 20px !important;
+  width: var(--space-5) !important;
+  height: var(--space-5) !important;
   stroke-width: 2.5 !important;
   color: #ffffff !important;
   flex-shrink: 0;
@@ -220,15 +220,15 @@ const saveAction = () => {
 .cancel-btn-dialog {
   font-weight: 700 !important;
   text-transform: none !important;
-  border-radius: 14px !important;
-  padding: 14px 32px !important;
+  border-radius: var(--radius-xl) !important;
+  padding: var(--space-3-5) 32px !important;
   border: 2px solid rgba(156, 163, 175, 0.5) !important;
   color: #374151 !important;
   background: rgba(255, 255, 255, 1) !important;
   backdrop-filter: blur(10px) !important;
   font-size: var(--font-size-base) !important;
   font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  min-width: 140px !important;
+  min-width: var(--space-36) !important;
   box-shadow: 
     0 4px 16px rgba(0, 0, 0, 0.1),
     0 2px 8px rgba(156, 163, 175, 0.15),

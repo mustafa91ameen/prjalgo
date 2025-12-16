@@ -203,7 +203,7 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 4px;
+  height: var(--space-1);
   background: var(--gradient-primary);
 }
 
@@ -241,25 +241,25 @@ body {
   .v-card {
     border-radius: var(--radius-lg) !important;
   }
-  
+
   .enhanced-card {
     border-radius: var(--radius-xl) !important;
   }
-  
+
   .stat-card {
     border-radius: var(--radius-xl) !important;
   }
 }
 
 /* شاشات متوسطة */
-@media (min-width: 601px) and (max-width: 960px) {
+@media (min-width: 601px) and (max-width: 1024px) {
   .v-card {
     border-radius: var(--radius-xl) !important;
   }
 }
 
 /* شاشات كبيرة */
-@media (min-width: 961px) {
+@media (min-width: 1025px) {
   .v-card {
     border-radius: var(--radius-2xl) !important;
   }
@@ -310,8 +310,8 @@ body {
 
 /* تحسين التمرير */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: var(--space-2);
+  height: var(--space-2);
 }
 
 ::-webkit-scrollbar-track {

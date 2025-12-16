@@ -193,14 +193,14 @@ const saveEngineer = () => {
 
 <style scoped>
 .edit-dialog-card {
-  border-radius: 20px !important;
+  border-radius: var(--radius-2xl) !important;
   overflow: hidden !important;
 }
 
 .edit-dialog-title {
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) !important;
   color: white !important;
-  padding: 20px 24px !important;
+  padding: var(--space-5) 24px !important;
 }
 
 .edit-dialog-title h2 {
@@ -208,7 +208,7 @@ const saveEngineer = () => {
 }
 
 .form-field-enhanced {
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
 }
 
 .dialog-actions {
@@ -216,11 +216,11 @@ const saveEngineer = () => {
 }
 
 .cancel-btn {
-  border-radius: 12px !important;
+  border-radius: var(--radius-xl) !important;
 }
 
 .save-btn {
-  border-radius: 12px !important;
+  border-radius: var(--radius-xl) !important;
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
 }
 </style>

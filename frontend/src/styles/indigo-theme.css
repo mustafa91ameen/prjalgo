@@ -23,7 +23,7 @@
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(199, 210, 254, 0.3);
-  border-radius: 16px;
+  border-radius: var(--radius-2xl);
   box-shadow: 0 4px 6px -1px rgba(67, 56, 202, 0.1), 0 2px 4px -1px rgba(67, 56, 202, 0.06);
   transition: all var(--transition-normal);
 }
@@ -47,8 +47,8 @@
   background: linear-gradient(135deg, #4338ca 0%, #6366f1 100%);
   color: white;
   border: none;
-  border-radius: 12px;
-  padding: 12px 24px;
+  border-radius: var(--radius-xl);
+  padding: var(--space-3) 24px;
   font-weight: 600;
   box-shadow: 0 4px 6px -1px rgba(67, 56, 202, 0.1), 0 2px 4px -1px rgba(67, 56, 202, 0.06);
   transition: all var(--transition-normal);
@@ -64,8 +64,8 @@
   background: transparent;
   color: #4338ca;
   border: 2px solid #4338ca;
-  border-radius: 12px;
-  padding: 10px 22px;
+  border-radius: var(--radius-xl);
+  padding: var(--space-2-5) 22px;
   font-weight: 600;
   transition: all var(--transition-normal);
 }
@@ -194,14 +194,14 @@
    فئات الاستجابة
    ======================================== */
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .indigo-btn {
-    padding: 10px 20px;
+    padding: var(--space-2-5) 20px;
     font-size: var(--font-size-sm);
   }
-  
+
   .indigo-card {
-    border-radius: 12px;
+    border-radius: var(--radius-xl);
   }
 }
 

@@ -192,21 +192,21 @@ const tableHeaders = [
 
 <style scoped>
 .data-table-card {
-  border-radius: 24px !important;
+  border-radius: var(--radius-3xl) !important;
   overflow: hidden;
 }
 
 .table-header {
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) !important;
-  padding: 16px 24px !important;
+  padding: var(--space-4) 24px !important;
 }
 
 .search-field-enhanced {
-  max-width: 500px;
+  max-width: var(--space-96);
 }
 
 .add-button {
-  border-radius: 12px !important;
+  border-radius: var(--radius-xl) !important;
   font-weight: 600 !important;
   text-transform: none !important;
   letter-spacing: 0 !important;

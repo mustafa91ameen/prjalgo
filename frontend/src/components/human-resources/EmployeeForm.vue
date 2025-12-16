@@ -487,7 +487,7 @@ const saveEmployee = () => {
 
 .dialog-header {
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
-  padding: 16px 24px;
+  padding: var(--space-4) 24px;
 }
 
 .header-content {
@@ -499,7 +499,7 @@ const saveEmployee = () => {
 .header-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .header-title {
@@ -509,21 +509,21 @@ const saveEmployee = () => {
 }
 
 .dialog-body {
-  padding: 24px;
+  padding: var(--space-6);
   max-height: 60vh;
   overflow-y: auto;
 }
 
 .dialog-actions {
-  padding: 16px 24px;
+  padding: var(--space-4) 24px;
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  border-top: 1px solid #e5e7eb;
+  gap: var(--space-3);
+  border-top: var(--space-px) solid #e5e7eb;
 }
 
 .fingerprint-card {
-  border-radius: 12px;
+  border-radius: var(--radius-xl);
 }
 
 .fingerprint-title {
@@ -537,6 +537,6 @@ const saveEmployee = () => {
 }
 
 .fingerprint-btn {
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
 }
 </style>

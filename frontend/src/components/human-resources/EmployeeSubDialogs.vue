@@ -635,7 +635,7 @@ defineExpose({
 <style scoped>
 .dialog-header {
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
-  padding: 16px 24px;
+  padding: var(--space-4) 24px;
 }
 
 .header-content {
@@ -647,7 +647,7 @@ defineExpose({
 .header-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .header-title {
@@ -657,14 +657,14 @@ defineExpose({
 }
 
 .dialog-body {
-  padding: 24px;
+  padding: var(--space-6);
 }
 
 .dialog-actions {
-  padding: 16px 24px;
+  padding: var(--space-4) 24px;
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  border-top: 1px solid #e5e7eb;
+  gap: var(--space-3);
+  border-top: var(--space-px) solid #e5e7eb;
 }
 </style>

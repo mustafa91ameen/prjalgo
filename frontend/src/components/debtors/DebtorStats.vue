@@ -75,7 +75,7 @@ const formattedTotalDebt = computed(() => formatCurrency(props.totalDebt))
 <style scoped>
 .stat-card {
   position: relative;
-  border-radius: 24px !important;
+  border-radius: var(--radius-3xl) !important;
   background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
   border: 1px solid rgba(0, 0, 0, 0.05);
   overflow: hidden;

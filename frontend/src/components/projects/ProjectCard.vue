@@ -180,7 +180,7 @@ const statusIcon = computed(() => {
 
 /* Progress bar styling */
 .progress-bar {
-  border-radius: 4px;
+  border-radius: var(--radius-base);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -208,7 +208,7 @@ const statusIcon = computed(() => {
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
+@media (max-width: var(--space-96)) {
   .project-card-actions {
     padding: 0.75rem 1rem 1rem 1rem !important;
   }

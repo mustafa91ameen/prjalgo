@@ -13,11 +13,9 @@ export { useHumanResources } from './useHumanResources'
 export { useUsers } from './useUsers'
 
 // Project-related composables
-export { useProjectFilters } from './useProjectFilters'
 export { useProjectForm } from './useProjectForm'
 export { useProjectStats } from './useProjectStats'
 export { useProjectExpenses } from './useProjectExpenses'
 
-// Team & Task composables
-export { useTeamManagement } from './useTeamManagement'
+// Task composables
 export { useTasks } from './useTasks'

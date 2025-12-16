@@ -596,7 +596,7 @@ const formatCurrency = (amount) => {
 
 .dialog-header {
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
-  padding: 16px 24px;
+  padding: var(--space-4) 24px;
 }
 
 .header-content {
@@ -608,7 +608,7 @@ const formatCurrency = (amount) => {
 .header-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .header-title {
@@ -618,21 +618,21 @@ const formatCurrency = (amount) => {
 }
 
 .dialog-body {
-  padding: 24px;
+  padding: var(--space-6);
   max-height: 60vh;
   overflow-y: auto;
 }
 
 .dialog-actions {
-  padding: 16px 24px;
+  padding: var(--space-4) 24px;
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  border-top: 1px solid #e5e7eb;
+  gap: var(--space-3);
+  border-top: var(--space-px) solid #e5e7eb;
 }
 
 .info-card {
-  border-radius: 12px;
+  border-radius: var(--radius-xl);
 }
 
 .info-card-title {
@@ -643,8 +643,8 @@ const formatCurrency = (amount) => {
 .info-item {
   display: flex;
   justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1px solid #f1f5f9;
+  padding: var(--space-2) 0;
+  border-bottom: var(--space-px) solid #f1f5f9;
 }
 
 .info-item:last-child {
@@ -668,7 +668,7 @@ const formatCurrency = (amount) => {
 }
 
 .fingerprint-management-card {
-  border-radius: 16px;
+  border-radius: var(--radius-2xl);
 }
 
 .fingerprint-card-title {
@@ -681,8 +681,8 @@ const formatCurrency = (amount) => {
 }
 
 .certificate-item {
-  padding: 12px;
-  border-radius: 8px;
+  padding: var(--space-3);
+  border-radius: var(--radius-lg);
   background: #f8fafc;
 }
 

@@ -194,16 +194,16 @@ body .modern-sidebar * {
 
 .logo-enhanced {
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   background: rgba(255, 255, 255, 0.1);
-  padding: 8px;
+  padding: var(--space-2);
 }
 
 /* عناصر القائمة */
 .menu-item {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 12px !important;
-  margin-bottom: 8px;
+  border-radius: var(--radius-xl) !important;
+  margin-bottom: var(--space-2);
 }
 
 .menu-item .v-list-item-title {
@@ -298,13 +298,13 @@ body .modern-sidebar .v-chip .v-chip__content {
 .feature-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .feature-item {
   background: rgba(5, 150, 105, 0.2);
-  border-radius: 8px;
-  padding: 12px 8px;
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) 8px;
   text-align: center;
   transition: all 0.3s ease;
   backdrop-filter: blur(5px);

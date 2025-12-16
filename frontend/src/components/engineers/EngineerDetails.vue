@@ -161,24 +161,24 @@ const closeDialog = () => {
 
 <style scoped>
 .engineer-details-dialog .v-card {
-  border-radius: 20px !important;
+  border-radius: var(--radius-2xl) !important;
   overflow: hidden !important;
 }
 
 .details-header {
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) !important;
-  padding: 20px 24px !important;
+  padding: var(--space-5) 24px !important;
 }
 
 .info-card {
-  border-radius: 16px !important;
+  border-radius: var(--radius-2xl) !important;
   height: 100%;
 }
 
 .info-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .info-item {

@@ -1,8 +1,11 @@
 /**
  * Sales Page Styles
- * Extracted from sales.vue
+ * Contains ONLY page-level styles for the sales page.
  */
-/* Page Styles */
+
+/* ============================================
+   Page Container
+   ============================================ */
 .data-page {
   background: linear-gradient(135deg, var(--color-indigo-500) 0%, var(--color-violet-600) 100%);
   min-height: 100vh;
@@ -12,115 +15,17 @@
   box-sizing: border-box;
 }
 
-.search-card .v-card-text {
-  padding: var(--space-4) !important;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-/* زر البحث */
-.search-card .search-btn,
-.search-card .search-btn.v-btn,
-.search-card .v-btn.search-btn {
-  background: linear-gradient(135deg, var(--color-blue-800) 0%, var(--color-blue-600) 50%, var(--color-blue-500) 100%) !important;
-  color: white !important;
-  font-weight: 600 !important;
-  font-size: var(--font-size-sm-plus) !important;
-  padding: var(--space-3) 20px !important;
-  border-radius: var(--radius-xl) !important;
-  box-shadow: 
-    0 4px 16px rgba(30, 64, 175, 0.3),
-    0 2px 8px rgba(37, 99, 235, 0.2),
-    0 0 20px rgba(59, 130, 246, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
-  border: 2px solid rgba(255, 255, 255, 0.3) !important;
-  transition: all var(--transition-normal) !important;
-  text-transform: none !important;
-  letter-spacing: 0.3px !important;
-  line-height: 1.4 !important;
-}
-
-.search-card .search-btn :deep(.v-btn__content) {
-  color: white !important;
-  font-weight: 600 !important;
-  font-size: var(--font-size-sm-plus) !important;
-  text-align: center !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  letter-spacing: 0.3px !important;
-  line-height: 1.4 !important;
-}
-
-.search-card .search-btn:hover {
-  transform: translateY(-2px) scale(1.03) !important;
-  box-shadow: 
-    0 8px 24px rgba(30, 64, 175, 0.5),
-    0 4px 12px rgba(37, 99, 235, 0.4),
-    0 0 40px rgba(59, 130, 246, 0.7),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
-  background: linear-gradient(135deg, var(--color-blue-900) 0%, var(--color-blue-800) 50%, var(--color-blue-600) 100%) !important;
-}
-
-/* زر إضافة عملية بيع */
-.search-card .add-expense-btn,
-.search-card .add-expense-btn.v-btn,
-.search-card .v-btn.add-expense-btn {
-  background: linear-gradient(135deg, var(--color-emerald-500) 0%, var(--color-emerald-600) 50%, var(--color-emerald-700) 100%) !important;
-  color: white !important;
-  font-weight: 600 !important;
-  font-size: var(--font-size-sm-plus) !important;
-  padding: var(--space-3) 20px !important;
-  border-radius: var(--radius-xl) !important;
-  box-shadow: 
-    0 4px 16px rgba(16, 185, 129, 0.3),
-    0 2px 8px rgba(5, 150, 105, 0.2),
-    0 0 20px rgba(16, 185, 129, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
-  border: 2px solid rgba(255, 255, 255, 0.3) !important;
-  transition: all var(--transition-normal) !important;
-  text-transform: none !important;
-  letter-spacing: 0.3px !important;
-  line-height: 1.4 !important;
-}
-
-.search-card .add-expense-btn:hover {
-  transform: translateY(-2px) scale(1.03) !important;
-  box-shadow: 
-    0 8px 24px rgba(16, 185, 129, 0.5),
-    0 4px 12px rgba(5, 150, 105, 0.4),
-    0 0 40px rgba(16, 185, 129, 0.7),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
-  background: linear-gradient(135deg, var(--color-emerald-600) 0%, var(--color-emerald-700) 50%, var(--color-emerald-800) 100%) !important;
-}
-
-.search-card .add-expense-btn :deep(.v-btn__content) {
-  color: white !important;
-  gap: var(--space-1-5) !important;
-  font-weight: 600 !important;
-  font-size: var(--font-size-sm-plus) !important;
-  text-align: center !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  letter-spacing: 0.3px !important;
-  line-height: 1.4 !important;
-}
-
-.search-card .add-expense-btn :deep(.v-icon) {
-  color: white !important;
-  font-size: var(--font-size-lg) !important;
-  margin: 0 !important;
-}
-
 .fullscreen-content {
-  max-width: 1400px;
+  max-width: var(--space-96);
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
   overflow-x: hidden;
 }
 
+/* ============================================
+   Page Header
+   ============================================ */
 .page-header {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(20px);
@@ -143,17 +48,20 @@
 .page-title {
   font-size: var(--font-size-2xl);
   font-weight: 800;
-  color: rgb(246, 246, 246);
+  color: var(--text-white);
   margin-bottom: var(--space-1-5);
   text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .page-subtitle {
   font-size: var(--font-size-sm-plus);
-  color: rgba(243, 240, 240, 0.9);
+  color: rgba(255, 255, 255, 0.9);
   margin: 0;
 }
 
+/* ============================================
+   Statistics Row
+   ============================================ */
 .stats-row {
   margin-bottom: var(--space-8);
   width: 100%;
@@ -161,10 +69,10 @@
 }
 
 .stat-card {
-  background: rgba(229, 226, 226, 0.95);
+  background: rgba(255, 255, 255, 0.95);
   border-radius: var(--radius-2xl);
   transition: all var(--transition-normal);
-  border: 1px solid rgba(252, 252, 252, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .stat-card:hover {
@@ -172,18 +80,52 @@
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
+/* ============================================
+   Search Card
+   ============================================ */
 .search-card {
   background: linear-gradient(135deg, var(--color-blue-500) 0%, var(--color-indigo-600) 100%) !important;
   border: 2px solid var(--color-blue-700) !important;
   border-radius: var(--radius-xl) !important;
-  box-shadow: 0 4px 12px rgba(200, 11, 11, 0.1) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
   width: 100%;
   overflow-x: hidden;
   box-sizing: border-box;
 }
 
+.search-card .v-card-text {
+  padding: var(--space-4) !important;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.search-card .search-btn {
+  background: linear-gradient(135deg, var(--color-blue-800) 0%, var(--color-blue-600) 100%) !important;
+  color: var(--text-white) !important;
+  font-weight: 600 !important;
+  border-radius: var(--radius-xl) !important;
+}
+
+.search-card .search-btn:hover {
+  transform: translateY(-2px) scale(1.03) !important;
+}
+
+.search-card .add-expense-btn {
+  background: linear-gradient(135deg, var(--color-emerald-500) 0%, var(--color-emerald-700) 100%) !important;
+  color: var(--text-white) !important;
+  font-weight: 600 !important;
+  border-radius: var(--radius-xl) !important;
+}
+
+.search-card .add-expense-btn:hover {
+  transform: translateY(-2px) scale(1.03) !important;
+}
+
+/* ============================================
+   Data Table Card
+   ============================================ */
 .data-table-card {
-  background: rgba(255, 249, 249, 0.95);
+  background: rgba(255, 255, 255, 0.95);
   border-radius: var(--radius-2xl);
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
@@ -194,19 +136,17 @@
   color: var(--text-white) !important;
   padding: var(--space-5) 24px !important;
   border-radius: var(--radius-xl) var(--radius-xl) 0 0 !important;
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3) !important;
 }
 
 .title-text {
   font-size: var(--font-size-xl-plus) !important;
   font-weight: 800 !important;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
 }
 
-/* ========================================
-   تنسيق جدول المبيعات - Sales Table
-   ======================================== */
+/* ============================================
+   Sales Table
+   ============================================ */
 .project-table {
   background: linear-gradient(135deg, var(--color-slate-50) 0%, var(--color-slate-200) 100%);
   border-radius: var(--radius-xl);
@@ -214,7 +154,6 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* عناوين الجدول - Header Styles */
 .project-table .v-data-table__th {
   background: linear-gradient(135deg, var(--color-violet-600) 0%, var(--color-violet-500) 100%) !important;
   color: var(--text-white) !important;
@@ -222,161 +161,82 @@
   font-size: var(--font-size-base-plus) !important;
   text-align: center !important;
   padding: var(--space-4) 14px !important;
-  border-bottom: var(--space-3) solid var(--color-violet-700) !important;
-  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.5) !important;
-  letter-spacing: 1px !important;
-  border-radius: 0 !important;
-  position: relative !important;
+  border-bottom: 3px solid var(--color-violet-700) !important;
 }
 
-.project-table .v-data-table__wrapper table thead tr th {
-  background: linear-gradient(135deg, var(--color-violet-600) 0%, var(--color-violet-500) 100%) !important;
-  color: var(--text-white) !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-align: center !important;
-  padding: var(--space-4) 14px !important;
-  border-bottom: var(--space-3) solid var(--color-violet-700) !important;
-  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.5) !important;
-  letter-spacing: 1px !important;
-  position: relative !important;
-}
-
-/* بيانات الجدول - Table Data Styles - نص أسود تماماً */
 .project-table .v-data-table__td {
   padding: var(--space-4) 12px !important;
-  border-bottom: var(--space-px) solid var(--color-gray-200) !important;
+  border-bottom: 1px solid var(--color-gray-200) !important;
   text-align: center !important;
   background: var(--text-white) !important;
-  color: var(--text-primary) !important;
+  color: var(--color-slate-800) !important;
   font-weight: 600 !important;
-  font-size: var(--font-size-base) !important;
-  vertical-align: middle !important;
-}
-
-.project-table .v-data-table__td *,
-.project-table .v-data-table__td span,
-.project-table .v-data-table__td div,
-.project-table .v-data-table__td p {
-  color: var(--text-primary) !important;
 }
 
 .project-table .v-data-table__wrapper tbody tr:nth-child(even) {
   background: linear-gradient(135deg, var(--color-violet-50) 0%, var(--color-violet-100) 100%) !important;
 }
 
-.project-table .v-data-table__wrapper tbody tr:nth-child(odd) {
-  background: linear-gradient(135deg, var(--text-white) 0%, var(--color-violet-50) 100%) !important;
-}
-
 .project-table .v-data-table__wrapper tbody tr:hover {
   background: linear-gradient(135deg, var(--color-violet-100) 0%, var(--color-violet-200) 100%) !important;
   transform: translateY(-2px) !important;
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15) !important;
-  transition: all var(--transition-normal) !important;
+  box-shadow: var(--shadow-violet-md) !important;
 }
 
-.project-table .v-data-table__wrapper tbody tr:hover td {
-  color: var(--text-primary) !important;
+/* ============================================
+   Table Cell Styles
+   ============================================ */
+.serial-number {
+  color: var(--color-slate-700) !important;
   font-weight: 700 !important;
-}
-
-/* تنسيق النصوص داخل الخلايا - جميعها أسود */
-.project-table .serial-number {
-  color: var(--text-primary) !important;
-  font-weight: 700 !important;
-  font-size: var(--font-size-base) !important;
   background: linear-gradient(135deg, var(--color-gray-100) 0%, var(--color-gray-200) 100%) !important;
   padding: var(--space-1-5) 12px !important;
   border-radius: var(--radius-lg) !important;
   display: inline-block !important;
-  min-width: 40px !important;
-  text-align: center !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
 }
 
-.project-table .project-name {
-  color: var(--text-primary) !important;
+.project-name {
+  color: var(--color-slate-800) !important;
   font-weight: 600 !important;
-  font-size: var(--font-size-base) !important;
   text-align: end !important;
-  padding: var(--space-1) 8px !important;
-  border-radius: var(--radius-md) !important;
-  display: inline-block !important;
-  max-width: 200px !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
 }
 
-.project-table .date-text {
-  color: var(--text-primary) !important;
+.date-text {
+  color: var(--color-slate-700) !important;
   font-weight: 600 !important;
-  font-size: var(--font-size-base) !important;
-  font-family: var(--font-primary) !important;
 }
 
-.project-table .cost-text {
-  color: var(--text-primary) !important;
+.cost-text {
+  color: var(--color-slate-800) !important;
   font-weight: 700 !important;
-  font-size: var(--font-size-base) !important;
   font-family: var(--font-primary) !important;
   direction: ltr !important;
   background: linear-gradient(135deg, var(--color-gray-100) 0%, var(--color-gray-200) 100%) !important;
   padding: var(--space-1-5) 12px !important;
   border-radius: var(--radius-lg) !important;
   display: inline-block !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-  border: 1px solid var(--color-gray-300) !important;
 }
 
-/* تنسيق الشريحات - Chips - نص أسود */
-.project-table .v-chip {
-  font-weight: 600 !important;
-  font-size: var(--font-size-sm-plus) !important;
-  padding: var(--space-2) 14px !important;
-  border-radius: var(--radius-lg) !important;
-  color: var(--text-primary) !important;
-  background: var(--color-gray-100) !important;
-  border: 1px solid var(--color-gray-200) !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-  transition: all var(--transition-normal) !important;
-}
-
-.project-table .v-chip:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
-  background: var(--color-gray-200) !important;
-}
-
-.project-table .category-chip {
-  color: var(--text-primary) !important;
+/* ============================================
+   Chips
+   ============================================ */
+.category-chip {
+  color: var(--color-slate-700) !important;
   background: var(--color-gray-100) !important;
   border: 1px solid var(--color-gray-300) !important;
   font-weight: 600 !important;
-  font-size: var(--font-size-sm-plus) !important;
 }
 
-.project-table .category-chip:hover {
-  background: var(--color-gray-200) !important;
-  border-color: var(--color-gray-400) !important;
-  color: var(--text-primary) !important;
-}
-
-.project-table .status-chip {
-  color: var(--text-primary) !important;
+.status-chip {
+  color: var(--color-slate-700) !important;
   background: var(--color-gray-100) !important;
   border: 1px solid var(--color-gray-300) !important;
   font-weight: 600 !important;
-  font-size: var(--font-size-sm-plus) !important;
 }
 
-.project-table .status-chip:hover {
-  background: var(--color-gray-200) !important;
-  border-color: var(--color-gray-400) !important;
-  color: var(--text-primary) !important;
-}
-
+/* ============================================
+   Action Buttons
+   ============================================ */
 .action-buttons {
   display: flex;
   gap: var(--space-1);
@@ -385,16 +245,14 @@
 }
 
 .action-btn {
-  min-width: 36px !important;
-  height: 36px !important;
+  min-width: var(--space-9) !important;
+  height: var(--space-9) !important;
   border-radius: var(--radius-lg) !important;
   transition: all var(--transition-normal) !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
 }
 
 .action-btn:hover {
   transform: translateY(-2px) scale(1.05) !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
 }
 
 .details-btn {
@@ -404,29 +262,11 @@
 
 .details-btn:hover {
   background: rgba(124, 58, 237, 0.2) !important;
-  color: var(--color-violet-700) !important;
 }
 
-.action-btn[color="success"] {
-  color: var(--color-emerald-600) !important;
-  background: rgba(5, 150, 105, 0.1) !important;
-}
-
-.action-btn[color="success"]:hover {
-  background: rgba(5, 150, 105, 0.2) !important;
-  color: var(--color-emerald-700) !important;
-}
-
-.action-btn[color="error"] {
-  color: var(--color-red-600) !important;
-  background: rgba(220, 38, 38, 0.1) !important;
-}
-
-.action-btn[color="error"]:hover {
-  background: rgba(220, 38, 38, 0.2) !important;
-  color: var(--color-red-700) !important;
-}
-
+/* ============================================
+   Dialog Styles
+   ============================================ */
 .image-style-dialog {
   background: linear-gradient(135deg, var(--color-emerald-600) 0%, var(--color-emerald-500) 100%);
   border-radius: var(--radius-2xl);
@@ -436,12 +276,12 @@
 .dialog-header {
   background: linear-gradient(135deg, var(--color-emerald-600), var(--color-emerald-500));
   padding: var(--space-5);
-  color: white;
+  color: var(--text-white);
 }
 
 .dialog-body {
   padding: var(--space-8);
-  background: var(--color-slate-50);
+  background: var(--text-white);
 }
 
 .dialog-actions {
@@ -452,477 +292,31 @@
   gap: var(--space-3);
 }
 
-/* ========================================
-   تنسيق الحقول - نفس تنسيق صفحة المصروفات
-   ======================================== */
-
-/* تحسين ألوان الحقول في القائمة المنبثقة */
-.form-field .v-field__input {
-  color: var(--color-neutral-850) !important;
-  font-weight: 600 !important;
-  background: white !important;
-  border-radius: var(--radius-lg) !important;
-  font-size: var(--font-size-base) !important;
-  padding: var(--space-3) 16px !important;
-}
-
-/* إصلاح لون النص في جميع الحقول */
-.form-field .v-field__input input,
-.form-field .v-field__input textarea,
-.form-field .v-field__input .v-field__input {
-  color: var(--color-neutral-850) !important;
-  background: white !important;
-}
-
-.form-field .v-field__outline {
-  border-color: var(--color-emerald-600) !important;
-  border-width: 2px !important;
-}
-
-.form-field .v-label {
-  color: var(--color-emerald-600) !important;
-  font-weight: 700 !important;
-  font-size: var(--font-size-base) !important;
-  background: white !important;
-  padding: 0 8px !important;
-}
-
-/* إصلاح لون النص في التسميات */
-.form-field .v-field__field .v-label,
-.form-field .v-field--focused .v-label {
-  color: var(--color-emerald-600) !important;
-  background: white !important;
-}
-
-.form-field .v-field--focused .v-field__outline {
-  border-color: var(--color-emerald-600) !important;
-  border-width: 3px !important;
-  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1) !important;
-}
-
-.form-field .v-field--focused .v-label {
-  color: var(--color-emerald-600) !important;
-  font-weight: 700 !important;
-  font-size: var(--font-size-sm) !important;
-  background: white !important;
-  padding: 0 8px !important;
-  margin: 0 !important;
-  border-radius: var(--radius-base) !important;
-  text-shadow: none !important;
-  letter-spacing: normal !important;
-  box-shadow: none !important;
-  border: none !important;
-  transform: none !important;
-  position: static !important;
-  z-index: auto !important;
-  font-family: inherit !important;
-  text-transform: none !important;
-}
-
-/* تحسين ألوان القوائم المنسدلة */
-.form-field .v-select .v-field__input {
-  color: var(--color-neutral-850) !important;
-  font-weight: 600 !important;
-  font-size: var(--font-size-base) !important;
-  padding: var(--space-3) 16px !important;
-}
-
-.form-field .v-select .v-field__outline {
-  border-color: var(--color-emerald-600) !important;
-  border-width: 2px !important;
-}
-
-.form-field .v-select .v-label {
-  color: var(--color-emerald-600) !important;
-  font-weight: 700 !important;
-  font-size: var(--font-size-sm) !important;
-  background: white !important;
-  padding: 0 8px !important;
-  margin: 0 !important;
-  border-radius: var(--radius-base) !important;
-  text-shadow: none !important;
-  letter-spacing: normal !important;
-  box-shadow: none !important;
-  border: none !important;
-  position: static !important;
-  z-index: auto !important;
-  font-family: inherit !important;
-  text-transform: none !important;
-}
-
-/* تحسين ألوان رسائل الخطأ */
-.form-field .v-messages__message {
-  color: var(--color-red-600) !important;
-  font-weight: 500 !important;
-  font-size: var(--font-size-xs-plus) !important;
-}
-
-/* تحسين ألوان النصوص في الحقول */
-.form-field .v-field__input::placeholder {
-  color: var(--color-gray-500) !important;
-  font-weight: 500 !important;
-  font-size: var(--font-size-base-minus) !important;
-}
-
-/* تحسين ألوان النصوص المكتوبة */
-.form-field .v-field__input input {
-  color: var(--color-neutral-850) !important;
-  font-weight: 600 !important;
-  font-size: var(--font-size-base) !important;
-}
-
-/* إصلاح شامل للنصوص في الحقول */
-.form-field input,
-.form-field textarea,
-.form-field .v-field__input,
-.form-field .v-field__input *,
-.form-field .v-input__control,
-.form-field .v-input__control {
-  color: var(--color-neutral-850) !important;
-  background: white !important;
-}
-
-/* تحسين ألوان النصوص في textarea */
-.form-field .v-textarea .v-field__input {
-  color: var(--color-neutral-850) !important;
-  font-weight: 600 !important;
-  font-size: var(--font-size-base) !important;
-  line-height: 1.5 !important;
-}
-
-/* تحسين ألوان الأيقونات */
-.form-field .v-icon {
-  color: var(--color-emerald-600) !important;
-}
-
-/* تحسين ألوان القوائم المنسدلة المفتوحة */
-.form-field .v-list {
-  background: white !important;
-  border: 2px solid var(--color-emerald-600) !important;
-  border-radius: var(--radius-lg) !important;
-  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2) !important;
-}
-
-/* إصلاح النصوص في القوائم المنسدلة */
-.form-field .v-list *,
-.form-field .v-menu *,
-.form-field .v-overlay *,
-.form-field .v-list-item {
-  color: var(--color-neutral-850) !important;
-  background: white !important;
-}
-
-.form-field .v-list-item {
-  color: var(--color-neutral-850) !important;
-  font-weight: 600 !important;
-  font-size: var(--font-size-base) !important;
-  padding: var(--space-3) 16px !important;
-}
-
-.form-field .v-list-item:hover {
-  background: var(--color-slate-100) !important;
-  color: var(--color-emerald-600) !important;
-  font-weight: 700 !important;
-}
-
-.form-field .v-list-item--active {
-  background: var(--color-emerald-600) !important;
-  color: white !important;
-  font-weight: 700 !important;
-}
-
-/* إصلاح شامل لجميع النصوص في النافذة */
-.image-style-dialog .form-field *,
-.image-style-dialog .dialog-body *,
-.image-style-dialog .v-field *,
-.image-style-dialog .v-input *,
-.image-style-dialog .v-select *,
-.image-style-dialog .v-textarea {
-  color: var(--color-neutral-850) !important;
-}
-
-/* استثناء للتسميات */
-.image-style-dialog .form-field .v-label {
-  color: var(--color-emerald-600) !important;
-}
-
-/* إصلاح النصوص في الحقول المحددة */
-.image-style-dialog .form-field .v-field--focused input,
-.image-style-dialog .form-field .v-field--focused textarea,
-.image-style-dialog .form-field .v-field--focused .v-field__input,
-.image-style-dialog .form-field .v-field--focused .v-field__input {
-  color: var(--color-neutral-850) !important;
-  background: white !important;
-}
-
-/* إصلاح النصوص في القوائم المنسدلة المحددة */
-.image-style-dialog .form-field .v-field--focused .v-select__selection,
-.image-style-dialog .form-field .v-field--focused .v-field__input {
-  color: var(--color-neutral-850) !important;
-  background: white !important;
-}
-
-/* تحسين ألوان النصوص في القوائم المنسدلة */
-.form-field .v-list-item .v-list-item-title {
-  color: inherit !important;
-  font-weight: inherit !important;
-  font-size: inherit !important;
-}
-
-/* إصلاح نهائي لجميع النصوص */
-.dialog-body {
-  background: white !important;
-}
-
-.dialog-body .v-field,
-.dialog-body .v-input,
-.dialog-body .v-select,
-.dialog-body .v-textarea {
-  background: white !important;
-}
-
-.dialog-body .v-field__input,
-.dialog-body .v-field__input *,
-.dialog-body .v-field__field,
-.dialog-body .v-field__field {
-  color: var(--color-neutral-850) !important;
-  background: white !important;
-}
-
-/* إصلاح النصوص في القوائم المنسدلة المفتوحة */
-.v-overlay__content .v-list,
-.v-overlay__content .v-list *,
-.v-menu__content .v-list,
-.v-menu__content .v-list {
-  color: var(--color-neutral-850) !important;
-  background: white !important;
-}
-
-/* إصلاح خاص لقائمة أنواع المصروفات */
-.v-list-item,
-.v-list-item *,
-.v-list-item .v-list-item-title,
-.v-list-item .v-list-item-subtitle,
-.v-list-item .v-list-item-content,
-.v-list-item .v-list-item-content {
-  color: var(--color-neutral-850) !important;
-  background: white !important;
-}
-
-/* إصلاح القوائم المنسدلة العامة */
-.v-menu .v-list,
-.v-menu .v-list *,
-.v-menu .v-list-item,
-.v-menu .v-list-item {
-  color: var(--color-neutral-850) !important;
-  background: white !important;
-}
-
-/* إصلاح القوائم المنسدلة في جميع الحالات */
-.v-list,
-.v-list *,
-.v-list .v-list-item,
-.v-list .v-list-item *,
-.v-list .v-list-item-title,
-.v-list .v-list-item-subtitle {
-  color: var(--color-neutral-850) !important;
-  background: white !important;
-}
-
-/* إصلاح شامل لجميع القوائم المنسدلة في الصفحة */
-.v-select .v-list,
-.v-select .v-list *,
-.v-select .v-list-item,
-.v-select .v-list-item *,
-.v-select .v-list-item-title,
-.v-select .v-list-item-subtitle {
-  color: var(--color-neutral-850) !important;
-  background: white !important;
-}
-
-/* إصلاح القوائم المنسدلة في الصفحة الرئيسية */
-.data-page .v-list,
-.data-page .v-list *,
-.data-page .v-list-item,
-.data-page .v-list-item *,
-.data-page .v-list-item-title,
-.data-page .v-list-item-subtitle {
-  color: var(--color-neutral-850) !important;
-  background: white !important;
-}
-
-/* إصلاح خاص لقوائم أنواع المصروفات */
-.v-select[data-type="expense-type"] .v-list,
-.v-select[data-type="expense-type"] .v-list *,
-.v-select[data-type="expense-type"] .v-list-item,
-.v-select[data-type="expense-type"] .v-list-item {
-  color: var(--color-neutral-850) !important;
-  background: white !important;
-}
-
-/* إصلاح شامل لجميع القوائم المنسدلة في Vuetify */
-.v-list-item,
-.v-list-item-title,
-.v-list-item-subtitle,
-.v-list-item-content,
-.v-list-item-content {
-  color: var(--color-neutral-850) !important;
-  background: white !important;
-}
-
-/* إصلاح القوائم المنسدلة في جميع الأماكن */
-.v-menu__content,
-.v-menu__content *,
-.v-overlay__content,
-.v-overlay__content {
-  color: var(--color-neutral-850) !important;
-  background: white !important;
-}
-
-/* إصلاح النصوص في القوائم المنسدلة المفتوحة */
-.v-menu__content .v-list-item,
-.v-menu__content .v-list-item *,
-.v-overlay__content .v-list-item,
-.v-overlay__content .v-list-item {
-  color: var(--color-neutral-850) !important;
-  background: white !important;
-}
-
-/* إصلاح نهائي لجميع القوائم المنسدلة */
-.v-select__menu,
-.v-select__menu *,
-.v-select__menu .v-list-item,
-.v-select__menu .v-list-item {
-  color: var(--color-neutral-850) !important;
-  background: white !important;
-}
-
-/* إصلاح شامل لجميع عناصر القوائم */
-.v-list-item__content,
-.v-list-item__content *,
-.v-list-item__title,
-.v-list-item__subtitle {
-  color: var(--color-neutral-850) !important;
-  background: white !important;
-}
-
-/* ========================================
-   تنسيق القوائم المنسدلة - Dropdown Menus
-   ======================================== */
-
-/* القائمة المنسدلة نفسها */
-.v-menu__content,
-.v-overlay__content {
-  background: white !important;
-  border-radius: var(--radius-lg) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-  border: 1px solid var(--color-gray-200) !important;
-  overflow: hidden !important;
-}
-
-.v-list {
-  background: white !important;
-  padding: var(--space-1) 0 !important;
-}
-
-
-/* قواعد قوية للتسميات - Vuetify 3 - أسود تماماً */
-.v-field__label,
-.v-label,
-.v-field__label *,
-.v-label {
-  color: var(--text-primary) !important;
-  font-weight: 800 !important;
-  opacity: 1 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: none !important;
-  -webkit-text-stroke: 0 !important;
-  -webkit-font-smoothing: antialiased !important;
-}
-
-.v-field--focused .v-field__label,
-.v-field--focused .v-label,
-.v-field--active .v-field__label,
-.v-field--active .v-label,
-.v-field--dirty .v-field__label,
-.v-field--dirty .v-label {
-  color: var(--text-primary) !important;
-  font-weight: 800 !important;
-  opacity: 1 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: none !important;
-}
-
-/* قواعد شاملة لجميع التسميات - أسود تماماً */
-* .v-label,
-* .v-field__label,
-* label,
-.v-input label,
-.v-text-field label,
-.v-textarea label,
-.v-select label {
-  color: var(--text-primary) !important;
-  font-weight: 800 !important;
-  opacity: 1 !important;
-}
-
-.image-style-dialog * .v-label,
-.image-style-dialog * .v-field__label,
-.image-style-dialog * label,
-.image-style-dialog .v-input label,
-.image-style-dialog .v-text-field label,
-.image-style-dialog .v-textarea label,
-.image-style-dialog .v-select label {
-  color: var(--text-primary) !important;
-  font-weight: 800 !important;
-  opacity: 1 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: none !important;
-}
-
-/* قواعد قوية جداً للتسميات */
-.v-input__details,
-.v-messages,
-.v-input__details {
-  color: var(--text-primary) !important;
-}
-
-.image-style-dialog .v-input__details,
-.image-style-dialog .v-messages {
-  color: var(--text-primary) !important;
-}
-
-/* إجبار اللون الأسود على جميع التسميات */
-.image-style-dialog .v-field__label,
-.image-style-dialog .v-label,
-.image-style-dialog .v-field__label *,
-.image-style-dialog .v-label {
-  color: var(--text-primary) !important;
-  font-weight: 800 !important;
-  opacity: 1 !important;
-  text-shadow: none !important;
-  -webkit-text-stroke: 0 !important;
-}
-
+/* ============================================
+   Animations
+   ============================================ */
 @keyframes star-twinkle {
   0%, 100% { transform: scale(1) rotate(0deg); }
   50% { transform: scale(1.1) rotate(180deg); }
 }
 
-@media (max-width: 768px) {
+/* ============================================
+   Responsive Design
+   ============================================ */
+@media (max-width: 600px) {
   .page-title {
-    font-size: var(--font-size-3xl-plus);
+    font-size: var(--font-size-xl);
   }
-  
+
   .page-subtitle {
     font-size: var(--font-size-base);
   }
-  
+
   .project-table .v-data-table__wrapper {
     overflow-x: auto !important;
   }
-  
+
   .project-table .v-data-table__wrapper table {
-    min-width: 900px !important;
+    min-width: var(--space-96) !important;
   }
 }

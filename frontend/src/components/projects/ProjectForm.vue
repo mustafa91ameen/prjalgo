@@ -284,7 +284,7 @@ const saveProject = () => {
 
 /* Dialog container */
 .image-style-dialog {
-  border-radius: 20px !important;
+  border-radius: var(--radius-2xl) !important;
   overflow: hidden !important;
 }
 
@@ -304,7 +304,7 @@ const saveProject = () => {
 
 .header-icon {
   background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   padding: 0.5rem;
 }
 

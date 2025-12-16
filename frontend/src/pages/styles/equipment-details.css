@@ -1,22 +1,29 @@
 /**
- * equipment-details Page Styles
- * Extracted from equipment-details.vue
+ * Equipment Details Page Styles
+ * Contains ONLY page-level styles for the equipment details page.
  */
+
+/* ============================================
+   Page Layout
+   ============================================ */
 .equipment-details-page {
   min-height: 100vh;
   background: linear-gradient(135deg, var(--color-slate-50) 0%, var(--color-slate-300) 100%);
   padding: 2rem;
 }
 
+/* ============================================
+   Page Header
+   ============================================ */
 .page-header {
   background: linear-gradient(135deg, var(--color-blue-400) 0%, var(--color-blue-500) 50%, var(--color-blue-600) 100%) !important;
-  color: white;
+  color: var(--text-white);
   padding: 2.5rem;
   border-radius: var(--radius-2xl);
   margin-bottom: 2rem;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.4);
+  box-shadow: var(--shadow-blue-intense);
   border: 1px solid rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
 }
@@ -39,16 +46,12 @@
   background: rgba(255, 255, 255, 0.2) !important;
   backdrop-filter: blur(15px);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3);
   transition: all var(--transition-normal);
-  position: relative;
-  z-index: var(--z-base);
 }
 
 .back-btn:hover {
   background: rgba(255, 255, 255, 0.3) !important;
   transform: translateX(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .page-title {
@@ -57,12 +60,6 @@
   margin: 0;
   color: var(--text-white);
   text-shadow: 0 4px 20px rgba(255, 255, 255, 0.5), 0 2px 10px rgba(0, 0, 0, 0.3);
-  letter-spacing: -0.5px;
-  background: linear-gradient(135deg, var(--text-white) 0%, var(--color-indigo-50) 50%, var(--text-white) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.3));
 }
 
 .page-subtitle {
@@ -71,10 +68,11 @@
   margin: 0.8rem 0 0 0;
   font-weight: 400;
   color: rgba(255, 255, 255, 0.95);
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(255, 255, 255, 0.2);
-  letter-spacing: 0.5px;
 }
 
+/* ============================================
+   Section Cards
+   ============================================ */
 .section-card {
   border-radius: var(--radius-2xl);
   overflow: hidden;
@@ -82,14 +80,15 @@
 
 .section-title {
   background: linear-gradient(135deg, var(--color-blue-400) 0%, var(--color-blue-500) 100%);
-  color: white;
+  color: var(--text-white);
   font-weight: 800;
   font-size: var(--font-size-xl-plus);
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   padding: 1.25rem 1.5rem !important;
 }
 
-/* تحسين تصميم شريط البحث */
+/* ============================================
+   Search Container
+   ============================================ */
 .search-container {
   padding: 1.5rem;
   background: linear-gradient(135deg, var(--color-blue-50) 0%, var(--color-blue-100) 50%, var(--color-blue-200) 100%);
@@ -97,25 +96,13 @@
   margin-bottom: 1rem;
   box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2);
   border: 2px solid var(--color-blue-300);
-  position: relative;
-}
-
-.search-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--color-blue-400), var(--color-blue-500), var(--color-blue-600));
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 
 .search-box {
   display: flex;
   align-items: center;
   gap: 1rem;
-  max-width: 800px;
+  max-width: var(--space-96);
   margin: 0 auto;
 }
 
@@ -124,75 +111,12 @@
   margin-bottom: 0;
 }
 
-.search-field :deep(.v-field) {
-  background-color: var(--text-white) !important;
-  border-radius: var(--radius-lg);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
-  border: 2px solid var(--color-blue-500) !important;
-  transition: all var(--transition-normal);
-}
-
-.search-field :deep(.v-field__input) {
-  background-color: var(--text-white) !important;
-  border-radius: var(--radius-lg);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
-  border: 2px solid var(--color-blue-500) !important;
-  transition: all var(--transition-normal);
-}
-
-.search-field :deep(.v-field__outline) {
-  border-color: var(--color-blue-500) !important;
-  border-width: 2px !important;
-}
-
-.search-field :deep(.v-field--focused .v-field__outline) {
-  border-color: var(--color-blue-600) !important;
-  border-width: 3px !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
-}
-
-.search-field :deep(.v-field__input):focus {
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4) !important;
-  border-color: var(--color-blue-600) !important;
-  transform: translateY(-1px);
-}
-
-.search-field :deep(.v-label) {
-  color: var(--color-blue-800) !important;
-  font-weight: 700 !important;
-  font-size: var(--font-size-base) !important;
-  opacity: 1 !important;
-}
-
-.search-field :deep(.v-label--active),
-.search-field :deep(.v-field__label--active) {
-  color: var(--color-blue-800) !important;
-  font-weight: 700 !important;
-  opacity: 1 !important;
-}
-
-.search-field :deep(.v-field__input input) {
-  color: var(--color-gray-900) !important;
-  font-weight: 600 !important;
-  font-size: var(--font-size-base) !important;
-}
-
-.search-field :deep(.v-field__prepend-inner) {
-  color: var(--color-blue-500) !important;
-}
-
-.search-field :deep(.v-field__prepend-inner .v-icon) {
-  color: var(--color-blue-500) !important;
-  font-size: var(--font-size-2xl) !important;
-}
-
-.search-field :deep(.v-field__prepend-inner i) {
-  color: var(--color-blue-500) !important;
-}
-
+/* ============================================
+   Buttons
+   ============================================ */
 .search-btn {
-  height: 56px;
-  min-width: 120px;
+  height: var(--space-14);
+  min-width: var(--space-28);
   border-radius: var(--radius-lg);
   font-weight: bold;
   text-transform: none;
@@ -205,10 +129,9 @@
   box-shadow: 0 6px 16px rgba(25, 118, 210, 0.4);
 }
 
-/* أنماط أزرار الإضافة */
 .add-btn {
-  height: 56px;
-  min-width: 140px;
+  height: var(--space-14);
+  min-width: var(--space-36);
   border-radius: var(--radius-lg);
   font-weight: bold;
   text-transform: none;
@@ -220,88 +143,52 @@
 .add-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(63, 81, 181, 0.4);
-  background: linear-gradient(135deg, var(--color-indigo-700) 0%, var(--color-indigo-800) 100%) !important;
 }
 
+/* ============================================
+   Data Table
+   ============================================ */
 .data-table {
   margin-top: 1rem;
 }
 
-/* تحسين ألوان النصوص في الجداول */
 .data-table :deep(.v-data-table__td) {
-  color: var(--color-gray-800) !important;
+  color: var(--color-slate-800) !important;
   font-weight: 500;
 }
 
 .data-table :deep(.v-data-table__th) {
-  color: var(--color-blue-600) !important;
+  color: var(--text-white) !important;
   font-weight: bold;
-  background-color: var(--color-neutral-100) !important;
+  background: linear-gradient(135deg, var(--color-indigo-500) 0%, var(--color-indigo-700) 100%) !important;
 }
 
 .data-table :deep(.v-data-table__tr:hover) {
   background-color: var(--color-gray-50) !important;
 }
 
-.data-table :deep(.v-data-table__tr:hover .v-data-table__td) {
-  color: var(--text-primary) !important;
-}
-
-/* تحسين ألوان النصوص في الجداول الفرعية */
 .data-table :deep(.v-data-table__wrapper) {
   border: 2px solid var(--color-indigo-50);
   border-radius: var(--radius-xl);
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(63, 81, 181, 0.1);
-  background: white;
+  background: var(--text-white);
 }
 
-.data-table :deep(.v-data-table__wrapper table) {
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-.data-table :deep(.v-data-table__wrapper table td) {
-  color: var(--color-gray-800) !important;
-  border-color: var(--color-gray-300) !important;
-}
-
-.data-table :deep(.v-data-table__wrapper table th) {
-  color: var(--text-white) !important;
-  background: linear-gradient(135deg, var(--color-indigo-500) 0%, var(--color-indigo-700) 100%) !important;
-  border-color: var(--color-indigo-800) !important;
-}
-
-/* أنماط مخصصة لجداول الآليات */
+/* Equipment Table Specific */
 .equipment-table :deep(.v-data-table__td) {
   color: var(--color-slate-800) !important;
   font-weight: 600;
-  font-size: var(--font-size-base-minus);
 }
 
 .equipment-table :deep(.v-data-table__th) {
   color: var(--text-white) !important;
   font-weight: bold;
-  font-size: var(--font-size-base);
   background: linear-gradient(135deg, var(--color-indigo-500) 0%, var(--color-indigo-700) 100%) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  border-bottom: var(--space-0-5) solid var(--color-indigo-800) !important;
-  position: relative;
 }
 
-/* تحسين ألوان الأزرار في الجداول */
-.data-table :deep(.v-btn) {
-  color: var(--color-red-500) !important;
-  transition: all var(--transition-normal);
-}
-
-.data-table :deep(.v-btn:hover) {
-  background-color: var(--color-red-100) !important;
-  color: var(--color-red-900) !important;
-  transform: scale(1.1);
-  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
-}
-
+/* ============================================
+   Dialog Styles
+   ============================================ */
 .dialog-card {
   border-radius: var(--radius-2xl);
   overflow: hidden;
@@ -309,7 +196,7 @@
 
 .dialog-title {
   background: linear-gradient(135deg, var(--color-indigo-500) 0%, var(--color-indigo-700) 100%);
-  color: white;
+  color: var(--text-white);
   font-weight: bold;
   font-size: var(--font-size-xl);
 }
@@ -323,57 +210,35 @@
   background: var(--color-gray-50);
 }
 
-/* Animations */
+/* ============================================
+   Visual Effects
+   ============================================ */
 .glass-effect {
   backdrop-filter: blur(15px);
-}
-
-.page-header.glass-effect {
-  background: linear-gradient(135deg, var(--color-blue-400) 0%, var(--color-blue-500) 50%, var(--color-blue-600) 100%) !important;
-}
-
-.gradient-animation {
-  background-size: 400% 400%;
-  animation: gradientShift 20s ease infinite;
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
 }
 
 .text-glow {
   text-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
 }
 
-.fade-in {
-  animation: fadeIn 1.2s ease-out;
+/* ============================================
+   Animations
+   ============================================ */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 @keyframes fadeIn {
-  from { 
-    opacity: 0; 
-    transform: translateY(30px) scale(0.95); 
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
   }
-  to { 
-    opacity: 1; 
-    transform: translateY(0) scale(1); 
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
-}
-
-/* تأثيرات إضافية للرأس */
-.page-header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.15) 50%, transparent 70%);
-  animation: shimmer 3s ease-in-out infinite;
-  pointer-events: none;
-  border-radius: var(--radius-2xl);
 }
 
 @keyframes shimmer {
@@ -381,58 +246,43 @@
   100% { transform: translateX(100%); }
 }
 
-.page-header::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(66, 165, 245, 0.1) 50%, transparent 70%);
-  animation: pulse 4s ease-in-out infinite;
-  pointer-events: none;
-  border-radius: 50%;
-}
-
 @keyframes pulse {
   0%, 100% { opacity: 0.3; transform: scale(0.8); }
   50% { opacity: 0.6; transform: scale(1.2); }
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+.fade-in {
+  animation: fadeIn 1.2s ease-out;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 600px) {
   .equipment-details-page {
     padding: 1rem;
   }
-  
+
   .page-title {
     font-size: var(--font-size-3xl-plus);
   }
-  
+
   .header-content {
     flex-direction: column;
     text-align: center;
   }
-  
-  .dialog-content {
-    padding: 1rem;
-  }
-  
+
   .search-box {
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .search-btn, .add-btn {
     width: 100%;
     min-width: auto;
   }
-  
+
   .search-container {
     padding: 0.75rem;
-  }
-  
-  .search-field {
-    margin-bottom: 0.5rem;
   }
 }

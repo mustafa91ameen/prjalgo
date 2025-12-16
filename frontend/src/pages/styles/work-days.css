@@ -1,23 +1,29 @@
 /**
  * Work Days Page Styles
- * Extracted from work-days.vue
+ * Contains ONLY page-level styles for the work-days page.
+ * This page doesn't use separate components, so styles are page-specific.
  */
+
+/* ============================================
+   Page Container
+   ============================================ */
 .work-days-page {
   background: var(--color-neutral-100);
   min-height: 100vh;
   direction: rtl;
 }
 
-/* Top Navigation Bar */
-/* Page Title Header */
+/* ============================================
+   Page Title Header
+   ============================================ */
 .page-title-header {
   background: linear-gradient(135deg, var(--color-blue-400) 0%, var(--color-blue-500) 50%, var(--color-blue-600) 100%) !important;
   padding: 0.6rem 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: white !important;
-  box-shadow: 
+  color: var(--text-white) !important;
+  box-shadow:
     0 4px 16px rgba(59, 130, 246, 0.3),
     0 2px 8px rgba(37, 99, 235, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
@@ -25,33 +31,6 @@
   position: relative;
   overflow: hidden;
   min-height: auto;
-}
-
-/* Ensure all text in header is white, except buttons */
-.page-title-header h1,
-.page-title-header h2,
-.page-title-header h3,
-.page-title-header span:not(.v-btn span),
-.page-title-header p,
-.page-title-header label {
-  color: white !important;
-}
-
-/* Force white color with deep selector */
-.page-title-header :deep(h1),
-.page-title-header :deep(h2),
-.page-title-header :deep(h3),
-.page-title-header :deep(span):not(.v-btn span),
-.page-title-header :deep(p),
-.page-title-header :deep(label) {
-  color: white !important;
-  -webkit-text-fill-color: white !important;
-}
-
-/* Exclude buttons from white color */
-.page-title-header .v-btn,
-.page-title-header .nav-btn {
-  color: inherit !important;
 }
 
 .page-title-header::before {
@@ -66,11 +45,19 @@
   pointer-events: none;
 }
 
-@keyframes shimmer {
-  0% { left: -100%; }
-  100% { left: 100%; }
+/* Header text colors */
+.page-title-header h1,
+.page-title-header h2,
+.page-title-header h3,
+.page-title-header span:not(.v-btn span),
+.page-title-header p,
+.page-title-header label {
+  color: var(--text-white) !important;
 }
 
+/* ============================================
+   Header Sections
+   ============================================ */
 .header-left-section {
   display: flex;
   align-items: center;
@@ -82,19 +69,18 @@
   align-items: center;
 }
 
+/* ============================================
+   Navigation Buttons
+   ============================================ */
 .nav-btn {
   background: rgba(255, 255, 255, 0.95) !important;
   color: var(--color-blue-600) !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
   border: 2px solid rgba(255, 255, 255, 0.3) !important;
   transition: all var(--transition-normal) !important;
-  width: 32px !important;
-  height: 32px !important;
-  min-width: 32px !important;
-}
-
-.nav-btn :deep(.v-icon) {
-  font-size: var(--font-size-lg) !important;
+  width: var(--space-8) !important;
+  height: var(--space-8) !important;
+  min-width: var(--space-8) !important;
 }
 
 .nav-btn:hover {
@@ -104,6 +90,7 @@
 }
 
 .nav-btn :deep(.v-icon) {
+  font-size: var(--font-size-lg) !important;
   color: var(--color-blue-600) !important;
 }
 
@@ -111,16 +98,14 @@
   transform: rotate(90deg) !important;
 }
 
+/* ============================================
+   Title Icon & Text
+   ============================================ */
 .title-icon {
   font-size: var(--font-size-xl-plus) !important;
   color: var(--text-white) !important;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)) !important;
   animation: iconPulse 2s ease-in-out infinite;
-}
-
-@keyframes iconPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
 }
 
 .page-title-text {
@@ -134,43 +119,9 @@
   line-height: 1.3;
 }
 
-/* Force white color with higher specificity */
-.page-title-header .page-title-text,
-.page-title-header h1.page-title-text,
-.header-left-section .page-title-text,
-.header-left-section h1.page-title-text,
-.page-title-header :deep(.page-title-text),
-.page-title-header :deep(h1.page-title-text) {
-  color: var(--text-white) !important;
-  -webkit-text-fill-color: var(--text-white) !important;
-}
-
-/* Override any inline styles or other rules */
-.page-title-header .header-left-section .page-title-text {
-  color: var(--text-white) !important;
-  -webkit-text-fill-color: var(--text-white) !important;
-}
-
-/* Force white color for all text elements in header */
-/* Force white color for text in header sections */
-.page-title-header .header-left-section {
-  color: white !important;
-}
-
-.page-title-header .header-right-section {
-  color: white !important;
-}
-
-/* Specific text elements - force white */
-.page-title-header .header-left-section h1,
-.page-title-header .header-left-section h2,
-.page-title-header .header-left-section h3,
-.page-title-header .header-left-section p,
-.page-title-header .header-left-section label,
-.page-title-header .header-left-section div:not(.search-box):not(.search-section) {
-  color: white !important;
-}
-
+/* ============================================
+   Search Section
+   ============================================ */
 .search-section {
   display: flex;
   align-items: center;
@@ -183,12 +134,12 @@
   border-radius: var(--radius-xl) !important;
   padding: 0.5rem 1rem !important;
   gap: 0.75rem !important;
-  box-shadow: 
+  box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.15),
     0 2px 6px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
   border: 2px solid rgba(255, 255, 255, 0.8) !important;
-  min-width: 300px;
+  min-width: var(--space-72);
 }
 
 .search-icon {
@@ -198,1336 +149,292 @@
 }
 
 .search-input {
-  min-width: 200px;
   flex: 1;
-}
-
-.search-input :deep(.v-field) {
-  background: transparent !important;
   border: none !important;
-  box-shadow: none !important;
+  background: transparent !important;
+  outline: none !important;
 }
 
 .search-input :deep(.v-field__input) {
-  padding: 0.5rem 0 !important;
-  font-size: var(--font-size-base-minus) !important;
-  color: var(--text-primary) !important;
+  color: var(--color-slate-800) !important;
   font-weight: 600 !important;
+  font-size: var(--font-size-base) !important;
+  padding: 0 !important;
+  min-height: auto !important;
 }
 
-.search-input :deep(.v-field__input input) {
-  color: var(--text-primary) !important;
-  font-weight: 600 !important;
-}
-
-.search-input :deep(.v-field__input::placeholder) {
-  color: var(--color-gray-400) !important;
-  font-weight: 500 !important;
+.search-input :deep(.v-field__outline) {
+  display: none !important;
 }
 
 .search-btn {
-  background: linear-gradient(135deg, var(--color-blue-800) 0%, var(--color-blue-600) 50%, var(--color-blue-500) 100%) !important;
-  color: white !important;
-  font-weight: 600 !important;
-  padding: 0.5rem 1.25rem !important;
   border-radius: var(--radius-lg) !important;
-  font-size: var(--font-size-sm-minus) !important;
-  text-transform: none !important;
-  box-shadow: 
-    0 2px 8px rgba(30, 64, 175, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
-  border: 2px solid rgba(255, 255, 255, 0.3) !important;
-  transition: all var(--transition-normal) !important;
-  min-width: 80px;
-}
-
-.search-btn:hover {
-  background: linear-gradient(135deg, var(--color-blue-900) 0%, var(--color-blue-800) 50%, var(--color-blue-600) 100%) !important;
-  box-shadow: 
-    0 4px 12px rgba(30, 64, 175, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
-  transform: translateY(-1px) scale(1.02) !important;
-}
-
-.search-btn :deep(.v-btn__content) {
-  color: white !important;
   font-weight: 600 !important;
-  font-size: var(--font-size-sm-minus) !important;
+  padding: 0.5rem 1rem !important;
+  min-width: auto !important;
 }
 
+/* ============================================
+   Table Container
+   ============================================ */
+.table-container {
+  padding: 1rem;
+  background: var(--text-white);
+  margin: 1rem;
+  border-radius: var(--radius-xl);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
 
-/* Modal Styles */
+/* ============================================
+   Work Days Table
+   ============================================ */
+.work-days-table {
+  background: var(--text-white) !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+.work-days-table :deep(.v-data-table__th) {
+  background: linear-gradient(135deg, var(--color-blue-500) 0%, var(--color-blue-600) 100%) !important;
+  color: var(--text-white) !important;
+  font-weight: 700 !important;
+  font-size: var(--font-size-sm) !important;
+  text-align: center !important;
+  padding: 0.75rem 0.5rem !important;
+}
+
+.work-days-table :deep(.v-data-table__td) {
+  text-align: center !important;
+  padding: 0.75rem 0.5rem !important;
+  border-bottom: 1px solid var(--color-slate-200) !important;
+}
+
+.work-days-table :deep(tbody tr:hover) {
+  background: var(--color-blue-50) !important;
+}
+
+/* Table Cell Styles */
+.serial-number {
+  font-weight: 700;
+  color: var(--color-blue-600);
+}
+
+.date-text {
+  font-weight: 600;
+  color: var(--color-slate-700);
+}
+
+.day-text {
+  font-weight: 600;
+  color: var(--color-slate-600);
+}
+
+.period-text {
+  font-weight: 600;
+  color: var(--color-emerald-600);
+  background: var(--color-emerald-50);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-base);
+}
+
+.work-type-text {
+  font-weight: 600;
+  color: var(--color-violet-600);
+}
+
+.about-text {
+  font-weight: 500;
+  color: var(--color-slate-600);
+  font-size: var(--font-size-sm);
+}
+
+/* ============================================
+   Action Buttons
+   ============================================ */
+.actions-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.action-btn {
+  min-width: var(--space-8) !important;
+  width: var(--space-8) !important;
+  height: var(--space-8) !important;
+  transition: all var(--transition-normal) !important;
+}
+
+.action-btn:hover {
+  transform: scale(1.1) !important;
+}
+
+.export-action-btn:hover {
+  background: var(--color-emerald-50) !important;
+}
+
+/* ============================================
+   Modal Styles
+   ============================================ */
 .modal-card {
-  border-radius: var(--radius-xl) !important;
+  border-radius: var(--radius-2xl) !important;
   overflow: hidden;
 }
 
 .modal-header {
-  background: var(--color-blue-500) !important;
-  color: white !important;
+  background: linear-gradient(135deg, var(--color-blue-500) 0%, var(--color-blue-600) 100%) !important;
+  color: var(--text-white) !important;
   padding: 1rem 1.5rem !important;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 }
 
 .modal-title {
-  font-size: var(--font-size-xl-plus);
-  font-weight: 800;
-  color: white;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  letter-spacing: 0.5px;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
 }
 
 .close-btn {
-  color: white !important;
-  min-width: 32px !important;
-  height: 32px !important;
+  color: var(--text-white) !important;
 }
 
 .modal-content {
-  padding: 2rem !important;
-  background: white;
-}
-
-.modal-content :deep(.v-field) {
-  border-radius: var(--radius-lg) !important;
-  background: var(--color-neutral-50) !important;
-  transition: all var(--transition-normal) !important;
-}
-
-.modal-content :deep(.v-field:hover) {
-  background: var(--color-neutral-100) !important;
-  border-color: var(--color-neutral-600) !important;
-}
-
-.modal-content :deep(.v-field__input) {
-  color: var(--color-blue-900) !important;
-  font-weight: 600 !important;
-  font-size: var(--font-size-base) !important;
-  text-shadow: none !important;
-}
-
-.modal-content :deep(.v-label) {
-  color: var(--text-primary) !important;
-  font-weight: 700 !important;
-  font-size: var(--font-size-base) !important;
-  text-shadow: none !important;
-}
-
-.modal-content :deep(.v-field__outline) {
-  border-color: var(--color-neutral-700) !important;
-  border-width: 2px !important;
-  border-style: solid !important;
-  box-shadow: 0 0 0 1px rgba(51, 51, 51, 0.2) !important;
-}
-
-.modal-content :deep(.v-field--focused .v-field__outline) {
-  border-color: var(--color-blue-500) !important;
-  border-width: 3px !important;
-  border-style: solid !important;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3) !important;
-  outline: none !important;
-}
-
-.modal-content :deep(.v-field__input::placeholder) {
-  color: var(--color-blue-900) !important;
-  opacity: 0.7 !important;
-  font-weight: 500 !important;
-}
-
-/* Dropdown Menu Styling - نفس تنسيقات إضافة موظف */
-.modal-content :deep(.v-list),
-.modal-content :deep(.v-menu__content),
-.modal-content :deep(.v-overlay__content) {
-  background: white !important;
-  border: 2px solid var(--color-neutral-850) !important;
-  border-radius: var(--radius-lg) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
-  max-height: 300px !important;
-  overflow-y: auto !important;
-}
-
-.modal-content :deep(.v-list .v-list-item__content),
-.modal-content :deep(.v-menu__content .v-list-item__content),
-.modal-content :deep(.v-overlay__content .v-list-item__content) {
-  color: var(--text-primary) !important;
-}
-
-.modal-content :deep(.v-list .v-list-item-title),
-.modal-content :deep(.v-menu__content .v-list-item-title),
-.modal-content :deep(.v-overlay__content .v-list-item-title) {
-  color: var(--text-primary) !important;
-  font-weight: 600 !important;
-}
-
-.modal-content :deep(.v-list-item),
-.modal-content :deep(.v-menu__content .v-list-item),
-.modal-content :deep(.v-overlay__content .v-list-item) {
-  color: var(--text-primary) !important;
-  font-weight: 600 !important;
-  font-size: var(--font-size-base) !important;
-  padding: var(--space-3) 16px !important;
-  background: white !important;
-  border-bottom: var(--space-px) solid var(--color-gray-200) !important;
-  transition: all var(--transition-fast) !important;
-}
-
-.modal-content :deep(.v-list-item:hover),
-.modal-content :deep(.v-menu__content .v-list-item:hover),
-.modal-content :deep(.v-overlay__content .v-list-item:hover) {
-  background: var(--color-neutral-100) !important;
-  color: var(--text-primary) !important;
-  font-weight: 700 !important;
-}
-
-.modal-content :deep(.v-list-item--active),
-.modal-content :deep(.v-menu__content .v-list-item--active),
-.modal-content :deep(.v-overlay__content .v-list-item--active),
-.modal-content :deep(.v-list-item[aria-selected="true"]),
-.modal-content :deep(.v-menu__content .v-list-item[aria-selected="true"]),
-.modal-content :deep(.v-overlay__content .v-list-item[aria-selected="true"]) {
-  background: var(--color-neutral-850) !important;
-  color: white !important;
-  font-weight: 700 !important;
-}
-
-.modal-content :deep(.v-list-item--active:hover),
-.modal-content :deep(.v-menu__content .v-list-item--active:hover),
-.modal-content :deep(.v-overlay__content .v-list-item--active:hover) {
-  background: var(--text-primary) !important;
-  color: white !important;
-}
-
-/* Vuetify Select Dropdown Styling - نفس تنسيقات إضافة موظف */
-.modal-content :deep(.v-select__menu) {
-  background: white !important;
-  border: 2px solid var(--color-neutral-850) !important;
-  border-radius: var(--radius-lg) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
-  max-height: 300px !important;
-  overflow-y: auto !important;
-}
-
-.modal-content :deep(.v-select__menu .v-list-item__content) {
-  color: var(--text-primary) !important;
-}
-
-.modal-content :deep(.v-select__menu .v-list-item-title) {
-  color: var(--text-primary) !important;
-  font-weight: 600 !important;
-}
-
-.modal-content :deep(.v-select__menu .v-list-item) {
-  color: var(--text-primary) !important;
-  font-weight: 600 !important;
-  font-size: var(--font-size-base) !important;
-  padding: var(--space-3) 16px !important;
-  background: white !important;
-  border-bottom: var(--space-px) solid var(--color-gray-200) !important;
-  transition: all var(--transition-fast) !important;
-}
-
-.modal-content :deep(.v-select__menu .v-list-item:hover) {
-  background: var(--color-neutral-100) !important;
-  color: var(--text-primary) !important;
-  font-weight: 700 !important;
-}
-
-.modal-content :deep(.v-select__menu .v-list-item--active),
-.modal-content :deep(.v-select__menu .v-list-item[aria-selected="true"]) {
-  background: var(--color-neutral-850) !important;
-  color: white !important;
-  font-weight: 700 !important;
-}
-
-.modal-content :deep(.v-select__menu .v-list-item--active:hover) {
-  background: var(--text-primary) !important;
-  color: white !important;
-}
-
-/* Select Field Arrow */
-.modal-content :deep(.v-field__append-inner) {
-  color: var(--color-neutral-700) !important;
-}
-
-.modal-content :deep(.v-field--focused .v-field__append-inner) {
-  color: var(--color-blue-500) !important;
-}
-
-/* Global styling for all dropdown items in modal - نفس تنسيقات إضافة موظف */
-.modal-content :deep(.v-list-item),
-.modal-content :deep(.v-list-item__content),
-.modal-content :deep(.v-list-item-title),
-.modal-content :deep(.v-list-item__title) {
-  color: var(--text-primary) !important;
-  font-weight: 600 !important;
-}
-
-.modal-content :deep(.v-select .v-field__input) {
-  color: var(--text-primary) !important;
-}
-
-.modal-content :deep(.v-select .v-field__input::placeholder) {
-  color: var(--text-primary) !important;
-  opacity: 0.7 !important;
-}
-
-/* Force color for all text in dropdowns */
-.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-title),
-.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-subtitle),
-.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-body) {
-  color: var(--color-blue-900) !important;
-  font-weight: 600 !important;
-}
-
-/* Ultra-specific targeting for dropdown text */
-.modal-content :deep(.v-list-item) {
-  color: var(--color-blue-900) !important;
-}
-
-.modal-content :deep(.v-list-item__content) {
-  color: var(--color-blue-900) !important;
-}
-
-.modal-content :deep(.v-select__menu .v-list-item) {
-  color: var(--color-blue-900) !important;
-}
-
-.modal-content :deep(.v-menu__content .v-list-item) {
-  color: var(--color-blue-900) !important;
-}
-
-.modal-content :deep(.v-overlay__content .v-list-item) {
-  color: var(--color-blue-900) !important;
-}
-
-/* Target all possible text elements */
-.modal-content :deep(span),
-.modal-content :deep(div),
-.modal-content :deep(p),
-.modal-content :deep(.v-list-item__content span),
-.modal-content :deep(.v-list-item__content div) {
-  color: var(--color-blue-900) !important;
-}
-
-/* Comprehensive dropdown styling */
-.modal-content :deep(.v-list-item__overlay),
-.modal-content :deep(.v-list-item__underlay) {
-  color: var(--color-blue-900) !important;
-}
-
-.modal-content :deep(.v-list-item__prepend),
-.modal-content :deep(.v-list-item__append) {
-  color: var(--color-blue-900) !important;
-}
-
-/* Override any white text specifically */
-.modal-content :deep(.v-list-item),
-.modal-content :deep(.v-list-item__content),
-.modal-content :deep(.v-list-item-title),
-.modal-content :deep(.v-list-item__title) {
-  color: var(--color-blue-900) !important;
-  text-shadow: none !important;
-  -webkit-text-fill-color: var(--color-blue-900) !important;
-}
-
-/* Force override for any conflicting styles */
-.modal-content :deep(.v-list-item[style*="color"]),
-.modal-content :deep(.v-list-item__content[style*="color"]),
-.modal-content :deep(.v-list-item-title[style*="color"]) {
-  color: var(--color-blue-900) !important;
-}
-
-/* Ultimate text color override */
-.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-title),
-.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-subtitle),
-.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-body),
-.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-media),
-.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-action) {
-  color: var(--color-blue-900) !important;
-  text-shadow: none !important;
-  -webkit-text-fill-color: var(--color-blue-900) !important;
-  fill: var(--color-blue-900) !important;
-}
-
-/* Target all text nodes */
-.modal-content :deep(.v-list-item .v-list-item__content > *),
-.modal-content :deep(.v-list-item .v-list-item__content > * > *),
-.modal-content :deep(.v-list-item .v-list-item__content > * > * > *) {
-  color: var(--color-blue-900) !important;
-}
-
-/* Specific targeting for select menus */
-.modal-content :deep(.v-select__menu .v-list-item .v-list-item__content .v-list-item-title),
-.modal-content :deep(.v-select__menu .v-list-item .v-list-item__content .v-list-item-subtitle),
-.modal-content :deep(.v-select__menu .v-list-item .v-list-item__content .v-list-item-body) {
-  color: var(--color-blue-900) !important;
-  text-shadow: none !important;
-  -webkit-text-fill-color: var(--color-blue-900) !important;
-}
-
-/* Nuclear approach - override everything */
-.modal-content :deep(.v-list-item),
-.modal-content :deep(.v-list-item__content),
-.modal-content :deep(.v-list-item-title),
-.modal-content :deep(.v-list-item__title),
-.modal-content :deep(.v-list-item-subtitle),
-.modal-content :deep(.v-list-item-body),
-.modal-content :deep(.v-list-item-media),
-.modal-content :deep(.v-list-item-action) {
-  color: var(--color-blue-900) !important;
-  text-shadow: none !important;
-  -webkit-text-fill-color: var(--color-blue-900) !important;
-  fill: var(--color-blue-900) !important;
-  stroke: var(--color-blue-900) !important;
-}
-
-/* Force all text elements */
-.modal-content :deep(.v-list-item .v-list-item__content),
-.modal-content :deep(.v-list-item .v-list-item__content > *),
-.modal-content :deep(.v-list-item .v-list-item__content > * > *),
-.modal-content :deep(.v-list-item .v-list-item__content > * > * > *),
-.modal-content :deep(.v-list-item .v-list-item__content > * > * > * > *) {
-  color: var(--color-blue-900) !important;
-  text-shadow: none !important;
-  -webkit-text-fill-color: var(--color-blue-900) !important;
-}
-
-/* Override any inline styles */
-.modal-content :deep(.v-list-item[style]),
-.modal-content :deep(.v-list-item__content[style]),
-.modal-content :deep(.v-list-item-title[style]),
-.modal-content :deep(.v-list-item__title[style]) {
-  color: var(--color-blue-900) !important;
-  text-shadow: none !important;
-  -webkit-text-fill-color: var(--color-blue-900) !important;
-}
-
-/* Ultimate dropdown override */
-.modal-content :deep(.v-select__menu),
-.modal-content :deep(.v-menu__content),
-.modal-content :deep(.v-overlay__content),
-.modal-content :deep(.v-list) {
-  --v-list-item-color: var(--color-blue-900) !important;
-  --v-list-item-title-color: var(--color-blue-900) !important;
-  --v-list-item-subtitle-color: var(--color-blue-900) !important;
-}
-
-.modal-content :deep(.v-select__menu .v-list-item),
-.modal-content :deep(.v-menu__content .v-list-item),
-.modal-content :deep(.v-overlay__content .v-list-item),
-.modal-content :deep(.v-list .v-list-item) {
-  --v-list-item-color: var(--color-blue-900) !important;
-  --v-list-item-title-color: var(--color-blue-900) !important;
-  --v-list-item-subtitle-color: var(--color-blue-900) !important;
-}
-
-/* CSS Variables override */
-.modal-content :deep(.v-list-item) {
-  color: var(--v-list-item-color, var(--color-blue-900)) !important;
-}
-
-.modal-content :deep(.v-list-item-title) {
-  color: var(--v-list-item-title-color, var(--color-blue-900)) !important;
-}
-
-.modal-content :deep(.v-list-item-subtitle) {
-  color: var(--v-list-item-subtitle-color, var(--color-blue-900)) !important;
-}
-
-/* Final attempt - target all possible elements */
-.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-title),
-.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-subtitle),
-.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-body),
-.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-media),
-.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-action),
-.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-prepend),
-.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-append) {
-  color: var(--color-blue-900) !important;
-  text-shadow: none !important;
-  -webkit-text-fill-color: var(--color-blue-900) !important;
-  fill: var(--color-blue-900) !important;
-  stroke: var(--color-blue-900) !important;
-}
-
-/* Override all possible text elements */
-.modal-content :deep(.v-list-item .v-list-item__content > *),
-.modal-content :deep(.v-list-item .v-list-item__content > * > *),
-.modal-content :deep(.v-list-item .v-list-item__content > * > * > *),
-.modal-content :deep(.v-list-item .v-list-item__content > * > * > * > *),
-.modal-content :deep(.v-list-item .v-list-item__content > * > * > * > * > *) {
-  color: var(--color-blue-900) !important;
-  text-shadow: none !important;
-  -webkit-text-fill-color: var(--color-blue-900) !important;
-}
-
-/* Global dropdown text color - outside modal */
-:deep(.v-list-item) {
-  color: var(--color-blue-900) !important;
-}
-
-:deep(.v-list-item__content) {
-  color: var(--color-blue-900) !important;
-}
-
-:deep(.v-list-item-title) {
-  color: var(--color-blue-900) !important;
-}
-
-:deep(.v-list-item__title) {
-  color: var(--color-blue-900) !important;
-}
-
-:deep(.v-list-item-subtitle) {
-  color: var(--color-blue-900) !important;
-}
-
-:deep(.v-list-item-body) {
-  color: var(--color-blue-900) !important;
-}
-
-/* Global select menu styling */
-:deep(.v-select__menu .v-list-item) {
-  color: var(--color-blue-900) !important;
-}
-
-:deep(.v-select__menu .v-list-item__content) {
-  color: var(--color-blue-900) !important;
-}
-
-:deep(.v-select__menu .v-list-item-title) {
-  color: var(--color-blue-900) !important;
-}
-
-/* Global menu content styling */
-:deep(.v-menu__content .v-list-item) {
-  color: var(--color-blue-900) !important;
-}
-
-:deep(.v-menu__content .v-list-item__content) {
-  color: var(--color-blue-900) !important;
-}
-
-:deep(.v-menu__content .v-list-item-title) {
-  color: var(--color-blue-900) !important;
-}
-
-/* Ultimate global override for all dropdown text */
-:deep(.v-list-item *),
-:deep(.v-list-item__content *),
-:deep(.v-select__menu *),
-:deep(.v-menu__content *),
-:deep(.v-overlay__content *) {
-  color: var(--color-blue-900) !important;
-  text-shadow: none !important;
-  -webkit-text-fill-color: var(--color-blue-900) !important;
-}
-
-/* Force all text elements globally */
-:deep(span),
-:deep(div),
-:deep(p),
-:deep(.v-list-item span),
-:deep(.v-list-item div),
-:deep(.v-list-item p) {
-  color: var(--color-blue-900) !important;
-}
-
-/* Override any CSS variables globally */
-:deep(.v-list-item) {
-  --v-list-item-color: var(--color-blue-900) !important;
-  --v-list-item-title-color: var(--color-blue-900) !important;
-  --v-list-item-subtitle-color: var(--color-blue-900) !important;
-}
-
-:deep(.v-list-item-title) {
-  color: var(--v-list-item-title-color, var(--color-blue-900)) !important;
-}
-
-:deep(.v-list-item-subtitle) {
-  color: var(--v-list-item-subtitle-color, var(--color-blue-900)) !important;
-}
-
-/* تنسيق حقول اليوم ونوع العمل */
-.day-select :deep(.v-field),
-.work-type-select :deep(.v-field) {
-  background: rgba(255, 255, 255, 1) !important;
-  border: 2px solid rgba(156, 163, 175, 0.3) !important;
-  border-radius: var(--radius-xl) !important;
-  transition: all var(--transition-normal) !important;
-}
-
-.day-select :deep(.v-field__input),
-.work-type-select :deep(.v-field__input) {
-  color: var(--text-primary) !important;
-  font-weight: 600 !important;
-  padding: var(--space-3) 16px !important;
-}
-
-.day-select :deep(.v-field__input input),
-.work-type-select :deep(.v-field__input input) {
-  color: var(--text-primary) !important;
-  font-weight: 600 !important;
-  font-size: var(--font-size-base) !important;
-}
-
-.day-select :deep(.v-label),
-.work-type-select :deep(.v-label) {
-  color: var(--color-gray-500) !important;
-  font-weight: 600 !important;
-  background: rgba(255, 255, 255, 1) !important;
-  padding: 0 8px !important;
-  text-decoration: none !important;
-  border-bottom: none !important;
-  box-shadow: none !important;
-}
-
-.day-select :deep(.v-field--focused .v-label),
-.work-type-select :deep(.v-field--focused .v-label) {
-  color: var(--color-blue-600) !important;
-  background: rgba(255, 255, 255, 1) !important;
-  text-decoration: none !important;
-  border-bottom: none !important;
-  box-shadow: none !important;
-}
-
-.day-select :deep(.v-field:hover),
-.work-type-select :deep(.v-field:hover) {
-  background: rgba(255, 255, 255, 1) !important;
-  border-color: rgba(59, 130, 246, 0.5) !important;
-}
-
-.day-select :deep(.v-field--focused),
-.work-type-select :deep(.v-field--focused) {
-  border-color: var(--color-blue-600) !important;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
-  background: rgba(255, 255, 255, 1) !important;
-}
-
-.day-select :deep(.v-icon),
-.work-type-select :deep(.v-icon) {
-  color: var(--color-blue-600) !important;
-}
-
-/* تنسيق حقل التاريخ */
-.date-field :deep(.v-field) {
-  background: rgba(255, 255, 255, 1) !important;
-  border: 2px solid rgba(156, 163, 175, 0.3) !important;
-  border-radius: var(--radius-xl) !important;
-  transition: all var(--transition-normal) !important;
-}
-
-.date-field :deep(.v-field__input) {
-  color: var(--text-primary) !important;
-  font-weight: 600 !important;
-  padding: var(--space-3) 16px !important;
-  text-decoration: none !important;
-  border-bottom: none !important;
-}
-
-.date-field :deep(.v-field__input input) {
-  color: var(--text-primary) !important;
-  font-weight: 600 !important;
-  font-size: var(--font-size-base) !important;
-  text-decoration: none !important;
-  border-bottom: none !important;
-  box-shadow: none !important;
-}
-
-.date-field :deep(.v-label) {
-  color: var(--color-gray-500) !important;
-  font-weight: 600 !important;
-  background: rgba(255, 255, 255, 1) !important;
-  padding: 0 8px !important;
-  text-decoration: none !important;
-  border-bottom: none !important;
-  box-shadow: none !important;
-}
-
-.date-field :deep(.v-field--focused .v-label) {
-  color: var(--color-blue-600) !important;
-  background: rgba(255, 255, 255, 1) !important;
-  text-decoration: none !important;
-  border-bottom: none !important;
-  box-shadow: none !important;
-}
-
-.date-field :deep(.v-field:hover) {
-  background: rgba(255, 255, 255, 1) !important;
-  border-color: rgba(59, 130, 246, 0.5) !important;
-}
-
-.date-field :deep(.v-field--focused) {
-  border-color: var(--color-blue-600) !important;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
-  background: rgba(255, 255, 255, 1) !important;
-}
-
-.date-field :deep(.v-icon) {
-  color: var(--color-blue-600) !important;
-}
-
-/* Specific styling for day and work type selects - نفس تنسيقات إضافة موظف */
-.day-select :deep(.v-menu__content),
-.day-select :deep(.v-overlay__content),
-.work-type-select :deep(.v-menu__content),
-.work-type-select :deep(.v-overlay__content) {
-  background: white !important;
-  border: 2px solid var(--color-blue-600) !important;
-  border-radius: var(--radius-xl) !important;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2) !important;
-}
-
-.day-select :deep(.v-list-item),
-.work-type-select :deep(.v-list-item) {
-  color: var(--text-primary) !important;
-  font-weight: 600 !important;
-  font-size: var(--font-size-base) !important;
-  padding: var(--space-3) 16px !important;
-  background: white !important;
-  text-shadow: none !important;
-  -webkit-text-fill-color: var(--text-primary) !important;
-}
-
-.day-select :deep(.v-list-item__content),
-.work-type-select :deep(.v-list-item__content) {
-  color: var(--text-primary) !important;
-  text-shadow: none !important;
-  -webkit-text-fill-color: var(--text-primary) !important;
-}
-
-.day-select :deep(.v-list-item-title),
-.work-type-select :deep(.v-list-item-title) {
-  color: var(--text-primary) !important;
-  font-weight: 600 !important;
-  text-shadow: none !important;
-  -webkit-text-fill-color: var(--text-primary) !important;
-}
-
-.day-select :deep(.v-list-item:hover),
-.work-type-select :deep(.v-list-item:hover) {
-  background: var(--color-neutral-100) !important;
-  color: var(--text-primary) !important;
-  font-weight: 700 !important;
-}
-
-.day-select :deep(.v-list-item--active),
-.day-select :deep(.v-list-item[aria-selected="true"]),
-.work-type-select :deep(.v-list-item--active),
-.work-type-select :deep(.v-list-item[aria-selected="true"]) {
-  background: var(--color-neutral-850) !important;
-  color: white !important;
-  font-weight: 700 !important;
-}
-
-.day-select :deep(.v-list-item--active:hover),
-.work-type-select :deep(.v-list-item--active:hover) {
-  background: var(--text-primary) !important;
-  color: white !important;
+  padding: 1.5rem !important;
+  background: var(--color-slate-50);
 }
 
 .modal-footer {
   padding: 1rem 1.5rem !important;
-  background: var(--color-gray-50) !important;
-  border-top: var(--space-px) solid var(--color-gray-300) !important;
+  background: var(--text-white);
+  border-top: 1px solid var(--color-slate-200);
 }
 
-.cancel-btn,
-.cancel-btn.v-btn {
-  font-weight: 600 !important;
-  text-transform: none !important;
-  border-radius: var(--radius-xl) !important;
-  padding: var(--space-2-5) 20px !important;
-  border: 2px solid rgba(156, 163, 175, 0.3) !important;
-  color: var(--color-gray-500) !important;
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(10px) !important;
-  font-size: var(--font-size-xs) !important;
-  font-family: var(--font-primary) !important;
-  min-width: 100px !important;
-  box-shadow: 
-    0 4px 16px rgba(0, 0, 0, 0.08),
-    0 2px 8px rgba(156, 163, 175, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
-  transition: all var(--transition-normal) !important;
-  letter-spacing: 0.3px !important;
-  line-height: 1.4 !important;
-  position: relative;
-  overflow: hidden;
-}
-
-.cancel-btn :deep(.v-btn__content) {
-  color: var(--color-gray-500) !important;
-  font-weight: 600 !important;
-  font-size: var(--font-size-xs) !important;
-  letter-spacing: 0.3px !important;
-}
-
-.cancel-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left var(--transition-slow);
-}
-
-.cancel-btn:hover::before {
-  left: 100%;
-}
-
-.cancel-btn:hover,
-.cancel-btn.v-btn:hover {
-  background: rgba(255, 255, 255, 1) !important;
-  border-color: rgba(156, 163, 175, 0.5) !important;
-  color: var(--color-gray-700) !important;
-  transform: translateY(-2px) scale(1.02) !important;
-  box-shadow: 
-    0 6px 20px rgba(0, 0, 0, 0.12),
-    0 3px 10px rgba(156, 163, 175, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 1) !important;
-}
-
-.save-btn,
-.save-btn.v-btn {
-  font-weight: 600 !important;
-  text-transform: none !important;
-  border-radius: var(--radius-xl) !important;
-  padding: var(--space-2-5) 20px !important;
-  background: linear-gradient(135deg, var(--color-blue-400) 0%, var(--color-blue-500) 50%, var(--color-blue-600) 100%) !important;
-  color: var(--text-white) !important;
-  font-size: var(--font-size-xs) !important;
-  font-family: var(--font-primary) !important;
-  min-width: 100px !important;
-  box-shadow: 
-    0 4px 16px rgba(59, 130, 246, 0.4),
-    0 2px 8px rgba(37, 99, 235, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
-  border: 2px solid rgba(255, 255, 255, 0.3) !important;
-  transition: all var(--transition-normal) !important;
-  letter-spacing: 0.3px !important;
-  line-height: 1.4 !important;
-  position: relative;
-  overflow: hidden;
-}
-
-.save-btn :deep(.v-btn__content) {
-  color: var(--text-white) !important;
-  font-weight: 600 !important;
-  font-size: var(--font-size-xs) !important;
-  text-align: center !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  letter-spacing: 0.3px !important;
-  line-height: 1.4 !important;
-}
-
-.save-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left var(--transition-slow);
-  z-index: var(--z-base);
-}
-
-.save-btn:hover::before {
-  left: 100%;
-}
-
-.save-btn:hover,
-.save-btn.v-btn:hover {
-  background: linear-gradient(135deg, var(--color-blue-500) 0%, var(--color-blue-600) 50%, var(--color-blue-700) 100%) !important;
-  box-shadow: 
-    0 8px 24px rgba(59, 130, 246, 0.5),
-    0 4px 12px rgba(37, 99, 235, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
-  transform: translateY(-2px) scale(1.02) !important;
-  border-color: rgba(255, 255, 255, 0.5) !important;
-}
-
-.save-btn:disabled {
-  background: linear-gradient(135deg, var(--color-gray-400) 0%, var(--color-gray-500) 100%) !important;
-  color: var(--text-white) !important;
-  box-shadow: 0 2px 8px rgba(156, 163, 175, 0.2) !important;
-  transform: none !important;
-  opacity: 0.6 !important;
-  cursor: not-allowed !important;
-}
-
-.save-btn:disabled::before {
-  display: none !important;
-}
-
-/* Work Period Section */
+/* ============================================
+   Form Styles
+   ============================================ */
 .work-period-section {
   margin-bottom: 1rem;
-  padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.95) !important;
-  border: 2px solid rgba(59, 130, 246, 0.2) !important;
-  border-radius: var(--radius-xl) !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
 }
 
 .section-label {
   display: block;
-  font-weight: 800;
-  color: var(--color-blue-800) !important;
-  margin-bottom: 1rem;
-  font-size: var(--font-size-base-plus);
-  text-shadow: none !important;
-  font-family: var(--font-primary) !important;
+  font-weight: 600;
+  color: var(--color-slate-700);
+  margin-bottom: 0.5rem;
 }
 
 .period-inputs {
   display: flex;
   align-items: center;
   gap: 1rem;
-  width: 100%;
-}
-
-.test-btn {
-  font-size: var(--font-size-xs-plus) !important;
-  height: 32px !important;
 }
 
 .period-input {
   flex: 1;
-  min-width: 0;
-}
-
-.period-input :deep(.v-field) {
-  background: rgba(255, 255, 255, 1) !important;
-  border: 2px solid rgba(156, 163, 175, 0.3) !important;
-  border-radius: var(--radius-xl) !important;
-  transition: all var(--transition-normal) !important;
-}
-
-.period-input :deep(.v-field__input) {
-  color: var(--text-primary) !important;
-  font-weight: 600 !important;
-  padding: var(--space-3) 16px !important;
-  text-decoration: none !important;
-  border-bottom: none !important;
-}
-
-.period-input :deep(.v-field__input input) {
-  text-decoration: none !important;
-  border-bottom: none !important;
-  box-shadow: none !important;
-}
-
-.period-input :deep(.v-field__input input) {
-  color: var(--text-primary) !important;
-  font-weight: 600 !important;
-  font-size: var(--font-size-base) !important;
-}
-
-.period-input :deep(.v-label) {
-  color: var(--color-gray-500) !important;
-  font-weight: 600 !important;
-  background: rgba(255, 255, 255, 1) !important;
-  padding: 0 8px !important;
-  text-decoration: none !important;
-  border-bottom: none !important;
-  box-shadow: none !important;
-}
-
-.period-input :deep(.v-field--focused .v-label) {
-  color: var(--color-blue-600) !important;
-  background: rgba(255, 255, 255, 1) !important;
-  text-decoration: none !important;
-  border-bottom: none !important;
-  box-shadow: none !important;
-}
-
-.period-input :deep(.v-field__input) {
-  text-decoration: none !important;
-  border-bottom: none !important;
-}
-
-.period-input :deep(.v-field__input::after),
-.period-input :deep(.v-field__input::before) {
-  display: none !important;
-}
-
-.period-input :deep(.v-field:hover) {
-  background: rgba(255, 255, 255, 1) !important;
-  border-color: rgba(59, 130, 246, 0.5) !important;
-}
-
-.period-input :deep(.v-field--focused) {
-  border-color: var(--color-blue-600) !important;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
-  background: rgba(255, 255, 255, 1) !important;
-}
-
-.period-input :deep(.v-icon) {
-  color: var(--color-blue-600) !important;
 }
 
 .period-separator {
-  font-size: var(--font-size-2xl);
-  font-weight: 800;
-  color: var(--color-blue-600) !important;
-  margin: 0 0.5rem;
-  text-shadow: none !important;
-  flex-shrink: 0;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-slate-400);
 }
 
-/* Table Container */
-.table-container {
-  background: white;
-  margin: 1rem;
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  border: 1px solid var(--color-gray-200);
+.cancel-btn {
+  border-radius: var(--radius-xl) !important;
 }
 
-.table-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--color-blue-500), var(--color-blue-700));
-}
-
-.work-days-table {
-  direction: rtl;
-}
-
-.work-days-table :deep(.v-data-table-header th),
-.work-days-table :deep(.v-data-table__th),
-.work-days-table :deep(.v-data-table-header) {
-  background: linear-gradient(135deg, var(--color-violet-500) 0%, var(--color-violet-600) 50%, var(--color-violet-700) 100%) !important;
-  color: var(--text-white) !important;
-  -webkit-text-fill-color: var(--text-white) !important;
-  font-weight: 700 !important;
-  font-size: var(--font-size-sm-minus) !important;
-  border-bottom: var(--space-3) solid var(--color-violet-800) !important;
-  text-align: center !important;
-  padding: var(--space-3) 10px !important;
-  letter-spacing: 0.5px !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.2) !important;
-  position: relative !important;
-  border-radius: 0 !important;
-  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3) !important;
-}
-
-/* Force white color for all text elements in table header */
-.work-days-table :deep(.v-data-table-header th *),
-.work-days-table :deep(.v-data-table-header th span),
-.work-days-table :deep(.v-data-table-header th div),
-.work-days-table :deep(.v-data-table-header th .v-data-table-header__content),
-.work-days-table :deep(.v-data-table-header th .v-data-table-header__content *) {
-  color: var(--text-white) !important;
-  -webkit-text-fill-color: var(--text-white) !important;
-}
-
-.work-days-table :deep(.v-data-table-header th::after) {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--text-white) 0%, rgba(255, 255, 255, 0.3) 50%, var(--text-white) 100%);
-  opacity: 0.3;
-}
-
-/* إظهار أسهم الفرز دائماً في جميع الأعمدة القابلة للفرز */
-.work-days-table :deep(.v-data-table-header th) {
-  position: relative;
-}
-
-/* إظهار الأسهم دائماً - جميع الحالات */
-.work-days-table :deep(.v-data-table-header th .v-data-table-header__content) {
-  position: relative;
-}
-
-.work-days-table :deep(.v-data-table-header th .v-data-table-header__sort-badge),
-.work-days-table :deep(.v-data-table-header th .v-data-table-header__sort-icon),
-.work-days-table :deep(.v-data-table-header th .v-icon),
-.work-days-table :deep(.v-data-table-header th[aria-sort] .v-data-table-header__sort-badge),
-.work-days-table :deep(.v-data-table-header th[aria-sort] .v-data-table-header__sort-icon),
-.work-days-table :deep(.v-data-table-header th:not([aria-sort]) .v-data-table-header__sort-badge),
-.work-days-table :deep(.v-data-table-header th:not([aria-sort]) .v-data-table-header__sort-icon),
-.work-days-table :deep(.v-data-table-header th:hover .v-data-table-header__sort-badge),
-.work-days-table :deep(.v-data-table-header th:hover .v-data-table-header__sort-icon) {
-  opacity: 1 !important;
-  visibility: visible !important;
-  display: inline-flex !important;
-}
-
-/* إظهار الأسهم حتى في الحالة الافتراضية (غير مفروز) */
-.work-days-table :deep(.v-data-table-header th.sortable .v-data-table-header__sort-badge),
-.work-days-table :deep(.v-data-table-header th[data-sortable="true"] .v-data-table-header__sort-badge),
-.work-days-table :deep(.v-data-table-header th.sortable .v-data-table-header__sort-icon),
-.work-days-table :deep(.v-data-table-header th[data-sortable="true"] .v-data-table-header__sort-icon) {
-  opacity: 1 !important;
-  visibility: visible !important;
-  display: inline-flex !important;
-}
-
-/* إظهار أيقونة السهم في الأعمدة القابلة للفرز - دائماً */
-.work-days-table :deep(.v-data-table-header th.sortable::after),
-.work-days-table :deep(.v-data-table-header th[data-sortable="true"]::after) {
-  content: '⇅' !important;
-  display: inline-block !important;
-  margin-inline-end: var(--space-1) !important;
-  opacity: 1 !important;
-  font-size: var(--font-size-sm-plus) !important;
-  color: rgba(255, 255, 255, 1) !important;
-  visibility: visible !important;
-}
-
-/* إظهار الأسهم في جميع حالات الفرز */
-.work-days-table :deep(.v-data-table-header th[aria-sort="ascending"]::after) {
-  content: '↑' !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-}
-
-.work-days-table :deep(.v-data-table-header th[aria-sort="descending"]::after) {
-  content: '↓' !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-}
-
-.work-days-table :deep(.v-data-table__wrapper table thead tr th) {
-  background: linear-gradient(135deg, var(--color-violet-500) 0%, var(--color-violet-600) 50%, var(--color-violet-700) 100%) !important;
-  color: var(--text-white) !important;
-  -webkit-text-fill-color: var(--text-white) !important;
-  font-weight: 700 !important;
-  font-size: var(--font-size-sm-minus) !important;
-  text-align: center !important;
-  padding: var(--space-3) 10px !important;
-  border-bottom: var(--space-3) solid var(--color-violet-800) !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.2) !important;
-  letter-spacing: 0.5px !important;
-  position: relative !important;
-  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3) !important;
-}
-
-/* Force white color for all nested text elements */
-.work-days-table :deep(.v-data-table__wrapper table thead tr th *),
-.work-days-table :deep(.v-data-table__wrapper table thead tr th span),
-.work-days-table :deep(.v-data-table__wrapper table thead tr th div),
-.work-days-table :deep(.v-data-table__wrapper table thead tr th .v-data-table-header__content),
-.work-days-table :deep(.v-data-table__wrapper table thead tr th .v-data-table-header__content *) {
-  color: var(--text-white) !important;
-  -webkit-text-fill-color: var(--text-white) !important;
-}
-
-.work-days-table :deep(.v-data-table__tbody td) {
-  text-align: center !important;
-  padding: 0.75rem 0.5rem !important;
-  border-bottom: var(--space-0-5) solid var(--color-gray-200) !important;
-  background: white !important;
-  font-size: var(--font-size-xs) !important;
-  color: var(--color-gray-900) !important;
-  font-weight: 400 !important;
-}
-
-.work-days-table :deep(.v-data-table__tbody tr:hover) {
-  background: var(--color-blue-50) !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15) !important;
-  transition: all var(--transition-fast) !important;
-}
-
-.work-days-table :deep(.v-data-table__tbody tr:hover td) {
-  color: var(--color-info-dark) !important;
+.save-btn {
+  border-radius: var(--radius-xl) !important;
   font-weight: 600 !important;
 }
 
-/* Table Cell Styles */
-.serial-number,
-.date-text,
-.day-text,
-.period-text,
-.work-type-text,
-.about-text {
-  font-size: var(--font-size-xs) !important;
-  color: var(--color-gray-900) !important;
-  font-weight: 400 !important;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) !important;
+/* ============================================
+   Animations
+   ============================================ */
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
 }
 
-.serial-number {
-  background: var(--color-gray-50) !important;
-  padding: 0.4rem 0.5rem !important;
-  border-radius: var(--radius-md) !important;
-  font-weight: 500 !important;
-  font-size: var(--font-size-xs) !important;
-  color: var(--color-blue-500) !important;
-  border: 1px solid var(--color-gray-200) !important;
+@keyframes iconPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
 
-.date-text {
-  color: var(--color-success) !important;
-  font-weight: 500 !important;
-  font-size: var(--font-size-xs) !important;
-}
-
-.day-text {
-  color: var(--color-error) !important;
-  font-weight: 500 !important;
-  font-size: var(--font-size-xs) !important;
-}
-
-.period-text {
-  color: var(--color-warning) !important;
-  font-weight: 500 !important;
-  font-size: var(--font-size-xs) !important;
-  background: var(--color-amber-100) !important;
-  padding: 0.2rem 0.4rem !important;
-  border-radius: var(--radius-base) !important;
-}
-
-.work-type-text {
-  color: var(--color-violet-600) !important;
-  font-weight: 500 !important;
-  font-size: var(--font-size-xs) !important;
-}
-
-.about-text {
-  color: var(--color-info) !important;
-  font-weight: 400 !important;
-  font-size: var(--font-size-xs) !important;
-  max-width: 200px !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
-}
-
-.actions-buttons {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
-  align-items: center;
-  padding: 0.5rem;
-  background: var(--color-gray-50);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-gray-200);
-}
-
-.action-btn {
-  min-width: 36px !important;
-  height: 36px !important;
-  border-radius: var(--radius-md) !important;
-  transition: all var(--transition-fast) !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-}
-
-.action-btn:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
-}
-
-.actions-buttons .v-btn[color="red"] {
-  background: var(--color-blue-900) !important;
-  color: white !important;
-}
-
-.actions-buttons .v-btn[color="black"] {
-  background: var(--color-gray-600) !important;
-  color: white !important;
-}
-
-/* Dialog Styles */
-.dialog-header {
-  background: linear-gradient(135deg, var(--color-blue-500) 0%, var(--color-blue-700) 100%) !important;
-  color: white !important;
-  font-weight: 600 !important;
-  padding: 1.5rem !important;
-}
-
-.dialog-content {
-  padding: 2rem !important;
-}
-
-.dialog-actions {
-  padding: 1rem 1.5rem !important;
-  background: var(--color-gray-50) !important;
-}
-
-/* Pagination */
-.work-days-table :deep(.v-data-table-footer) {
-  background: var(--color-gray-50) !important;
-  border-top: var(--space-px) solid var(--color-gray-300) !important;
-  padding: 1rem !important;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .main-header {
+/* ============================================
+   Responsive Design
+   ============================================ */
+@media (max-width: 960px) {
+  .page-title-header {
     flex-direction: column;
-    gap: 1rem;
-    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem;
   }
-  
-  .search-box {
+
+  .header-left-section,
+  .header-right-section {
     width: 100%;
+    justify-content: center;
   }
-  
-  .search-input {
-    min-width: auto;
-    flex: 1;
+
+  .search-box {
+    min-width: 100%;
   }
-  
-  .header-title {
-    align-self: center;
-  }
-  
+
   .table-container {
     margin: 0.5rem;
+    padding: 0.5rem;
   }
-  
-  .work-days-table :deep(.v-data-table-header th),
-  .work-days-table :deep(.v-data-table__tbody td) {
-    padding: 0.5rem 0.25rem !important;
-    font-size: var(--font-size-xs-plus) !important;
-  }
-  
+
   .actions-buttons {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 600px) {
+  .page-title-text {
+    font-size: var(--font-size-base);
+  }
+
+  .title-icon {
+    font-size: var(--font-size-lg) !important;
+  }
+
+  .nav-btn {
+    width: var(--space-7) !important;
+    height: var(--space-7) !important;
+    min-width: var(--space-7) !important;
+  }
+
+  .search-box {
+    padding: 0.25rem 0.5rem !important;
+    gap: 0.5rem !important;
+  }
+
+  .work-days-table :deep(.v-data-table__th),
+  .work-days-table :deep(.v-data-table__td) {
+    padding: 0.5rem 0.25rem !important;
+    font-size: var(--font-size-xs) !important;
+  }
+
+  .modal-content {
+    padding: 1rem !important;
+  }
+
+  .period-inputs {
     flex-direction: column;
-    gap: 0.1rem;
+    gap: 0.5rem;
   }
-  
-  .action-btn {
-    min-width: 24px !important;
-    height: 24px !important;
+
+  .period-separator {
+    display: none;
   }
-}
-
-/* زر تصدير Excel في عمود الإجراءات */
-.export-action-btn {
-  background: linear-gradient(135deg, var(--color-emerald-500) 0%, var(--color-emerald-600) 100%) !important;
-  color: white !important;
-  border-radius: var(--radius-md) !important;
-  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3) !important;
-  transition: all var(--transition-normal) !important;
-  margin-bottom: var(--space-1) !important;
-}
-
-.export-action-btn:hover {
-  background: linear-gradient(135deg, var(--color-emerald-600) 0%, var(--color-emerald-700) 100%) !important;
-  transform: scale(1.1) !important;
-  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4) !important;
-}
-
-.export-action-btn .v-icon {
-  color: white !important;
-  font-size: var(--font-size-base) !important;
 }

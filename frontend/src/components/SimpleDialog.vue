@@ -92,7 +92,7 @@ const saveAction = () => {
 
 <style scoped>
 .modern-dialog {
-  border-radius: 12px;
+  border-radius: var(--radius-xl);
   overflow: hidden;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
@@ -125,9 +125,9 @@ const saveAction = () => {
 .close-btn {
   opacity: 0.9;
   transition: opacity 0.3s ease;
-  min-width: 32px !important;
-  width: 32px !important;
-  height: 32px !important;
+  min-width: var(--space-8) !important;
+  width: var(--space-8) !important;
+  height: var(--space-8) !important;
   padding: 0.25rem !important;
 }
 
@@ -148,23 +148,23 @@ const saveAction = () => {
 .dialog-actions {
   padding: 1.25rem 1.5rem !important;
   background: #f8f9fa !important;
-  border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
+  border-top: var(--space-px) solid rgba(0, 0, 0, 0.05) !important;
   display: flex;
   justify-content: flex-end;
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .save-btn,
 .save-btn.v-btn {
   font-weight: 700 !important;
   text-transform: none !important;
-  border-radius: 14px !important;
-  padding: 14px 32px !important;
+  border-radius: var(--radius-xl) !important;
+  padding: var(--space-3-5) 32px !important;
   background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
   color: #ffffff !important;
   font-size: var(--font-size-base) !important;
   font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  min-width: 140px !important;
+  min-width: var(--space-36) !important;
   box-shadow: 
     0 6px 20px rgba(59, 130, 246, 0.4),
     0 3px 10px rgba(37, 99, 235, 0.3),
@@ -179,7 +179,7 @@ const saveAction = () => {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  gap: 10px;
+  gap: var(--space-2-5);
 }
 
 .save-btn :deep(.v-btn__content) {
@@ -190,7 +190,7 @@ const saveAction = () => {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 10px !important;
+  gap: var(--space-2-5) !important;
 }
 
 .save-btn :deep(.v-icon) {
@@ -230,15 +230,15 @@ const saveAction = () => {
 .cancel-btn.v-btn {
   font-weight: 700 !important;
   text-transform: none !important;
-  border-radius: 14px !important;
-  padding: 14px 32px !important;
+  border-radius: var(--radius-xl) !important;
+  padding: var(--space-3-5) 32px !important;
   border: 2px solid rgba(156, 163, 175, 0.5) !important;
   color: #374151 !important;
   background: rgba(255, 255, 255, 1) !important;
   backdrop-filter: blur(10px) !important;
   font-size: var(--font-size-base) !important;
   font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  min-width: 140px !important;
+  min-width: var(--space-36) !important;
   box-shadow: 
     0 4px 16px rgba(0, 0, 0, 0.1),
     0 2px 8px rgba(156, 163, 175, 0.15),

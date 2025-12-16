@@ -216,14 +216,14 @@ const closeDialog = () => {
 
 <style scoped>
 .projects-dialog .v-card {
-  border-radius: 20px !important;
+  border-radius: var(--radius-2xl) !important;
   overflow: hidden !important;
 }
 
 .projects-dialog-title {
   background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%) !important;
   color: white !important;
-  padding: 20px 24px !important;
+  padding: var(--space-5) 24px !important;
 }
 
 .projects-dialog-title h2 {
@@ -231,23 +231,23 @@ const closeDialog = () => {
 }
 
 .add-project-section {
-  border-radius: 16px !important;
+  border-radius: var(--radius-2xl) !important;
   background: linear-gradient(145deg, #f0fdf4 0%, #dcfce7 100%) !important;
   border-color: #86efac !important;
 }
 
 .add-project-btn {
-  height: 56px !important;
-  border-radius: 12px !important;
+  height: var(--space-14) !important;
+  border-radius: var(--radius-xl) !important;
   font-weight: 600 !important;
 }
 
 .projects-list-card {
-  border-radius: 16px !important;
+  border-radius: var(--radius-2xl) !important;
 }
 
 .project-item {
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: var(--space-px) solid #e5e7eb;
 }
 
 .project-item:last-child {
@@ -255,6 +255,6 @@ const closeDialog = () => {
 }
 
 .form-field-enhanced {
-  border-radius: 12px !important;
+  border-radius: var(--radius-xl) !important;
 }
 </style>

@@ -224,15 +224,15 @@ const getDueDateStatus = (dueDate) => {
 
 <style scoped>
 .data-table-card {
-  border-radius: 16px !important;
+  border-radius: var(--radius-2xl) !important;
   overflow: hidden;
 }
 
 .add-button {
-  border-radius: 12px !important;
+  border-radius: var(--radius-xl) !important;
 }
 
 .action-button {
-  border-radius: 8px !important;
+  border-radius: var(--radius-lg) !important;
 }
 </style>

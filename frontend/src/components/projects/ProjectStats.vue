@@ -111,7 +111,7 @@ const formattedBudget = computed(() => {
 
 .stats-row .v-col {
   margin: 0 !important;
-  padding: 8px !important;
+  padding: var(--space-2) !important;
   box-sizing: border-box !important;
 }
 
@@ -130,7 +130,7 @@ const formattedBudget = computed(() => {
   right: 0;
   bottom: 0;
   background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-  border-radius: 24px;
+  border-radius: var(--radius-3xl);
   z-index: 1;
   pointer-events: none;
 }
@@ -139,8 +139,8 @@ const formattedBudget = computed(() => {
   filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.15));
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: var(--font-size-6xl) !important;
-  width: 60px !important;
-  height: 60px !important;
+  width: var(--space-14) !important;
+  height: var(--space-14) !important;
 }
 
 .stat-card:hover .v-icon {
@@ -190,38 +190,38 @@ const formattedBudget = computed(() => {
 }
 
 /* Responsive adjustments specific to stats row */
-@media (max-width: 1200px) {
+@media (max-width: var(--space-96)) {
   .stats-row {
     gap: 0;
     padding: 0;
   }
 
   .stats-row .v-col {
-    padding: 6px !important;
+    padding: var(--space-1-5) !important;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: var(--space-96)) {
   .stats-row .v-col {
-    padding: 4px !important;
+    padding: var(--space-1) !important;
   }
 
   .stat-card .v-icon {
     font-size: var(--font-size-4xl-plus) !important;
-    width: 40px !important;
-    height: 40px !important;
+    width: var(--space-10) !important;
+    height: var(--space-10) !important;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--space-96)) {
   .stats-row .v-col {
-    padding: 2px !important;
+    padding: var(--space-0-5) !important;
   }
 
   .stat-card .v-icon {
     font-size: var(--font-size-3xl-plus) !important;
-    width: 32px !important;
-    height: 32px !important;
+    width: var(--space-8) !important;
+    height: var(--space-8) !important;
   }
 }
 </style>

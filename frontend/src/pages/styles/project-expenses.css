@@ -1,17 +1,23 @@
 /**
- * project-expenses Page Styles
- * Extracted from project-expenses.vue
+ * Project Expenses Page Styles
+ * Contains ONLY page-level styles for the project expenses page.
  */
+
+/* ============================================
+   Page Layout
+   ============================================ */
 .project-expenses-page {
   background: linear-gradient(135deg, var(--color-slate-50) 0%, var(--color-slate-200) 100%);
   min-height: 100vh;
   padding: var(--space-5);
 }
 
-/* Header Styles */
+/* ============================================
+   Page Header
+   ============================================ */
 .header-card {
   background: linear-gradient(135deg, var(--color-blue-800) 0%, var(--color-blue-500) 100%) !important;
-  color: white !important;
+  color: var(--text-white) !important;
   border-radius: var(--radius-2xl) !important;
 }
 
@@ -36,33 +42,23 @@
 
 .add-btn-header {
   background: linear-gradient(135deg, var(--color-emerald-600) 0%, var(--color-emerald-500) 100%) !important;
-  color: white !important;
+  color: var(--text-white) !important;
   font-weight: 700 !important;
-  font-size: var(--font-size-base) !important;
-  padding: var(--space-3) 20px !important;
   border-radius: var(--radius-xl) !important;
-  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3) !important;
+  box-shadow: var(--shadow-emerald-md) !important;
   text-transform: none !important;
-  letter-spacing: 0.5px !important;
 }
 
 .add-btn-header:hover {
   transform: translateY(-2px) !important;
-  box-shadow: 0 6px 16px rgba(5, 150, 105, 0.4) !important;
-}
-
-.add-btn-header .v-icon {
-  margin-inline-end: var(--space-2) !important;
-  font-size: var(--font-size-base-plus) !important;
 }
 
 .back-btn {
   background: rgba(255, 255, 255, 0.2) !important;
-  color: white !important;
+  color: var(--text-white) !important;
   border: 2px solid rgba(255, 255, 255, 0.3) !important;
   border-radius: var(--radius-xl) !important;
   font-weight: 600 !important;
-  padding: var(--space-3) 24px !important;
 }
 
 .back-btn:hover {
@@ -70,7 +66,9 @@
   transform: translateY(-2px) !important;
 }
 
-/* Info Card Styles */
+/* ============================================
+   Info Card
+   ============================================ */
 .info-card {
   border-radius: var(--radius-2xl) !important;
   border: 2px solid var(--color-slate-200) !important;
@@ -81,7 +79,6 @@
   color: var(--color-blue-800) !important;
   font-weight: 700 !important;
   font-size: var(--font-size-xl) !important;
-  border-bottom: var(--space-0-5) solid var(--color-slate-200) !important;
 }
 
 .info-item {
@@ -93,13 +90,11 @@
   color: var(--color-slate-500) !important;
   display: block !important;
   margin-bottom: var(--space-1) !important;
-  font-size: var(--font-size-sm-plus) !important;
 }
 
 .info-value {
   font-weight: 700 !important;
   color: var(--color-slate-800) !important;
-  font-size: var(--font-size-base-plus) !important;
 }
 
 .info-value.cost {
@@ -107,7 +102,9 @@
   font-size: var(--font-size-xl) !important;
 }
 
-/* Statistics Cards */
+/* ============================================
+   Statistics Cards
+   ============================================ */
 .stat-card {
   border-radius: var(--radius-2xl) !important;
   transition: all var(--transition-normal) !important;
@@ -116,7 +113,7 @@
 
 .stat-card:hover {
   transform: translateY(-4px) !important;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: var(--shadow-popup) !important;
 }
 
 .total-expenses {
@@ -142,7 +139,6 @@
 .stat-number {
   font-size: var(--font-size-4xl-plus) !important;
   font-weight: 800 !important;
-  margin: var(--space-3) 0 8px 0 !important;
   color: var(--color-slate-800) !important;
 }
 
@@ -150,10 +146,11 @@
   font-size: var(--font-size-base) !important;
   font-weight: 600 !important;
   color: var(--color-slate-500) !important;
-  margin: 0 !important;
 }
 
-/* Table Styles */
+/* ============================================
+   Expenses Table
+   ============================================ */
 .expenses-table-card {
   border-radius: var(--radius-2xl) !important;
   border: 2px solid var(--color-violet-200) !important;
@@ -166,13 +163,10 @@
   color: var(--color-violet-600) !important;
   font-weight: 800 !important;
   font-size: var(--font-size-2xl) !important;
-  border-bottom: var(--space-3) solid var(--color-violet-300) !important;
-  text-shadow: 0 2px 4px rgba(124, 58, 237, 0.2) !important;
-  letter-spacing: 0.5px !important;
 }
 
 .search-field {
-  max-width: 300px !important;
+  max-width: var(--space-72) !important;
 }
 
 .expenses-table {
@@ -187,34 +181,17 @@
   font-size: var(--font-size-base-plus) !important;
   text-align: center !important;
   padding: 1.2rem 0.8rem !important;
-  border-bottom: var(--space-1) solid var(--color-emerald-800) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
-  position: relative !important;
-}
-
-.expenses-table .v-data-table__th::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent 0%, var(--text-white) 50%, transparent 100%);
-  opacity: 0.3;
+  border-bottom: 4px solid var(--color-emerald-800) !important;
 }
 
 .expenses-table .v-data-table__td {
   background: var(--text-white) !important;
-  color: var(--color-gray-800) !important;
+  color: var(--color-slate-800) !important;
   font-weight: 700 !important;
   font-size: var(--font-size-base-plus) !important;
   padding: 1rem 0.8rem !important;
-  border-bottom: var(--space-px) solid var(--color-gray-200) !important;
+  border-bottom: 1px solid var(--color-gray-200) !important;
   text-align: center !important;
-  transition: all var(--transition-normal) !important;
-  vertical-align: middle !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
 }
 
 .expenses-table .v-data-table__wrapper tbody tr:nth-child(even) .v-data-table__td {
@@ -223,36 +200,28 @@
 
 .expenses-table .v-data-table__wrapper tbody tr:hover .v-data-table__td {
   background: var(--color-gray-50) !important;
-  color: var(--color-gray-900) !important;
-  font-weight: 700 !important;
-  transform: scale(1.01) !important;
-  box-shadow: 0 4px 12px rgba(4, 120, 87, 0.15) !important;
 }
 
-/* Custom Text Styles */
+/* ============================================
+   Table Cell Styles
+   ============================================ */
 .serial-number {
   font-weight: 700 !important;
   color: var(--color-gray-700) !important;
   background: var(--color-gray-100) !important;
   padding: var(--space-1-5) 10px !important;
   border-radius: var(--radius-lg) !important;
-  font-size: var(--font-size-base) !important;
   border: 1px solid var(--color-gray-300) !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
 }
 
 .expense-type-chip {
   font-weight: 700 !important;
-  font-size: var(--font-size-sm-plus) !important;
   border-radius: var(--radius-xl) !important;
-  padding: var(--space-1) 12px !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
 }
 
 .amount-text {
   font-weight: 700 !important;
   color: var(--color-emerald-600) !important;
-  font-size: var(--font-size-base) !important;
   background: var(--color-emerald-50) !important;
   padding: var(--space-1) 8px !important;
   border-radius: var(--radius-md) !important;
@@ -264,22 +233,19 @@
 .date-text {
   font-weight: 600 !important;
   color: var(--color-gray-700) !important;
-  font-size: var(--font-size-base-minus) !important;
   background: var(--color-gray-100) !important;
   padding: var(--space-1) 8px !important;
   border-radius: var(--radius-md) !important;
-  border: 1px solid var(--color-gray-300) !important;
 }
 
 .status-chip {
   font-weight: 700 !important;
-  font-size: var(--font-size-sm-plus) !important;
   border-radius: var(--radius-xl) !important;
-  padding: var(--space-1-5) 12px !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Action Buttons */
+/* ============================================
+   Action Buttons
+   ============================================ */
 .action-buttons {
   display: flex;
   gap: var(--space-1);
@@ -288,8 +254,8 @@
 }
 
 .action-btn {
-  min-width: 32px !important;
-  height: 32px !important;
+  min-width: var(--space-8) !important;
+  height: var(--space-8) !important;
   border-radius: var(--radius-md) !important;
   transition: all var(--transition-normal) !important;
 }
@@ -324,39 +290,33 @@
   transform: scale(1.05) !important;
 }
 
-/* Add Expense Section */
+/* ============================================
+   Add Expense Section
+   ============================================ */
 .add-expense-section {
   display: flex;
   justify-content: flex-start;
   align-items: center;
   padding: var(--space-4) 0;
-  border-bottom: var(--space-0-5) solid var(--color-slate-200);
+  border-bottom: 2px solid var(--color-slate-200);
   margin-bottom: var(--space-5);
 }
 
 .add-expense-btn {
   background: linear-gradient(135deg, var(--color-blue-800) 0%, var(--color-blue-500) 100%) !important;
-  color: white !important;
+  color: var(--text-white) !important;
   font-weight: 700 !important;
-  font-size: var(--font-size-base-plus) !important;
-  padding: var(--space-3) 24px !important;
   border-radius: var(--radius-xl) !important;
-  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3) !important;
   text-transform: none !important;
-  letter-spacing: 0.5px !important;
 }
 
 .add-expense-btn:hover {
   transform: translateY(-2px) !important;
-  box-shadow: 0 6px 16px rgba(30, 64, 175, 0.4) !important;
 }
 
-.add-expense-btn .v-icon {
-  margin-inline-end: var(--space-2) !important;
-  font-size: var(--font-size-lg-plus) !important;
-}
-
-/* FAB Button */
+/* ============================================
+   FAB Button
+   ============================================ */
 .add-expense-fab {
   position: fixed !important;
   bottom: var(--space-6) !important;
@@ -364,373 +324,93 @@
   z-index: var(--z-modal) !important;
 }
 
-/* Add Expense Dialog Styles */
+/* ============================================
+   Dialog Styles
+   ============================================ */
 .add-expense-dialog {
   border-radius: var(--radius-2xl) !important;
   overflow: hidden !important;
-  box-shadow: 0 20px 40px rgba(210, 40, 176, 0.2) !important;
-  border: 3px solid var(--color-blue-800) !important;
-  background: linear-gradient(135deg, var(--color-violet-950) 0%, var(--color-violet-600) 100%) !important;
 }
 
 .dialog-header {
   background: linear-gradient(135deg, var(--color-indigo-600) 0%, var(--color-indigo-500) 100%) !important;
-  color: rgb(255, 255, 255) !important;
+  color: var(--text-white) !important;
   font-weight: 800 !important;
-    font-size: var(--font-size-xl-plus) !important;
+  font-size: var(--font-size-xl-plus) !important;
   padding: var(--space-6) 28px !important;
-  border-bottom: var(--space-3) solid var(--text-primary) !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
 }
 
 .close-btn {
-  color: rgb(14, 7, 7) !important;
+  color: var(--text-white) !important;
   background: rgba(255, 255, 255, 0.2) !important;
   border-radius: var(--radius-lg) !important;
 }
 
 .close-btn:hover {
-  background: rgba(7, 1, 1, 0.3) !important;
+  background: rgba(255, 255, 255, 0.3) !important;
   transform: scale(1.05) !important;
 }
 
 .dialog-content {
   padding: var(--space-6) !important;
-  background: linear-gradient(135deg, var(--color-violet-600) 0%, var(--color-violet-500) 100%) !important;
-  border-radius: 0 0 16px 16px !important;
-}
-
-.form-field {
-  margin-bottom: var(--space-4) !important;
-}
-
-.form-field .v-field {
-  border-radius: var(--radius-xl) !important;
-  background: linear-gradient(135deg, var(--color-gray-100) 0%, var(--color-rose-700) 100%) !important;
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.1) !important;
-  border: 2px solid var(--color-violet-600) !important;
-}
-
-.form-field .v-field__outline {
-  border: 2px solid var(--color-gray-50) !important;
-  border-radius: var(--radius-xl) !important;
-}
-
-.form-field .v-field--focused .v-field__outline {
-  border-color: var(--color-violet-600) !important;
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2) !important;
-}
-
-.form-field .v-label {
-  color: var(--color-violet-600) !important;
-  font-weight: 700 !important;
-  font-size: var(--font-size-base) !important;
-}
-
-.form-field .v-field__input {
-  color: var(--color-slate-800) !important;
-  font-weight: 600 !important;
-  font-size: var(--font-size-base-plus) !important;
-}
-
-/* Dropdown Menu Styling */
-.form-field .v-list {
-  background: linear-gradient(135deg, var(--text-primary) 0%, var(--color-violet-950) 100%) !important;
-  border-radius: var(--radius-xl) !important;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8) !important;
-  border: 4px solid var(--color-orange-500) !important;
-  backdrop-filter: blur(15px) !important;
-}
-
-.form-field .v-list-item {
-  color: var(--text-white) !important;
-  font-weight: 900 !important;
-  font-size: var(--font-size-xl) !important;
-  padding: var(--space-5) 28px !important;
-  transition: all var(--transition-normal) !important;
-  border-bottom: var(--space-3) solid rgba(255, 255, 255, 0.5) !important;
-  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.9) !important;
-  letter-spacing: 1px !important;
-  background: linear-gradient(135deg, var(--color-violet-950) 0%, var(--color-violet-950) 100%) !important;
-}
-
-.form-field .v-list-item:hover {
-  background: linear-gradient(135deg, var(--color-orange-500) 0%, var(--color-orange-400) 100%) !important;
-  color: var(--text-primary) !important;
-  transform: translateX(10px) !important;
-  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.7) !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
-  border-inline-start: 6px solid var(--text-primary) !important;
-  font-weight: 900 !important;
-}
-
-.form-field .v-list-item--active {
-  background: linear-gradient(135deg, var(--color-orange-500) 0%, var(--color-orange-400) 100%) !important;
-  color: var(--text-primary) !important;
-  font-weight: 900 !important;
-  box-shadow: 0 10px 30px rgba(255, 107, 53, 0.8) !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
-  border-inline-start: 6px solid var(--text-primary) !important;
-  transform: scale(1.05) !important;
+  background: var(--text-white) !important;
 }
 
 .dialog-actions {
   padding: var(--space-5) 28px !important;
   background: linear-gradient(135deg, var(--text-white) 0%, var(--color-violet-50) 100%) !important;
-  border-top: var(--space-0-5) solid var(--color-violet-200) !important;
-  border-radius: 0 0 16px 16px !important;
+  border-top: 2px solid var(--color-violet-200) !important;
 }
 
 .cancel-btn {
   color: var(--color-violet-600) !important;
   font-weight: 700 !important;
-  padding: var(--space-3-5) 28px !important;
   border-radius: var(--radius-xl) !important;
-  margin-inline-start: var(--space-3) !important;
-  background: linear-gradient(135deg, var(--color-indigo-700) 0%, var(--color-gray-50) 100%) !important;
-  border: 2px solid var(--color-gray-50) !important;
-  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2) !important;
 }
 
 .cancel-btn:hover {
-  background: linear-gradient(135deg, var(--color-gray-100) 0%, var(--color-violet-200) 100%) !important;
   transform: translateY(-2px) !important;
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3) !important;
 }
 
 .save-btn {
   background: linear-gradient(135deg, var(--color-violet-600) 0%, var(--color-violet-500) 100%) !important;
-  color: white !important;
+  color: var(--text-white) !important;
   font-weight: 800 !important;
-  padding: var(--space-3-5) 28px !important;
   border-radius: var(--radius-xl) !important;
-  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.4) !important;
-  border: 2px solid var(--color-violet-700) !important;
 }
 
 .save-btn:hover {
   transform: translateY(-3px) !important;
-  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.5) !important;
 }
 
 .save-btn:disabled {
   background: linear-gradient(135deg, var(--color-slate-200) 0%, var(--color-slate-300) 100%) !important;
   color: var(--color-slate-400) !important;
-  box-shadow: none !important;
-  transform: none !important;
-  border-color: var(--color-slate-300) !important;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+/* ============================================
+   Responsive Design
+   ============================================ */
+@media (max-width: 600px) {
   .project-expenses-page {
     padding: var(--space-2-5);
   }
-  
+
   .page-title {
     font-size: var(--font-size-3xl-plus) !important;
   }
-  
+
   .stat-number {
     font-size: var(--font-size-3xl-plus) !important;
   }
-  
+
   .action-buttons {
     flex-direction: column;
     gap: var(--space-0-5);
   }
-  
+
   .action-btn {
-    min-width: 28px !important;
-    height: 28px !important;
+    min-width: var(--space-7) !important;
+    height: var(--space-7) !important;
   }
-}
-
-/* ========================================
-   تحسين إضافي لعناوين الجدول - Additional Table Headers
-   ======================================== */
-.expenses-table table thead tr th {
-  background: linear-gradient(135deg, var(--color-emerald-700) 0%, var(--color-emerald-600) 100%) !important;
-  color: var(--text-white) !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
-}
-
-.expenses-table table thead tr th .v-data-table-header__content {
-  color: var(--text-white) !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
-}
-
-.expenses-table table thead tr th .v-data-table-header__content .v-data-table-header__sort-icon {
-  color: var(--text-white) !important;
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3)) !important;
-}
-
-/* CSS إضافي لضمان التطبيق */
-.expenses-table .v-data-table__wrapper table thead tr th {
-  background: linear-gradient(135deg, var(--color-emerald-700) 0%, var(--color-emerald-600) 100%) !important;
-  color: var(--text-white) !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
-}
-
-.expenses-table .v-data-table__wrapper table thead tr th .v-data-table-header__content {
-  color: var(--text-white) !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
-}
-</style>
-
-<style>
-/* CSS غير محدود النطاق لضمان تطبيق التغييرات */
-.expenses-table table tbody tr td {
-  color: var(--color-gray-800) !important;
-  font-weight: 700 !important;
-  font-size: var(--font-size-base-plus) !important;
-  background: var(--text-white) !important;
-  border-bottom: var(--space-px) solid var(--color-gray-200) !important;
-  padding: 1rem 0.8rem !important;
-  vertical-align: middle !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
-}
-
-.expenses-table table tbody tr:hover td {
-  background: var(--color-gray-50) !important;
-  color: var(--color-gray-900) !important;
-  font-weight: 800 !important;
-}
-
-.expenses-table table tbody tr:nth-child(even) td {
-  background: var(--color-slate-50) !important;
-}
-
-.expenses-table table tbody tr:nth-child(even):hover td {
-  background: var(--color-slate-100) !important;
-}
-
-/* تحسين وضوح النصوص داخل الخلايا */
-.expenses-table .serial-number {
-  color: var(--color-gray-700) !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  background: var(--color-gray-100) !important;
-  padding: var(--space-2) 12px !important;
-  border-radius: var(--radius-lg) !important;
-  border: 2px solid var(--color-gray-300) !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
-}
-
-.expenses-table .amount-text {
-  color: var(--color-emerald-600) !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  background: var(--color-emerald-50) !important;
-  padding: var(--space-1-5) 10px !important;
-  border-radius: var(--radius-md) !important;
-  border: 2px solid var(--color-emerald-200) !important;
-  font-family: var(--font-primary) !important;
-  direction: ltr !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
-}
-
-.expenses-table .date-text {
-  color: var(--color-gray-700) !important;
-  font-weight: 700 !important;
-  font-size: var(--font-size-base) !important;
-  background: var(--color-gray-100) !important;
-  padding: var(--space-1-5) 10px !important;
-  border-radius: var(--radius-md) !important;
-  border: 2px solid var(--color-gray-300) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
-}
-
-/* CSS إضافي لضمان التطبيق */
-.v-data-table.expenses-table table tbody tr td {
-  color: var(--color-gray-800) !important;
-  font-weight: 700 !important;
-  font-size: var(--font-size-base-plus) !important;
-  background: var(--text-white) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
-}
-
-.v-data-table.expenses-table table tbody tr:hover td {
-  background: var(--color-gray-50) !important;
-  color: var(--color-gray-900) !important;
-  font-weight: 800 !important;
-}
-
-/* ========================================
-   تحسين وضوح بيانات الجدول - Table Data Clarity
-   ======================================== */
-.expenses-table table tbody tr td {
-  color: var(--color-gray-800) !important;
-  font-weight: 700 !important;
-  font-size: var(--font-size-base-plus) !important;
-  background: var(--text-white) !important;
-  border-bottom: var(--space-px) solid var(--color-gray-200) !important;
-  padding: 1rem 0.8rem !important;
-  vertical-align: middle !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
-}
-
-.expenses-table table tbody tr:hover td {
-  background: var(--color-gray-50) !important;
-  color: var(--color-gray-900) !important;
-  font-weight: 800 !important;
-}
-
-.expenses-table table tbody tr:nth-child(even) td {
-  background: var(--color-slate-50) !important;
-}
-
-.expenses-table table tbody tr:nth-child(even):hover td {
-  background: var(--color-slate-100) !important;
-}
-
-/* تحسين وضوح النصوص داخل الخلايا */
-.expenses-table .serial-number {
-  color: var(--color-gray-700) !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  background: var(--color-gray-100) !important;
-  padding: var(--space-2) 12px !important;
-  border-radius: var(--radius-lg) !important;
-  border: 2px solid var(--color-gray-300) !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
-}
-
-.expenses-table .amount-text {
-  color: var(--color-emerald-600) !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  background: var(--color-emerald-50) !important;
-  padding: var(--space-1-5) 10px !important;
-  border-radius: var(--radius-md) !important;
-  border: 2px solid var(--color-emerald-200) !important;
-  font-family: var(--font-primary) !important;
-  direction: ltr !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
-}
-
-.expenses-table .date-text {
-  color: var(--color-gray-700) !important;
-  font-weight: 700 !important;
-  font-size: var(--font-size-base) !important;
-  background: var(--color-gray-100) !important;
-  padding: var(--space-1-5) 10px !important;
-  border-radius: var(--radius-md) !important;
-  border: 2px solid var(--color-gray-300) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
 }

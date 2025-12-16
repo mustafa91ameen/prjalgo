@@ -125,27 +125,27 @@ defineEmits(['update:searchQuery', 'update:expenseType', 'update:status', 'searc
 
 <style scoped>
 .search-card {
-  border-radius: 16px !important;
+  border-radius: var(--radius-2xl) !important;
   background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
 }
 
 .search-field {
-  border-radius: 12px !important;
+  border-radius: var(--radius-xl) !important;
 }
 
 .filter-field {
-  border-radius: 12px !important;
+  border-radius: var(--radius-xl) !important;
 }
 
 .search-btn {
-  border-radius: 12px !important;
+  border-radius: var(--radius-xl) !important;
   font-weight: 600 !important;
-  height: 48px !important;
+  height: var(--space-12) !important;
 }
 
 .add-expense-btn {
-  border-radius: 12px !important;
+  border-radius: var(--radius-xl) !important;
   font-weight: 600 !important;
-  height: 48px !important;
+  height: var(--space-12) !important;
 }
 </style>

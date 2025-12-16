@@ -69,7 +69,7 @@ defineProps({
 
 .stat-card {
   position: relative;
-  border-radius: 24px !important;
+  border-radius: var(--radius-3xl) !important;
   background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
   border: 1px solid rgba(0, 0, 0, 0.05);
   overflow: hidden;
@@ -81,9 +81,9 @@ defineProps({
   top: 0;
   left: 0;
   right: 0;
-  height: 4px;
+  height: var(--space-1);
   background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-  border-radius: 24px 24px 0 0;
+  border-radius: var(--radius-3xl) 24px 0 0;
 }
 
 .stat-card:nth-child(2)::before {

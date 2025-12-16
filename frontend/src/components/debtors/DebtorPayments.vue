@@ -341,7 +341,7 @@ const getPaymentMethodText = (method) => {
 
 <style scoped>
 .payments-dialog-card {
-  border-radius: 20px !important;
+  border-radius: var(--radius-2xl) !important;
   overflow: hidden !important;
 }
 
@@ -349,6 +349,6 @@ const getPaymentMethodText = (method) => {
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) !important;
   color: white !important;
   font-weight: 700 !important;
-  padding: 20px 24px !important;
+  padding: var(--space-5) 24px !important;
 }
 </style>

@@ -251,7 +251,7 @@ const saveExpense = () => {
 
 <style scoped>
 .image-style-dialog {
-  border-radius: 20px !important;
+  border-radius: var(--radius-2xl) !important;
   overflow: hidden !important;
 }
 
@@ -274,7 +274,7 @@ const saveExpense = () => {
 
 .header-icon {
   background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   padding: 0.5rem;
 }
 
@@ -300,7 +300,7 @@ const saveExpense = () => {
 }
 
 .form-field {
-  border-radius: 12px !important;
+  border-radius: var(--radius-xl) !important;
 }
 
 .dialog-actions {
@@ -309,11 +309,11 @@ const saveExpense = () => {
   gap: 0.75rem;
   padding: 1rem 1.5rem;
   background: #f8fafc;
-  border-top: 1px solid #e5e7eb;
+  border-top: var(--space-px) solid #e5e7eb;
 }
 
 .action-btn {
-  border-radius: 12px !important;
+  border-radius: var(--radius-xl) !important;
 }
 
 .primary-btn {

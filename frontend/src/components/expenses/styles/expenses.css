@@ -6,8 +6,8 @@
 /* Card glow effect */
 .card-glow {
   position: relative;
-  border-radius: 24px !important;
-  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
+  border-radius: var(--radius-3xl) !important;
+  background: linear-gradient(145deg, var(--text-white) 0%, var(--color-slate-50) 100%) !important;
   border: 1px solid rgba(0, 0, 0, 0.05);
   overflow: hidden;
   transition: all var(--transition-normal);
@@ -44,20 +44,20 @@
 
 /* Data table styles */
 .data-table-card {
-  border-radius: 16px !important;
+  border-radius: var(--radius-2xl) !important;
   overflow: hidden;
 }
 
 /* Indigo title */
 .indigo-title {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-  color: white !important;
+  background: linear-gradient(135deg, var(--color-emerald-700) 0%, var(--color-emerald-600) 100%) !important;
+  color: var(--text-white) !important;
   font-weight: 700;
 }
 
 /* Form field */
 .form-field .v-field {
-  border-radius: 12px !important;
+  border-radius: var(--radius-xl) !important;
 }
 
 /* Project table */
@@ -66,13 +66,13 @@
 }
 
 .project-table th {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-  color: white !important;
+  background: linear-gradient(135deg, var(--color-emerald-700) 0%, var(--color-emerald-600) 100%) !important;
+  color: var(--text-white) !important;
   font-weight: 700 !important;
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: var(--space-96)) {
   .stats-row > .v-col {
     margin-bottom: 1rem;
   }

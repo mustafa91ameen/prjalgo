@@ -136,14 +136,14 @@ const tableHeaders = [
 
 <style scoped>
 .data-table-card {
-  border-radius: 16px !important;
+  border-radius: var(--radius-2xl) !important;
   overflow: hidden;
 }
 
 .table-title {
   background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
   color: white !important;
-  padding: 16px 24px !important;
+  padding: var(--space-4) 24px !important;
   display: flex;
   align-items: center;
 }
@@ -183,12 +183,12 @@ const tableHeaders = [
 
 .action-buttons {
   display: flex;
-  gap: 4px;
+  gap: var(--space-1);
   justify-content: center;
 }
 
 .action-btn {
-  min-width: 32px !important;
-  height: 32px !important;
+  min-width: var(--space-8) !important;
+  height: var(--space-8) !important;
 }
 </style>
