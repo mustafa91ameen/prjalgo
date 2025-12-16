@@ -61,10 +61,10 @@
       </div>
 
       <!-- Progress Bar -->
-      <div class="progress-section" style="margin-top: 1rem;">
-        <div class="progress-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-          <span class="progress-label" style="font-family: 'Arial', 'Helvetica', sans-serif; color: #424242; font-size: var(--font-size-sm-plus); font-weight: 600;">نسبة الإنجاز</span>
-          <span class="progress-percentage" style="font-family: 'Arial', 'Helvetica', sans-serif; color: #1976d2; font-size: var(--font-size-sm-plus); font-weight: 700;">{{ project.progress || 0 }}%</span>
+      <div class="progress-section mt-4">
+        <div class="progress-header mb-2">
+          <span class="progress-label">نسبة الإنجاز</span>
+          <span class="progress-percentage">{{ project.progress || 0 }}%</span>
         </div>
         <v-progress-linear
           :model-value="project.progress || 0"
@@ -72,7 +72,6 @@
           height="8"
           rounded
           class="progress-bar"
-          style="border-radius: 4px;"
         />
       </div>
     </v-card-text>
@@ -96,6 +95,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { formatCurrencyFull, formatDate } from '@/utils/formatters'
 
 const props = defineProps({
   project: {
@@ -106,25 +106,8 @@ const props = defineProps({
 
 defineEmits(['view-details'])
 
-// Helper functions
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'IQD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(amount)
-}
-
-const formatDate = (dateString) => {
-  if (!dateString) return 'غير محدد'
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-GB', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  })
-}
+// Use centralized formatters
+const formatCurrency = (amount) => formatCurrencyFull(amount, 'IQD', 'en-US')
 
 // Status helpers
 const statusColor = computed(() => {

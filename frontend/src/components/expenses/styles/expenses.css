@@ -55,11 +55,6 @@
   font-weight: 700;
 }
 
-/* Form field */
-.form-field .v-field {
-  border-radius: var(--radius-xl) !important;
-}
-
 /* Project table */
 .project-table {
   font-size: var(--font-size-base-minus);

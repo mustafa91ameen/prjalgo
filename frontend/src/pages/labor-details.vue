@@ -240,6 +240,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { formatCurrency } from '@/utils/formatters'
 import SimpleDialog from '@/components/SimpleDialog.vue'
 import LaborForm from '@/components/LaborForm.vue'
 
@@ -434,17 +435,6 @@ const deleteLabor = (item) => {
       laborData.value.splice(index, 1)
     }
   }
-}
-
-// Format currency
-const formatCurrency = (value) => {
-  if (!value) return '0 د.ع'
-  return new Intl.NumberFormat('ar-IQ', {
-    style: 'currency',
-    currency: 'IQD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(value).replace('IQD', 'د.ع')
 }
 
 // Lifecycle

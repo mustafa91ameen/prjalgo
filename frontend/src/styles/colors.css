@@ -213,7 +213,7 @@
   --text-disabled: #bdbdbd;
   --text-hint: #bdbdbd;
   --text-white: #ffffff;
-  
+
   /* ألوان الخلفية - نظام نيلي موحد */
   --background-primary: #ffffff;
   --background-secondary: #f8fafc;
@@ -223,7 +223,7 @@
   --background-indigo-light: #eef2ff;
   --background-indigo-medium: #e0e7ff;
   --background-indigo-dark: #c7d2fe;
-  
+
   /* ألوان الحدود - نظام نيلي موحد */
   --border-light: #e2e8f0;
   --border-medium: #cbd5e1;
@@ -231,13 +231,13 @@
   --border-primary: var(--color-primary);
   --border-indigo: #c7d2fe;
   --border-indigo-light: #e0e7ff;
-  
+
   /* ألوان الظلال */
   --shadow-light: rgba(0, 0, 0, 0.1);
   --shadow-medium: rgba(0, 0, 0, 0.2);
   --shadow-dark: rgba(0, 0, 0, 0.3);
   --shadow-primary: rgba(67, 56, 202, 0.3);
-  
+
   /* ألوان التدرجات - نظام نيلي موحد */
   --gradient-primary: linear-gradient(135deg, #4338ca 0%, #6366f1 100%);
   --gradient-secondary: linear-gradient(135deg, #3730a3 0%, #4338ca 100%);
@@ -245,41 +245,68 @@
   --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   --gradient-error: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   --gradient-info: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  
+
+  /* تدرجات إضافية للبطاقات الإحصائية */
+  --gradient-primary-purple: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  --gradient-success-dark: linear-gradient(90deg, #10b981, #059669);
+  --gradient-info-cyan: linear-gradient(90deg, #3b82f6, #0ea5e9);
+  --gradient-warning-dark: linear-gradient(90deg, #f59e0b, #d97706);
+  --gradient-error-dark: linear-gradient(90deg, #ef4444, #dc2626);
+  --gradient-primary-deep: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #7c3aed 100%);
+  --gradient-success-deep: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+  --gradient-warning-deep: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+  --gradient-error-deep: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
+  --gradient-info-deep: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
+
+  /* تدرج البطاقات البيضاء */
+  --gradient-card-white: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+
+  /* ظلال ملونة للتأثيرات */
+  --shadow-primary-glow: rgba(59, 130, 246, 0.25);
+  --shadow-success-glow: rgba(16, 185, 129, 0.25);
+  --shadow-warning-glow: rgba(245, 158, 11, 0.25);
+  --shadow-error-glow: rgba(239, 68, 68, 0.25);
+  --shadow-info-glow: rgba(59, 130, 246, 0.25);
+
+  /* تدرجات أجزاء النظام */
+  --sidebar-bg-gradient: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary-darker, #312e81) 100%);
+  --table-header-gradient: linear-gradient(135deg, var(--color-emerald-700) 0%, var(--color-emerald-600) 100%);
+
+
   /* ألوان الحالات */
   --status-active: var(--color-success);
   --status-pending: var(--color-warning);
   --status-completed: var(--color-info);
   --status-cancelled: var(--color-error);
   --status-draft: var(--color-secondary);
-  
+
   /* ألوان الكروت */
   --card-background: var(--background-surface);
   --card-border: var(--border-light);
   --card-shadow: var(--shadow-light);
   --card-hover-shadow: var(--shadow-medium);
-  
+
   /* ألوان الأزرار */
   --btn-primary-bg: var(--color-primary);
   --btn-primary-text: var(--text-white);
   --btn-primary-hover: var(--color-primary-dark);
-  
+
   --btn-secondary-bg: var(--color-secondary);
   --btn-secondary-text: var(--text-white);
   --btn-secondary-hover: var(--color-secondary-dark);
-  
+
   --btn-success-bg: var(--color-success);
   --btn-success-text: var(--text-white);
   --btn-success-hover: var(--color-success-dark);
-  
+
   --btn-warning-bg: var(--color-warning);
   --btn-warning-text: var(--text-white);
   --btn-warning-hover: var(--color-warning-dark);
-  
+
   --btn-error-bg: var(--color-error);
   --btn-error-text: var(--text-white);
   --btn-error-hover: var(--color-error-dark);
-  
+
   --btn-outlined-border: var(--color-primary);
   --btn-outlined-text: var(--color-primary);
   --btn-outlined-hover-bg: var(--color-primary);
@@ -298,10 +325,10 @@
   --v-theme-warning: var(--color-warning);
   --v-theme-error: var(--color-error);
   --v-theme-info: var(--color-info);
-  
+
   --v-theme-surface: var(--background-surface);
   --v-theme-background: var(--background-primary);
-  
+
   --v-theme-on-primary: var(--text-white);
   --v-theme-on-secondary: var(--text-white);
   --v-theme-on-success: var(--text-white);
@@ -317,63 +344,173 @@
    ======================================== */
 
 /* ألوان النص */
-.text-primary { color: var(--text-primary) !important; }
-.text-secondary { color: var(--text-secondary) !important; }
-.text-tertiary { color: var(--text-tertiary) !important; }
-.text-disabled { color: var(--text-disabled) !important; }
-.text-hint { color: var(--text-hint) !important; }
-.text-white { color: var(--text-white) !important; }
+.text-primary {
+  color: var(--text-primary) !important;
+}
+
+.text-secondary {
+  color: var(--text-secondary) !important;
+}
+
+.text-tertiary {
+  color: var(--text-tertiary) !important;
+}
+
+.text-disabled {
+  color: var(--text-disabled) !important;
+}
+
+.text-hint {
+  color: var(--text-hint) !important;
+}
+
+.text-white {
+  color: var(--text-white) !important;
+}
 
 /* ألوان النص النيلية */
-.text-indigo { color: var(--color-primary) !important; }
-.text-indigo-light { color: var(--color-primary-light) !important; }
-.text-indigo-dark { color: var(--color-primary-dark) !important; }
+.text-indigo {
+  color: var(--color-primary) !important;
+}
+
+.text-indigo-light {
+  color: var(--color-primary-light) !important;
+}
+
+.text-indigo-dark {
+  color: var(--color-primary-dark) !important;
+}
 
 /* ألوان الخلفية */
-.bg-primary { background-color: var(--color-primary) !important; }
-.bg-secondary { background-color: var(--color-secondary) !important; }
-.bg-success { background-color: var(--color-success) !important; }
-.bg-warning { background-color: var(--color-warning) !important; }
-.bg-error { background-color: var(--color-error) !important; }
-.bg-info { background-color: var(--color-info) !important; }
+.bg-primary {
+  background-color: var(--color-primary) !important;
+}
 
-.bg-surface { background-color: var(--background-surface) !important; }
-.bg-background { background-color: var(--background-primary) !important; }
+.bg-secondary {
+  background-color: var(--color-secondary) !important;
+}
+
+.bg-success {
+  background-color: var(--color-success) !important;
+}
+
+.bg-warning {
+  background-color: var(--color-warning) !important;
+}
+
+.bg-error {
+  background-color: var(--color-error) !important;
+}
+
+.bg-info {
+  background-color: var(--color-info) !important;
+}
+
+.bg-surface {
+  background-color: var(--background-surface) !important;
+}
+
+.bg-background {
+  background-color: var(--background-primary) !important;
+}
 
 /* ألوان الخلفية النيلية */
-.bg-indigo-light { background-color: var(--background-indigo-light) !important; }
-.bg-indigo-medium { background-color: var(--background-indigo-medium) !important; }
-.bg-indigo-dark { background-color: var(--background-indigo-dark) !important; }
+.bg-indigo-light {
+  background-color: var(--background-indigo-light) !important;
+}
+
+.bg-indigo-medium {
+  background-color: var(--background-indigo-medium) !important;
+}
+
+.bg-indigo-dark {
+  background-color: var(--background-indigo-dark) !important;
+}
 
 /* ألوان الحدود */
-.border-primary { border-color: var(--border-primary) !important; }
-.border-light { border-color: var(--border-light) !important; }
-.border-medium { border-color: var(--border-medium) !important; }
-.border-dark { border-color: var(--border-dark) !important; }
+.border-primary {
+  border-color: var(--border-primary) !important;
+}
+
+.border-light {
+  border-color: var(--border-light) !important;
+}
+
+.border-medium {
+  border-color: var(--border-medium) !important;
+}
+
+.border-dark {
+  border-color: var(--border-dark) !important;
+}
 
 /* ألوان الحدود النيلية */
-.border-indigo { border-color: var(--border-indigo) !important; }
-.border-indigo-light { border-color: var(--border-indigo-light) !important; }
+.border-indigo {
+  border-color: var(--border-indigo) !important;
+}
+
+.border-indigo-light {
+  border-color: var(--border-indigo-light) !important;
+}
 
 /* ألوان الحالات */
-.status-active { color: var(--status-active) !important; }
-.status-pending { color: var(--status-pending) !important; }
-.status-completed { color: var(--status-completed) !important; }
-.status-cancelled { color: var(--status-cancelled) !important; }
-.status-draft { color: var(--status-draft) !important; }
+.status-active {
+  color: var(--status-active) !important;
+}
+
+.status-pending {
+  color: var(--status-pending) !important;
+}
+
+.status-completed {
+  color: var(--status-completed) !important;
+}
+
+.status-cancelled {
+  color: var(--status-cancelled) !important;
+}
+
+.status-draft {
+  color: var(--status-draft) !important;
+}
 
 /* ألوان التدرجات */
-.gradient-primary { background: var(--gradient-primary) !important; }
-.gradient-secondary { background: var(--gradient-secondary) !important; }
-.gradient-success { background: var(--gradient-success) !important; }
-.gradient-warning { background: var(--gradient-warning) !important; }
-.gradient-error { background: var(--gradient-error) !important; }
-.gradient-info { background: var(--gradient-info) !important; }
+.gradient-primary {
+  background: var(--gradient-primary) !important;
+}
+
+.gradient-secondary {
+  background: var(--gradient-secondary) !important;
+}
+
+.gradient-success {
+  background: var(--gradient-success) !important;
+}
+
+.gradient-warning {
+  background: var(--gradient-warning) !important;
+}
+
+.gradient-error {
+  background: var(--gradient-error) !important;
+}
+
+.gradient-info {
+  background: var(--gradient-info) !important;
+}
 
 /* تدرجات إضافية */
-.gradient-indigo-soft { background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%) !important; }
-.gradient-indigo-medium { background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%) !important; }
-.gradient-indigo-strong { background: linear-gradient(135deg, #c7d2fe 0%, #a5b4fc 100%) !important; }
+.gradient-indigo-soft {
+  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%) !important;
+}
+
+.gradient-indigo-medium {
+  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%) !important;
+}
+
+.gradient-indigo-strong {
+  background: linear-gradient(135deg, #c7d2fe 0%, #a5b4fc 100%) !important;
+}
 
 /* ========================================
    ألوان مخصصة للمكونات
@@ -582,16 +719,16 @@
     --text-secondary: #b0b0b0;
     --text-tertiary: #808080;
     --text-disabled: #606060;
-    
+
     --background-primary: #121212;
     --background-secondary: #1e1e1e;
     --background-tertiary: #2a2a2a;
     --background-surface: #1e1e1e;
-    
+
     --border-light: #404040;
     --border-medium: #606060;
     --border-dark: #808080;
-    
+
     --card-background: var(--background-surface);
     --card-border: var(--border-light);
   }
@@ -630,4 +767,110 @@
 .project-status-cancelled {
   background-color: var(--color-error) !important;
   color: var(--text-white) !important;
+}
+
+/* ========================================
+   فئات خلفيات المكونات
+   Component Background Classes
+   ======================================== */
+
+/* خلفية الفلاتر */
+.bg-filter-input {
+  background: #f5f5f5 !important;
+}
+
+/* خلفية النجاح الفاتحة */
+.bg-success-light {
+  background: #f0fdf4 !important;
+}
+
+/* تدرج أزرق للجداول */
+.bg-gradient-blue-header {
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
+}
+
+/* ========================================
+   فئات العناصر التفاعلية
+   Interactive Element Classes
+   ======================================== */
+
+/* عنصر قابل للنقر */
+.clickable {
+  cursor: pointer !important;
+}
+
+/* أيقونة شفافة بيضاء */
+.icon-btn-white-transparent {
+  color: white !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+}
+
+/* شريحة شفافة بيضاء */
+.chip-white-transparent {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+  color: white !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+}
+
+/* ========================================
+   فئات العناوين في الأقسام
+   Section Header Classes
+   ======================================== */
+
+/* عنوان قسم معلومات */
+.section-header-info {
+  color: #1e40af !important;
+  font-weight: 700 !important;
+  font-size: var(--font-size-base-plus) !important;
+}
+
+/* عنوان قسم تحذير */
+.section-header-warning {
+  color: #b45309 !important;
+  font-weight: 700 !important;
+  font-size: var(--font-size-base-plus) !important;
+}
+
+/* عنوان قسم نجاح */
+.section-header-success {
+  color: #047857 !important;
+  font-weight: 700 !important;
+  font-size: var(--font-size-base-plus) !important;
+}
+
+/* أيقونة مع ظل */
+.icon-drop-shadow-info {
+  filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.3)) !important;
+}
+
+.icon-drop-shadow-warning {
+  filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3)) !important;
+}
+
+.icon-drop-shadow-success {
+  filter: drop-shadow(0 2px 4px rgba(16, 185, 129, 0.3)) !important;
+}
+
+/* ========================================
+   فئات عناصر التفاصيل
+   Detail Element Classes
+   ======================================== */
+
+/* عنوان التفاصيل مع ظل */
+.detail-header-title {
+  color: white !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* عنوان فرعي للتفاصيل */
+.detail-header-subtitle {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 500 !important;
+}
+
+/* قيمة التقييم */
+.rating-value {
+  color: #f59e0b !important;
+  font-weight: 700 !important;
 }

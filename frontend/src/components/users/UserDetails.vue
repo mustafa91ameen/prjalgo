@@ -107,6 +107,8 @@
 </template>
 
 <script setup>
+import { formatDateTime } from '@/utils/formatters'
+
 defineProps({
   modelValue: {
     type: Boolean,
@@ -121,6 +123,12 @@ defineProps({
 defineEmits(['update:modelValue'])
 
 const defaultAvatar = 'https://ui-avatars.com/api/?name=User&background=667eea&color=fff&size=128'
+
+// Use centralized formatter with custom fallback
+const formatDate = (date) => {
+  if (!date) return 'لم يسجل دخول'
+  return formatDateTime(date)
+}
 
 const getRoleText = (role) => {
   const texts = {
@@ -153,17 +161,6 @@ const getStatusText = (status) => {
     'banned': 'محظور'
   }
   return texts[status] || 'غير محدد'
-}
-
-const formatDate = (date) => {
-  if (!date) return 'لم يسجل دخول'
-  return new Date(date).toLocaleDateString('ar-SA', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
 }
 </script>
 

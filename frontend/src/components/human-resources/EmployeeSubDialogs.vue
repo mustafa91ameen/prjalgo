@@ -384,7 +384,7 @@
               />
             </v-col>
             <v-col cols="12" md="6">
-              <v-card class="pa-4" style="background: #f0fdf4;">
+              <v-card class="pa-4 bg-success-light">
                 <div class="text-caption text-grey mb-1">صافي الراتب</div>
                 <div class="text-h6 text-success font-weight-bold">
                   {{ formatCurrency(netSalary) }}
@@ -404,6 +404,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { formatCurrency } from '@/utils/formatters'
 
 const props = defineProps({
   leaveDialog: { type: Boolean, default: false },
@@ -537,17 +538,6 @@ const netSalary = computed(() => {
          parseFloat(salaryForm.value.deductions || 0)
 })
 
-// Methods
-const formatCurrency = (amount) => {
-  if (!amount) return '0 د.ع'
-  const formatted = new Intl.NumberFormat('ar-IQ', {
-    style: 'decimal',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(amount)
-  return formatted + ' د.ع'
-}
-
 // Leave
 const closeLeaveDialog = () => {
   leaveDialogModel.value = false
@@ -634,7 +624,7 @@ defineExpose({
 
 <style scoped>
 .dialog-header {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
+  background: var(--gradient-info-deep);
   padding: var(--space-4) 24px;
 }
 
@@ -651,7 +641,7 @@ defineExpose({
 }
 
 .header-title {
-  color: white;
+  color: var(--text-white);
   font-weight: 600;
   font-size: var(--font-size-base-plus);
 }
@@ -665,6 +655,6 @@ defineExpose({
   display: flex;
   justify-content: flex-end;
   gap: var(--space-3);
-  border-top: var(--space-px) solid #e5e7eb;
+  border-top: var(--space-px) solid var(--border-light);
 }
 </style>

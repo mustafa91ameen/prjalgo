@@ -13,7 +13,7 @@
 .filters-card {
   border-radius: var(--radius-2xl);
   box-shadow: 0 8px 32px rgba(67, 56, 202, 0.2);
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--color-indigo-500) 0%, var(--color-violet-600) 100%);
   backdrop-filter: blur(10px);
   border: 2px solid rgba(255, 255, 255, 0.2);
   padding: var(--space-2);
@@ -246,34 +246,10 @@
 /* Dropdown Labels */
 .add-user-dialog .v-label,
 .add-user-dialog .v-field__label {
-  color: #000000 !important;
+  color: var(--color-black) !important;
   font-weight: 800 !important;
   font-size: var(--font-size-base) !important;
   opacity: 1 !important;
   background: var(--text-white) !important;
   padding: 0 8px !important;
-}
-
-/* Dropdown Select Styles */
-.black-dropdown-select :deep(.v-menu__content),
-.black-dropdown-select :deep(.v-overlay__content) {
-  background: var(--text-white) !important;
-  border: 2px solid var(--color-neutral-850) !important;
-  border-radius: var(--radius-lg) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
-}
-
-.black-dropdown-select :deep(.v-list-item) {
-  color: #000000 !important;
-  font-weight: 600 !important;
-  background: var(--text-white) !important;
-}
-
-.black-dropdown-select :deep(.v-list-item:hover) {
-  background: var(--color-neutral-100) !important;
-}
-
-.black-dropdown-select :deep(.v-list-item--active) {
-  background: var(--color-neutral-850) !important;
-  color: var(--text-white) !important;
 }

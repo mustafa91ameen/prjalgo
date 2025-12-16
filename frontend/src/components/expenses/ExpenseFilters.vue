@@ -12,8 +12,7 @@
             density="comfortable"
             clearable
             hide-details
-            class="search-field"
-            style="background: #f5f5f5;"
+            class="search-field bg-filter-input"
           />
         </v-col>
         <v-col cols="12" md="2">
@@ -126,7 +125,7 @@ defineEmits(['update:searchQuery', 'update:expenseType', 'update:status', 'searc
 <style scoped>
 .search-card {
   border-radius: var(--radius-2xl) !important;
-  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
+  background: var(--gradient-card-white) !important;
 }
 
 .search-field {

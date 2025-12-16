@@ -85,6 +85,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { formatCurrency } from '@/utils/formatters'
 
 // Sample data - in real app, this would come from API
 const incomeData = ref(175000) // Total income
@@ -170,13 +171,6 @@ const totalIncome = computed(() => incomeData.value)
 const totalExpenses = computed(() => expenseData.value)
 const netProfit = computed(() => totalIncome.value - totalExpenses.value)
 
-// Methods
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('ar-SA', {
-    style: 'currency',
-    currency: 'IQD'
-  }).format(amount)
-}
 </script>
 
 

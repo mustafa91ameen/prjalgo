@@ -15,7 +15,7 @@
             <div class="stat-icon mb-3 icon-glow">
               <v-icon size="64" color="success">mdi-cash-multiple</v-icon>
             </div>
-            <h3 class="text-h3 font-weight-bold text-success mb-2" style="font-family: 'Arial', 'Helvetica', sans-serif; direction: ltr;">{{ totalSales || 0 }}</h3>
+            <h3 class="text-h3 font-weight-bold text-success mb-2 stat-number-ltr">{{ totalSales || 0 }}</h3>
             <p class="text-subtitle-1 text-success mb-0">إجمالي المبيعات</p>
           </v-card>
         </v-col>
@@ -24,7 +24,7 @@
             <div class="stat-icon mb-3 icon-glow">
               <v-icon size="64" color="primary">mdi-currency-usd</v-icon>
             </div>
-            <h3 class="text-h6 font-weight-bold text-primary mb-2" style="font-family: 'Arial', 'Helvetica', sans-serif; direction: ltr; white-space: nowrap;">{{ formatCurrency(totalRevenue) || '0 د.ع' }}</h3>
+            <h3 class="text-h6 font-weight-bold text-primary mb-2 stat-number-ltr-nowrap">{{ formatCurrency(totalRevenue) || '0 د.ع' }}</h3>
             <p class="text-subtitle-1 text-primary mb-0">إجمالي الإيرادات</p>
           </v-card>
         </v-col>
@@ -33,7 +33,7 @@
             <div class="stat-icon mb-3 icon-glow">
               <v-icon size="64" color="info">mdi-account-group</v-icon>
             </div>
-            <h3 class="text-h3 font-weight-bold text-info mb-2" style="font-family: 'Arial', 'Helvetica', sans-serif; direction: ltr;">{{ totalCustomers || 0 }}</h3>
+            <h3 class="text-h3 font-weight-bold text-info mb-2 stat-number-ltr">{{ totalCustomers || 0 }}</h3>
             <p class="text-subtitle-1 text-info mb-0">إجمالي العملاء</p>
           </v-card>
         </v-col>
@@ -42,7 +42,7 @@
             <div class="stat-icon mb-3 icon-glow">
               <v-icon size="64" color="warning">mdi-clock-alert</v-icon>
             </div>
-            <h3 class="text-h3 font-weight-bold text-warning mb-2" style="font-family: 'Arial', 'Helvetica', sans-serif; direction: ltr;">{{ pendingSales || 0 }}</h3>
+            <h3 class="text-h3 font-weight-bold text-warning mb-2 stat-number-ltr">{{ pendingSales || 0 }}</h3>
             <p class="text-subtitle-1 text-warning mb-0">مبيعات معلقة</p>
           </v-card>
         </v-col>
@@ -61,8 +61,7 @@
                 density="comfortable"
                 clearable
                 hide-details
-                class="search-field"
-                style="background: #f5f5f5;"
+                class="search-field bg-filter-input"
               />
             </v-col>
             <v-col cols="12" md="2">
@@ -399,6 +398,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
+import { formatCurrency } from '@/utils/formatters'
 
 // متغيرات الحالة الأساسية
 const loading = ref(false)
@@ -613,14 +613,6 @@ const saveSale = () => {
 }
 
 // دوال مساعدة
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('ar-SA', {
-    style: 'currency',
-    currency: 'IQD',
-    minimumFractionDigits: 0
-  }).format(amount).replace('IQD', 'د.ع')
-}
-
 const getStatusText = (status) => {
   return status || 'غير محدد'
 }

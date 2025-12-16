@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { formatCurrencyFull, formatDate as formatDateUtil } from '@/utils/formatters'
 
 /**
  * Composable for project statistics
@@ -97,25 +98,15 @@ export function useProjectStats(projects) {
     return icons[priority] || 'mdi-help'
   }
 
-  // Format helpers
+  // Format helpers - use centralized formatters
   function formatCurrency(amount) {
     if (amount === null || amount === undefined) return '0 د.ع'
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'IQD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount)
+    return formatCurrencyFull(amount, 'IQD', 'en-US')
   }
 
   function formatDate(dateString) {
     if (!dateString) return 'غير محدد'
-    const date = new Date(dateString)
-    return date.toLocaleDateString('en-GB', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    })
+    return formatDateUtil(dateString, { locale: 'en-GB', format: 'short' })
   }
 
   function formatProgress(progress) {

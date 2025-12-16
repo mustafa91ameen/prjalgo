@@ -483,6 +483,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { formatCurrency } from '@/utils/formatters'
 
 const props = defineProps({
   modelValue: {
@@ -579,23 +580,13 @@ const closeDialog = () => {
   detailsTab.value = 'info'
   emit('close')
 }
-
-const formatCurrency = (amount) => {
-  if (!amount) return '0 د.ع'
-  const formatted = new Intl.NumberFormat('ar-IQ', {
-    style: 'decimal',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(amount)
-  return formatted + ' د.ع'
-}
 </script>
 
 <style scoped>
 @import './styles/human-resources.css';
 
 .dialog-header {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
+  background: var(--gradient-info-deep);
   padding: var(--space-4) 24px;
 }
 
@@ -612,7 +603,7 @@ const formatCurrency = (amount) => {
 }
 
 .header-title {
-  color: white;
+  color: var(--text-white);
   font-weight: 600;
   font-size: var(--font-size-base-plus);
 }
@@ -628,7 +619,7 @@ const formatCurrency = (amount) => {
   display: flex;
   justify-content: flex-end;
   gap: var(--space-3);
-  border-top: var(--space-px) solid #e5e7eb;
+  border-top: var(--space-px) solid var(--color-slate-200);
 }
 
 .info-card {
@@ -636,7 +627,7 @@ const formatCurrency = (amount) => {
 }
 
 .info-card-title {
-  background: #f8fafc;
+  background: var(--color-slate-50);
   font-size: var(--font-size-base);
 }
 
@@ -644,7 +635,7 @@ const formatCurrency = (amount) => {
   display: flex;
   justify-content: space-between;
   padding: var(--space-2) 0;
-  border-bottom: var(--space-px) solid #f1f5f9;
+  border-bottom: var(--space-px) solid var(--color-slate-100);
 }
 
 .info-item:last-child {
@@ -652,19 +643,19 @@ const formatCurrency = (amount) => {
 }
 
 .info-label {
-  color: #64748b;
+  color: var(--color-slate-500);
   font-weight: 500;
 }
 
 .info-value {
-  color: #1e293b;
+  color: var(--color-slate-800);
   font-weight: 600;
 }
 
 .section-title {
   font-size: var(--font-size-base-plus);
   font-weight: 600;
-  color: #1e293b;
+  color: var(--color-slate-800);
 }
 
 .fingerprint-management-card {
@@ -672,7 +663,7 @@ const formatCurrency = (amount) => {
 }
 
 .fingerprint-card-title {
-  background: #f8fafc;
+  background: var(--color-slate-50);
 }
 
 .fingerprint-chip {
@@ -683,7 +674,7 @@ const formatCurrency = (amount) => {
 .certificate-item {
   padding: var(--space-3);
   border-radius: var(--radius-lg);
-  background: #f8fafc;
+  background: var(--color-slate-50);
 }
 
 .rating-display {

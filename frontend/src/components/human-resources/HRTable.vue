@@ -113,6 +113,8 @@
 </template>
 
 <script setup>
+import { formatCurrency } from '@/utils/formatters'
+
 defineProps({
   employees: {
     type: Array,
@@ -151,16 +153,6 @@ const headers = [
   { title: 'الحالة', key: 'status', align: 'center' },
   { title: 'الإجراءات', key: 'actions', align: 'center', sortable: false }
 ]
-
-const formatCurrency = (amount) => {
-  if (!amount) return '0 د.ع'
-  const formatted = new Intl.NumberFormat('ar-IQ', {
-    style: 'decimal',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(amount)
-  return formatted + ' د.ع'
-}
 </script>
 
 <style scoped>

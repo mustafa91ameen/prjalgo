@@ -5,7 +5,7 @@
         <div class="stat-icon mb-3 icon-glow">
           <v-icon size="64" color="error">mdi-currency-usd</v-icon>
         </div>
-        <h3 class="text-h3 font-weight-bold text-error mb-2" style="font-family: 'Arial', 'Helvetica', sans-serif; direction: ltr;">{{ totalExpenses }}</h3>
+        <h3 class="text-h3 font-weight-bold text-error mb-2 stat-number-ltr">{{ totalExpenses }}</h3>
         <p class="text-subtitle-1 text-error mb-0">إجمالي المصاريف</p>
       </v-card>
     </v-col>
@@ -14,7 +14,7 @@
         <div class="stat-icon mb-3 icon-glow">
           <v-icon size="64" color="success">mdi-check-circle</v-icon>
         </div>
-        <h3 class="text-h3 font-weight-bold text-success mb-2" style="font-family: 'Arial', 'Helvetica', sans-serif; direction: ltr;">{{ activeExpenses }}</h3>
+        <h3 class="text-h3 font-weight-bold text-success mb-2 stat-number-ltr">{{ activeExpenses }}</h3>
         <p class="text-subtitle-1 text-success mb-0">مصاريف نشطة</p>
       </v-card>
     </v-col>
@@ -23,7 +23,7 @@
         <div class="stat-icon mb-3 icon-glow">
           <v-icon size="64" color="warning">mdi-clock-alert</v-icon>
         </div>
-        <h3 class="text-h3 font-weight-bold text-warning mb-2" style="font-family: 'Arial', 'Helvetica', sans-serif; direction: ltr;">{{ pendingExpenses }}</h3>
+        <h3 class="text-h3 font-weight-bold text-warning mb-2 stat-number-ltr">{{ pendingExpenses }}</h3>
         <p class="text-subtitle-1 text-warning mb-0">في الانتظار</p>
       </v-card>
     </v-col>
@@ -32,7 +32,7 @@
         <div class="stat-icon mb-3 icon-glow">
           <v-icon size="64" color="info">mdi-chart-line</v-icon>
         </div>
-        <h3 class="text-h6 font-weight-bold text-info mb-2" style="font-family: 'Arial', 'Helvetica', sans-serif; direction: ltr; white-space: nowrap;">{{ formattedTotalCost }}</h3>
+        <h3 class="text-h6 font-weight-bold text-info mb-2 stat-number-ltr-nowrap">{{ formattedTotalCost }}</h3>
         <p class="text-subtitle-1 text-info mb-0">إجمالي التكلفة</p>
       </v-card>
     </v-col>
@@ -41,6 +41,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { formatCurrency } from '@/utils/formatters'
 
 const props = defineProps({
   totalExpenses: {
@@ -61,14 +62,6 @@ const props = defineProps({
   }
 })
 
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('ar-SA', {
-    style: 'currency',
-    currency: 'IQD',
-    minimumFractionDigits: 0
-  }).format(amount).replace('IQD', 'د.ع')
-}
-
 const formattedTotalCost = computed(() => {
   return formatCurrency(props.totalCost)
 })
@@ -78,8 +71,8 @@ const formattedTotalCost = computed(() => {
 .stat-card {
   position: relative;
   border-radius: var(--radius-3xl) !important;
-  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  background: var(--gradient-card-white) !important;
+  border: 1px solid var(--border-light);
   overflow: hidden;
 }
 
@@ -90,29 +83,29 @@ const formattedTotalCost = computed(() => {
   left: 0;
   right: 0;
   height: var(--space-1);
-  background: linear-gradient(90deg, #ef4444, #dc2626);
+  background: var(--gradient-error-dark);
   border-radius: var(--radius-3xl) 24px 0 0;
 }
 
 .stat-card:nth-child(2)::before {
-  background: linear-gradient(90deg, #10b981, #059669);
+  background: var(--gradient-success-dark);
 }
 
 .stat-card:nth-child(3)::before {
-  background: linear-gradient(90deg, #f59e0b, #d97706);
+  background: var(--gradient-warning-dark);
 }
 
 .stat-card:nth-child(4)::before {
-  background: linear-gradient(90deg, #3b82f6, #0ea5e9);
+  background: var(--gradient-info-cyan);
 }
 
 .hover-lift {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--transition-normal);
 }
 
 .hover-lift:hover {
   transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: var(--shadow-xl) !important;
 }
 
 .stat-icon {
@@ -122,6 +115,6 @@ const formattedTotalCost = computed(() => {
 }
 
 .icon-glow .v-icon {
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 4px 8px var(--shadow-light));
 }
 </style>

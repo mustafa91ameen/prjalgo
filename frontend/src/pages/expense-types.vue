@@ -306,6 +306,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { toast } from 'vue3-toastify'
+import { formatAmount } from '@/utils/formatters'
 
 // متغيرات الحالة الأساسية
 const loading = ref(false)
@@ -432,10 +433,7 @@ const totalExpensesAmount = computed(() => {
     .toLocaleString()
 })
 
-// الدوال المساعدة
-const formatAmount = (amount) => {
-  return `${amount.toLocaleString()} د.ع`
-}
+// الدوال المساعدة - using centralized formatters
 
 // دوال الإجراءات
 const addExpenseType = () => {

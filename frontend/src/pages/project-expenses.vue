@@ -358,6 +358,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue3-toastify'
+import { formatAmount } from '@/utils/formatters'
 
 const route = useRoute()
 const router = useRouter()
@@ -517,9 +518,7 @@ const getStatusLabel = (status) => {
   return labels[status] || 'غير محدد'
 }
 
-const formatAmount = (amount) => {
-  return `${amount.toLocaleString()} د.ع`
-}
+// formatAmount imported from @/utils/formatters
 
 // Action functions
 const goBack = () => {

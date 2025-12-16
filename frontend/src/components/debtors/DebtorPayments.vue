@@ -232,6 +232,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { formatCurrency, formatDate } from '@/utils/formatters'
 
 const props = defineProps({
   modelValue: {
@@ -306,18 +307,6 @@ const closeDialog = () => {
   emit('close')
 }
 
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('ar-SA', {
-    style: 'currency',
-    currency: 'IQD'
-  }).format(amount)
-}
-
-const formatDate = (date) => {
-  if (!date) return ''
-  return new Date(date).toLocaleDateString('ar-SA')
-}
-
 const getPaymentMethodColor = (method) => {
   const colors = {
     'bank_transfer': 'primary',
@@ -346,8 +335,8 @@ const getPaymentMethodText = (method) => {
 }
 
 .payments-header {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) !important;
-  color: white !important;
+  background: var(--gradient-info-deep) !important;
+  color: var(--text-white) !important;
   font-weight: 700 !important;
   padding: var(--space-5) 24px !important;
 }

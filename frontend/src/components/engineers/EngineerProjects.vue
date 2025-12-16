@@ -30,8 +30,7 @@
                 variant="outlined"
                 density="comfortable"
                 prepend-inner-icon="mdi-briefcase"
-                class="form-field-enhanced enhanced-select"
-                style="color: #000000 !important; font-size: var(--font-size-base-plus) !important; font-weight: 600 !important;"
+                class="form-field-enhanced enhanced-select input-text-dark"
                 color="black"
                 :menu-props="{
                   maxHeight: 300,
@@ -221,19 +220,19 @@ const closeDialog = () => {
 }
 
 .projects-dialog-title {
-  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%) !important;
-  color: white !important;
+  background: var(--gradient-success-deep) !important;
+  color: var(--text-white) !important;
   padding: var(--space-5) 24px !important;
 }
 
 .projects-dialog-title h2 {
-  color: white !important;
+  color: var(--text-white) !important;
 }
 
 .add-project-section {
   border-radius: var(--radius-2xl) !important;
-  background: linear-gradient(145deg, #f0fdf4 0%, #dcfce7 100%) !important;
-  border-color: #86efac !important;
+  background: linear-gradient(145deg, var(--color-green-50) 0%, var(--color-green-100) 100%) !important;
+  border-color: var(--color-green-300) !important;
 }
 
 .add-project-btn {
@@ -247,7 +246,7 @@ const closeDialog = () => {
 }
 
 .project-item {
-  border-bottom: var(--space-px) solid #e5e7eb;
+  border-bottom: var(--space-px) solid var(--border-light);
 }
 
 .project-item:last-child {

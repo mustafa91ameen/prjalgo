@@ -10,7 +10,7 @@
           <v-icon>mdi-plus</v-icon>
         </v-btn>
         <v-icon class="title-icon">mdi-calendar-clock</v-icon>
-        <h1 class="page-title-text" style="color: #ffffff !important;">ايام العمل</h1>
+        <h1 class="page-title-text text-white-important">ايام العمل</h1>
       </div>
       <div class="header-right-section">
         <div class="search-section">

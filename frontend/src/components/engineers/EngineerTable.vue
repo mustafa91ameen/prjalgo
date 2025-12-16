@@ -2,17 +2,16 @@
   <v-card class="data-table-card card-glow smooth-transition centered-table" elevation="2">
     <v-card-title class="d-flex align-center justify-space-between table-header">
       <div class="d-flex align-center">
-        <v-icon class="me-2" style="color: white !important;">mdi-account-group</v-icon>
-        <span class="text-h6 font-weight-bold" style="color: white !important; font-family: 'Arial', 'Helvetica', sans-serif;">قائمة المهندسين</span>
-        <v-chip class="ms-3" style="background-color: rgba(255, 255, 255, 0.3) !important; color: white !important; border: 1px solid rgba(255, 255, 255, 0.5);" size="small">{{ engineers.length }}</v-chip>
+        <v-icon class="me-2 text-white-important">mdi-account-group</v-icon>
+        <span class="text-h6 font-weight-bold text-white-important stat-number-ltr">قائمة المهندسين</span>
+        <v-chip class="ms-3 chip-white-transparent" size="small">{{ engineers.length }}</v-chip>
       </div>
       <v-btn
         v-if="canWrite"
-        class="add-button btn-glow light-sweep smooth-transition"
+        class="add-button btn-glow light-sweep smooth-transition bg-gradient-blue-header"
         @click="$emit('add')"
         elevation="2"
         color="primary"
-        style="background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;"
       >
         <v-icon class="me-2 icon-glow">mdi-plus</v-icon>
         إضافة حساب جديد
@@ -30,8 +29,7 @@
         density="comfortable"
         clearable
         hide-details
-        class="mb-4 search-field-enhanced"
-        style="font-size: var(--font-size-base-plus) !important; font-weight: 500 !important;"
+        class="mb-4 search-field-enhanced text-base-plus font-weight-medium"
         placeholder="ابحث بالاسم أو البريد الإلكتروني أو التخصص..."
         color="primary"
         bg-color="white"
@@ -60,8 +58,8 @@
       <!-- Name Column -->
       <template v-slot:item.name="{ item }">
         <div>
-          <div class="font-weight-bold text-primary" style="font-size: var(--font-size-base) !important; color: #1976d2 !important;">{{ item.name }}</div>
-          <div class="text-caption text-medium-emphasis" style="font-size: var(--font-size-sm) !important; color: #666 !important;">{{ item.email }}</div>
+          <div class="font-weight-bold text-primary text-base">{{ item.name }}</div>
+          <div class="text-caption text-medium-emphasis text-sm">{{ item.email }}</div>
         </div>
       </template>
 
@@ -197,7 +195,7 @@ const tableHeaders = [
 }
 
 .table-header {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) !important;
+  background: var(--gradient-info-deep) !important;
   padding: var(--space-4) 24px !important;
 }
 
@@ -213,6 +211,6 @@ const tableHeaders = [
 }
 
 .btn-glow:hover {
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4) !important;
+  box-shadow: 0 8px 25px var(--shadow-info-glow) !important;
 }
 </style>

@@ -256,7 +256,7 @@ const saveExpense = () => {
 }
 
 .dialog-header {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
+  background: var(--gradient-error-deep);
   padding: 1.25rem 1.5rem;
 }
 
@@ -281,7 +281,7 @@ const saveExpense = () => {
 .header-title {
   font-size: var(--font-size-xl);
   font-weight: 700;
-  color: white;
+  color: var(--text-white);
 }
 
 .close-btn {
@@ -308,8 +308,8 @@ const saveExpense = () => {
   justify-content: flex-end;
   gap: 0.75rem;
   padding: 1rem 1.5rem;
-  background: #f8fafc;
-  border-top: var(--space-px) solid #e5e7eb;
+  background: var(--color-slate-50);
+  border-top: var(--space-px) solid var(--border-light);
 }
 
 .action-btn {
@@ -317,8 +317,8 @@ const saveExpense = () => {
 }
 
 .primary-btn {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
-  color: white !important;
+  background: var(--gradient-error) !important;
+  color: var(--text-white) !important;
   font-weight: 600 !important;
 }
 </style>

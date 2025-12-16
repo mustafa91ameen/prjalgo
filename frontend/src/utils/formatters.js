@@ -74,13 +74,13 @@ export function formatDate(date, options = {}) {
   const { locale = 'ar-SA', format = 'short' } = options
 
   if (!date) {
-    return ':J1 E-//'
+    return 'تاريخ غير محدد'
   }
 
   const dateObj = typeof date === 'string' ? new Date(date) : date
 
   if (isNaN(dateObj.getTime())) {
-    return '*'1J. :J1 5'D-'
+    return 'تاريخ غير صالح'
   }
 
   const formatOptions = {
@@ -116,12 +116,12 @@ export function formatDateForInput(date) {
  * @returns {string} Formatted date and time string
  */
 export function formatDateTime(date, locale = 'ar-SA') {
-  if (!date) return ':J1 E-//'
+  if (!date) return 'تاريخ غير محدد'
 
   const dateObj = typeof date === 'string' ? new Date(date) : date
 
   if (isNaN(dateObj.getTime())) {
-    return '*'1J. :J1 5'D-'
+    return 'تاريخ غير صالح'
   }
 
   return dateObj.toLocaleString(locale, {

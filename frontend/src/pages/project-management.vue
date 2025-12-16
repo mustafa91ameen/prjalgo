@@ -32,8 +32,8 @@
       <v-card class="data-table-card card-glow smooth-transition centered-table" elevation="2">
         <v-card-title class="d-flex align-center justify-space-between">
           <div class="d-flex align-center">
-            <v-icon class="me-2" style="color: #4338ca;" size="28">mdi-folder-multiple</v-icon>
-            <span class="text-h4 font-weight-black" style="color: #ffffff; font-family: 'Arial', 'Helvetica', sans-serif; text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2); letter-spacing: 0.5px;">قائمة المشاريع</span>
+            <v-icon class="me-2" size="28">mdi-folder-multiple</v-icon>
+            <span class="text-h4 font-weight-black">قائمة المشاريع</span>
             <v-chip class="ms-3" color="primary" size="small" variant="elevated">{{ projects.length }}</v-chip>
           </div>
           <v-btn
@@ -124,7 +124,7 @@ const router = useRouter()
 const projectsStore = useProjectsStore()
 
 // Get reactive state from store
-const { projects, loading, error } = storeToRefs(projectsStore)
+const { projects, loading } = storeToRefs(projectsStore)
 
 // Local UI state
 const dialog = ref(false)
@@ -147,7 +147,6 @@ const averageProgress = computed(() => {
 // Fetch projects on mount
 onMounted(async () => {
   await projectsStore.fetchProjects()
-  // TODO: Fetch team members from API
 })
 
 // Project dialog functions
@@ -176,40 +175,12 @@ const viewProjectDetails = (project) => {
   router.push(`/project-details?id=${project.id}`)
 }
 
-const editProject = (project) => {
-  isEditing.value = true
-  selectedProject.value = project
-  dialog.value = true
-}
-
-const deleteProject = (project) => {
-  selectedProject.value = project
-  deleteDialog.value = true
-}
-
 const confirmDelete = async () => {
   if (selectedProject.value) {
     await projectsStore.deleteProject(selectedProject.value.id)
   }
   deleteDialog.value = false
   selectedProject.value = null
-}
-
-// Team management functions (placeholder - will connect to API later)
-const viewTeamMember = (member) => {
-  // TODO: Implement view member details
-}
-
-const editTeamMember = (member) => {
-  // TODO: Implement edit member
-}
-
-const deleteTeamMember = (member) => {
-  // TODO: Implement delete member
-}
-
-const addTeamMember = (newMember) => {
-  teamMembers.value.push(newMember)
 }
 </script>
 

@@ -99,7 +99,7 @@ defineEmits(['update:searchQuery', 'update:statusFilter', 'update:amountFilter',
 <style scoped>
 .search-filter-card {
   border-radius: var(--radius-2xl) !important;
-  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
+  background: var(--gradient-card-white) !important;
 }
 
 .search-field,

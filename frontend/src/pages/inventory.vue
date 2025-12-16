@@ -15,7 +15,7 @@
             <div class="stat-icon mb-3 icon-glow">
               <v-icon size="64" color="primary">mdi-package-variant</v-icon>
             </div>
-            <h3 class="text-h3 font-weight-bold text-primary mb-2" style="font-family: 'Arial', 'Helvetica', sans-serif; direction: ltr;">{{ totalItems || 0 }}</h3>
+            <h3 class="text-h3 font-weight-bold text-primary mb-2 stat-number-ltr">{{ totalItems || 0 }}</h3>
             <p class="text-subtitle-1 text-primary mb-0">إجمالي العناصر</p>
           </v-card>
         </v-col>
@@ -24,7 +24,7 @@
             <div class="stat-icon mb-3 icon-glow">
               <v-icon size="64" color="success">mdi-check-circle</v-icon>
             </div>
-            <h3 class="text-h3 font-weight-bold text-success mb-2" style="font-family: 'Arial', 'Helvetica', sans-serif; direction: ltr;">{{ inStockItems || 0 }}</h3>
+            <h3 class="text-h3 font-weight-bold text-success mb-2 stat-number-ltr">{{ inStockItems || 0 }}</h3>
             <p class="text-subtitle-1 text-success mb-0">متوفر في المخزون</p>
           </v-card>
         </v-col>
@@ -33,7 +33,7 @@
             <div class="stat-icon mb-3 icon-glow">
               <v-icon size="64" color="warning">mdi-alert</v-icon>
             </div>
-            <h3 class="text-h3 font-weight-bold text-warning mb-2" style="font-family: 'Arial', 'Helvetica', sans-serif; direction: ltr;">{{ lowStockItems || 0 }}</h3>
+            <h3 class="text-h3 font-weight-bold text-warning mb-2 stat-number-ltr">{{ lowStockItems || 0 }}</h3>
             <p class="text-subtitle-1 text-warning mb-0">منخفض المخزون</p>
           </v-card>
         </v-col>
@@ -42,7 +42,7 @@
             <div class="stat-icon mb-3 icon-glow">
               <v-icon size="64" color="info">mdi-currency-usd</v-icon>
             </div>
-            <h3 class="text-h6 font-weight-bold text-info mb-2" style="font-family: 'Arial', 'Helvetica', sans-serif; direction: ltr; white-space: nowrap;">{{ formatCurrency(totalValue) || '0 د.ع' }}</h3>
+            <h3 class="text-h6 font-weight-bold text-info mb-2 stat-number-ltr-nowrap">{{ formatCurrency(totalValue) || '0 د.ع' }}</h3>
             <p class="text-subtitle-1 text-info mb-0">إجمالي القيمة</p>
           </v-card>
         </v-col>
@@ -61,8 +61,7 @@
                 density="comfortable"
                 clearable
                 hide-details
-                class="search-field"
-                style="background: #f5f5f5;"
+                class="search-field bg-filter-input"
               />
             </v-col>
             <v-col cols="12" md="2">
@@ -397,6 +396,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { formatCurrency } from '@/utils/formatters'
 
 // متغيرات الحالة الأساسية
 const loading = ref(false)
@@ -613,14 +613,6 @@ const saveItem = () => {
 }
 
 // دوال مساعدة
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('ar-SA', {
-    style: 'currency',
-    currency: 'IQD',
-    minimumFractionDigits: 0
-  }).format(amount).replace('IQD', 'د.ع')
-}
-
 const getCategoryColor = (category) => {
   const colors = {
     'مواد بناء': 'primary',

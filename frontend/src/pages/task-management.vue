@@ -71,7 +71,7 @@
       <v-card class="filters-card">
         <v-card-title class="filters-header">
           <v-icon size="32" color="white" class="mr-2">mdi-filter</v-icon>
-          <span class="text-h4 font-weight-black" style="color: #ffffff; font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif; text-shadow: 0 3px 6px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.3); letter-spacing: 1px; font-size: var(--font-size-2xl-plus);">فلترة المهام</span>
+          <span class="text-h4 font-weight-black filter-title-text">فلترة المهام</span>
         </v-card-title>
         <v-card-text>
           <v-row>
@@ -129,7 +129,7 @@
       <v-card class="tasks-card">
         <v-card-title class="tasks-header">
           <v-icon size="18" color="white" class="mr-2">mdi-clipboard-list</v-icon>
-          <span class="text-h4 font-weight-black" style="color: #ffffff; font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); letter-spacing: 0.2px; font-size: var(--font-size-sm-plus);">قائمة المهام</span>
+          <span class="text-h4 font-weight-black list-title-text">قائمة المهام</span>
           <v-spacer />
           <v-btn
             color="primary"
@@ -272,8 +272,7 @@
                   variant="outlined"
                   :rules="[v => !!v || 'عنوان المهمة مطلوب']"
                   required
-                  class="task-form-field"
-                  style="--v-theme-primary: #000000; --v-field-label-color: #000000; --v-field-label-active-color: #000000; --v-field-label-floating-color: #000000; text-align: center; direction: rtl;"
+                  class="task-form-field input-field-dark-labels"
                 />
               </v-col>
               <v-col cols="12" md="6">
@@ -283,8 +282,7 @@
                   label="حالة المهمة"
                   variant="outlined"
                   required
-                  class="task-form-field"
-                  style="--v-theme-primary: #000000; --v-field-label-color: #000000; --v-field-label-active-color: #000000; --v-field-label-floating-color: #000000; text-align: center; direction: rtl;"
+                  class="task-form-field input-field-dark-labels"
                 />
               </v-col>
               <v-col cols="12">
@@ -293,8 +291,7 @@
                   label="وصف المهمة"
                   variant="outlined"
                   rows="3"
-                  class="task-form-field"
-                  style="--v-theme-primary: #000000; --v-field-label-color: #000000; --v-field-label-active-color: #000000; --v-field-label-floating-color: #000000; text-align: center; direction: rtl;"
+                  class="task-form-field input-field-dark-labels"
                 />
               </v-col>
               <v-col cols="12" md="6">
@@ -304,8 +301,7 @@
                   label="أولوية المهمة"
                   variant="outlined"
                   required
-                  class="task-form-field"
-                  style="--v-theme-primary: #000000; --v-field-label-color: #000000; --v-field-label-active-color: #000000; --v-field-label-floating-color: #000000; text-align: center; direction: rtl;"
+                  class="task-form-field input-field-dark-labels"
                 />
               </v-col>
               <v-col cols="12" md="6">
@@ -315,8 +311,7 @@
                   label="المسؤول"
                   variant="outlined"
                   required
-                  class="task-form-field"
-                  style="--v-theme-primary: #000000; --v-field-label-color: #000000; --v-field-label-active-color: #000000; --v-field-label-floating-color: #000000; text-align: center; direction: rtl;"
+                  class="task-form-field input-field-dark-labels"
                 />
               </v-col>
               <v-col cols="12" md="6">
@@ -326,8 +321,7 @@
                   type="date"
                   variant="outlined"
                   required
-                  class="task-form-field"
-                  style="--v-theme-primary: #000000; --v-field-label-color: #000000; --v-field-label-active-color: #000000; --v-field-label-floating-color: #000000; text-align: center; direction: rtl;"
+                  class="task-form-field input-field-dark-labels"
                 />
               </v-col>
               <v-col cols="12" md="6">
@@ -445,6 +439,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { formatDate } from '@/utils/formatters'
 
 // Reactive data
 const tasksLoading = ref(false)
@@ -619,10 +614,6 @@ const getProgressColor = (progress) => {
   if (progress < 30) return 'error'
   if (progress < 70) return 'warning'
   return 'success'
-}
-
-const formatDate = (date) => {
-  return new Date(date).toLocaleDateString('ar-SA')
 }
 
 const viewTask = (task) => {

@@ -94,12 +94,12 @@ const saveAction = () => {
 .modern-dialog {
   border-radius: var(--radius-xl);
   overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-xl);
 }
 
 .dialog-header {
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
-  color: white;
+  background: var(--gradient-info);
+  color: var(--text-white);
   padding: 0.75rem 1rem !important;
   display: flex;
   align-items: center;
@@ -147,8 +147,8 @@ const saveAction = () => {
 
 .dialog-actions {
   padding: 1.25rem 1.5rem !important;
-  background: #f8f9fa !important;
-  border-top: var(--space-px) solid rgba(0, 0, 0, 0.05) !important;
+  background: var(--color-slate-50) !important;
+  border-top: var(--space-px) solid var(--border-light) !important;
   display: flex;
   justify-content: flex-end;
   gap: var(--space-4);
@@ -160,8 +160,8 @@ const saveAction = () => {
   text-transform: none !important;
   border-radius: var(--radius-xl) !important;
   padding: var(--space-3-5) 32px !important;
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
-  color: #ffffff !important;
+  background: var(--gradient-info) !important;
+  color: var(--text-white) !important;
   font-size: var(--font-size-base) !important;
   font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
   min-width: var(--space-36) !important;
@@ -183,7 +183,7 @@ const saveAction = () => {
 }
 
 .save-btn :deep(.v-btn__content) {
-  color: #ffffff !important;
+  color: var(--text-white) !important;
   font-weight: 700 !important;
   font-size: var(--font-size-base) !important;
   letter-spacing: 0.5px !important;
@@ -194,7 +194,7 @@ const saveAction = () => {
 }
 
 .save-btn :deep(.v-icon) {
-  color: #ffffff !important;
+  color: var(--text-white) !important;
   font-size: var(--font-size-xl) !important;
   flex-shrink: 0;
 }
@@ -217,7 +217,7 @@ const saveAction = () => {
 
 .save-btn:hover,
 .save-btn.v-btn:hover {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) !important;
+  background: var(--gradient-info-deep) !important;
   box-shadow: 
     0 8px 24px rgba(59, 130, 246, 0.5),
     0 4px 12px rgba(37, 99, 235, 0.4),
@@ -232,9 +232,9 @@ const saveAction = () => {
   text-transform: none !important;
   border-radius: var(--radius-xl) !important;
   padding: var(--space-3-5) 32px !important;
-  border: 2px solid rgba(156, 163, 175, 0.5) !important;
-  color: #374151 !important;
-  background: rgba(255, 255, 255, 1) !important;
+  border: 2px solid var(--color-slate-300) !important;
+  color: var(--color-slate-700) !important;
+  background: var(--text-white) !important;
   backdrop-filter: blur(10px) !important;
   font-size: var(--font-size-base) !important;
   font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
@@ -255,7 +255,7 @@ const saveAction = () => {
 }
 
 .cancel-btn :deep(.v-btn__content) {
-  color: #374151 !important;
+  color: var(--color-slate-700) !important;
   font-weight: 700 !important;
   font-size: var(--font-size-base) !important;
   letter-spacing: 0.5px !important;
@@ -278,9 +278,9 @@ const saveAction = () => {
 
 .cancel-btn:hover,
 .cancel-btn.v-btn:hover {
-  background: rgba(255, 255, 255, 1) !important;
-  border-color: rgba(156, 163, 175, 0.7) !important;
-  color: #1f2937 !important;
+  background: var(--text-white) !important;
+  border-color: var(--color-slate-400) !important;
+  color: var(--color-slate-800) !important;
   transform: translateY(-2px) scale(1.02) !important;
   box-shadow: 
     0 6px 20px rgba(0, 0, 0, 0.12),

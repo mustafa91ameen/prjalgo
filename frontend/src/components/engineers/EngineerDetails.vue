@@ -8,11 +8,11 @@
             <v-icon v-else>mdi-account</v-icon>
           </v-avatar>
           <div>
-            <h2 class="text-h5 font-weight-bold" style="color: white; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">{{ engineer.name }}</h2>
-            <p class="text-subtitle-2 mb-0" style="color: rgba(255, 255, 255, 0.9); font-weight: 500;">{{ engineer.email }}</p>
+            <h2 class="text-h5 font-weight-bold detail-header-title">{{ engineer.name }}</h2>
+            <p class="text-subtitle-2 mb-0 detail-header-subtitle">{{ engineer.email }}</p>
           </div>
         </div>
-        <v-btn icon="mdi-close" variant="text" @click="closeDialog" style="color: white; background: rgba(255, 255, 255, 0.1); border-radius: 8px;" />
+        <v-btn icon="mdi-close" variant="text" @click="closeDialog" class="icon-btn-white-transparent" />
       </v-card-title>
 
       <v-divider />
@@ -23,8 +23,8 @@
           <v-col cols="12" md="6">
             <v-card variant="outlined" class="pa-4 info-card">
               <v-card-title class="text-h6 pa-0 mb-3">
-                <v-icon class="me-2" color="info" style="filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.3));">mdi-information</v-icon>
-                <span style="color: #1e40af !important; font-weight: 700 !important; font-size: var(--font-size-base-plus) !important;">المعلومات الأساسية</span>
+                <v-icon class="me-2 icon-drop-shadow-info" color="info">mdi-information</v-icon>
+                <span class="section-header-info">المعلومات الأساسية</span>
               </v-card-title>
               <div class="info-list">
                 <div class="info-item">
@@ -55,8 +55,8 @@
           <v-col cols="12" md="6">
             <v-card variant="outlined" class="pa-4 info-card">
               <v-card-title class="text-h6 pa-0 mb-3">
-                <v-icon class="me-2" color="warning" style="filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3));">mdi-star</v-icon>
-                <span style="color: #b45309 !important; font-weight: 700 !important; font-size: var(--font-size-base-plus) !important;">التقييم والحالة</span>
+                <v-icon class="me-2 icon-drop-shadow-warning" color="warning">mdi-star</v-icon>
+                <span class="section-header-warning">التقييم والحالة</span>
               </v-card-title>
               <div class="info-list">
                 <div class="info-item d-flex align-center">
@@ -68,7 +68,7 @@
                     color="warning"
                     density="compact"
                   />
-                  <span class="text-h6 ms-2" style="color: #f59e0b !important; font-weight: 700 !important;">{{ engineer.rating || 0 }}</span>
+                  <span class="text-h6 ms-2 rating-value">{{ engineer.rating || 0 }}</span>
                 </div>
                 <div class="info-item">
                   <span class="info-label">الحالة:</span>
@@ -88,8 +88,8 @@
           <v-col cols="12">
             <v-card variant="outlined" class="pa-4 info-card">
               <v-card-title class="text-h6 pa-0 mb-3">
-                <v-icon class="me-2" color="success" style="filter: drop-shadow(0 2px 4px rgba(16, 185, 129, 0.3));">mdi-cog</v-icon>
-                <span style="color: #047857 !important; font-weight: 700 !important; font-size: var(--font-size-base-plus) !important;">المهارات</span>
+                <v-icon class="me-2 icon-drop-shadow-success" color="success">mdi-cog</v-icon>
+                <span class="section-header-success">المهارات</span>
               </v-card-title>
               <div v-if="engineer.skills && engineer.skills.length > 0" class="d-flex flex-wrap gap-2">
                 <v-chip
@@ -166,7 +166,7 @@ const closeDialog = () => {
 }
 
 .details-header {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) !important;
+  background: var(--gradient-info-deep) !important;
   padding: var(--space-5) 24px !important;
 }
 
@@ -189,17 +189,17 @@ const closeDialog = () => {
 
 .info-label {
   font-weight: 700;
-  color: #1e293b;
+  color: var(--color-slate-800);
   font-size: var(--font-size-base-minus);
 }
 
 .info-value {
-  color: #334155;
+  color: var(--color-slate-600);
   font-size: var(--font-size-base-minus);
 }
 
 .info-value.text-primary {
-  color: #2563eb !important;
+  color: var(--color-blue-600) !important;
   font-weight: 600;
 }
 </style>

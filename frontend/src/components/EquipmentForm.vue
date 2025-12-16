@@ -170,12 +170,12 @@ input:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  border-color: var(--color-indigo-500);
+  box-shadow: 0 0 0 3px var(--shadow-info-glow);
 }
 
 label {
-  color: #374151;
+  color: var(--color-slate-700);
   font-weight: 500;
 }
 
@@ -188,11 +188,11 @@ select {
 input:hover,
 textarea:hover,
 select:hover {
-  border-color: #9ca3af;
+  border-color: var(--color-slate-400);
 }
 
 select {
-  background-color: white;
+  background-color: var(--text-white);
   cursor: pointer;
 }
 </style>

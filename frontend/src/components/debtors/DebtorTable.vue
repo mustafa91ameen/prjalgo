@@ -45,7 +45,7 @@
     >
       <!-- Name Column -->
       <template v-slot:item.name="{ item }">
-        <div class="d-flex align-center" style="cursor: pointer;" @click="$emit('view-payments', item)">
+        <div class="d-flex align-center clickable" @click="$emit('view-payments', item)">
           <v-avatar
             :color="getStatusColor(item.status)"
             size="32"
@@ -137,6 +137,8 @@
 </template>
 
 <script setup>
+import { formatCurrency, formatDate } from '@/utils/formatters'
+
 defineProps({
   debtors: {
     type: Array,
@@ -165,20 +167,6 @@ const tableHeaders = [
   { title: 'الحالة', key: 'status', sortable: true, align: 'center' },
   { title: 'الإجراءات', key: 'actions', sortable: false, align: 'center' }
 ]
-
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('ar-SA', {
-    style: 'currency',
-    currency: 'IQD',
-    minimumFractionDigits: 0
-  }).format(amount || 0).replace('IQD', 'د.ع')
-}
-
-const formatDate = (dateString) => {
-  if (!dateString) return 'غير محدد'
-  const date = new Date(dateString)
-  return date.toLocaleDateString('ar-SA')
-}
 
 const getStatusColor = (status) => {
   const colors = {

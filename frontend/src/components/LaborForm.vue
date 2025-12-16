@@ -187,12 +187,12 @@ defineExpose({
 input:focus,
 textarea:focus {
   outline: none;
-  border-color: #4caf50;
-  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+  border-color: var(--color-green-500);
+  box-shadow: 0 0 0 3px var(--shadow-success-glow);
 }
 
 label {
-  color: #374151;
+  color: var(--color-slate-700);
   font-weight: 500;
 }
 
@@ -203,6 +203,6 @@ textarea {
 
 input:hover,
 textarea:hover {
-  border-color: #9ca3af;
+  border-color: var(--color-slate-400);
 }
 </style>

@@ -486,7 +486,7 @@ const saveEmployee = () => {
 @import './styles/human-resources.css';
 
 .dialog-header {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
+  background: var(--gradient-info-deep);
   padding: var(--space-4) 24px;
 }
 
@@ -503,7 +503,7 @@ const saveEmployee = () => {
 }
 
 .header-title {
-  color: white;
+  color: var(--text-white);
   font-weight: 600;
   font-size: var(--font-size-base-plus);
 }
@@ -519,7 +519,7 @@ const saveEmployee = () => {
   display: flex;
   justify-content: flex-end;
   gap: var(--space-3);
-  border-top: var(--space-px) solid #e5e7eb;
+  border-top: var(--space-px) solid var(--border-light);
 }
 
 .fingerprint-card {
@@ -527,7 +527,7 @@ const saveEmployee = () => {
 }
 
 .fingerprint-title {
-  background: #f8fafc;
+  background: var(--color-slate-50);
   font-size: var(--font-size-base);
 }
 

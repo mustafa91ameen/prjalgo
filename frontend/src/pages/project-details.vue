@@ -195,6 +195,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { formatCurrency } from '@/utils/formatters'
 
 const route = useRoute()
 const router = useRouter()
@@ -244,11 +245,6 @@ const loadProject = () => {
 
 const goBack = () => {
   router.push('/project-management')
-}
-
-const formatCurrency = (amount) => {
-  if (!amount) return '0 د.ع'
-  return `${amount.toLocaleString()} د.ع`
 }
 
 const getStatusColor = (status) => {

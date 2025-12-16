@@ -161,7 +161,7 @@ watch(() => route.path, updateActiveMenuItem, { immediate: true })
 .v-application .v-navigation-drawer.modern-sidebar,
 body .modern-sidebar,
 body .v-navigation-drawer.modern-sidebar {
-  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%) !important;
+  background: var(--sidebar-bg-gradient, linear-gradient(135deg, var(--color-primary-dark, #2563eb) 0%, var(--color-primary-darker, #7c3aed) 100%)) !important;
   border-left: none !important;
   box-shadow: -4px 0 20px rgba(37, 99, 235, 0.3) !important;
   color: white !important;
@@ -264,7 +264,7 @@ body .modern-sidebar .menu-item {
 .modern-sidebar .menu-item:hover,
 .modern-sidebar .v-list-item.menu-item:hover,
 body .modern-sidebar .menu-item:hover {
-  background: rgba(37, 99, 235, 0.2) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
   transform: translateX(-4px);
   animation: none !important;
 }
@@ -272,14 +272,15 @@ body .modern-sidebar .menu-item:hover {
 .modern-sidebar .active-menu-item,
 .modern-sidebar .v-list-item.active-menu-item,
 body .modern-sidebar .active-menu-item {
-  background: linear-gradient(135deg, #1d4ed8 0%, #6d28d9 100%) !important;
-  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   transform: translateX(-4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .modern-sidebar .active-menu-item .v-list-item-title,
 body .modern-sidebar .active-menu-item .v-list-item-title {
-  font-weight: 600 !important;
+  font-weight: 700 !important;
   color: white !important;
 }
 
@@ -302,7 +303,7 @@ body .modern-sidebar .v-chip .v-chip__content {
 }
 
 .feature-item {
-  background: rgba(5, 150, 105, 0.2);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-lg);
   padding: var(--space-3) 8px;
   text-align: center;
@@ -311,7 +312,7 @@ body .modern-sidebar .v-chip .v-chip__content {
 }
 
 .feature-item:hover {
-  background: rgba(5, 150, 105, 0.3);
+  background: rgba(255, 255, 255, 0.2);
   transform: translateY(-2px);
 }
 
@@ -321,17 +322,17 @@ body .modern-sidebar .v-chip .v-chip__content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: rgba(34, 197, 94, 0.2) !important;
-  border: 1px solid rgba(34, 197, 94, 0.3);
+  background: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   position: relative;
   overflow: hidden;
 }
 
 .feature-link:hover {
-  background: rgba(34, 197, 94, 0.4) !important;
-  border-color: rgba(34, 197, 94, 0.5);
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.4);
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
 .feature-link::before {
@@ -429,118 +430,6 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 
 .v-col {
   direction: rtl;
-}
-
-/* ========================================
-   تخصيص عناوين الجداول - Table Headers
-   ======================================== */
-.v-data-table table thead tr th {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-  color: #ffffff !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-align: center !important;
-  vertical-align: middle !important;
-  padding: 1.2rem 0.8rem !important;
-  border: none !important;
-  box-shadow: 0 3px 12px rgba(4, 120, 87, 0.4) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
-}
-
-.v-data-table table thead tr th .v-data-table-header__content {
-  color: #ffffff !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
-}
-
-.v-data-table table thead tr th .v-data-table-header__content .v-data-table-header__sort-icon {
-  color: #ffffff !important;
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3)) !important;
-}
-
-/* CSS إضافي لضمان التطبيق */
-.v-data-table__wrapper table thead tr th {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-  color: #ffffff !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
-}
-
-.v-data-table__wrapper table thead tr th .v-data-table-header__content {
-  color: #ffffff !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
-}
-
-/* CSS لجميع عناوين الجداول */
-table thead tr th {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-  color: #ffffff !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
-}
-
-/* CSS محدد لصفحة إدارة الفريق */
-.team-data-table table thead tr th {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-  color: #ffffff !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
-}
-
-.team-data-table table thead tr th .v-data-table-header__content {
-  color: #ffffff !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
-}
-
-/* CSS لضمان التطبيق على جميع عناصر Vuetify */
-.v-data-table.team-data-table .v-data-table__wrapper table thead tr th {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-  color: #ffffff !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
-}
-
-.v-data-table.team-data-table .v-data-table__wrapper table thead tr th .v-data-table-header__content {
-  color: #ffffff !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
-}
-
-/* CSS لجميع عناوين الجداول في التطبيق */
-.v-application .v-data-table table thead tr th {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-  color: #ffffff !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
-}
-
-.v-application .v-data-table table thead tr th .v-data-table-header__content {
-  color: #ffffff !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
 }
 
 /* ========================================

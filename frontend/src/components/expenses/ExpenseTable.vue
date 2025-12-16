@@ -141,8 +141,8 @@ const tableHeaders = [
 }
 
 .table-title {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-  color: white !important;
+  background: var(--gradient-success-deep) !important;
+  color: var(--text-white) !important;
   padding: var(--space-4) 24px !important;
   display: flex;
   align-items: center;
@@ -155,29 +155,29 @@ const tableHeaders = [
 
 .serial-number {
   font-weight: 600;
-  color: #374151;
+  color: var(--color-slate-700);
 }
 
 .project-name {
   font-weight: 600;
-  color: #1e40af;
+  color: var(--color-blue-800);
 }
 
 .date-text {
-  color: #4b5563;
+  color: var(--color-slate-600);
 }
 
 .cost-text {
   font-weight: 600;
-  color: #059669;
+  color: var(--color-emerald-600);
 }
 
 .location-text {
-  color: #4b5563;
+  color: var(--color-slate-600);
 }
 
 .notes-text {
-  color: #6b7280;
+  color: var(--color-slate-500);
   font-size: var(--font-size-sm);
 }
 

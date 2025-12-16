@@ -5,7 +5,7 @@
         <div class="stat-icon mb-3">
           <v-icon size="64" color="info">mdi-account-group</v-icon>
         </div>
-        <h3 class="text-h3 font-weight-bold text-info mb-2" style="font-family: 'Arial', 'Helvetica', sans-serif; direction: ltr;">{{ totalDebtors }}</h3>
+        <h3 class="text-h3 font-weight-bold text-info mb-2 stat-number-ltr">{{ totalDebtors }}</h3>
         <p class="text-subtitle-1 text-info mb-0">إجمالي المديونون</p>
       </v-card>
     </v-col>
@@ -14,7 +14,7 @@
         <div class="stat-icon mb-3">
           <v-icon size="64" color="error">mdi-currency-usd</v-icon>
         </div>
-        <h3 class="text-h3 font-weight-bold text-error mb-2" style="font-family: 'Arial', 'Helvetica', sans-serif; direction: ltr;">{{ formattedTotalDebt }}</h3>
+        <h3 class="text-h3 font-weight-bold text-error mb-2 stat-number-ltr">{{ formattedTotalDebt }}</h3>
         <p class="text-subtitle-1 text-error mb-0">إجمالي المديونية</p>
       </v-card>
     </v-col>
@@ -23,7 +23,7 @@
         <div class="stat-icon mb-3">
           <v-icon size="64" color="warning">mdi-clock-alert</v-icon>
         </div>
-        <h3 class="text-h3 font-weight-bold text-warning mb-2" style="font-family: 'Arial', 'Helvetica', sans-serif; direction: ltr;">{{ overdueCount }}</h3>
+        <h3 class="text-h3 font-weight-bold text-warning mb-2 stat-number-ltr">{{ overdueCount }}</h3>
         <p class="text-subtitle-1 text-warning mb-0">متأخرين</p>
       </v-card>
     </v-col>
@@ -32,7 +32,7 @@
         <div class="stat-icon mb-3">
           <v-icon size="64" color="success">mdi-check-circle</v-icon>
         </div>
-        <h3 class="text-h3 font-weight-bold text-success mb-2" style="font-family: 'Arial', 'Helvetica', sans-serif; direction: ltr;">{{ paidCount }}</h3>
+        <h3 class="text-h3 font-weight-bold text-success mb-2 stat-number-ltr">{{ paidCount }}</h3>
         <p class="text-subtitle-1 text-success mb-0">مدفوع</p>
       </v-card>
     </v-col>
@@ -41,6 +41,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { formatCurrency } from '@/utils/formatters'
 
 const props = defineProps({
   totalDebtors: {
@@ -61,14 +62,6 @@ const props = defineProps({
   }
 })
 
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('ar-SA', {
-    style: 'currency',
-    currency: 'IQD',
-    minimumFractionDigits: 0
-  }).format(amount).replace('IQD', 'د.ع')
-}
-
 const formattedTotalDebt = computed(() => formatCurrency(props.totalDebt))
 </script>
 
@@ -76,15 +69,15 @@ const formattedTotalDebt = computed(() => formatCurrency(props.totalDebt))
 .stat-card {
   position: relative;
   border-radius: var(--radius-3xl) !important;
-  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  background: var(--gradient-card-white) !important;
+  border: 1px solid var(--border-light);
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--transition-normal);
 }
 
 .stat-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: var(--shadow-xl) !important;
 }
 
 .stat-icon {
@@ -94,6 +87,6 @@ const formattedTotalDebt = computed(() => formatCurrency(props.totalDebt))
 }
 
 .stat-icon .v-icon {
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 4px 8px var(--shadow-light));
 }
 </style>

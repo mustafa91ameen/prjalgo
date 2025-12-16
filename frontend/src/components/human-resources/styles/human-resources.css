@@ -10,8 +10,8 @@
 .stat-card {
   position: relative;
   border-radius: var(--radius-3xl) !important;
-  background: linear-gradient(145deg, var(--text-white) 0%, var(--color-slate-50) 100%) !important;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  background: var(--gradient-card-white) !important;
+  border: 1px solid var(--border-light);
   overflow: hidden;
 }
 
@@ -32,7 +32,7 @@
 
 .hover-lift:hover {
   transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: var(--shadow-xl) !important;
 }
 
 .stat-icon {
@@ -42,7 +42,7 @@
 }
 
 .icon-glow .v-icon {
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 4px 8px var(--shadow-light));
 }
 
 .stat-number {
@@ -84,8 +84,8 @@
 /* Search & Filter Styles */
 .search-card {
   border-radius: var(--radius-2xl) !important;
-  background: linear-gradient(145deg, var(--text-white) 0%, var(--color-slate-50) 100%) !important;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  background: var(--gradient-card-white) !important;
+  border: 1px solid var(--border-light);
 }
 
 .search-field {
@@ -128,7 +128,7 @@
 
 .cost-text {
   font-weight: 600;
-  color: #0d9488;
+  color: var(--color-teal-600);
 }
 
 .serial-number {
@@ -270,10 +270,5 @@
 }
 
 .card-glow:hover {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-}
-
-/* Black List for Dropdowns */
-.black-list .v-list-item-title {
-  color: #000000 !important;
+  box-shadow: var(--shadow-lg);
 }

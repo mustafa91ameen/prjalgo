@@ -24,8 +24,7 @@
                 variant="outlined"
                 density="comfortable"
                 prepend-inner-icon="mdi-account"
-                class="form-field-enhanced"
-                style="font-size: var(--font-size-base-plus) !important; color: #000000 !important;"
+                class="form-field-enhanced text-base-plus input-text-dark"
               />
             </v-col>
             <v-col cols="12">
@@ -40,8 +39,7 @@
                 prepend-inner-icon="mdi-lock"
                 :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 @click:append-inner="showPassword = !showPassword"
-                class="form-field-enhanced"
-                style="font-size: var(--font-size-base-plus) !important; color: #000000 !important;"
+                class="form-field-enhanced input-text-dark"
                 :hint="isEditing ? 'اتركه فارغاً إذا لم ترد تغيير كلمة المرور' : ''"
                 persistent-hint
               />
@@ -198,13 +196,13 @@ const saveEngineer = () => {
 }
 
 .edit-dialog-title {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) !important;
-  color: white !important;
+  background: var(--gradient-info-deep) !important;
+  color: var(--text-white) !important;
   padding: var(--space-5) 24px !important;
 }
 
 .edit-dialog-title h2 {
-  color: white !important;
+  color: var(--text-white) !important;
 }
 
 .form-field-enhanced {
@@ -212,7 +210,7 @@ const saveEngineer = () => {
 }
 
 .dialog-actions {
-  background: #f8fafc;
+  background: var(--color-slate-50);
 }
 
 .cancel-btn {
@@ -221,6 +219,6 @@ const saveEngineer = () => {
 
 .save-btn {
   border-radius: var(--radius-xl) !important;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+  background: var(--gradient-info) !important;
 }
 </style>

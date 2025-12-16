@@ -113,15 +113,15 @@ const saveAction = () => {
 <style scoped>
 /* تحسينات إضافية للتصميم */
 .bg-blue-600 {
-  background-color: #1976d2;
+  background-color: var(--color-blue-600);
 }
 
 .hover\:bg-blue-500:hover {
-  background-color: #1565c0;
+  background-color: var(--color-blue-700);
 }
 
 .focus\:ring-blue-500:focus {
-  --tw-ring-color: #1976d2;
+  --tw-ring-color: var(--color-blue-600);
 }
 
 /* تنسيق شريط العنوان المصغر */
@@ -152,8 +152,8 @@ const saveAction = () => {
   align-items: center;
   gap: var(--space-4);
   padding: 1.25rem 1.5rem !important;
-  background: #f8f9fa !important;
-  border-top: var(--space-px) solid rgba(0, 0, 0, 0.05) !important;
+  background: var(--color-slate-50) !important;
+  border-top: var(--space-px) solid var(--border-light) !important;
 }
 
 .save-btn-dialog {
@@ -161,8 +161,8 @@ const saveAction = () => {
   text-transform: none !important;
   border-radius: var(--radius-xl) !important;
   padding: var(--space-3-5) 32px !important;
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
-  color: #ffffff !important;
+  background: var(--gradient-info) !important;
+  color: var(--text-white) !important;
   font-size: var(--font-size-base) !important;
   font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
   min-width: var(--space-36) !important;
@@ -187,7 +187,7 @@ const saveAction = () => {
   width: var(--space-5) !important;
   height: var(--space-5) !important;
   stroke-width: 2.5 !important;
-  color: #ffffff !important;
+  color: var(--text-white) !important;
   flex-shrink: 0;
 }
 
@@ -208,7 +208,7 @@ const saveAction = () => {
 }
 
 .save-btn-dialog:hover {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) !important;
+  background: var(--gradient-info-deep) !important;
   box-shadow: 
     0 8px 24px rgba(59, 130, 246, 0.5),
     0 4px 12px rgba(37, 99, 235, 0.4),
@@ -222,9 +222,9 @@ const saveAction = () => {
   text-transform: none !important;
   border-radius: var(--radius-xl) !important;
   padding: var(--space-3-5) 32px !important;
-  border: 2px solid rgba(156, 163, 175, 0.5) !important;
-  color: #374151 !important;
-  background: rgba(255, 255, 255, 1) !important;
+  border: 2px solid var(--color-slate-300) !important;
+  color: var(--color-slate-700) !important;
+  background: var(--text-white) !important;
   backdrop-filter: blur(10px) !important;
   font-size: var(--font-size-base) !important;
   font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
@@ -260,9 +260,9 @@ const saveAction = () => {
 }
 
 .cancel-btn-dialog:hover {
-  background: rgba(255, 255, 255, 1) !important;
-  border-color: rgba(156, 163, 175, 0.5) !important;
-  color: #374151 !important;
+  background: var(--text-white) !important;
+  border-color: var(--color-slate-400) !important;
+  color: var(--color-slate-800) !important;
   transform: translateY(-2px) scale(1.02) !important;
   box-shadow: 
     0 6px 20px rgba(0, 0, 0, 0.12),

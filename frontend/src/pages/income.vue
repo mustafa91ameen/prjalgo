@@ -179,6 +179,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
+import { formatCurrency, formatDate, formatDateForInput } from '@/utils/formatters'
 
 // ========================================
 // متغيرات الحالة الأساسية
@@ -400,21 +401,6 @@ const incomeByCategory = computed(() => {
 // ========================================
 // الدوال المساعدة
 // ========================================
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('ar-SA', {
-    style: 'currency',
-    currency: 'IQD'
-  }).format(amount)
-}
-
-const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleDateString('ar-SA')
-}
-
-const formatDateForInput = (dateString) => {
-  return new Date(dateString).toISOString().split('T')[0]
-}
-
 const getCategoryColor = (category) => {
   const cat = incomeCategories.find(c => c.value === category)
   return cat ? cat.color : 'grey'

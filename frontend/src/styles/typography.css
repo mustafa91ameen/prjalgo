@@ -459,6 +459,10 @@ h6,
   font-size: var(--font-size-6xl) !important;
 }
 
+.text-base-plus {
+  font-size: var(--font-size-base-plus) !important;
+}
+
 /* ========================================
    تنسيق المحاذاة
    ======================================== */
@@ -566,6 +570,66 @@ h6,
 /* تحسين الأرقام العربية */
 .arabic-numbers {
   font-variant-numeric: tabular-nums;
+}
+
+/* ========================================
+   فئات الأرقام والإحصائيات (LTR)
+   Stat Numbers - LTR Direction
+   ======================================== */
+
+/* أرقام الإحصائيات - اتجاه من اليسار لليمين */
+.stat-number-ltr {
+  font-family: 'Arial', 'Helvetica', sans-serif !important;
+  direction: ltr !important;
+}
+
+/* أرقام الإحصائيات مع منع التفاف النص */
+.stat-number-ltr-nowrap {
+  font-family: 'Arial', 'Helvetica', sans-serif !important;
+  direction: ltr !important;
+  white-space: nowrap !important;
+}
+
+/* عنوان الفلتر مع ظل النص */
+.filter-title-text {
+  color: #ffffff !important;
+  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 1px !important;
+}
+
+/* عنوان القائمة مع ظل النص */
+.list-title-text {
+  color: #ffffff !important;
+  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.2px !important;
+}
+
+/* نص أبيض مع أهمية عالية */
+.text-white-important {
+  color: #ffffff !important;
+}
+
+/* ========================================
+   فئات حقول الإدخال
+   Input Field Classes
+   ======================================== */
+
+/* حقول الإدخال بألوان داكنة */
+.input-field-dark-labels {
+  --v-theme-primary: #000000 !important;
+  --v-field-label-color: #000000 !important;
+  --v-field-label-active-color: #000000 !important;
+  --v-field-label-floating-color: #000000 !important;
+  text-align: center !important;
+  direction: rtl !important;
+}
+
+/* حقول الإدخال مع لون نص محدد */
+.input-text-dark {
+  font-size: var(--font-size-base-plus) !important;
+  color: #000000 !important;
 }
 
 

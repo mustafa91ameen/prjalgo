@@ -2,8 +2,8 @@
 
 /* CSS قوي لجميع عناوين الجداول في Vuetify */
 .v-data-table table thead tr th {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-  color: #ffffff !important;
+  background: var(--table-header-gradient, linear-gradient(135deg, var(--color-emerald-700) 0%, var(--color-emerald-600) 100%)) !important;
+  color: var(--text-white) !important;
   font-weight: 800 !important;
   font-size: var(--font-size-base-plus) !important;
   text-align: center !important;
@@ -16,7 +16,7 @@
 }
 
 .v-data-table table thead tr th .v-data-table-header__content {
-  color: #ffffff !important;
+  color: var(--text-white) !important;
   font-weight: 800 !important;
   font-size: var(--font-size-base-plus) !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
@@ -24,14 +24,14 @@
 }
 
 .v-data-table table thead tr th .v-data-table-header__content .v-data-table-header__sort-icon {
-  color: #ffffff !important;
+  color: var(--text-white) !important;
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3)) !important;
 }
 
 /* CSS إضافي لضمان التطبيق */
 .v-data-table__wrapper table thead tr th {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-  color: #ffffff !important;
+  background: var(--table-header-gradient, linear-gradient(135deg, var(--color-emerald-700) 0%, var(--color-emerald-600) 100%)) !important;
+  color: var(--text-white) !important;
   font-weight: 800 !important;
   font-size: var(--font-size-base-plus) !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
@@ -39,7 +39,7 @@
 }
 
 .v-data-table__wrapper table thead tr th .v-data-table-header__content {
-  color: #ffffff !important;
+  color: var(--text-white) !important;
   font-weight: 800 !important;
   font-size: var(--font-size-base-plus) !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
@@ -48,8 +48,8 @@
 
 /* CSS لجميع عناوين الجداول */
 table thead tr th {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-  color: #ffffff !important;
+  background: var(--table-header-gradient, linear-gradient(135deg, var(--color-emerald-700) 0%, var(--color-emerald-600) 100%)) !important;
+  color: var(--text-white) !important;
   font-weight: 800 !important;
   font-size: var(--font-size-base-plus) !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
@@ -58,8 +58,8 @@ table thead tr th {
 
 /* CSS محدد لصفحة إدارة الفريق */
 .team-data-table table thead tr th {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-  color: #ffffff !important;
+  background: var(--table-header-gradient, linear-gradient(135deg, var(--color-emerald-700) 0%, var(--color-emerald-600) 100%)) !important;
+  color: var(--text-white) !important;
   font-weight: 800 !important;
   font-size: var(--font-size-base-plus) !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
@@ -67,7 +67,7 @@ table thead tr th {
 }
 
 .team-data-table table thead tr th .v-data-table-header__content {
-  color: #ffffff !important;
+  color: var(--text-white) !important;
   font-weight: 800 !important;
   font-size: var(--font-size-base-plus) !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
@@ -76,8 +76,8 @@ table thead tr th {
 
 /* CSS لضمان التطبيق على جميع عناصر Vuetify */
 .v-data-table.team-data-table .v-data-table__wrapper table thead tr th {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-  color: #ffffff !important;
+  background: var(--table-header-gradient, linear-gradient(135deg, var(--color-emerald-700) 0%, var(--color-emerald-600) 100%)) !important;
+  color: var(--text-white) !important;
   font-weight: 800 !important;
   font-size: var(--font-size-base-plus) !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
@@ -85,7 +85,7 @@ table thead tr th {
 }
 
 .v-data-table.team-data-table .v-data-table__wrapper table thead tr th .v-data-table-header__content {
-  color: #ffffff !important;
+  color: var(--text-white) !important;
   font-weight: 800 !important;
   font-size: var(--font-size-base-plus) !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
@@ -94,8 +94,8 @@ table thead tr th {
 
 /* CSS لجميع عناوين الجداول في التطبيق */
 .v-application .v-data-table table thead tr th {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-  color: #ffffff !important;
+  background: var(--table-header-gradient, linear-gradient(135deg, var(--color-emerald-700) 0%, var(--color-emerald-600) 100%)) !important;
+  color: var(--text-white) !important;
   font-weight: 800 !important;
   font-size: var(--font-size-base-plus) !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
@@ -103,7 +103,7 @@ table thead tr th {
 }
 
 .v-application .v-data-table table thead tr th .v-data-table-header__content {
-  color: #ffffff !important;
+  color: var(--text-white) !important;
   font-weight: 800 !important;
   font-size: var(--font-size-base-plus) !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;

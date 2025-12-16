@@ -5,7 +5,7 @@
         <div class="stat-icon mb-3 icon-glow">
           <v-icon size="48" color="info">mdi-folder-multiple</v-icon>
         </div>
-        <h3 class="text-h4 font-weight-bold text-info mb-2" style="font-family: 'Arial', 'Helvetica', sans-serif; direction: ltr;">{{ totalProjects || 0 }}</h3>
+        <h3 class="text-h4 font-weight-bold text-info mb-2 stat-number-ltr">{{ totalProjects || 0 }}</h3>
         <p class="text-caption text-info mb-0">إجمالي المشاريع</p>
       </v-card>
     </v-col>
@@ -14,7 +14,7 @@
         <div class="stat-icon mb-3 icon-glow">
           <v-icon size="48" color="success">mdi-check-circle</v-icon>
         </div>
-        <h3 class="text-h4 font-weight-bold text-success mb-2" style="font-family: 'Arial', 'Helvetica', sans-serif; direction: ltr;">{{ activeProjects || 0 }}</h3>
+        <h3 class="text-h4 font-weight-bold text-success mb-2 stat-number-ltr">{{ activeProjects || 0 }}</h3>
         <p class="text-caption text-success mb-0">مشاريع نشطة</p>
       </v-card>
     </v-col>
@@ -23,7 +23,7 @@
         <div class="stat-icon mb-3 icon-glow">
           <v-icon size="48" color="warning">mdi-clock-alert</v-icon>
         </div>
-        <h3 class="text-h4 font-weight-bold text-warning mb-2" style="font-family: 'Arial', 'Helvetica', sans-serif; direction: ltr;">{{ pendingProjects || 0 }}</h3>
+        <h3 class="text-h4 font-weight-bold text-warning mb-2 stat-number-ltr">{{ pendingProjects || 0 }}</h3>
         <p class="text-caption text-warning mb-0">في الانتظار</p>
       </v-card>
     </v-col>
@@ -32,7 +32,7 @@
         <div class="stat-icon mb-3 icon-glow">
           <v-icon size="48" color="error">mdi-currency-usd</v-icon>
         </div>
-        <h3 class="text-h6 font-weight-bold text-error mb-2" style="font-family: 'Arial', 'Helvetica', sans-serif; direction: ltr; white-space: nowrap;">{{ formattedBudget }}</h3>
+        <h3 class="text-h6 font-weight-bold text-error mb-2 stat-number-ltr-nowrap">{{ formattedBudget }}</h3>
         <p class="text-caption text-error mb-0">إجمالي الميزانية</p>
       </v-card>
     </v-col>
@@ -41,7 +41,7 @@
         <div class="stat-icon mb-3 icon-glow">
           <v-icon size="48" color="primary">mdi-chart-line</v-icon>
         </div>
-        <h3 class="text-h4 font-weight-bold text-primary mb-2" style="font-family: 'Arial', 'Helvetica', sans-serif; direction: ltr;">{{ averageProgress || 0 }}%</h3>
+        <h3 class="text-h4 font-weight-bold text-primary mb-2 stat-number-ltr">{{ averageProgress || 0 }}%</h3>
         <p class="text-caption text-primary mb-0">متوسط التقدم</p>
       </v-card>
     </v-col>
@@ -50,6 +50,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { formatCurrencyFull } from '@/utils/formatters'
 
 const props = defineProps({
   totalProjects: {
@@ -74,18 +75,8 @@ const props = defineProps({
   }
 })
 
-// Local format function to match original component
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'IQD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(amount)
-}
-
 const formattedBudget = computed(() => {
-  return formatCurrency(props.totalBudget) || '0 د.ع'
+  return formatCurrencyFull(props.totalBudget, 'IQD', 'en-US') || '0 د.ع'
 })
 </script>
 
@@ -136,8 +127,8 @@ const formattedBudget = computed(() => {
 }
 
 .stat-card .v-icon {
-  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.15));
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 6px 12px var(--shadow-medium));
+  transition: all var(--transition-normal);
   font-size: var(--font-size-6xl) !important;
   width: var(--space-14) !important;
   height: var(--space-14) !important;
@@ -145,48 +136,48 @@ const formattedBudget = computed(() => {
 
 .stat-card:hover .v-icon {
   transform: scale(1.15) rotate(8deg);
-  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.25));
+  filter: drop-shadow(0 12px 24px var(--shadow-dark));
 }
 
 /* Color-specific effects for each stat card */
 .stat-card:nth-child(1)::before {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #7c3aed 100%);
+  background: var(--gradient-primary-deep);
 }
 
 .stat-card:nth-child(1):hover {
-  box-shadow: 0 25px 50px rgba(59, 130, 246, 0.25), 0 8px 16px rgba(59, 130, 246, 0.15) !important;
+  box-shadow: 0 25px 50px var(--shadow-primary-glow), 0 8px 16px var(--shadow-info-glow) !important;
 }
 
 .stat-card:nth-child(2)::before {
-  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+  background: var(--gradient-success-deep);
 }
 
 .stat-card:nth-child(2):hover {
-  box-shadow: 0 25px 50px rgba(16, 185, 129, 0.25), 0 8px 16px rgba(16, 185, 129, 0.15) !important;
+  box-shadow: 0 25px 50px var(--shadow-success-glow), 0 8px 16px var(--shadow-success-glow) !important;
 }
 
 .stat-card:nth-child(3)::before {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+  background: var(--gradient-warning-deep);
 }
 
 .stat-card:nth-child(3):hover {
-  box-shadow: 0 25px 50px rgba(245, 158, 11, 0.25), 0 8px 16px rgba(245, 158, 11, 0.15) !important;
+  box-shadow: 0 25px 50px var(--shadow-warning-glow), 0 8px 16px var(--shadow-warning-glow) !important;
 }
 
 .stat-card:nth-child(4)::before {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
+  background: var(--gradient-error-deep);
 }
 
 .stat-card:nth-child(4):hover {
-  box-shadow: 0 25px 50px rgba(239, 68, 68, 0.25), 0 8px 16px rgba(239, 68, 68, 0.15) !important;
+  box-shadow: 0 25px 50px var(--shadow-error-glow), 0 8px 16px var(--shadow-error-glow) !important;
 }
 
 .stat-card:nth-child(5)::before {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
+  background: var(--gradient-info-deep);
 }
 
 .stat-card:nth-child(5):hover {
-  box-shadow: 0 25px 50px rgba(59, 130, 246, 0.25), 0 8px 16px rgba(59, 130, 246, 0.15) !important;
+  box-shadow: 0 25px 50px var(--shadow-info-glow), 0 8px 16px var(--shadow-info-glow) !important;
 }
 
 /* Responsive adjustments specific to stats row */

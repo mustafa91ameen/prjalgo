@@ -12,8 +12,7 @@
             density="comfortable"
             clearable
             hide-details
-            class="search-field"
-            style="background: #f5f5f5;"
+            class="search-field bg-filter-input"
           />
         </v-col>
         <v-col cols="12" md="2">

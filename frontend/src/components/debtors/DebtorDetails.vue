@@ -70,6 +70,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { formatCurrency, formatDate } from '@/utils/formatters'
 
 const props = defineProps({
   modelValue: {
@@ -92,18 +93,6 @@ const dialogModel = computed({
 const closeDialog = () => {
   dialogModel.value = false
   emit('close')
-}
-
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('ar-SA', {
-    style: 'currency',
-    currency: 'IQD'
-  }).format(amount)
-}
-
-const formatDate = (date) => {
-  if (!date) return ''
-  return new Date(date).toLocaleDateString('ar-SA')
 }
 
 const getStatusColor = (status) => {
@@ -132,8 +121,8 @@ const getStatusText = (status) => {
 }
 
 .details-header {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) !important;
-  color: white !important;
+  background: var(--gradient-info-deep) !important;
+  color: var(--text-white) !important;
   font-weight: 700 !important;
   padding: var(--space-5) 24px !important;
 }

@@ -192,8 +192,8 @@ const saveDebtor = () => {
 }
 
 .form-header {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) !important;
-  color: white !important;
+  background: var(--gradient-info-deep) !important;
+  color: var(--text-white) !important;
   font-weight: 700 !important;
   padding: var(--space-5) 24px !important;
 }

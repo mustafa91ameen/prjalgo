@@ -325,6 +325,6 @@ const saveProject = () => {
 }
 
 .readonly-field {
-  background: #e5e7eb !important;
+  background: var(--color-slate-200) !important;
 }
 </style>
