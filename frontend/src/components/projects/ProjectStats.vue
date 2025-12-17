@@ -3,12 +3,12 @@
     <v-col cols="12" sm="6" md="2" lg="2" xl="2" class="pa-2">
       <div class="modern-stat-card stat-card-info hover-lift">
         <div class="stat-card-background"></div>
-        <div class="stat-card-content">
-          <div class="stat-icon-wrapper">
-            <v-icon size="32" class="stat-icon">mdi-folder-multiple</v-icon>
+        <div class="project-stat-content">
+          <div class="project-icon-wrapper">
+            <v-icon size="32" class="project-stat-icon">mdi-folder-multiple</v-icon>
           </div>
-          <div class="stat-value">{{ totalProjects || 0 }}</div>
-          <div class="stat-label">إجمالي المشاريع</div>
+          <div class="project-stat-value">{{ totalProjects || 0 }}</div>
+          <div class="project-stat-label">إجمالي المشاريع</div>
         </div>
       </div>
     </v-col>
@@ -16,12 +16,12 @@
     <v-col cols="12" sm="6" md="2" lg="2" xl="2" class="pa-2">
       <div class="modern-stat-card stat-card-success hover-lift">
         <div class="stat-card-background"></div>
-        <div class="stat-card-content">
-          <div class="stat-icon-wrapper">
-            <v-icon size="32" class="stat-icon">mdi-check-circle</v-icon>
+        <div class="project-stat-content">
+          <div class="project-icon-wrapper">
+            <v-icon size="32" class="project-stat-icon">mdi-check-circle</v-icon>
           </div>
-          <div class="stat-value">{{ activeProjects || 0 }}</div>
-          <div class="stat-label">مشاريع نشطة</div>
+          <div class="project-stat-value">{{ activeProjects || 0 }}</div>
+          <div class="project-stat-label">مشاريع نشطة</div>
         </div>
       </div>
     </v-col>
@@ -29,12 +29,12 @@
     <v-col cols="12" sm="6" md="2" lg="2" xl="2" class="pa-2">
       <div class="modern-stat-card stat-card-warning hover-lift">
         <div class="stat-card-background"></div>
-        <div class="stat-card-content">
-          <div class="stat-icon-wrapper">
-            <v-icon size="32" class="stat-icon">mdi-clock-alert</v-icon>
+        <div class="project-stat-content">
+          <div class="project-icon-wrapper">
+            <v-icon size="32" class="project-stat-icon">mdi-clock-alert</v-icon>
           </div>
-          <div class="stat-value">{{ pendingProjects || 0 }}</div>
-          <div class="stat-label">في الانتظار</div>
+          <div class="project-stat-value">{{ pendingProjects || 0 }}</div>
+          <div class="project-stat-label">في الانتظار</div>
         </div>
       </div>
     </v-col>
@@ -42,12 +42,12 @@
     <v-col cols="12" sm="6" md="3" lg="3" xl="3" class="pa-2">
       <div class="modern-stat-card stat-card-primary hover-lift">
         <div class="stat-card-background"></div>
-        <div class="stat-card-content">
-          <div class="stat-icon-wrapper">
-            <v-icon size="32" class="stat-icon">mdi-currency-usd</v-icon>
+        <div class="project-stat-content">
+          <div class="project-icon-wrapper">
+            <v-icon size="32" class="project-stat-icon">mdi-currency-usd</v-icon>
           </div>
-          <div class="stat-value">{{ formattedBudget }}</div>
-          <div class="stat-label">إجمالي الميزانية</div>
+          <div class="project-stat-value">{{ formattedBudget }}</div>
+          <div class="project-stat-label">إجمالي الميزانية</div>
         </div>
       </div>
     </v-col>
@@ -55,12 +55,12 @@
     <v-col cols="12" sm="6" md="3" lg="3" xl="3" class="pa-2">
       <div class="modern-stat-card stat-card-info hover-lift">
         <div class="stat-card-background"></div>
-        <div class="stat-card-content">
-          <div class="stat-icon-wrapper">
-            <v-icon size="32" class="stat-icon">mdi-chart-line</v-icon>
+        <div class="project-stat-content">
+          <div class="project-icon-wrapper">
+            <v-icon size="32" class="project-stat-icon">mdi-chart-line</v-icon>
           </div>
-          <div class="stat-value">{{ averageProgress || 0 }}%</div>
-          <div class="stat-label">متوسط التقدم</div>
+          <div class="project-stat-value">{{ averageProgress || 0 }}%</div>
+          <div class="project-stat-label">متوسط التقدم</div>
         </div>
       </div>
     </v-col>

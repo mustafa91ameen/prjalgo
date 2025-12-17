@@ -116,11 +116,15 @@
 }
 
 .types-table .v-data-table__th {
-  background: var(--color-slate-200);
-  color: var(--color-slate-600);
-  font-weight: 600;
-  text-align: center;
-  padding: var(--space-3) 8px;
+  background: var(--color-slate-50) !important;
+  color: var(--color-slate-600) !important;
+  font-weight: var(--font-weight-bold) !important;
+  font-size: 0.75rem !important;
+  text-align: center !important;
+  padding: var(--space-3) var(--space-4) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  border-bottom: 2px solid var(--border-light) !important;
 }
 
 .types-table .v-data-table__td {

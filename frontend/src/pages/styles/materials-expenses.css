@@ -136,10 +136,13 @@
 }
 
 .data-table :deep(.v-data-table__th) {
-  color: var(--text-white) !important;
-  font-weight: 900;
-  font-size: var(--font-size-base-plus);
-  background: linear-gradient(135deg, var(--color-blue-600) 0%, var(--color-blue-700) 100%) !important;
+  background: var(--color-slate-50) !important;
+  color: var(--color-slate-600) !important;
+  font-weight: var(--font-weight-bold) !important;
+  font-size: 0.75rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  border-bottom: 2px solid var(--border-light) !important;
 }
 
 .data-table :deep(.v-data-table__tr:hover) {
@@ -155,16 +158,24 @@
 
 /* Materials Table Specific */
 .materials-table :deep(.v-data-table__th) {
-  background: linear-gradient(135deg, var(--color-blue-600) 0%, var(--color-blue-700) 100%) !important;
-  color: var(--text-white) !important;
-  font-weight: 900;
+  background: var(--color-slate-50) !important;
+  color: var(--color-slate-600) !important;
+  font-weight: var(--font-weight-bold) !important;
+  font-size: 0.75rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  border-bottom: 2px solid var(--border-light) !important;
 }
 
 /* Expenses Table Specific */
 .expenses-table :deep(.v-data-table__th) {
-  background: linear-gradient(135deg, var(--color-blue-600) 0%, var(--color-blue-700) 100%) !important;
-  color: var(--text-white) !important;
-  font-weight: bold;
+  background: var(--color-slate-50) !important;
+  color: var(--color-slate-600) !important;
+  font-weight: var(--font-weight-bold) !important;
+  font-size: 0.75rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  border-bottom: 2px solid var(--border-light) !important;
 }
 
 /* ============================================

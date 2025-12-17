@@ -516,30 +516,21 @@ body {
   color: var(--text-white) !important;
 }
 
-/* تحسين التمرير */
+/* تحسين التمرير - Crystal Indigo Theme */
 ::-webkit-scrollbar {
   width: 8px;
-  /* Thinner for modern look */
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
-  /* Cleaner transparent track */
+  background: var(--color-slate-100);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  /* Slate 300 - Subtle Grey */
-  border-radius: 10px;
-  border: 2px solid transparent;
-  /* Padding effect */
-  background-clip: content-box;
+  background: var(--color-slate-300);
+  border-radius: var(--radius-base);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-  /* Slate 400 - Darker on hover */
-  border: 2px solid transparent;
-  background-clip: content-box;
+  background: var(--color-slate-400);
 }

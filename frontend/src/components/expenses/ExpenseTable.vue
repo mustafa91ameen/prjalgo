@@ -1,8 +1,8 @@
 <template>
   <v-card class="data-table-card" elevation="2">
-    <v-card-title class="table-title indigo-title">
+    <v-card-title class="table-title">
       <span class="title-text">المشاريع</span>
-      <v-chip class="ms-2" size="small" color="white" variant="flat">
+      <v-chip class="ms-2" size="small" color="primary" variant="flat">
         {{ items.length }}
       </v-chip>
     </v-card-title>
@@ -141,11 +141,12 @@ const tableHeaders = [
 }
 
 .table-title {
-  background: var(--gradient-success-deep) !important;
-  color: var(--text-white) !important;
-  padding: var(--space-4) 24px !important;
+  background: var(--background-surface) !important;
+  color: var(--text-primary) !important;
+  padding: 1.25rem 1.5rem !important;
   display: flex;
   align-items: center;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .title-text {

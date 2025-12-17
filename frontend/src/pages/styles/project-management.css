@@ -1,20 +1,16 @@
 /**
- * Project Management Page Styles
- * Contains ONLY page-level styles. Component styles are in their respective files:
- * - ProjectStats: components/projects/ProjectStats.vue + styles/projects.css
- * - ProjectCard: components/projects/ProjectCard.vue + styles/projects.css
- * - ProjectForm: components/projects/ProjectForm.vue + styles/projects.css
- * - DeleteConfirmDialog: components/projects/DeleteConfirmDialog.vue + styles/projects.css
+ * Project Management Page Styles - Crystal Indigo Theme
+ * Contains ONLY page-level styles. Component styles are in their respective files.
  */
 
 /* ============================================
-   Page Container - White Based Theme
+   Page Container
    ============================================ */
 .data-page {
-  background: var(--page-background) !important;
-  color: var(--text-dark);
+  background-color: var(--background-secondary) !important;
+  color: var(--text-secondary);
   min-height: 100vh;
-  padding: 1rem;
+  padding: 1.5rem;
   width: 100%;
 }
 
@@ -25,15 +21,13 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2rem;
   text-align: center;
 }
 
-/* Page Header styles moved to shared/styles/shared.css */
-
 /* Page Badge */
 .page-badge {
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   display: flex;
   justify-content: center;
   animation: fadeIn 0.8s ease-out 0.3s both;
@@ -41,75 +35,77 @@
 
 .page-badge .v-chip {
   font-weight: 600;
-  font-size: var(--font-size-sm-plus);
+  font-size: var(--font-size-sm);
   padding: 0.5rem 1rem;
-  box-shadow: var(--shadow-blue-material);
+  background-color: var(--color-indigo-100) !important;
+  color: var(--color-indigo-700) !important;
+  box-shadow: none !important;
   transition: all var(--transition-normal);
 }
 
 .page-badge .v-chip:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-blue-material-hover);
+  transform: translateY(-1px);
+  background-color: var(--color-indigo-200) !important;
 }
 
 /* ============================================
    Data Table Card (Projects List Container)
    ============================================ */
 .data-table-card {
-  background: var(--bg-white) !important;
-  border-radius: var(--radius-2xl) !important;
-  box-shadow: var(--shadow-elevated) !important;
+  background: var(--background-surface) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--shadow-card) !important;
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border-light);
   transition: all var(--transition-normal);
 }
 
 .data-table-card:hover {
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: var(--shadow-card-hover) !important;
 }
 
 .data-table-card .v-card-title {
-  background: linear-gradient(135deg, var(--color-blue-400) 0%, var(--color-blue-500) 50%, var(--color-blue-600) 100%) !important;
-  border-bottom: var(--space-px) solid rgba(255, 255, 255, 0.3);
-  padding: 1.5rem;
-  position: relative;
+  background: var(--background-surface) !important;
+  border-bottom: 1px solid var(--border-light);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Clean Header Typography */
+.data-table-card .v-card-title span {
+  color: var(--text-primary) !important;
+  font-family: var(--font-primary) !important;
+  font-weight: 700 !important;
+  font-size: var(--font-size-lg) !important;
+  letter-spacing: 0px !important;
+  text-shadow: none !important;
 }
 
 .data-table-card .v-card-title .v-icon {
-  color: var(--text-white) !important;
+  color: var(--color-primary) !important;
+  margin-inline-end: 0.75rem;
 }
 
-.data-table-card .v-card-title span {
-  color: var(--text-white) !important;
-  font-family: var(--font-primary) !important;
-  font-weight: 700 !important;
-  font-size: var(--font-size-xl) !important;
-  letter-spacing: 0.5px !important;
-  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2) !important;
-}
-
+/* Chip in Header */
 .data-table-card .v-card-title .v-chip {
-  color: var(--text-white) !important;
-  background: rgba(255, 255, 255, 0.2) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: var(--color-primary) !important;
+  background: var(--color-indigo-50) !important;
+  border: 1px solid var(--color-indigo-100) !important;
+  font-weight: 600;
 }
 
+/* Remove the top gradient bar */
 .data-table-card .v-card-title::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: var(--space-0-5);
-  background: var(--gradient-primary);
+  display: none;
 }
 
 /* Centered Table */
 .centered-table {
   width: 100%;
   margin: 0;
-  border-radius: var(--radius-2xl) !important;
-  overflow: hidden;
+  border-radius: 0 !important;
 }
 
 /* ============================================
@@ -117,27 +113,27 @@
    ============================================ */
 .projects-grid-row {
   margin-top: 1.5rem !important;
-  padding: 0 1rem !important;
+  padding: 0 0.5rem !important;
 }
 
 /* ============================================
-   Add Button
+   Add Button (Crystal Indigo)
    ============================================ */
 .add-button {
-  background: linear-gradient(135deg, var(--color-emerald-500) 0%, var(--color-emerald-600) 50%, var(--color-emerald-700) 100%) !important;
+  background: var(--color-primary) !important;
   color: var(--text-white) !important;
-  border-radius: var(--radius-xl) !important;
-  font-weight: 700 !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
   text-transform: none !important;
   padding: 0.75rem 1.5rem !important;
   transition: all var(--transition-normal) !important;
-  box-shadow: var(--shadow-emerald-md) !important;
+  box-shadow: var(--shadow-primary) !important;
 }
 
 .add-button:hover {
-  transform: translateY(-3px) scale(1.05) !important;
-  box-shadow: var(--shadow-emerald-lg) !important;
-  background: linear-gradient(135deg, var(--color-emerald-600) 0%, var(--color-emerald-700) 50%, var(--color-emerald-800) 100%) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: var(--shadow-primary-glow) !important;
+  background: var(--color-primary-light) !important;
 }
 
 .add-button .v-icon {
@@ -145,36 +141,32 @@
 }
 
 /* ============================================
-   No Projects Card
+   No Projects Card - Clean State
    ============================================ */
 .no-projects-card {
-  background: linear-gradient(135deg, var(--color-slate-50) 0%, var(--color-slate-100) 100%) !important;
-  border-radius: var(--radius-xl) !important;
-  border: 2px dashed var(--color-slate-300) !important;
-  margin: 1.5rem;
+  background: var(--background-secondary) !important;
+  border-radius: 16px !important;
+  border: 2px dashed var(--border-medium) !important;
+  margin: 2rem;
+  padding: 3rem !important;
 }
-
-/* ============================================
-   Animations
-   ============================================ */
-/* Animations inherited from global styles */
 
 /* ============================================
    Responsive Design
    ============================================ */
 @media (max-width: 960px) {
+  .data-page {
+    padding: 1rem;
+  }
+
   .data-table-card .v-card-title {
     flex-direction: column;
     gap: 1rem;
-    text-align: center;
+    align-items: flex-start;
   }
 
   .add-button {
     width: 100%;
-  }
-
-  .projects-grid-row {
-    padding: 0 0.5rem !important;
   }
 }
 
@@ -185,10 +177,5 @@
 
   .fullscreen-content {
     gap: 1rem;
-  }
-
-  .page-badge .v-chip {
-    font-size: var(--font-size-xs);
-    padding: 0.25rem 0.5rem;
   }
 }

@@ -152,7 +152,7 @@
   border-bottom: none !important;
 }
 
-.stat-card-primary .stat-icon {
+.stat-card-primary .dashboard-stat-icon {
   color: var(--color-blue-500) !important;
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%);
 }
@@ -166,7 +166,7 @@
   border-top: none !important;
 }
 
-.stat-card-success .stat-icon {
+.stat-card-success .dashboard-stat-icon {
   color: var(--color-emerald-500) !important;
   background: var(--color-emerald-50);
 }
@@ -180,7 +180,7 @@
   border-top: none !important;
 }
 
-.stat-card-warning .stat-icon {
+.stat-card-warning .dashboard-stat-icon {
   color: var(--color-amber-500) !important;
   background: var(--color-amber-50);
 }
@@ -194,7 +194,7 @@
   border-top: none !important;
 }
 
-.stat-card-info .stat-icon {
+.stat-card-info .dashboard-stat-icon {
   color: var(--color-sky-500) !important;
   background: var(--color-sky-50);
 }
@@ -203,7 +203,7 @@
   box-shadow: var(--shadow-sky-lg) !important;
 }
 
-.stat-card-content {
+.dashboard-stat-content {
   position: relative;
   z-index: 2;
   padding: var(--space-6);
@@ -214,34 +214,35 @@
   text-align: right;
 }
 
-.stat-icon-wrapper {
-  margin-bottom: var(--space-4);
+.dashboard-icon-wrapper {
+  margin-bottom: var(--space-6);
+  /* More breathing room */
   display: flex;
   justify-content: flex-start;
   /* Align to Right side (Standard RTL) */
+  width: 100%;
 }
 
-.stat-icon {
+.dashboard-stat-icon {
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  /* Force perfect circle */
   display: flex !important;
-  /* Force flex to center content */
   align-items: center;
   justify-content: center;
-  padding: 0;
-  /* Remove padding if fixing size */
+  padding: 0 !important;
+  margin: 0 !important;
   transition: all var(--transition-normal);
+  text-align: center !important;
 }
 
-.stat-icon .v-icon {
-  font-size: 32px !important;
+.dashboard-stat-icon {
+  font-size: 42px !important;
   margin: 0;
   padding: 0;
 }
 
-.modern-stat-card:hover .stat-icon {
+.modern-stat-card:hover .dashboard-stat-icon {
   transform: scale(1.1) rotate(5deg);
 }
 
@@ -252,20 +253,20 @@
   gap: var(--space-1);
 }
 
-.stat-value {
+.dashboard-stat-value {
   font-size: var(--font-size-3xl-plus);
   font-weight: var(--font-weight-extrabold);
   color: var(--text-primary);
   margin-bottom: var(--space-1);
   line-height: 1;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-primary);
   direction: ltr;
   display: block;
   text-align: right !important;
   width: 100%;
 }
 
-.stat-label {
+.dashboard-stat-label {
   color: var(--text-secondary);
   font-size: var(--font-size-sm-plus);
   font-weight: var(--font-weight-medium);
@@ -273,7 +274,7 @@
   text-align: right;
 }
 
-.stat-trend {
+.dashboard-stat-trend {
   margin-top: auto;
   display: flex;
   align-items: center;
@@ -282,7 +283,7 @@
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   color: var(--color-emerald-500);
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-primary);
   direction: ltr;
   padding: var(--space-1) var(--space-2);
   background: rgba(16, 185, 129, 0.1);
@@ -388,7 +389,7 @@
   font-weight: var(--font-weight-extrabold);
   letter-spacing: -1px;
   margin-bottom: var(--space-2);
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-primary);
   direction: ltr;
   text-align: right !important;
   width: 100%;
@@ -404,7 +405,7 @@
   font-weight: var(--font-weight-semibold);
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(5px);
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-primary);
   direction: ltr;
 }
 
@@ -419,7 +420,7 @@
   font-weight: var(--font-weight-extrabold);
   color: var(--text-primary);
   margin: 0.25rem 0;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-primary);
   direction: ltr;
 }
 
@@ -473,7 +474,7 @@
   color: var(--text-primary);
   margin: 0;
   line-height: 1;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-primary);
   direction: ltr;
 }
 
@@ -483,7 +484,7 @@
   font-size: var(--font-size-sm);
   color: var(--text-secondary);
   font-weight: var(--font-weight-medium);
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-primary);
   /* For the percentage numbers */
 }
 
@@ -493,7 +494,7 @@
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
   color: var(--text-primary);
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-primary);
   direction: ltr;
 }
 
@@ -502,7 +503,7 @@
 .activity-time {
   font-size: var(--font-size-xs);
   color: var(--text-tertiary);
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-primary);
   /* For numbers if any */
   display: block;
   text-align: right;

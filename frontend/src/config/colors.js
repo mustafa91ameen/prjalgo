@@ -11,39 +11,39 @@
  */
 
 export const colors = {
-  // Primary - Indigo
-  primary: '#4338ca',
-  'primary-light': '#6366f1',
-  'primary-dark': '#3730a3',
+  // Primary - Electric Indigo (Crystal Indigo Theme)
+  primary: '#4f46e5',           // Indigo 600 - Main actions, active states
+  'primary-light': '#6366f1',   // Indigo 500
+  'primary-dark': '#3730a3',    // Indigo 800
 
-  // Secondary - Gray
-  secondary: '#424242',
-  'secondary-light': '#6d6d6d',
-  'secondary-dark': '#212121',
+  // Secondary - Soft Sky
+  secondary: '#64748b',         // Slate 500
+  'secondary-light': '#94a3b8', // Slate 400
+  'secondary-dark': '#475569',  // Slate 600
 
-  // Success - Green
-  success: '#4caf50',
-  'success-light': '#81c784',
-  'success-dark': '#388e3c',
+  // Success - Green (Pastel style per Crystal Indigo)
+  success: '#166534',           // Green 800 (Text)
+  'success-light': '#dcfce7',   // Green 100 (Background)
+  'success-dark': '#14532d',    // Green 900
 
-  // Warning - Orange
-  warning: '#ff9800',
-  'warning-light': '#ffb74d',
-  'warning-dark': '#f57c00',
+  // Warning - Amber (Pastel style)
+  warning: '#92400e',           // Amber 800 (Text)
+  'warning-light': '#fef3c7',   // Amber 100 (Background)
+  'warning-dark': '#78350f',    // Amber 900
 
-  // Error - Red
-  error: '#f44336',
-  'error-light': '#e57373',
-  'error-dark': '#d32f2f',
+  // Error - Red (Pastel style)
+  error: '#991b1b',             // Red 800 (Text)
+  'error-light': '#fee2e2',     // Red 100 (Background)
+  'error-dark': '#7f1d1d',      // Red 900
 
-  // Info - Blue
-  info: '#2196f3',
-  'info-light': '#64b5f6',
-  'info-dark': '#1976d2',
+  // Info - Blue (Pastel style)
+  info: '#1e40af',              // Blue 800 (Text)
+  'info-light': '#dbeafe',      // Blue 100 (Background)
+  'info-dark': '#1e3a8a',       // Blue 900
 
-  // Background & Surface
-  background: '#ffffff',
-  surface: '#ffffff',
+  // Background & Surface (Crystal Indigo)
+  background: '#f8fafc',        // Slate 50 - App background
+  surface: '#ffffff',           // Pure Crystal - Cards, Sidebar, Modals
 }
 
 export default colors

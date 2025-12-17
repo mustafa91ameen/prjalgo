@@ -1,115 +1,76 @@
 /* ========================================
    نظام الألوان الشامل
-   Color System - Arabic RTL Support
+   Color System - Crystal Indigo Theme (Clean Light)
    ======================================== */
 
 /* متغيرات الألوان الأساسية */
 :root {
-  /* الألوان الأساسية - نظام نيلي موحد */
-  --color-primary: #4338ca;
+  /* THEME CORE OVERRIDES */
+  --background-primary: #ffffff;
+  --background-secondary: #f8fafc;
+  /* Slate 50 */
+  --background-tertiary: #f1f5f9;
+  /* Slate 100 */
+  --background-surface: #ffffff;
+
+  --color-primary: #4f46e5;
+  /* Indigo 600 */
   --color-primary-light: #6366f1;
+  /* Indigo 500 */
   --color-primary-dark: #3730a3;
-  --color-primary-darker: #312e81;
-  --color-primary-variant: #312e81;
+  /* Indigo 900 */
 
-  /* الألوان الثانوية */
-  --color-secondary: #424242;
-  --color-secondary-light: #6d6d6d;
-  --color-secondary-dark: #212121;
+  --text-primary: #0f172a;
+  /* Slate 900 */
+  --text-secondary: #334155;
+  /* Slate 700 */
+  --text-tertiary: #64748b;
+  /* Slate 500 */
+  --text-white: #ffffff;
 
-  /* ألوان النجاح */
-  --color-success: #4caf50;
-  --color-success-light: #81c784;
-  --color-success-dark: #388e3c;
+  --border-light: #e2e8f0;
+  /* Slate 200 */
+  --border-medium: #cbd5e1;
+  /* Slate 300 */
+  --border-primary: #e0e7ff;
+  /* Indigo 100 */
 
-  /* ألوان التحذير */
-  --color-warning: #ff9800;
-  --color-warning-light: #ffb74d;
-  --color-warning-dark: #f57c00;
+  /* Shadows - Crystal Indigo Premium System */
+  --shadow-light: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow-card-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-primary: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
+  --shadow-primary-glow: 0 4px 14px 0 rgba(79, 70, 229, 0.4);
 
-  /* ألوان الخطأ */
-  --color-error: #f44336;
-  --color-error-light: #e57373;
-  --color-error-dark: #d32f2f;
+  /* Status Colors (Soft/Pastel Backgrounds) */
+  --color-success: #166534;
+  /* Green 800 (Text) */
+  --color-success-bg: #dcfce7;
+  /* Green 100 (Bg) */
 
-  /* ألوان المعلومات */
-  --color-info: #2196f3;
-  --color-info-light: #64b5f6;
-  --color-info-dark: #1976d2;
+  --color-warning: #92400e;
+  /* Amber 800 (Text) */
+  --color-warning-bg: #fef3c7;
+  /* Amber 100 (Bg) */
 
-  /* ألوان زرقاء (Blue) - Tailwind */
-  --color-blue-50: #eff6ff;
-  --color-blue-100: #dbeafe;
-  --color-blue-200: #bfdbfe;
-  --color-blue-300: #93c5fd;
-  --color-blue-400: #60a5fa;
-  --color-blue-500: #3b82f6;
-  --color-blue-600: #2563eb;
-  --color-blue-700: #1d4ed8;
-  --color-blue-800: #1e40af;
-  --color-blue-900: #1e3a8a;
+  --color-info: #1e40af;
+  /* Blue 800 (Text) */
+  --color-info-bg: #dbeafe;
+  /* Blue 100 (Bg) */
 
-  /* ألوان نيلية (Indigo) - Tailwind */
-  --color-indigo-50: #eef2ff;
-  --color-indigo-100: #e0e7ff;
-  --color-indigo-200: #c7d2fe;
-  --color-indigo-300: #a5b4fc;
-  --color-indigo-400: #818cf8;
-  --color-indigo-500: #6366f1;
-  --color-indigo-600: #4f46e5;
-  --color-indigo-700: #4338ca;
-  --color-indigo-800: #3730a3;
-  --color-indigo-900: #312e81;
+  --color-error: #991b1b;
+  /* Red 800 (Text) */
+  --color-error-bg: #fee2e2;
+  /* Red 100 (Bg) */
 
-  /* ألوان زرقاء داكنة (Material Design) */
-  --color-navy-50: #e8eaf6;
-  --color-navy-100: #c5cae9;
-  --color-navy-200: #9fa8da;
-  --color-navy-300: #7986cb;
-  --color-navy-400: #5c6bc0;
-  --color-navy-500: #3949ab;
-  --color-navy-600: #303f9f;
-  --color-navy-700: #283593;
-  --color-navy-800: #1a237e;
-  --color-navy-900: #0d1642;
+  /* Legacy Compat Variables mapped to New Theme */
+  --page-background: var(--background-secondary);
+  --card-background: var(--background-surface);
+  --card-border: var(--border-light);
+  --card-shadow: var(--shadow-card);
+  --card-hover-shadow: var(--shadow-card-hover);
 
-  /* ألوان خضراء (Green) - Tailwind */
-  --color-green-50: #f0fdf4;
-  --color-green-100: #dcfce7;
-  --color-green-200: #bbf7d0;
-  --color-green-300: #86efac;
-  --color-green-400: #4ade80;
-  --color-green-500: #22c55e;
-  --color-green-600: #16a34a;
-  --color-green-700: #15803d;
-  --color-green-800: #166534;
-  --color-green-900: #14532d;
-
-  /* ألوان خضراء (Emerald) - Tailwind */
-  --color-emerald-50: #ecfdf5;
-  --color-emerald-100: #d1fae5;
-  --color-emerald-200: #a7f3d0;
-  --color-emerald-300: #6ee7b7;
-  --color-emerald-400: #34d399;
-  --color-emerald-500: #10b981;
-  --color-emerald-600: #059669;
-  --color-emerald-700: #047857;
-  --color-emerald-800: #065f46;
-  --color-emerald-900: #064e3b;
-
-  /* ألوان برتقالية (Amber) - Tailwind */
-  --color-amber-50: #fffbeb;
-  --color-amber-100: #fef3c7;
-  --color-amber-200: #fde68a;
-  --color-amber-300: #fcd34d;
-  --color-amber-400: #fbbf24;
-  --color-amber-500: #f59e0b;
-  --color-amber-600: #d97706;
-  --color-amber-700: #b45309;
-  --color-amber-800: #92400e;
-  --color-amber-900: #78350f;
-
-  /* ألوان رمادية (Slate) - Tailwind */
+  /* Palette - Slate */
   --color-slate-50: #f8fafc;
   --color-slate-100: #f1f5f9;
   --color-slate-200: #e2e8f0;
@@ -121,7 +82,20 @@
   --color-slate-800: #1e293b;
   --color-slate-900: #0f172a;
 
-  /* ألوان رمادية (Gray) - Tailwind */
+  /* Palette - Indigo */
+  --color-indigo-50: #eef2ff;
+  --color-indigo-100: #e0e7ff;
+  --color-indigo-200: #c7d2fe;
+  --color-indigo-300: #a5b4fc;
+  --color-indigo-400: #818cf8;
+  --color-indigo-500: #6366f1;
+  --color-indigo-600: #4f46e5;
+  --color-indigo-700: #4338ca;
+  --color-indigo-800: #3730a3;
+  --color-indigo-900: #312e81;
+  --color-indigo-950: #1e1b4b;
+
+  /* Palette - Gray (for legacy compat) */
   --color-gray-50: #f9fafb;
   --color-gray-100: #f3f4f6;
   --color-gray-200: #e5e7eb;
@@ -133,45 +107,37 @@
   --color-gray-800: #1f2937;
   --color-gray-900: #111827;
 
-  /* ألوان رمادية (Neutral) - Additional grays */
-  --color-neutral-50: #fafafa;
-  --color-neutral-100: #f5f5f5;
-  --color-neutral-150: #f2f2f2;
-  --color-neutral-200: #e5e5e5;
-  --color-neutral-300: #d4d4d4;
-  --color-neutral-400: #a3a3a3;
-  --color-neutral-500: #737373;
-  --color-neutral-600: #525252;
-  --color-neutral-700: #404040;
-  --color-neutral-800: #262626;
-  --color-neutral-850: #1a1a1a;
-  --color-neutral-900: #171717;
+  /* Palette - Blue (Extended) */
+  --color-blue-50: #eff6ff;
+  --color-blue-100: #dbeafe;
+  --color-blue-200: #bfdbfe;
+  --color-blue-300: #93c5fd;
+  --color-blue-400: #60a5fa;
+  --color-blue-500: #3b82f6;
+  --color-blue-600: #2563eb;
+  --color-blue-700: #1d4ed8;
+  --color-blue-800: #1e40af;
+  --color-blue-900: #1e3a8a;
 
-  /* ألوان سماوية (Cyan) - Tailwind */
-  --color-cyan-50: #ecfeff;
-  --color-cyan-100: #cffafe;
-  --color-cyan-200: #a5f3fc;
-  --color-cyan-300: #67e8f9;
-  --color-cyan-400: #22d3ee;
-  --color-cyan-500: #06b6d4;
-  --color-cyan-600: #0891b2;
-  --color-cyan-700: #0e7490;
-  --color-cyan-800: #155e75;
-  --color-cyan-900: #164e63;
+  /* Palette - Green (Success) */
+  --color-green-50: #f0fdf4;
+  --color-green-100: #dcfce7;
+  --color-green-200: #bbf7d0;
+  --color-green-300: #86efac;
+  --color-green-400: #4ade80;
+  --color-green-500: #22c55e;
+  --color-green-600: #16a34a;
+  --color-green-700: #15803d;
+  --color-green-800: #166534;
+  --color-green-900: #14532d;
 
-  /* ألوان سماوية فاتحة (Sky) - Tailwind */
-  --color-sky-50: #f0f9ff;
-  --color-sky-100: #e0f2fe;
-  --color-sky-200: #bae6fd;
-  --color-sky-300: #7dd3fc;
-  --color-sky-400: #38bdf8;
-  --color-sky-500: #0ea5e9;
-  --color-sky-600: #0284c7;
-  --color-sky-700: #0369a1;
-  --color-sky-800: #075985;
-  --color-sky-900: #0c4a6e;
+  /* Palette - Emerald */
+  --color-emerald-50: #ecfdf5;
+  --color-emerald-100: #d1fae5;
+  --color-emerald-500: #10b981;
+  --color-emerald-600: #059669;
 
-  /* ألوان حمراء (Red) - Tailwind */
+  /* Palette - Red (Error) */
   --color-red-50: #fef2f2;
   --color-red-100: #fee2e2;
   --color-red-200: #fecaca;
@@ -183,172 +149,312 @@
   --color-red-800: #991b1b;
   --color-red-900: #7f1d1d;
 
-  /* ألوان بنفسجية (Violet) - Tailwind */
-  --color-violet-50: #f5f3ff;
-  --color-violet-100: #ede9fe;
-  --color-violet-200: #ddd6fe;
-  --color-violet-300: #c4b5fd;
-  --color-violet-400: #a78bfa;
-  --color-violet-500: #8b5cf6;
-  --color-violet-600: #7c3aed;
-  --color-violet-700: #6d28d9;
-  --color-violet-800: #5b21b6;
-  --color-violet-900: #4c1d95;
+  /* Palette - Amber (Warning) */
+  --color-amber-50: #fffbeb;
+  --color-amber-100: #fef3c7;
+  --color-amber-200: #fde68a;
+  --color-amber-300: #fcd34d;
+  --color-amber-400: #fbbf24;
+  --color-amber-500: #f59e0b;
+  --color-amber-600: #d97706;
+  --color-amber-700: #b45309;
+  --color-amber-800: #92400e;
+  --color-amber-900: #78350f;
 
-  /* ألوان برتقالية (Orange) - Tailwind */
-  --color-orange-50: #fff7ed;
-  --color-orange-100: #ffedd5;
-  --color-orange-200: #fed7aa;
-  --color-orange-300: #fdba74;
-  --color-orange-400: #fb923c;
-  --color-orange-500: #f97316;
-  --color-orange-600: #ea580c;
-  --color-orange-700: #c2410c;
-  --color-orange-800: #9a3412;
-  --color-orange-900: #7c2d12;
+  /* Palette - Cyan */
+  --color-cyan-50: #ecfeff;
+  --color-cyan-100: #cffafe;
+  --color-cyan-200: #a5f3fc;
+  --color-cyan-300: #67e8f9;
+  --color-cyan-400: #22d3ee;
+  --color-cyan-500: #06b6d4;
+  --color-cyan-600: #0891b2;
+  --color-cyan-700: #0e7490;
+  --color-cyan-800: #155e75;
+  --color-cyan-900: #164e63;
 
-  /* ألوان النص */
-  --text-primary: #212121;
-  --text-secondary: #757575;
-  --text-tertiary: #9e9e9e;
-  --text-disabled: #bdbdbd;
-  --text-hint: #bdbdbd;
-  --text-white: #ffffff;
+  /* Gradients - Crystal Indigo Theme */
+  --gradient-primary: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+  --gradient-secondary: linear-gradient(135deg, #64748b 0%, #94a3b8 100%);
+  --gradient-success: linear-gradient(135deg, #166534 0%, #22c55e 100%);
+  --gradient-warning: linear-gradient(135deg, #92400e 0%, #f59e0b 100%);
+  --gradient-error: linear-gradient(135deg, #991b1b 0%, #ef4444 100%);
+  --gradient-info: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  --nav-active-gradient: linear-gradient(90deg, #eff6ff 0%, #ffffff 100%);
 
-  /* ألوان الخلفية - نظام نيلي موحد */
-  --background-primary: #ffffff;
-  --background-secondary: #f8fafc;
-  --background-tertiary: #f1f5f9;
-  --background-dark: #1e293b;
-  --background-surface: #ffffff;
-  --background-indigo-light: #eef2ff;
-  --background-indigo-medium: #e0e7ff;
-  --background-indigo-dark: #c7d2fe;
+  /* Alpha/Opacity Colors - for overlays, shadows, borders */
+  --color-white-10: rgba(255, 255, 255, 0.1);
+  --color-white-15: rgba(255, 255, 255, 0.15);
+  --color-white-20: rgba(255, 255, 255, 0.2);
+  --color-white-25: rgba(255, 255, 255, 0.25);
+  --color-white-30: rgba(255, 255, 255, 0.3);
+  --color-white-40: rgba(255, 255, 255, 0.4);
+  --color-white-50: rgba(255, 255, 255, 0.5);
+  --color-white-80: rgba(255, 255, 255, 0.8);
+  --color-white-90: rgba(255, 255, 255, 0.9);
+  --color-white-95: rgba(255, 255, 255, 0.95);
 
-  /* خلفية الصفحة الرئيسية - White Based Theme */
-  --page-background: var(--background-primary);
-  --page-header-background: linear-gradient(135deg, var(--background-primary) 0%, var(--background-secondary) 100%);
+  --color-black-05: rgba(0, 0, 0, 0.05);
+  --color-black-10: rgba(0, 0, 0, 0.1);
+  --color-black-15: rgba(0, 0, 0, 0.15);
+  --color-black-20: rgba(0, 0, 0, 0.2);
+  --color-black-25: rgba(0, 0, 0, 0.25);
+  --color-black-30: rgba(0, 0, 0, 0.3);
+  --color-black-40: rgba(0, 0, 0, 0.4);
+  --color-black-50: rgba(0, 0, 0, 0.5);
 
-  /* ألوان الحدود - نظام نيلي موحد */
-  --border-light: #e2e8f0;
-  --border-medium: #cbd5e1;
-  --border-dark: #64748b;
-  --border-primary: var(--color-primary);
-  --border-indigo: #c7d2fe;
-  --border-indigo-light: #e0e7ff;
+  /* Modal Overlay - Crystal Indigo spec */
+  --overlay-backdrop: rgba(15, 23, 42, 0.4);
+}
 
-  /* ألوان الظلال */
-  --shadow-light: rgba(0, 0, 0, 0.1);
-  --shadow-medium: rgba(0, 0, 0, 0.2);
-  --shadow-dark: rgba(0, 0, 0, 0.3);
-  --shadow-primary: rgba(67, 56, 202, 0.3);
+/* ========================================
+   Global Selection Styles (Crystal Indigo)
+   ======================================== */
+::selection {
+  background-color: var(--color-indigo-200) !important;
+  color: var(--color-indigo-950) !important;
+}
 
-  /* ألوان التدرجات - نظام نيلي موحد */
-  --gradient-primary: linear-gradient(135deg, #4338ca 0%, #6366f1 100%);
-  --gradient-secondary: linear-gradient(135deg, #3730a3 0%, #4338ca 100%);
-  --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  --gradient-error: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  --gradient-info: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+::-moz-selection {
+  background-color: var(--color-indigo-200) !important;
+  color: var(--color-indigo-950) !important;
+}
 
-  /* تدرجات إضافية للبطاقات الإحصائية */
-  --gradient-primary-purple: linear-gradient(90deg, #3b82f6, #8b5cf6);
-  --gradient-success-dark: linear-gradient(90deg, #10b981, #059669);
-  --gradient-info-cyan: linear-gradient(90deg, #3b82f6, #0ea5e9);
-  --gradient-warning-dark: linear-gradient(90deg, #f59e0b, #d97706);
-  --gradient-error-dark: linear-gradient(90deg, #ef4444, #dc2626);
-  --gradient-primary-deep: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #7c3aed 100%);
-  --gradient-success-deep: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
-  --gradient-warning-deep: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
-  --gradient-error-deep: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
-  --gradient-info-deep: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
+/* ========================================
+   Interactive Elements
+   ======================================== */
 
-  /* تدرج البطاقات البيضاء */
-  --gradient-card-white: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+/* Checkboxes & Radios - Crystal Indigo */
+.v-selection-control--dirty .v-selection-control__input .v-icon {
+  color: var(--color-primary) !important;
+}
 
-  /* ظلال ملونة للتأثيرات */
-  --shadow-primary-glow: rgba(59, 130, 246, 0.25);
-  --shadow-success-glow: rgba(16, 185, 129, 0.25);
-  --shadow-warning-glow: rgba(245, 158, 11, 0.25);
-  --shadow-error-glow: rgba(239, 68, 68, 0.25);
-  --shadow-info-glow: rgba(59, 130, 246, 0.25);
+/* Icons - General */
+.v-icon.text-primary {
+  color: var(--color-primary) !important;
+}
 
-  /* تدرجات أجزاء النظام */
-  --sidebar-bg-gradient: #ffffff;
-  --table-header-gradient: linear-gradient(135deg, var(--color-emerald-700) 0%, var(--color-emerald-600) 100%);
-
-
-  /* ألوان الحالات */
-  --status-active: var(--color-success);
-  --status-pending: var(--color-warning);
-  --status-completed: var(--color-info);
-  --status-cancelled: var(--color-error);
-  --status-draft: var(--color-secondary);
-
-  /* ألوان الكروت */
-  --card-background: var(--background-surface);
-  --card-border: var(--border-light);
-  --card-shadow: var(--shadow-light);
-  --card-hover-shadow: var(--shadow-medium);
-
-  /* ألوان الأزرار */
-  --btn-primary-bg: var(--color-primary);
-  --btn-primary-text: var(--text-white);
-  --btn-primary-hover: var(--color-primary-dark);
-
-  --btn-secondary-bg: var(--color-secondary);
-  --btn-secondary-text: var(--text-white);
-  --btn-secondary-hover: var(--color-secondary-dark);
-
-  --btn-success-bg: var(--color-success);
-  --btn-success-text: var(--text-white);
-  --btn-success-hover: var(--color-success-dark);
-
-  --btn-warning-bg: var(--color-warning);
-  --btn-warning-text: var(--text-white);
-  --btn-warning-hover: var(--color-warning-dark);
-
-  --btn-error-bg: var(--color-error);
-  --btn-error-text: var(--text-white);
-  --btn-error-hover: var(--color-error-dark);
-
-  --btn-outlined-border: var(--color-primary);
-  --btn-outlined-text: var(--color-primary);
-  --btn-outlined-hover-bg: var(--color-primary);
-  --btn-outlined-hover-text: var(--text-white);
+.heading-icon {
+  color: var(--color-primary) !important;
+  opacity: 0.9;
 }
 
 /* ========================================
    تطبيق الألوان على Vuetify
    ======================================== */
 
-/* ألوان Vuetify الأساسية */
 .v-theme--light {
   --v-theme-primary: var(--color-primary);
-  --v-theme-secondary: var(--color-secondary);
-  --v-theme-success: var(--color-success);
-  --v-theme-warning: var(--color-warning);
-  --v-theme-error: var(--color-error);
-  --v-theme-info: var(--color-info);
-
+  --v-theme-secondary: var(--text-secondary);
   --v-theme-surface: var(--background-surface);
-  --v-theme-background: var(--background-primary);
-
-  --v-theme-on-primary: var(--text-white);
-  --v-theme-on-secondary: var(--text-white);
-  --v-theme-on-success: var(--text-white);
-  --v-theme-on-warning: var(--text-white);
-  --v-theme-on-error: var(--text-white);
-  --v-theme-on-info: var(--text-white);
+  --v-theme-background: var(--background-secondary);
   --v-theme-on-surface: var(--text-primary);
-  --v-theme-on-background: var(--text-primary);
 }
 
 /* ========================================
-   فئات الألوان المساعدة
+   Clean Theme Component Overrides
    ======================================== */
 
-/* ألوان النص */
+/* Enhanced Cards - Crystal Indigo */
+.card-indigo {
+  background: #ffffff !important;
+  border: 1px solid var(--border-light) !important;
+  /* Slate 200 */
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1) !important;
+  /* Soft Shadow */
+}
+
+.card-indigo:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-2px) !important;
+}
+
+.sidebar-text {
+  color: var(--text-primary) !important;
+}
+
+/* Standard Cards */
+.card-bg {
+  background-color: var(--card-background) !important;
+  border: 1px solid var(--card-border) !important;
+  box-shadow: var(--card-shadow) !important;
+}
+
+.card-bg:hover {
+  box-shadow: var(--card-hover-shadow) !important;
+}
+
+/* ========================================
+   Button Styles - Crystal Indigo
+   ======================================== */
+.btn-primary {
+  background-color: var(--color-primary) !important;
+  color: #ffffff !important;
+  box-shadow: var(--shadow-primary) !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-light) !important;
+  box-shadow: var(--shadow-primary-glow) !important;
+}
+
+.btn-secondary {
+  background-color: var(--background-surface) !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid var(--border-medium) !important;
+}
+
+.btn-secondary:hover {
+  background-color: var(--background-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+.btn-success {
+  background-color: var(--color-success-bg) !important;
+  color: var(--color-success) !important;
+  box-shadow: none !important;
+}
+
+.btn-warning {
+  background-color: var(--color-warning-bg) !important;
+  color: var(--color-warning) !important;
+  box-shadow: none !important;
+}
+
+.btn-error {
+  background-color: var(--color-error-bg) !important;
+  color: var(--color-error) !important;
+  box-shadow: none !important;
+}
+
+.btn-outlined {
+  border: 1px solid var(--border-medium) !important;
+  color: var(--text-secondary) !important;
+  background-color: transparent !important;
+}
+
+.btn-outlined:hover {
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+  background-color: var(--color-indigo-50) !important;
+}
+
+/* Indigo Buttons */
+.btn-indigo {
+  background: var(--color-primary) !important;
+  color: #ffffff !important;
+  box-shadow: var(--shadow-primary) !important;
+}
+
+.btn-indigo:hover {
+  background: var(--color-primary-light) !important;
+  box-shadow: var(--shadow-primary-glow) !important;
+}
+
+/* ========================================
+   Table Styles - Crystal Clean
+   ======================================== */
+.table-header {
+  background-color: var(--background-secondary) !important;
+  /* Slate 50 */
+  color: var(--text-tertiary) !important;
+  font-weight: 700 !important;
+  font-size: 0.75rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+.table-row {
+  background-color: var(--background-surface) !important;
+  border-bottom: 1px solid var(--border-light) !important;
+}
+
+.table-row:hover {
+  background-color: var(--color-blue-50) !important;
+}
+
+/* ========================================
+   Form Styles
+   ======================================== */
+.form-field-focused {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 4px var(--color-indigo-100) !important;
+}
+
+/* ========================================
+   Alerts - Pastel Style
+   ======================================== */
+.alert-success {
+  background-color: var(--color-success-bg) !important;
+  color: var(--color-success) !important;
+  border: 1px solid var(--color-success-bg) !important;
+}
+
+.alert-warning {
+  background-color: var(--color-warning-bg) !important;
+  color: var(--color-warning) !important;
+  border: 1px solid var(--color-warning-bg) !important;
+}
+
+.alert-error {
+  background-color: var(--color-error-bg) !important;
+  color: var(--color-error) !important;
+  border: 1px solid var(--color-error-bg) !important;
+}
+
+.alert-info {
+  background-color: var(--color-info-bg) !important;
+  color: var(--color-info) !important;
+  border: 1px solid var(--color-info-bg) !important;
+}
+
+/* ========================================
+   Project Cards & Status
+   ======================================== */
+.project-card {
+  background: var(--background-surface) !important;
+  border: 1px solid var(--border-light) !important;
+  box-shadow: var(--shadow-card) !important;
+}
+
+.project-card:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: var(--shadow-card-hover) !important;
+}
+
+/* Chips / Status - Crystal Indigo Pastel Backgrounds */
+.project-status-active,
+.project-status-in-progress {
+  background-color: var(--color-info-bg) !important;
+  /* Blue 100 */
+  color: var(--color-info) !important;
+  /* Blue 800 */
+}
+
+.project-status-pending {
+  background-color: var(--color-warning-bg) !important;
+  /* Amber 100 */
+  color: var(--color-warning) !important;
+  /* Amber 800 */
+}
+
+.project-status-completed {
+  background-color: var(--color-success-bg) !important;
+  /* Green 100 */
+  color: var(--color-success) !important;
+  /* Green 800 */
+}
+
+.project-status-cancelled {
+  background-color: var(--color-error-bg) !important;
+  /* Red 100 */
+  color: var(--color-error) !important;
+  /* Red 800 */
+}
+
+/* ========================================
+   Helper Classes
+   ======================================== */
 .text-primary {
   color: var(--text-primary) !important;
 }
@@ -357,527 +463,41 @@
   color: var(--text-secondary) !important;
 }
 
-.text-tertiary {
-  color: var(--text-tertiary) !important;
-}
-
-.text-disabled {
-  color: var(--text-disabled) !important;
-}
-
-.text-hint {
-  color: var(--text-hint) !important;
-}
-
-.text-white {
-  color: var(--text-white) !important;
-}
-
-/* ألوان النص النيلية */
-.text-indigo {
-  color: var(--color-primary) !important;
-}
-
-.text-indigo-light {
-  color: var(--color-primary-light) !important;
-}
-
-.text-indigo-dark {
-  color: var(--color-primary-dark) !important;
-}
-
-/* ألوان الخلفية */
-.bg-primary {
-  background-color: var(--color-primary) !important;
-}
-
-.bg-secondary {
-  background-color: var(--color-secondary) !important;
-}
-
-.bg-success {
-  background-color: var(--color-success) !important;
-}
-
-.bg-warning {
-  background-color: var(--color-warning) !important;
-}
-
-.bg-error {
-  background-color: var(--color-error) !important;
-}
-
-.bg-info {
-  background-color: var(--color-info) !important;
-}
-
 .bg-surface {
   background-color: var(--background-surface) !important;
 }
 
 .bg-background {
-  background-color: var(--background-primary) !important;
-}
-
-/* ألوان الخلفية النيلية */
-.bg-indigo-light {
-  background-color: var(--background-indigo-light) !important;
-}
-
-.bg-indigo-medium {
-  background-color: var(--background-indigo-medium) !important;
-}
-
-.bg-indigo-dark {
-  background-color: var(--background-indigo-dark) !important;
-}
-
-/* ألوان الحدود */
-.border-primary {
-  border-color: var(--border-primary) !important;
-}
-
-.border-light {
-  border-color: var(--border-light) !important;
-}
-
-.border-medium {
-  border-color: var(--border-medium) !important;
-}
-
-.border-dark {
-  border-color: var(--border-dark) !important;
-}
-
-/* ألوان الحدود النيلية */
-.border-indigo {
-  border-color: var(--border-indigo) !important;
-}
-
-.border-indigo-light {
-  border-color: var(--border-indigo-light) !important;
-}
-
-/* ألوان الحالات */
-.status-active {
-  color: var(--status-active) !important;
-}
-
-.status-pending {
-  color: var(--status-pending) !important;
-}
-
-.status-completed {
-  color: var(--status-completed) !important;
-}
-
-.status-cancelled {
-  color: var(--status-cancelled) !important;
-}
-
-.status-draft {
-  color: var(--status-draft) !important;
-}
-
-/* ألوان التدرجات */
-.gradient-primary {
-  background: var(--gradient-primary) !important;
-}
-
-.gradient-secondary {
-  background: var(--gradient-secondary) !important;
-}
-
-.gradient-success {
-  background: var(--gradient-success) !important;
-}
-
-.gradient-warning {
-  background: var(--gradient-warning) !important;
-}
-
-.gradient-error {
-  background: var(--gradient-error) !important;
-}
-
-.gradient-info {
-  background: var(--gradient-info) !important;
-}
-
-/* تدرجات إضافية */
-.gradient-indigo-soft {
-  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%) !important;
-}
-
-.gradient-indigo-medium {
-  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%) !important;
-}
-
-.gradient-indigo-strong {
-  background: linear-gradient(135deg, #c7d2fe 0%, #a5b4fc 100%) !important;
-}
-
-/* ========================================
-   ألوان مخصصة للمكونات
-   ======================================== */
-
-/* ألوان السايد بار */
-.sidebar-bg {
-  background: var(--gradient-primary) !important;
-}
-
-/* ألوان الصفحات */
-.page-bg-indigo {
-  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 50%, #c7d2fe 100%) !important;
-}
-
-.page-bg-indigo-dark {
-  background: linear-gradient(135deg, #4338ca 0%, #3730a3 50%, #312e81 100%) !important;
-}
-
-/* ألوان البطاقات المحسنة */
-.card-indigo {
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(10px) !important;
-  border: 1px solid var(--border-indigo-light) !important;
-  box-shadow: 0 4px 6px -1px rgba(67, 56, 202, 0.1), 0 2px 4px -1px rgba(67, 56, 202, 0.06) !important;
-}
-
-.card-indigo:hover {
-  box-shadow: 0 10px 15px -3px rgba(67, 56, 202, 0.1), 0 4px 6px -2px rgba(67, 56, 202, 0.05) !important;
-  transform: translateY(-2px) !important;
-}
-
-.sidebar-text {
-  color: var(--text-white) !important;
-}
-
-/* ألوان البطاقات */
-.card-bg {
-  background-color: var(--card-background) !important;
-  border: 1px solid var(--card-border) !important;
-  box-shadow: 0 2px 4px var(--card-shadow) !important;
-}
-
-.card-bg:hover {
-  box-shadow: 0 4px 8px var(--card-hover-shadow) !important;
-}
-
-/* ألوان الأزرار */
-.btn-primary {
-  background-color: var(--btn-primary-bg) !important;
-  color: var(--btn-primary-text) !important;
-}
-
-.btn-primary:hover {
-  background-color: var(--btn-primary-hover) !important;
-}
-
-.btn-secondary {
-  background-color: var(--btn-secondary-bg) !important;
-  color: var(--btn-secondary-text) !important;
-}
-
-.btn-secondary:hover {
-  background-color: var(--btn-secondary-hover) !important;
-}
-
-.btn-success {
-  background-color: var(--btn-success-bg) !important;
-  color: var(--btn-success-text) !important;
-}
-
-.btn-success:hover {
-  background-color: var(--btn-success-hover) !important;
-}
-
-.btn-warning {
-  background-color: var(--btn-warning-bg) !important;
-  color: var(--btn-warning-text) !important;
-}
-
-.btn-warning:hover {
-  background-color: var(--btn-warning-hover) !important;
-}
-
-.btn-error {
-  background-color: var(--btn-error-bg) !important;
-  color: var(--btn-error-text) !important;
-}
-
-.btn-error:hover {
-  background-color: var(--btn-error-hover) !important;
-}
-
-.btn-outlined {
-  border: 2px solid var(--btn-outlined-border) !important;
-  color: var(--btn-outlined-text) !important;
-  background-color: transparent !important;
-}
-
-.btn-outlined:hover {
-  background-color: var(--btn-outlined-hover-bg) !important;
-  color: var(--btn-outlined-hover-text) !important;
-}
-
-/* أزرار نيلي مخصصة */
-.btn-indigo {
-  background: var(--gradient-primary) !important;
-  color: var(--text-white) !important;
-  border: none !important;
-  box-shadow: 0 4px 6px -1px rgba(67, 56, 202, 0.1), 0 2px 4px -1px rgba(67, 56, 202, 0.06) !important;
-}
-
-.btn-indigo:hover {
-  background: var(--gradient-secondary) !important;
-  box-shadow: 0 10px 15px -3px rgba(67, 56, 202, 0.1), 0 4px 6px -2px rgba(67, 56, 202, 0.05) !important;
-  transform: translateY(-1px) !important;
-}
-
-.btn-indigo-outlined {
-  border: 2px solid var(--color-primary) !important;
-  color: var(--color-primary) !important;
-  background-color: transparent !important;
-}
-
-.btn-indigo-outlined:hover {
-  background-color: var(--color-primary) !important;
-  color: var(--text-white) !important;
-}
-
-/* ========================================
-   ألوان الجداول
-   ======================================== */
-
-.table-header {
-  background-color: var(--background-tertiary) !important;
-  color: var(--text-primary) !important;
-}
-
-.table-row:nth-child(even) {
   background-color: var(--background-secondary) !important;
 }
 
-.table-row:nth-child(odd) {
-  background-color: var(--background-primary) !important;
-}
-
-.table-row:hover {
-  background-color: var(--background-tertiary) !important;
-}
-
 /* ========================================
-   ألوان النماذج
+   Global Scrollbar - Dark Integrated
    ======================================== */
-
-.form-field-focused {
-  border-color: var(--color-primary) !important;
-  box-shadow: 0 0 0 2px var(--shadow-primary) !important;
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
 }
 
-.form-field-error {
-  border-color: var(--color-error) !important;
-  color: var(--color-error) !important;
+::-webkit-scrollbar-track {
+  background: var(--color-slate-900) !important;
+  /* Match Sidebar Background */
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.form-field-success {
-  border-color: var(--color-success) !important;
-  color: var(--color-success) !important;
+::-webkit-scrollbar-thumb {
+  background: var(--color-slate-700);
+  border-radius: 5px;
+  border: 2px solid var(--color-slate-900);
+  /* Padding effect */
 }
 
-/* ========================================
-   ألوان التنبيهات
-   ======================================== */
-
-.alert-success {
-  background-color: var(--color-success-light) !important;
-  color: var(--color-success-dark) !important;
-  border: 1px solid var(--color-success) !important;
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
 }
 
-.alert-warning {
-  background-color: var(--color-warning-light) !important;
-  color: var(--color-warning-dark) !important;
-  border: 1px solid var(--color-warning) !important;
-}
-
-.alert-error {
-  background-color: var(--color-error-light) !important;
-  color: var(--color-error-dark) !important;
-  border: 1px solid var(--color-error) !important;
-}
-
-.alert-info {
-  background-color: var(--color-info-light) !important;
-  color: var(--color-info-dark) !important;
-  border: 1px solid var(--color-info) !important;
-}
-
-/* ========================================
-   ألوان الاستجابة
-   ======================================== */
-
-/* الوضع المظلم */
-/* الوضع المظلم - تم تعطيله حالياً للحفاظ على تصميم النظام
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text-primary: #ffffff;
-    --text-secondary: #b0b0b0;
-    --text-tertiary: #808080;
-    --text-disabled: #606060;
-
-    --background-primary: #121212;
-    --background-secondary: #1e1e1e;
-    --background-tertiary: #2a2a2a;
-    --background-surface: #1e1e1e;
-
-    --border-light: #404040;
-    --border-medium: #606060;
-    --border-dark: #808080;
-
-    --card-background: var(--background-surface);
-    --card-border: var(--border-light);
-  }
-}
-*/
-
-/* ========================================
-   ألوان مخصصة للمشاريع
-   ======================================== */
-
-.project-card {
-  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%) !important;
-  border: 1px solid var(--border-light) !important;
-  transition: all var(--transition-normal) !important;
-}
-
-.project-card:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 8px 25px var(--shadow-medium) !important;
-}
-
-.project-status-active {
-  background-color: var(--color-success) !important;
-  color: var(--text-white) !important;
-}
-
-.project-status-pending {
-  background-color: var(--color-warning) !important;
-  color: var(--text-white) !important;
-}
-
-.project-status-completed {
-  background-color: var(--color-info) !important;
-  color: var(--text-white) !important;
-}
-
-.project-status-cancelled {
-  background-color: var(--color-error) !important;
-  color: var(--text-white) !important;
-}
-
-/* ========================================
-   فئات خلفيات المكونات
-   Component Background Classes
-   ======================================== */
-
-/* خلفية الفلاتر */
-.bg-filter-input {
-  background: #f5f5f5 !important;
-}
-
-/* خلفية النجاح الفاتحة */
-.bg-success-light {
-  background: #f0fdf4 !important;
-}
-
-/* تدرج أزرق للجداول */
-.bg-gradient-blue-header {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
-}
-
-/* ========================================
-   فئات العناصر التفاعلية
-   Interactive Element Classes
-   ======================================== */
-
-/* عنصر قابل للنقر */
-.clickable {
-  cursor: pointer !important;
-}
-
-/* أيقونة شفافة بيضاء */
-.icon-btn-white-transparent {
-  color: white !important;
-  background: rgba(255, 255, 255, 0.1) !important;
-  border-radius: 8px !important;
-}
-
-/* شريحة شفافة بيضاء */
-.chip-white-transparent {
-  background-color: rgba(255, 255, 255, 0.3) !important;
-  color: white !important;
-  border: 1px solid rgba(255, 255, 255, 0.5) !important;
-}
-
-/* ========================================
-   فئات العناوين في الأقسام
-   Section Header Classes
-   ======================================== */
-
-/* عنوان قسم معلومات */
-.section-header-info {
-  color: #1e40af !important;
-  font-weight: 700 !important;
-  font-size: var(--font-size-base-plus) !important;
-}
-
-/* عنوان قسم تحذير */
-.section-header-warning {
-  color: #b45309 !important;
-  font-weight: 700 !important;
-  font-size: var(--font-size-base-plus) !important;
-}
-
-/* عنوان قسم نجاح */
-.section-header-success {
-  color: #047857 !important;
-  font-weight: 700 !important;
-  font-size: var(--font-size-base-plus) !important;
-}
-
-/* أيقونة مع ظل */
-.icon-drop-shadow-info {
-  filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.3)) !important;
-}
-
-.icon-drop-shadow-warning {
-  filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3)) !important;
-}
-
-.icon-drop-shadow-success {
-  filter: drop-shadow(0 2px 4px rgba(16, 185, 129, 0.3)) !important;
-}
-
-/* ========================================
-   فئات عناصر التفاصيل
-   Detail Element Classes
-   ======================================== */
-
-/* عنوان التفاصيل مع ظل */
-.detail-header-title {
-  color: white !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
-}
-
-/* عنوان فرعي للتفاصيل */
-.detail-header-subtitle {
-  color: rgba(255, 255, 255, 0.9) !important;
-  font-weight: 500 !important;
-}
-
-/* قيمة التقييم */
-.rating-value {
-  color: #f59e0b !important;
-  font-weight: 700 !important;
+/* Firefox */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-slate-700) var(--color-slate-900) !important;
 }

@@ -114,10 +114,14 @@
 }
 
 .tasks-table .v-data-table__th {
-  background: var(--color-slate-100) !important;
-  color: var(--color-slate-700) !important;
-  font-weight: 600 !important;
+  background: var(--color-slate-50) !important;
+  color: var(--color-slate-600) !important;
+  font-weight: var(--font-weight-bold) !important;
+  font-size: 0.75rem !important;
   text-align: center !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  border-bottom: 2px solid var(--border-light) !important;
 }
 
 .tasks-table .v-data-table__td {

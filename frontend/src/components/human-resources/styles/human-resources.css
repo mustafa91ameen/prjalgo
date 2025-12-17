@@ -425,21 +425,17 @@
 }
 
 /* ============================================
-   Enhanced Table Header
+   Enhanced Table Header - Crystal Indigo Theme
    ============================================ */
 .hr-table .v-data-table__th {
-  background: linear-gradient(135deg, var(--color-blue-500) 0%, var(--color-blue-700) 100%) !important;
-  background-size: 200% 100%;
-  color: var(--text-white) !important;
-  font-weight: 900 !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-  animation: hrHeaderShimmer 8s ease-in-out infinite;
-}
-
-@keyframes hrHeaderShimmer {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  background: var(--color-slate-50) !important;
+  color: var(--color-slate-600) !important;
+  font-weight: var(--font-weight-bold) !important;
+  font-size: 0.75rem !important;
+  text-shadow: none !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  border-bottom: 2px solid var(--border-light) !important;
 }
 
 /* ============================================
@@ -450,7 +446,7 @@
 }
 
 .hr-table .v-data-table__tr:nth-child(even) {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.03) 0%, rgba(99, 102, 241, 0.01) 100%);
+  background: var(--color-slate-50);
 }
 
 .hr-table .v-data-table__tr:nth-child(odd) {

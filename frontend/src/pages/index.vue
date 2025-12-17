@@ -14,15 +14,15 @@
         <v-col cols="12" sm="6" md="3" class="pa-2">
           <v-card class="modern-stat-card stat-card-primary" elevation="0">
             <div class="stat-card-background"></div>
-            <div class="stat-card-content">
-              <div class="stat-icon-wrapper">
-                <v-icon size="48" class="stat-icon">mdi-folder-multiple</v-icon>
+            <div class="dashboard-stat-content">
+              <div class="dashboard-icon-wrapper">
+                <v-icon size="48" class="dashboard-stat-icon">mdi-folder-multiple</v-icon>
               </div>
               <div class="stat-info">
-                <h3 class="stat-value">{{ projectStats.totalProjects }}</h3>
-                <p class="stat-label">إجمالي المشاريع</p>
+                <h3 class="dashboard-stat-value">{{ projectStats.totalProjects }}</h3>
+                <p class="dashboard-stat-label">إجمالي المشاريع</p>
               </div>
-              <div class="stat-trend">
+              <div class="dashboard-stat-trend">
                 <v-icon size="20" color="success">mdi-trending-up</v-icon>
                 <span>+12%</span>
               </div>
@@ -34,15 +34,15 @@
         <v-col cols="12" sm="6" md="3" class="pa-2">
           <v-card class="modern-stat-card stat-card-success" elevation="0">
             <div class="stat-card-background"></div>
-            <div class="stat-card-content">
-              <div class="stat-icon-wrapper">
-                <v-icon size="48" class="stat-icon">mdi-check-circle</v-icon>
+            <div class="dashboard-stat-content">
+              <div class="dashboard-icon-wrapper">
+                <v-icon size="48" class="dashboard-stat-icon">mdi-check-circle</v-icon>
               </div>
               <div class="stat-info">
-                <h3 class="stat-value">{{ projectStats.activeProjects }}</h3>
-                <p class="stat-label">مشاريع نشطة</p>
+                <h3 class="dashboard-stat-value">{{ projectStats.activeProjects }}</h3>
+                <p class="dashboard-stat-label">مشاريع نشطة</p>
               </div>
-              <div class="stat-trend">
+              <div class="dashboard-stat-trend">
                 <v-icon size="20" color="success">mdi-trending-up</v-icon>
                 <span>+5%</span>
               </div>
@@ -54,15 +54,15 @@
         <v-col cols="12" sm="6" md="3" class="pa-2">
           <v-card class="modern-stat-card stat-card-warning" elevation="0">
             <div class="stat-card-background"></div>
-            <div class="stat-card-content">
-              <div class="stat-icon-wrapper">
-                <v-icon size="48" class="stat-icon">mdi-check-all</v-icon>
+            <div class="dashboard-stat-content">
+              <div class="dashboard-icon-wrapper">
+                <v-icon size="48" class="dashboard-stat-icon">mdi-check-all</v-icon>
               </div>
               <div class="stat-info">
-                <h3 class="stat-value">{{ projectStats.completedProjects }}</h3>
-                <p class="stat-label">مشاريع مكتملة</p>
+                <h3 class="dashboard-stat-value">{{ projectStats.completedProjects }}</h3>
+                <p class="dashboard-stat-label">مشاريع مكتملة</p>
               </div>
-              <div class="stat-trend">
+              <div class="dashboard-stat-trend">
                 <v-icon size="20" color="success">mdi-trending-up</v-icon>
                 <span>+8%</span>
               </div>
@@ -74,15 +74,15 @@
         <v-col cols="12" sm="6" md="3" class="pa-2">
           <v-card class="modern-stat-card stat-card-info" elevation="0">
             <div class="stat-card-background"></div>
-            <div class="stat-card-content">
-              <div class="stat-icon-wrapper">
-                <v-icon size="48" class="stat-icon">mdi-account-hard-hat</v-icon>
+            <div class="dashboard-stat-content">
+              <div class="dashboard-icon-wrapper">
+                <v-icon size="48" class="dashboard-stat-icon">mdi-account-hard-hat</v-icon>
               </div>
               <div class="stat-info">
-                <h3 class="stat-value">{{ projectStats.totalEngineers }}</h3>
-                <p class="stat-label">المهندسين</p>
+                <h3 class="dashboard-stat-value">{{ projectStats.totalEngineers }}</h3>
+                <p class="dashboard-stat-label">المهندسين</p>
               </div>
-              <div class="stat-trend">
+              <div class="dashboard-stat-trend">
                 <v-icon size="20" color="success">mdi-trending-up</v-icon>
                 <span>+3</span>
               </div>
@@ -602,7 +602,7 @@ const pendingPercentage = computed(() => {
 })
 </script>
 
-<style scoped>
-/* Import page styles - scoped to this component only */
+<style>
+/* Import page styles - Global to ensure consistency on navigation */
 @import './styles/index.css';
 </style>

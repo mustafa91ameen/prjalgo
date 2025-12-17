@@ -1,111 +1,51 @@
-/* تخصيص عناوين الجداول - Table Headers Customization */
+/* تخصيص عناوين الجداول - Crystal Indigo Theme */
+/* هذه الأنماط تحل محل الخلفيات الداكنة القديمة بخلفيات فاتحة ونصوص داكنة */
 
 /* CSS قوي لجميع عناوين الجداول في Vuetify */
-.v-data-table table thead tr th {
-  background: var(--table-header-gradient, linear-gradient(135deg, var(--color-emerald-700) 0%, var(--color-emerald-600) 100%)) !important;
-  color: var(--text-white) !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
+.v-data-table table thead tr th,
+.v-data-table__wrapper table thead tr th,
+table thead tr th,
+.team-data-table table thead tr th,
+.v-application .v-data-table table thead tr th {
+  background: var(--color-slate-50) !important;
+  color: var(--color-slate-600) !important;
+  font-weight: var(--font-weight-bold) !important;
+  font-size: 0.75rem !important;
   text-align: center !important;
   vertical-align: middle !important;
-  padding: 1.2rem 0.8rem !important;
+  padding: var(--space-3) var(--space-4) !important;
   border: none !important;
-  box-shadow: 0 3px 12px rgba(4, 120, 87, 0.4) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
+  border-bottom: 2px solid var(--border-light) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
 }
 
-.v-data-table table thead tr th .v-data-table-header__content {
-  color: var(--text-white) !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
-}
-
-.v-data-table table thead tr th .v-data-table-header__content .v-data-table-header__sort-icon {
-  color: var(--text-white) !important;
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3)) !important;
-}
-
-/* CSS إضافي لضمان التطبيق */
-.v-data-table__wrapper table thead tr th {
-  background: var(--table-header-gradient, linear-gradient(135deg, var(--color-emerald-700) 0%, var(--color-emerald-600) 100%)) !important;
-  color: var(--text-white) !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
-}
-
-.v-data-table__wrapper table thead tr th .v-data-table-header__content {
-  color: var(--text-white) !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
-}
-
-/* CSS لجميع عناوين الجداول */
-table thead tr th {
-  background: var(--table-header-gradient, linear-gradient(135deg, var(--color-emerald-700) 0%, var(--color-emerald-600) 100%)) !important;
-  color: var(--text-white) !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
-}
-
-/* CSS محدد لصفحة إدارة الفريق */
-.team-data-table table thead tr th {
-  background: var(--table-header-gradient, linear-gradient(135deg, var(--color-emerald-700) 0%, var(--color-emerald-600) 100%)) !important;
-  color: var(--text-white) !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
-}
-
-.team-data-table table thead tr th .v-data-table-header__content {
-  color: var(--text-white) !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
-}
-
-/* CSS لضمان التطبيق على جميع عناصر Vuetify */
-.v-data-table.team-data-table .v-data-table__wrapper table thead tr th {
-  background: var(--table-header-gradient, linear-gradient(135deg, var(--color-emerald-700) 0%, var(--color-emerald-600) 100%)) !important;
-  color: var(--text-white) !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
-}
-
-.v-data-table.team-data-table .v-data-table__wrapper table thead tr th .v-data-table-header__content {
-  color: var(--text-white) !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
-}
-
-/* CSS لجميع عناوين الجداول في التطبيق */
-.v-application .v-data-table table thead tr th {
-  background: var(--table-header-gradient, linear-gradient(135deg, var(--color-emerald-700) 0%, var(--color-emerald-600) 100%)) !important;
-  color: var(--text-white) !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
-}
-
+/* محتوى العنوان (الأيقونات والنصوص) */
+.v-data-table table thead tr th .v-data-table-header__content,
+.v-data-table__wrapper table thead tr th .v-data-table-header__content,
+.team-data-table table thead tr th .v-data-table-header__content,
 .v-application .v-data-table table thead tr th .v-data-table-header__content {
-  color: var(--text-white) !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
+  color: var(--color-slate-600) !important;
+  font-weight: var(--font-weight-bold) !important;
+  font-size: 0.75rem !important;
+  text-shadow: none !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* أيقونة الترتيب */
+.v-data-table table thead tr th .v-data-table-header__content .v-data-table-header__sort-icon,
+.v-data-table__wrapper table thead tr th .v-data-table-header__content .v-data-table-header__sort-icon,
+.v-application .v-data-table table thead tr th .v-data-table-header__content .v-data-table-header__sort-icon {
+  color: var(--color-slate-400) !important;
+  filter: none !important;
+  opacity: 0.7;
+}
+
+/* Hover State for Sort Icon */
+.v-data-table-header__content:hover .v-data-table-header__sort-icon {
+  opacity: 1 !important;
+  color: var(--color-primary) !important;
+  /* Indigo for interaction */
 }

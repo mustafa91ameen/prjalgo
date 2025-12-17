@@ -8,57 +8,72 @@
    ======================================== */
 
 .data-table-card {
-  background: var(--bg-white) !important;
-  border: var(--space-px) solid var(--color-slate-200) !important;
-  border-radius: var(--radius-2xl) !important;
-  box-shadow: var(--shadow-card) !important;
+  background: var(--background-surface) !important;
+  border: 1px solid rgba(79, 70, 229, 0.1) !important;
+  /* Gentle Indigo Border */
+  border-radius: 16px !important;
+  box-shadow: 0 10px 30px -4px rgba(79, 70, 229, 0.06), 0 4px 6px -2px rgba(0, 0, 0, 0.02) !important;
+  /* Crystal Lift */
   overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.data-table-card:hover {
+  box-shadow: 0 20px 40px -4px rgba(79, 70, 229, 0.1), 0 8px 10px -4px rgba(0, 0, 0, 0.04) !important;
+  transform: translateY(-2px);
+  /* Interactive Lift */
 }
 
 .data-table-card .v-card-title {
-  background: linear-gradient(135deg, var(--color-blue-600) 0%, var(--color-blue-700) 100%) !important;
-  border-bottom: var(--space-px) solid rgba(255, 255, 255, 0.3);
-  padding: var(--space-6);
+  background: var(--background-surface) !important;
+  border-bottom: 1px solid var(--border-light);
+  padding: 1.25rem 1.5rem;
   position: relative;
 }
 
 .data-table-card .v-card-title::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: var(--space-0-5);
-  background: var(--gradient-primary);
+  display: none;
 }
 
 .data-table-card .v-card-title .v-icon {
-  color: var(--text-white) !important;
+  color: var(--color-primary) !important;
 }
 
 .data-table-card .v-card-title span {
-  color: var(--text-white) !important;
-  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+  color: var(--text-primary) !important;
+  text-shadow: none !important;
 }
 
 .data-table-card .v-card-title .v-chip {
-  color: var(--text-white) !important;
-  background: rgba(255, 255, 255, 0.2) !important;
-  border: var(--space-px) solid rgba(255, 255, 255, 0.3) !important;
+  color: var(--color-primary) !important;
+  background: var(--color-indigo-50) !important;
+  border: 1px solid var(--color-indigo-100) !important;
 }
 
 /* ========================================
    2. رؤوس الصفحات (Page Headers)
    ======================================== */
 
+/* ========================================
+   2. رؤوس الصفحات (Page Headers) - Crystal Indigo
+   ======================================== */
+
 .page-header {
-  background: linear-gradient(135deg, var(--color-blue-400) 0%, var(--color-blue-500) 50%, var(--color-blue-600) 100%) !important;
-  border-radius: var(--radius-2xl);
-  padding: var(--space-8);
-  margin-bottom: var(--space-8);
-  box-shadow: var(--shadow-card);
+  background: var(--background-surface) !important;
+  border-top: 6px solid var(--color-indigo-950) !important;
+  border-bottom: 1px solid var(--border-light) !important;
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-card) !important;
   position: relative;
   overflow: hidden;
+  color: var(--text-primary) !important;
+}
+
+.page-header .page-header-icon {
+  color: var(--color-indigo-950) !important;
+  font-size: 3rem !important;
 }
 
 .page-header::before {
@@ -67,76 +82,121 @@
   top: 0;
   left: 0;
   right: 0;
-  height: var(--space-0-5);
-  background: var(--gradient-primary);
+  height: 100%;
+  background: linear-gradient(180deg, var(--color-indigo-50) 0%, transparent 100%);
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page-header-container {
+  display: flex !important;
+  align-items: flex-end;
+  /* Align actions with bottom of title area */
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.page-header-start {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.page-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.breadcrumb-separator {
+  color: var(--color-slate-300);
+}
+
+.breadcrumb-active {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.page-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .page-header .page-title {
-  color: var(--text-white) !important;
+  color: var(--text-primary) !important;
   font-size: var(--font-size-xl-plus) !important;
   font-weight: 700;
-  margin-bottom: var(--space-2);
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin-bottom: 0.25rem;
+  text-shadow: none;
+  position: relative;
+  z-index: 1;
+  line-height: 1.2;
 }
 
 .page-header .page-subtitle {
-  color: rgba(255, 255, 255, 0.9) !important;
+  color: var(--text-secondary) !important;
   font-size: var(--font-size-sm) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  text-shadow: none;
+  font-weight: 500;
+  position: relative;
+  z-index: 1;
 }
 
-/* ========================================
-   3. حالة المشروع (Project Status)
-   ======================================== */
-
-.status-chip-main {
-  font-weight: 500 !important;
-  font-size: var(--font-size-xs) !important;
-  color: var(--text-white) !important;
-}
-
-.status-chip-main .v-chip__content {
-  color: var(--text-white) !important;
-  font-size: var(--font-size-xs) !important;
-}
-
-.status-chip-main .v-icon {
-  color: var(--text-white) !important;
-  font-size: var(--font-size-sm) !important;
+/* Fix for existing content wrapper in PageHeader.vue */
+.page-header-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 /* ========================================
    4. عناوين الجداول الموحدة
    ======================================== */
 
+/* ========================================
+   4. عناوين الجداول الموحدة (Crystal Indigo)
+   ======================================== */
+
 .v-data-table table thead tr th,
 .v-data-table__wrapper table thead tr th,
 table thead tr th {
-  background: linear-gradient(135deg, var(--color-emerald-700) 0%, var(--color-emerald-600) 100%) !important;
-  color: var(--text-white) !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
+  background: var(--background-secondary) !important;
+  /* Slate 50 */
+  color: var(--text-tertiary) !important;
+  font-weight: 700 !important;
+  font-size: 0.75rem !important;
   text-align: center !important;
   vertical-align: middle !important;
-  padding: var(--space-5) var(--space-3) !important;
-  border: none !important;
-  box-shadow: var(--shadow-emerald-glow) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
+  padding: 12px 16px !important;
+  border-bottom: 1px solid var(--border-light) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
 }
 
 .v-data-table table thead tr th .v-data-table-header__content,
 .v-data-table__wrapper table thead tr th .v-data-table-header__content {
-  color: var(--text-white) !important;
-  font-weight: 800 !important;
-  font-size: var(--font-size-base-plus) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
+  color: var(--text-tertiary) !important;
+  font-weight: 700 !important;
+  font-size: 0.75rem !important;
+  text-shadow: none !important;
+  letter-spacing: 0.05em !important;
 }
 
 .v-data-table table thead tr th .v-data-table-header__content .v-data-table-header__sort-icon {
-  color: var(--text-white) !important;
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3)) !important;
+  color: var(--text-tertiary) !important;
+  filter: none !important;
 }
 
 /* ========================================
@@ -145,13 +205,16 @@ table thead tr th {
 
 /* تأثير التوهج للزر */
 @keyframes buttonGlow {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow:
       0 4px 16px rgba(30, 64, 175, 0.3),
       0 2px 8px rgba(37, 99, 235, 0.2),
       0 0 20px rgba(59, 130, 246, 0.4),
       inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
   }
+
   50% {
     box-shadow:
       0 4px 20px rgba(30, 64, 175, 0.5),
@@ -162,13 +225,16 @@ table thead tr th {
 }
 
 @keyframes buttonGlowHover {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow:
       0 12px 32px rgba(30, 64, 175, 0.5),
       0 6px 16px rgba(37, 99, 235, 0.5),
       0 0 40px rgba(59, 130, 246, 0.7),
       inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
   }
+
   50% {
     box-shadow:
       0 12px 36px rgba(30, 64, 175, 0.6),
@@ -179,9 +245,12 @@ table thead tr th {
 }
 
 @keyframes buttonPulse {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.02);
   }
@@ -191,20 +260,27 @@ table thead tr th {
   0% {
     transform: translateY(-1px) scale(1.02);
   }
+
   50% {
     transform: translateY(-1px) scale(0.98);
   }
+
   100% {
     transform: translateY(-1px) scale(1.02);
   }
 }
 
 @keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
 }
 
-/* زر الإضافة الموحد - Unified Add Button */
+/* زر الإضافة الموحد - Unified Add Button (Crystal Indigo) */
 .add-button,
 .add-button.v-btn,
 .v-btn.add-button,
@@ -216,24 +292,23 @@ table thead tr th {
 .add-user-btn,
 .add-purchase-btn,
 .add-sale-btn {
-  background: linear-gradient(135deg, var(--color-blue-800) 0%, var(--color-blue-600) 50%, var(--color-blue-500) 100%) !important;
+  background: var(--gradient-primary) !important;
   backdrop-filter: blur(10px) !important;
   color: var(--text-white) !important;
   border-radius: var(--radius-xl) !important;
   padding: var(--space-3) var(--space-6) !important;
-  font-weight: 700 !important;
+  font-weight: var(--font-weight-bold) !important;
   text-transform: none !important;
-  box-shadow: var(--shadow-blue-900-md), var(--ring-blue-600) !important;
+  box-shadow: var(--shadow-primary-glow) !important;
   transition: all var(--transition-normal) !important;
   position: relative;
   overflow: hidden;
-  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  border: 1px solid var(--color-indigo-400) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   text-align: center !important;
   min-width: auto !important;
-  animation: buttonGlow 2s ease-in-out infinite, buttonPulse 3s ease-in-out infinite !important;
 }
 
 .add-button :deep(.v-btn__content),
@@ -365,11 +440,10 @@ table thead tr th {
 .add-user-btn:hover,
 .add-purchase-btn:hover,
 .add-sale-btn:hover {
-  transform: translateY(-4px) scale(1.05) !important;
-  box-shadow: var(--shadow-blue-900-lg), var(--shadow-blue-glow), var(--shadow-white-inset) !important;
-  background: linear-gradient(135deg, var(--color-blue-900) 0%, var(--color-blue-800) 50%, var(--color-blue-600) 100%) !important;
-  border-color: rgba(255, 255, 255, 0.6) !important;
-  animation: buttonGlowHover 1.5s ease-in-out infinite !important;
+  transform: translateY(-2px) !important;
+  box-shadow: var(--shadow-indigo-lg) !important;
+  background: linear-gradient(135deg, var(--color-indigo-700) 0%, var(--color-indigo-600) 100%) !important;
+  border-color: var(--color-indigo-500) !important;
 }
 
 .add-button:active,
@@ -747,9 +821,12 @@ table thead tr th {
    ======================================== */
 
 @keyframes bounce {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }
@@ -760,6 +837,7 @@ table thead tr th {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -770,9 +848,11 @@ table thead tr th {
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }

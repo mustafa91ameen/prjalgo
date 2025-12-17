@@ -82,12 +82,13 @@
 }
 
 .table-header-enhanced {
-  background: linear-gradient(135deg, var(--color-blue-500) 0%, var(--color-blue-600) 100%) !important;
+  background: var(--background-surface) !important;
   padding: var(--space-4) var(--space-6) !important;
+  border-bottom: 1px solid var(--border-light) !important;
 }
 
 .table-header-icon {
-  color: var(--text-white) !important;
+  color: var(--color-primary) !important;
 }
 
 .table-header-content {
@@ -95,24 +96,24 @@
 }
 
 .table-title {
-  color: var(--text-white) !important;
-  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+  font-weight: var(--font-weight-bold) !important;
 }
 
 .table-subtitle {
-  color: rgba(255, 255, 255, 0.8) !important;
+  color: var(--text-tertiary) !important;
 }
 
 .add-btn-header {
-  background: rgba(255, 255, 255, 0.95) !important;
-  color: var(--color-blue-600) !important;
-  font-weight: 700 !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  background: var(--gradient-primary) !important;
+  color: var(--text-white) !important;
+  font-weight: var(--font-weight-bold) !important;
+  box-shadow: var(--shadow-primary) !important;
 }
 
 .add-btn-header:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2) !important;
+  box-shadow: var(--shadow-primary-glow) !important;
 }
 
 .add-btn-icon {

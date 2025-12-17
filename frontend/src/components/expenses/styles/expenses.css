@@ -67,25 +67,18 @@
 }
 
 /* ============================================
-   Enhanced Table Header Styles
+   Enhanced Table Header Styles - Crystal Indigo Theme
    ============================================ */
 .expense-table .v-data-table__th,
 .data-table-card .v-data-table__th {
-  background: linear-gradient(135deg, var(--color-indigo-500) 0%, var(--color-indigo-700) 100%) !important;
-  background-size: 200% 100%;
-  color: var(--text-white) !important;
-  font-weight: 900 !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  animation: headerShimmer 8s ease-in-out infinite;
-}
-
-/* Header shimmer animation */
-@keyframes headerShimmer {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  background: var(--color-slate-50) !important;
+  color: var(--color-slate-600) !important;
+  font-weight: var(--font-weight-bold) !important;
+  font-size: 0.75rem !important;
+  text-shadow: none !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  border-bottom: 2px solid var(--border-light) !important;
 }
 
 /* ============================================

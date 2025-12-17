@@ -32,12 +32,12 @@
         >
           <template v-slot:prepend>
             <div class="icon-container ms-3">
-              <v-icon :color="item.active ? 'primary' : 'grey-darken-2'" size="24">
+              <v-icon :color="item.active ? undefined : 'grey-darken-2'" size="24">
                 {{ item.icon }}
               </v-icon>
             </div>
           </template>
-          <v-list-item-title class="text-body-1 font-weight-medium text-right" :class="item.active ? 'text-primary font-weight-bold' : 'text-grey-darken-3'">
+          <v-list-item-title class="text-body-1 font-weight-medium text-right" :class="item.active ? 'font-weight-bold' : 'text-grey-darken-3'">
             {{ item.title }}
           </v-list-item-title>
           <template v-slot:append v-if="item.badge">
@@ -54,40 +54,22 @@
       </v-list>
 
       <!-- قسم المميزات -->
-      <div class="px-4 mt-4">
-        <h3 class="text-h6 font-weight-bold text-secondary mb-3">المميزات الرئيسية</h3>
-        <div class="feature-grid">
-          <div
-            v-for="feature in features"
-            :key="feature.title"
-            class="feature-item"
-          >
-            <v-icon :color="feature.color" size="20" class="mb-1">{{ feature.icon }}</v-icon>
-            <div class="text-caption text-secondary">{{ feature.title }}</div>
-          </div>
-          <!-- رابط إدارة الفريق -->
-          <router-link to="/team-management" class="feature-item feature-link">
-            <v-icon color="success" size="20" class="mb-1">mdi-account-group</v-icon>
-            <div class="text-caption text-secondary">إدارة الفريق</div>
-            <v-chip size="x-small" color="success" class="mt-1 text-white">جديد</v-chip>
-          </router-link>
-        </div>
-      </div>
+      <!-- Features Section Removed -->
 
       <!-- Footer -->
       <template v-slot:append>
         <div class="pa-4 text-center">
-                 <p class="text-caption text-white text-opacity-60">
+                 <p class="text-caption text-secondary text-opacity-60">
                 
                  </p>
-                 <p class="text-caption text-white text-opacity-60">
+                 <p class="text-caption text-secondary text-opacity-60">
                  </p>
         </div>
       </template>
     </v-navigation-drawer>
 
     <!-- المحتوى الرئيسي -->
-    <v-main>
+    <v-main class="app-main-content">
       <router-view />
     </v-main>
   </v-app>
@@ -150,11 +132,38 @@ watch(() => route.path, updateActiveMenuItem, { immediate: true })
 .arabic-app {
   direction: rtl;
   text-align: right;
-  font-family: 'Cairo', 'Tajawal', 'Noto Sans Arabic', 'Arial', sans-serif;
+  font-family: var(--font-primary);
+  background-color: var(--background-secondary) !important; /* Force global background */
 }
 
 /* ========================================
-   السايد بار العصري - Enhanced White Theme
+   Main Content Area - Crystal Indigo
+   ======================================== */
+/* ========================================
+   Main Content Area - Crystal Indigo
+   ======================================== */
+.app-main-content {
+  background-color: var(--background-tertiary) !important; /* Slate 100 - Better Contrast */
+  min-height: 100vh;
+}
+
+/* ========================================
+   السايد بار العصري - Crystal Indigo Theme
+   ======================================== */
+/* ========================================
+   السايد بار العصري - Dark Crystal Theme
+   ======================================== */
+/* ========================================
+   السايد بار العصري - Crystal Indigo White
+   ======================================== */
+/* ========================================
+   السايد بار العصري - Midnight Crystal (Hybrid)
+   ======================================== */
+/* ========================================
+   السايد بار العصري - Modern Floating Crystal
+   ======================================== */
+/* ========================================
+   السايد بار العصري - Midnight Integrated
    ======================================== */
 .modern-sidebar,
 .v-navigation-drawer.modern-sidebar,
@@ -162,10 +171,28 @@ watch(() => route.path, updateActiveMenuItem, { immediate: true })
 .v-application .v-navigation-drawer.modern-sidebar,
 body .modern-sidebar,
 body .v-navigation-drawer.modern-sidebar {
-  background: #ffffff !important;
-  border-left: 1px solid #e2e8f0 !important;
-  box-shadow: -6px 0 24px rgba(15, 23, 42, 0.06) !important;
-  color: var(--text-primary) !important;
+  background: linear-gradient(180deg, var(--color-slate-900) 0%, var(--color-indigo-950) 100%) !important; /* Unified Gradient */
+  border: none !important;
+  border-right: none !important;
+  border-left: none !important;
+  margin-right: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  right: 0 !important;
+  left: auto !important;
+  border-top-right-radius: 0 !important; /* Force Square Edge */
+  border-bottom-right-radius: 0 !important; /* Force Square Edge */
+  box-shadow: 4px 0 30px rgba(0, 0, 0, 0.2) !important;
+  color: #ffffff !important;
+  z-index: 1004 !important;
+}
+
+/* Nuclear Option: Kill the explicit Vuetify border element */
+.modern-sidebar .v-navigation-drawer__border,
+.v-navigation-drawer.modern-sidebar .v-navigation-drawer__border {
+  display: none !important;
+  width: 0 !important;
+  opacity: 0 !important;
 }
 
 /* Make inner list transparent */
@@ -211,81 +238,157 @@ body .v-navigation-drawer.modern-sidebar {
 }
 
 /* Menu item text styling */
+/* Menu item text styling */
+/* Menu item text styling */
+/* Menu item text styling */
+/* Menu item text styling */
+/* Menu item text styling */
+/* Menu item text styling */
+/* Menu item text styling */
 .modern-sidebar .v-list-item-title,
 .modern-sidebar .v-list-item__content {
-  color: #475569 !important; /* Slate 600 */
-  -webkit-text-fill-color: #475569 !important;
-  font-family: 'Tajawal', sans-serif !important;
-  font-size: 0.95rem !important;
+  color: var(--color-slate-300) !important; /* Light Slate for Dark Bg */
+  -webkit-text-fill-color: var(--color-slate-300) !important;
+  font-family: var(--font-secondary) !important;
+  font-size: 0.9rem !important;
   font-weight: 500 !important;
-  letter-spacing: 0.01em;
+  letter-spacing: 0px;
   transition: all 0.2s ease;
 }
 
 /* Header text */
+/* Header text */
+/* Header text */
+/* Header text */
+/* Header text */
 .modern-sidebar h1,
 .modern-sidebar h2,
 .modern-sidebar h3 {
-  color: #1e293b !important; /* Slate 800 */
-  -webkit-text-fill-color: #1e293b !important;
-  font-family: 'Tajawal', sans-serif !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  font-family: var(--font-secondary) !important;
 }
 
+/* Subtitles and smaller text */
+/* Subtitles and smaller text */
+/* Subtitles and smaller text */
 /* Subtitles and smaller text */
 .modern-sidebar .text-caption,
 .modern-sidebar .text-body-2,
 .modern-sidebar .v-list-item-subtitle {
-  color: #94a3b8 !important; /* Slate 400 */
+  color: var(--color-slate-400) !important;
   font-weight: 500 !important;
 }
 
 /* Icons - Elegant muted style */
+/* Icons - Elegant muted style */
+/* Icons - Elegant muted style */
+/* Icons - Elegant muted style */
+/* Icons - Elegant muted style */
+/* Icons - Elegant muted style */
+/* Icons - Elegant muted style */
+/* Icons - Elegant muted style */
 .modern-sidebar .v-icon,
 .v-navigation-drawer.modern-sidebar .v-icon {
-  color: #94a3b8 !important; /* Slate 400 */
+  color: var(--color-slate-400) !important;
   opacity: 1 !important;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Active Menu Item - Clean accent style */
+/* Active Menu Item - Dark Theme Pop */
+/* Active Menu Item - Pop-out Card Style */
+/* Active Menu Item - Pop-out Card Style */
+/* Active Menu Item - Modern Gradient Pill */
+/* Active Menu Item - High Contrast White Pop */
 .modern-sidebar .active-menu-item .v-list-item-title {
-  color: #4338ca !important; /* Indigo 700 */
-  -webkit-text-fill-color: #4338ca !important;
-  font-weight: 600 !important;
+  color: var(--color-slate-900) !important; /* Unified Dark Slate */
+  font-weight: 700 !important;
+  -webkit-text-fill-color: var(--color-slate-900) !important;
+  letter-spacing: 0;
 }
 
 .modern-sidebar .active-menu-item .v-icon {
-  color: #4338ca !important; /* Indigo 700 */
+  color: var(--color-slate-900) !important; /* Match Sidebar Background (Cutout Effect) */
+  opacity: 1 !important;
 }
 
-.modern-sidebar .active-menu-item {
-  background: linear-gradient(90deg, #eef2ff 0%, #f8fafc 100%) !important;
-  border: none !important;
-  border-right: 3px solid #4338ca !important;
-  box-shadow: 0 2px 8px rgba(67, 56, 202, 0.08);
+/* White Pill on Dark Background */
+/* White Pill on Dark Background - Focus Killer */
+.modern-sidebar .active-menu-item,
+.modern-sidebar .v-list-item--active,
+.modern-sidebar .v-list-item:focus,
+.modern-sidebar .active-menu-item:focus,
+.modern-sidebar .v-list-item--active:focus,
+.modern-sidebar .v-list-item:focus-visible {
+  background: #ffffff !important; /* Pure White */
+  /* Re-assert shadow - but allow no focus ring */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  border: 0px solid transparent !important;
+  border-width: 0 !important;
+  outline: none !important; /* KILL FOCUS RING */
+  --v-border-opacity: 0 !important;
+  --v-theme-primary: #ffffff !important; /* Kill Primary color bleed */
   position: relative;
+  border-radius: 8px !important;
+  margin-bottom: 4px;
 }
 
-/* Hover State - Smooth and subtle */
+.modern-sidebar .active-menu-item::before,
+.modern-sidebar .active-menu-item::after {
+  display: none !important; /* Kill Pseudo borders */
+  border: none !important;
+  content: none !important; 
+}
+
+/* Remove side indicator (the whole pill is the indicator) */
+.modern-sidebar .active-menu-item::before {
+  display: none !important;
+}
+
+/* Hover State - smooth darker */
 .modern-sidebar .menu-item:hover .v-list-item-title {
-  color: #334155 !important; /* Slate 700 */
-  -webkit-text-fill-color: #334155 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  transform: translateX(-4px);
+}
+
+/* Explicitly Prevent Hover changing the Active Item Text */
+.modern-sidebar .active-menu-item:hover .v-list-item-title {
+  color: var(--color-indigo-900) !important; /* Keep Text Dark */
+  -webkit-text-fill-color: var(--color-indigo-900) !important;
+  transform: none !important; /* Stop sliding */
 }
 
 .modern-sidebar .menu-item:hover .v-icon {
-  color: #6366f1 !important; /* Indigo 500 */
-  transform: scale(1.08);
+  color: #ffffff !important;
+  opacity: 1 !important;
+  transform: scale(1.05);
+}
+
+/* Explicitly Prevent Hover changing the Active Item Icon */
+.modern-sidebar .active-menu-item:hover .v-icon {
+  color: var(--color-slate-900) !important; /* Keep Icon Dark */
+  transform: none !important;
 }
 
 .modern-sidebar .menu-item:hover {
-  background: #f8fafc !important;
+  background: rgba(255, 255, 255, 0.1) !important; /* White Glass */
+  border-radius: 8px !important;
+}
+
+/* Active Hover Override - STAY WHITE & SOLID */
+.modern-sidebar .active-menu-item:hover {
+  background: #ffffff !important;
+  border: none !important;
+  outline: none !important;
+  opacity: 1 !important;
 }
 
 
 /* Features section title */
 .modern-sidebar .px-4 h3 {
-  color: #64748b !important;
-  -webkit-text-fill-color: #64748b !important;
+  color: var(--text-tertiary) !important;
+  -webkit-text-fill-color: var(--text-tertiary) !important;
   font-size: 0.85rem !important;
   font-weight: 600 !important;
   text-transform: uppercase;
@@ -302,8 +405,8 @@ body .v-navigation-drawer.modern-sidebar {
   align-items: center;
   gap: 12px;
   padding: 20px;
-  border-bottom: 1px solid #f1f5f9;
-  background: #ffffff !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important; /* Subtle Dark Theme Border */
+  background: transparent !important; /* Blend with Gradient */
 }
 
 .sidebar-logo {
@@ -312,33 +415,31 @@ body .v-navigation-drawer.modern-sidebar {
 }
 
 .header-title {
-  font-size: 1.15rem !important;
-  font-weight: 700 !important;
-  color: #1e293b !important;
-  -webkit-text-fill-color: #1e293b !important;
+  font-size: var(--font-size-lg) !important;
+  font-weight: var(--font-weight-bold) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
   margin: 0;
-  line-height: 1.4;
-  font-family: 'Tajawal', sans-serif !important;
+  line-height: var(--line-height-snug);
+  font-family: var(--font-secondary) !important;
 }
 
-/* Badge/Chip styling in sidebar - force white text (high specificity to override sidebar text rules) */
 /* Badge/Chip styling in sidebar */
 /* 1. Force white text on chip content */
 .modern-sidebar .v-chip .v-chip__content,
 .v-navigation-drawer.modern-sidebar .v-chip .v-chip__content {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
+  color: var(--text-white) !important;
+  -webkit-text-fill-color: var(--text-white) !important;
 }
 
 /* 2. Force white icons in chips */
 .modern-sidebar .v-chip .v-icon,
 .v-navigation-drawer.modern-sidebar .v-chip .v-icon {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
+  color: var(--text-white) !important;
+  -webkit-text-fill-color: var(--text-white) !important;
 }
 
-/* 3. Explicitly restore background colors for sidebar chips to prevent white-on-white */
-/* Note: We target both bg- and text- classes as Vuetify can use either depending on version/variant */
+/* 3. Explicitly restore background colors for sidebar chips */
 .modern-sidebar .v-chip.bg-success,
 .modern-sidebar .v-chip.text-success,
 .v-navigation-drawer.modern-sidebar .v-chip.bg-success,
@@ -363,13 +464,13 @@ body .v-navigation-drawer.modern-sidebar {
   border-color: var(--color-primary) !important;
 }
 
-/* عناصر القائمة */
+/* عناصر القائمة - Menu Item Container */
 .menu-item {
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 12px !important;
-  margin-bottom: 2px;
+  margin: 0 8px 6px 8px !important; /* Floating margins */
   border: none;
-  min-height: 46px !important;
+  min-height: 48px !important;
 }
 
 /* Features Grid */
@@ -380,8 +481,8 @@ body .v-navigation-drawer.modern-sidebar {
 }
 
 .feature-item {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: var(--background-secondary);
+  border: 1px solid var(--border-light);
   border-radius: 10px;
   padding: 14px 10px;
   text-align: center;
@@ -389,18 +490,18 @@ body .v-navigation-drawer.modern-sidebar {
 }
 
 .feature-item:hover {
-  background: #f1f5f9;
-  border-color: #c7d2fe;
+  background: var(--background-tertiary);
+  border-color: var(--color-indigo-200);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(67, 56, 202, 0.08);
+  box-shadow: var(--shadow-light);
 }
 
 .feature-item .v-icon {
-  color: #6366f1 !important;
+  color: var(--color-primary) !important;
 }
 
 .feature-item .text-caption {
-  color: #64748b !important;
+  color: var(--text-tertiary) !important;
   font-weight: 600 !important;
   font-size: 0.75rem !important;
 }
@@ -411,17 +512,17 @@ body .v-navigation-drawer.modern-sidebar {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: linear-gradient(135deg, #faf5ff 0%, #f8fafc 100%) !important;
-  border: 1px dashed #c4b5fd !important;
+  background: linear-gradient(135deg, var(--background-surface) 0%, var(--background-secondary) 100%) !important;
+  border: 1px dashed var(--color-indigo-200) !important;
 }
 
 .feature-link:hover {
-  background: linear-gradient(135deg, #ede9fe 0%, #eef2ff 100%) !important;
-  border-color: #a78bfa !important;
+  background: linear-gradient(135deg, var(--background-indigo-light) 0%, var(--background-indigo-medium) 100%) !important;
+  border-color: var(--color-indigo-300) !important;
 }
 
 .feature-link .v-icon {
-  color: #22c55e !important;
+  color: var(--color-success) !important;
 }
 
 /* Common Fixes */
@@ -539,7 +640,7 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 
 .Toastify__toast {
   direction: rtl !important;
-  font-family: 'Cairo', 'Tajawal', 'Noto Sans Arabic', 'Arial', sans-serif !important;
+  font-family: var(--font-primary) !important;
 }
 
 .Toastify__toast-body {
