@@ -44,7 +44,8 @@
             <v-chip
               :color="item.badgeColor"
               size="small"
-              class="text-white font-weight-bold me-2"
+              variant="flat"
+              text-color="white"
             >
               {{ item.badge }}
             </v-chip>
@@ -320,15 +321,46 @@ body .v-navigation-drawer.modern-sidebar {
   font-family: 'Tajawal', sans-serif !important;
 }
 
+/* Badge/Chip styling in sidebar - force white text (high specificity to override sidebar text rules) */
 /* Badge/Chip styling in sidebar */
-.modern-sidebar .v-chip {
+/* 1. Force white text on chip content */
+.modern-sidebar .v-chip .v-chip__content,
+.v-navigation-drawer.modern-sidebar .v-chip .v-chip__content {
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;
 }
 
-.modern-sidebar .v-chip .v-chip__content {
+/* 2. Force white icons in chips */
+.modern-sidebar .v-chip .v-icon,
+.v-navigation-drawer.modern-sidebar .v-chip .v-icon {
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;
+}
+
+/* 3. Explicitly restore background colors for sidebar chips to prevent white-on-white */
+/* Note: We target both bg- and text- classes as Vuetify can use either depending on version/variant */
+.modern-sidebar .v-chip.bg-success,
+.modern-sidebar .v-chip.text-success,
+.v-navigation-drawer.modern-sidebar .v-chip.bg-success,
+.v-navigation-drawer.modern-sidebar .v-chip.text-success {
+  background-color: var(--color-success) !important;
+  border-color: var(--color-success) !important;
+}
+
+.modern-sidebar .v-chip.bg-error,
+.modern-sidebar .v-chip.text-error,
+.v-navigation-drawer.modern-sidebar .v-chip.bg-error,
+.v-navigation-drawer.modern-sidebar .v-chip.text-error {
+  background-color: var(--color-error) !important;
+  border-color: var(--color-error) !important;
+}
+
+.modern-sidebar .v-chip.bg-primary,
+.modern-sidebar .v-chip.text-primary,
+.v-navigation-drawer.modern-sidebar .v-chip.bg-primary,
+.v-navigation-drawer.modern-sidebar .v-chip.text-primary {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
 }
 
 /* عناصر القائمة */

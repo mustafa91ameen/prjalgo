@@ -191,7 +191,7 @@ const statusIcon = computed(() => {
 }
 
 /* Responsive adjustments */
-@media (max-width: var(--space-96)) {
+@media (max-width: 960px) {
   .project-card-actions {
     padding: 0.75rem 1rem 1rem 1rem !important;
   }
