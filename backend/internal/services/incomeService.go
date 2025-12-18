@@ -121,8 +121,8 @@ func (s *IncomeService) Delete(ctx context.Context, id int64) error {
 	return nil
 }
 
-func (s *IncomeService) GetStats(ctx context.Context) (*dtos.IncomeStatsResponse, error) {
-	stats, err := s.incomeRepo.GetStats(ctx)
+func (s *IncomeService) GetStats(ctx context.Context, period string) (*dtos.IncomeStatsResponse, error) {
+	stats, err := s.incomeRepo.GetStats(ctx, period)
 	if err != nil {
 		return nil, err
 	}

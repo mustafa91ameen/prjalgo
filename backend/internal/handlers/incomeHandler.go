@@ -126,7 +126,14 @@ func (h *IncomeHandler) Delete(c *gin.Context) {
 
 // GetStats handles GET /income/stats
 func (h *IncomeHandler) GetStats(c *gin.Context) {
-	stats, err := h.incomeService.GetStats(c.Request.Context())
+	var periodQuery dtos.PeriodQuery
+	if err := c.ShouldBindQuery(&periodQuery); err != nil {
+		response.ValidationError(c, err)
+		return
+	}
+	periodQuery.Normalize()
+
+	stats, err := h.incomeService.GetStats(c.Request.Context(), periodQuery.Period)
 	if err != nil {
 		if errors.Is(err, services.ErrIncomeStatsNotFound) {
 			response.NotFound(c, err.Error())

@@ -108,3 +108,35 @@ You can also get team member assignments for a specific user:
 ```
 GET /api/v1/users/:id/team-members
 ```
+
+---
+
+## Get Team Member Stats
+
+```
+GET /api/v1/team-members/stats
+```
+
+### Query Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `period` | string | `month` | Time period filter: `all`, `month`, `year` |
+
+**Period Options:**
+- `month` - Current month (from day 1 of the month)
+- `year` - Current year (from January 1)
+- `all` - All time (no filter)
+
+### Response
+
+```json
+{
+  "data": {
+    "total": 50,
+    "uniqueUsers": 25,
+    "uniqueProjects": 10,
+    "avgPerProject": 5.0
+  }
+}
+```

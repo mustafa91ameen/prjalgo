@@ -104,8 +104,8 @@ func (s *TeamMemberService) Delete(ctx context.Context, id int64) error {
 	return nil
 }
 
-func (s *TeamMemberService) GetStats(ctx context.Context) (*dtos.TeamMemberStatsResponse, error) {
-	stats, err := s.teamMemberRepo.GetStats(ctx)
+func (s *TeamMemberService) GetStats(ctx context.Context, period string) (*dtos.TeamMemberStatsResponse, error) {
+	stats, err := s.teamMemberRepo.GetStats(ctx, period)
 	if err != nil {
 		return nil, err
 	}

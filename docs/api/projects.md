@@ -82,6 +82,17 @@ GET /api/v1/projects/:id
 GET /api/v1/projects/stats
 ```
 
+### Query Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `period` | string | `month` | Time period filter: `all`, `month`, `year` |
+
+**Period Options:**
+- `month` - Current month (from day 1 of the month)
+- `year` - Current year (from January 1)
+- `all` - All time (no filter)
+
 ### Response
 
 ```json

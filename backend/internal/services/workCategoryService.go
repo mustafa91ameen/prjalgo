@@ -109,8 +109,8 @@ func (s *WorkCategoryService) Delete(ctx context.Context, id int64) error {
 	return nil
 }
 
-func (s *WorkCategoryService) GetStats(ctx context.Context) (*dtos.WorkCategoryStatsResponse, error) {
-	stats, err := s.categoryRepo.GetStats(ctx)
+func (s *WorkCategoryService) GetStats(ctx context.Context, period string) (*dtos.WorkCategoryStatsResponse, error) {
+	stats, err := s.categoryRepo.GetStats(ctx, period)
 	if err != nil {
 		return nil, err
 	}

@@ -51,6 +51,17 @@ GET /api/v1/expenses
 GET /api/v1/expenses/stats
 ```
 
+### Query Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `period` | string | `month` | Time period filter: `all`, `month`, `year` |
+
+**Period Options:**
+- `month` - Current month (from day 1 of the month)
+- `year` - Current year (from January 1)
+- `all` - All time (no filter)
+
 ### Response
 
 ```json
@@ -287,4 +298,38 @@ PUT /api/v1/income/:id
 
 ```
 DELETE /api/v1/income/:id
+```
+
+---
+
+## Get Income Stats
+
+```
+GET /api/v1/income/stats
+```
+
+### Query Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `period` | string | `month` | Time period filter: `all`, `month`, `year` |
+
+**Period Options:**
+- `month` - Current month (from day 1 of the month)
+- `year` - Current year (from January 1)
+- `all` - All time (no filter)
+
+### Response
+
+```json
+{
+  "data": {
+    "total": 50,
+    "totalAmount": 500000.00,
+    "pending": 10,
+    "approved": 35,
+    "rejected": 5,
+    "averageAmount": 10000.00
+  }
+}
 ```

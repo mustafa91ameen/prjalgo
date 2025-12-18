@@ -107,6 +107,38 @@ DELETE /api/v1/work-categories/:id
 
 ---
 
+## Get Work Category Stats
+
+```
+GET /api/v1/work-categories/stats
+```
+
+### Query Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `period` | string | `month` | Time period filter: `all`, `month`, `year` |
+
+**Period Options:**
+- `month` - Current month (from day 1 of the month)
+- `year` - Current year (from January 1)
+- `all` - All time (no filter)
+
+### Response
+
+```json
+{
+  "data": {
+    "total": 20,
+    "active": 15,
+    "inactive": 5,
+    "totalSubcategory": 50
+  }
+}
+```
+
+---
+
 # Work Subcategories
 
 ## List Subcategories

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -16,7 +17,7 @@ type ProjectRepositoryInterface interface {
 	Delete(ctx context.Context, id int64) error
 	UpdateProgressPercentage(ctx context.Context, id int64, percentageToAdd float64) error
 	UpdateProgressPercentageWithTx(ctx context.Context, tx pgx.Tx, id int64, percentageToAdd float64) error
-	GetStats(ctx context.Context) (*ProjectStatsResult, error)
+	GetStats(ctx context.Context, period string) (*ProjectStatsResult, error)
 }
 
 // ProjectStatsResult holds aggregated project statistics
@@ -189,7 +190,9 @@ func (r *ProjectRepository) UpdateProgressPercentageWithTx(ctx context.Context, 
 	return nil
 }
 
-func (r *ProjectRepository) GetStats(ctx context.Context) (*ProjectStatsResult, error) {
+func (r *ProjectRepository) GetStats(ctx context.Context, period string) (*ProjectStatsResult, error) {
+	whereClause := buildPeriodWhereClause(period, "createdAt")
+
 	query := `
 		SELECT
 			COUNT(*) as total,
@@ -199,7 +202,7 @@ func (r *ProjectRepository) GetStats(ctx context.Context) (*ProjectStatsResult, 
 			COALESCE(SUM(totalCost), 0) as total_budget,
 			COALESCE(AVG(progressPercentage), 0) as average_progress
 		FROM projects
-	`
+	` + whereClause
 
 	var stats ProjectStatsResult
 	err := r.db.QueryRow(ctx, query).Scan(
@@ -215,4 +218,21 @@ func (r *ProjectRepository) GetStats(ctx context.Context) (*ProjectStatsResult, 
 	}
 
 	return &stats, nil
+}
+
+// buildPeriodWhereClause returns a WHERE clause based on the period filter
+func buildPeriodWhereClause(period, dateColumn string) string {
+	now := time.Now()
+	switch period {
+	case "month":
+		// First day of current month
+		startOfMonth := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
+		return " WHERE " + dateColumn + " >= '" + startOfMonth.Format("2006-01-02") + "'"
+	case "year":
+		// First day of current year
+		startOfYear := time.Date(now.Year(), 1, 1, 0, 0, 0, 0, now.Location())
+		return " WHERE " + dateColumn + " >= '" + startOfYear.Format("2006-01-02") + "'"
+	default: // "all"
+		return ""
+	}
 }

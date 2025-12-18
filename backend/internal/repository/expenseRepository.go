@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -15,7 +16,7 @@ type ExpenseRepositoryInterface interface {
 	Create(ctx context.Context, expense *models.Expense) (*models.Expense, error)
 	Update(ctx context.Context, id int64, expense *models.Expense) (*models.Expense, error)
 	Delete(ctx context.Context, id int64) error
-	GetStats(ctx context.Context) (*ExpenseStatsResult, error)
+	GetStats(ctx context.Context, period string) (*ExpenseStatsResult, error)
 }
 
 // ExpenseStatsResult holds aggregated expense statistics
@@ -180,7 +181,9 @@ func (r *ExpenseRepository) Delete(ctx context.Context, id int64) error {
 	return nil
 }
 
-func (r *ExpenseRepository) GetStats(ctx context.Context) (*ExpenseStatsResult, error) {
+func (r *ExpenseRepository) GetStats(ctx context.Context, period string) (*ExpenseStatsResult, error) {
+	whereClause := buildExpensePeriodWhereClause(period, "createdAt")
+
 	query := `
 		SELECT
 			COUNT(*) as total,
@@ -191,7 +194,7 @@ func (r *ExpenseRepository) GetStats(ctx context.Context) (*ExpenseStatsResult, 
 			COUNT(*) FILTER (WHERE isDebtor = true) as debtor_count,
 			COALESCE(AVG(amount), 0) as average_amount
 		FROM expenses
-	`
+	` + whereClause
 
 	var stats ExpenseStatsResult
 	err := r.db.QueryRow(ctx, query).Scan(
@@ -208,4 +211,19 @@ func (r *ExpenseRepository) GetStats(ctx context.Context) (*ExpenseStatsResult, 
 	}
 
 	return &stats, nil
+}
+
+// buildExpensePeriodWhereClause returns a WHERE clause based on the period filter
+func buildExpensePeriodWhereClause(period, dateColumn string) string {
+	now := time.Now()
+	switch period {
+	case "month":
+		startOfMonth := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
+		return " WHERE " + dateColumn + " >= '" + startOfMonth.Format("2006-01-02") + "'"
+	case "year":
+		startOfYear := time.Date(now.Year(), 1, 1, 0, 0, 0, 0, now.Location())
+		return " WHERE " + dateColumn + " >= '" + startOfYear.Format("2006-01-02") + "'"
+	default:
+		return ""
+	}
 }

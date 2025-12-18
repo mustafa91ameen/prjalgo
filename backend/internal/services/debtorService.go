@@ -129,8 +129,8 @@ func (s *DebtorService) Delete(ctx context.Context, id int64) error {
 	return nil
 }
 
-func (s *DebtorService) GetStats(ctx context.Context) (*dtos.DebtorStatsResponse, error) {
-	stats, err := s.debtorRepo.GetStats(ctx)
+func (s *DebtorService) GetStats(ctx context.Context, period string) (*dtos.DebtorStatsResponse, error) {
+	stats, err := s.debtorRepo.GetStats(ctx, period)
 	if err != nil {
 		return nil, err
 	}

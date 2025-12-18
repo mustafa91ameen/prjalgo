@@ -145,8 +145,8 @@ func (s *ProjectService) Delete(ctx context.Context, id int64) error {
 	return nil
 }
 
-func (s *ProjectService) GetStats(ctx context.Context) (*dtos.ProjectStatsResponse, error) {
-	stats, err := s.projectRepo.GetStats(ctx)
+func (s *ProjectService) GetStats(ctx context.Context, period string) (*dtos.ProjectStatsResponse, error) {
+	stats, err := s.projectRepo.GetStats(ctx, period)
 	if err != nil {
 		return nil, err
 	}

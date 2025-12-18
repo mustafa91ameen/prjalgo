@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -14,7 +15,7 @@ type WorkCategoryRepositoryInterface interface {
 	Create(ctx context.Context, category *models.WorkCategory) (*models.WorkCategory, error)
 	Update(ctx context.Context, id int64, category *models.WorkCategory) (*models.WorkCategory, error)
 	Delete(ctx context.Context, id int64) error
-	GetStats(ctx context.Context) (*WorkCategoryStatsResult, error)
+	GetStats(ctx context.Context, period string) (*WorkCategoryStatsResult, error)
 }
 
 // WorkCategoryStatsResult holds aggregated work category statistics
@@ -139,13 +140,15 @@ func (r *WorkCategoryRepository) Delete(ctx context.Context, id int64) error {
 	return nil
 }
 
-func (r *WorkCategoryRepository) GetStats(ctx context.Context) (*WorkCategoryStatsResult, error) {
+func (r *WorkCategoryRepository) GetStats(ctx context.Context, period string) (*WorkCategoryStatsResult, error) {
+	whereClause := buildWorkCategoryPeriodWhereClause(period, "createdAt")
+
 	query := `
 		SELECT
-			(SELECT COUNT(*) FROM workCategories) as total,
-			(SELECT COUNT(*) FROM workCategories WHERE status = 'active') as active,
-			(SELECT COUNT(*) FROM workCategories WHERE status = 'inactive') as inactive,
-			(SELECT COUNT(*) FROM workSubCategories) as total_subcategory
+			(SELECT COUNT(*) FROM workCategories` + whereClause + `) as total,
+			(SELECT COUNT(*) FROM workCategories WHERE status = 'active'` + buildWorkCategoryAndClause(period, "createdAt") + `) as active,
+			(SELECT COUNT(*) FROM workCategories WHERE status = 'inactive'` + buildWorkCategoryAndClause(period, "createdAt") + `) as inactive,
+			(SELECT COUNT(*) FROM workSubCategories` + whereClause + `) as total_subcategory
 	`
 
 	var stats WorkCategoryStatsResult
@@ -160,4 +163,32 @@ func (r *WorkCategoryRepository) GetStats(ctx context.Context) (*WorkCategorySta
 	}
 
 	return &stats, nil
+}
+
+func buildWorkCategoryPeriodWhereClause(period, dateColumn string) string {
+	now := time.Now()
+	switch period {
+	case "month":
+		startOfMonth := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
+		return " WHERE " + dateColumn + " >= '" + startOfMonth.Format("2006-01-02") + "'"
+	case "year":
+		startOfYear := time.Date(now.Year(), 1, 1, 0, 0, 0, 0, now.Location())
+		return " WHERE " + dateColumn + " >= '" + startOfYear.Format("2006-01-02") + "'"
+	default:
+		return ""
+	}
+}
+
+func buildWorkCategoryAndClause(period, dateColumn string) string {
+	now := time.Now()
+	switch period {
+	case "month":
+		startOfMonth := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
+		return " AND " + dateColumn + " >= '" + startOfMonth.Format("2006-01-02") + "'"
+	case "year":
+		startOfYear := time.Date(now.Year(), 1, 1, 0, 0, 0, 0, now.Location())
+		return " AND " + dateColumn + " >= '" + startOfYear.Format("2006-01-02") + "'"
+	default:
+		return ""
+	}
 }

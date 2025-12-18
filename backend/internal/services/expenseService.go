@@ -146,8 +146,8 @@ func (s *ExpenseService) Delete(ctx context.Context, id int64) error {
 	return nil
 }
 
-func (s *ExpenseService) GetStats(ctx context.Context) (*dtos.ExpenseStatsResponse, error) {
-	stats, err := s.expenseRepo.GetStats(ctx)
+func (s *ExpenseService) GetStats(ctx context.Context, period string) (*dtos.ExpenseStatsResponse, error) {
+	stats, err := s.expenseRepo.GetStats(ctx, period)
 	if err != nil {
 		return nil, err
 	}

@@ -133,7 +133,14 @@ func (h *TeamMemberHandler) Delete(c *gin.Context) {
 
 // GetStats handles GET /team-members/stats
 func (h *TeamMemberHandler) GetStats(c *gin.Context) {
-	stats, err := h.teamMemberService.GetStats(c.Request.Context())
+	var periodQuery dtos.PeriodQuery
+	if err := c.ShouldBindQuery(&periodQuery); err != nil {
+		response.ValidationError(c, err)
+		return
+	}
+	periodQuery.Normalize()
+
+	stats, err := h.teamMemberService.GetStats(c.Request.Context(), periodQuery.Period)
 	if err != nil {
 		if errors.Is(err, services.ErrTeamMemberStatsNotFound) {
 			response.NotFound(c, err.Error())

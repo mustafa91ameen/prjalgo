@@ -135,3 +135,37 @@ All fields are optional.
 ```
 DELETE /api/v1/debtors/:id
 ```
+
+---
+
+## Get Debtor Stats
+
+```
+GET /api/v1/debtors/stats
+```
+
+### Query Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `period` | string | `month` | Time period filter: `all`, `month`, `year` |
+
+**Period Options:**
+- `month` - Current month (from day 1 of the month)
+- `year` - Current year (from January 1)
+- `all` - All time (no filter)
+
+### Response
+
+```json
+{
+  "data": {
+    "total": 30,
+    "active": 20,
+    "paid": 10,
+    "totalDebt": 150000.00,
+    "activeDebt": 100000.00,
+    "averageDebt": 5000.00
+  }
+}
+```

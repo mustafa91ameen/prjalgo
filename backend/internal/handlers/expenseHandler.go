@@ -143,7 +143,14 @@ func (h *ExpenseHandler) Delete(c *gin.Context) {
 
 // GetStats handles GET /expenses/stats
 func (h *ExpenseHandler) GetStats(c *gin.Context) {
-	stats, err := h.expenseService.GetStats(c.Request.Context())
+	var periodQuery dtos.PeriodQuery
+	if err := c.ShouldBindQuery(&periodQuery); err != nil {
+		response.ValidationError(c, err)
+		return
+	}
+	periodQuery.Normalize()
+
+	stats, err := h.expenseService.GetStats(c.Request.Context(), periodQuery.Period)
 	if err != nil {
 		if errors.Is(err, services.ErrExpenseStatsNotFound) {
 			response.NotFound(c, err.Error())

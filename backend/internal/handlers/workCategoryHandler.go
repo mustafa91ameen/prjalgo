@@ -126,7 +126,14 @@ func (h *WorkCategoryHandler) Delete(c *gin.Context) {
 
 // GetStats handles GET /work-categories/stats
 func (h *WorkCategoryHandler) GetStats(c *gin.Context) {
-	stats, err := h.categoryService.GetStats(c.Request.Context())
+	var periodQuery dtos.PeriodQuery
+	if err := c.ShouldBindQuery(&periodQuery); err != nil {
+		response.ValidationError(c, err)
+		return
+	}
+	periodQuery.Normalize()
+
+	stats, err := h.categoryService.GetStats(c.Request.Context(), periodQuery.Period)
 	if err != nil {
 		if errors.Is(err, services.ErrWorkCategoryStatsNotFound) {
 			response.NotFound(c, err.Error())

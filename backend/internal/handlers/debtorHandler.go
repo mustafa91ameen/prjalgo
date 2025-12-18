@@ -126,7 +126,14 @@ func (h *DebtorHandler) Delete(c *gin.Context) {
 
 // GetStats handles GET /debtors/stats
 func (h *DebtorHandler) GetStats(c *gin.Context) {
-	stats, err := h.debtorService.GetStats(c.Request.Context())
+	var periodQuery dtos.PeriodQuery
+	if err := c.ShouldBindQuery(&periodQuery); err != nil {
+		response.ValidationError(c, err)
+		return
+	}
+	periodQuery.Normalize()
+
+	stats, err := h.debtorService.GetStats(c.Request.Context(), periodQuery.Period)
 	if err != nil {
 		if errors.Is(err, services.ErrDebtorStatsNotFound) {
 			response.NotFound(c, err.Error())
