@@ -194,3 +194,18 @@ Copy these overrides into `colors.css` or your specific page CSS to enforce the 
 }
 ```
 
+## 7. Components
+
+### Statistic Cards
+Cards used for high-level metrics (Project Management & Dashboard).
+- **Isolation**: Dashboard metrics use `.dashboard-stat-*` classes; Project specific metrics use `.project-stat-*`. This prevents style leakage.
+- **Card Padding**: Generous spacing (`2.5rem` or `var(--space-6)`) to ensure content breathes.
+- **Icon Styling**:
+  - **Size**: strictly `42px`.
+  - **Alignment**: Flex-centered (`display: flex; justify-content: center; align-items: center`).
+  - **Layering**: Icons must have `z-index: 5` and `position: relative` to sit above background effects.
+- **Icon Wrapper**:
+  - **Size**: `64px` x `64px`.
+  - **Shape**: Circle (`border-radius: 50%`).
+  - **Background**: Theme-specific soft gradient (e.g., Blue 50 for Primary).
+

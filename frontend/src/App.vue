@@ -532,6 +532,16 @@ body .v-navigation-drawer.modern-sidebar {
 
 .v-card-title {
   text-align: right;
+  direction: rtl;
+}
+
+/* Fix Vuetify v-card-title flex direction for RTL */
+.v-card-title.v-card-item__content,
+.v-card > .v-card-title {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  direction: rtl;
 }
 
 .v-card-text {

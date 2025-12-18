@@ -40,6 +40,7 @@
   transition: all var(--transition-normal);
   height: 100%;
   border: 1px solid var(--color-slate-100);
+  background: var(--background-primary, #ffffff) !important;
 }
 
 .detail-card:hover {
@@ -53,30 +54,36 @@
   padding: var(--space-4) var(--space-6) !important;
   border-radius: var(--radius-2xl) var(--radius-2xl) 0 0 !important;
   margin: var(--space-0) !important;
-  display: flex;
+  display: flex !important;
   align-items: center;
-  direction: rtl;
-  text-align: right;
+  direction: rtl !important;
+  text-align: right !important;
 }
 
-.info-header {
-  background: linear-gradient(135deg, var(--color-blue-500) 0%, var(--color-blue-700) 100%);
-  color: var(--text-white);
+/* Dark Crystal Theme - Matching sidebar style */
+.info-header,
+.status-header,
+.work-days-header,
+.financial-header,
+.description-header,
+.resources-header {
+  background: linear-gradient(180deg, var(--color-slate-900, #0f172a) 0%, var(--color-indigo-950, #1e1b4b) 100%);
+  color: #ffffff;
 }
 
-.status-header {
-  background: linear-gradient(135deg, var(--color-violet-500) 0%, var(--color-violet-600) 100%);
-  color: var(--text-white);
-}
-
-.work-days-header {
-  background: linear-gradient(135deg, var(--color-emerald-500) 0%, var(--color-emerald-600) 100%);
-  color: var(--text-white);
+.info-header .v-icon,
+.status-header .v-icon,
+.work-days-header .v-icon,
+.financial-header .v-icon,
+.description-header .v-icon,
+.resources-header .v-icon {
+  color: var(--color-slate-300, #cbd5e1) !important;
 }
 
 .edit-days-btn {
   opacity: 0.8;
   transition: all var(--transition-normal);
+  color: #ffffff !important;
 }
 
 .edit-days-btn:hover {
@@ -84,20 +91,16 @@
   transform: scale(1.1);
 }
 
-.financial-header {
-  background: linear-gradient(135deg, var(--color-cyan-500) 0%, var(--color-cyan-600) 100%);
-  color: var(--text-white);
-}
-
-.description-header {
-  background: linear-gradient(135deg, var(--color-amber-500) 0%, var(--color-amber-600) 100%);
-  color: var(--text-white);
+.edit-days-btn .v-icon {
+  color: #ffffff !important;
 }
 
 .card-content {
   padding: var(--space-6) !important;
   direction: rtl;
   text-align: right;
+  background: var(--background-primary, #ffffff);
+  color: var(--text-secondary, #334155);
 }
 
 .detail-item {
@@ -226,11 +229,6 @@
 }
 
 /* Resources Management Section */
-.resources-header {
-  background: linear-gradient(135deg, var(--color-blue-600) 0%, var(--color-indigo-600) 100%);
-  color: var(--text-white);
-}
-
 .resource-card {
   border-radius: var(--radius-xl) !important;
   cursor: pointer;
@@ -273,12 +271,36 @@
   font-weight: 700;
   color: var(--color-gray-800);
   margin-bottom: var(--space-2);
+  direction: rtl;
+  text-align: center;
 }
 
 .resource-description {
   font-size: var(--font-size-sm);
   color: var(--color-gray-500);
   margin-bottom: var(--space-0);
+  direction: rtl;
+  text-align: center;
+}
+
+/* Resource cards RTL support */
+.resource-card .v-card-text {
+  direction: rtl !important;
+  text-align: center;
+}
+
+.resource-card .v-btn .v-icon {
+  margin-left: var(--space-1) !important;
+  margin-right: 0 !important;
+}
+
+/* Global RTL button icon support */
+.project-details-page .v-btn {
+  direction: rtl !important;
+}
+
+.project-details-page .v-btn .v-icon {
+  order: 1;
 }
 
 /* Medium screens - ensure cards stack on smaller tablets */

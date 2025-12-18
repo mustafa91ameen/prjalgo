@@ -23,40 +23,59 @@
     <!-- Statistics Cards -->
     <div class="stats-section">
       <v-row>
+        <!-- Total Tasks -->
         <v-col cols="12" sm="6" md="3">
-          <v-card class="stat-card">
-            <v-card-text class="text-center">
-              <v-icon size="40" color="primary" class="mb-2">mdi-clipboard-list</v-icon>
-              <h3 class="text-h4 font-weight-bold">{{ totalTasks }}</h3>
+          <v-card class="stat-card stat-card-primary" elevation="2">
+            <div class="stat-card-background"></div>
+            <div class="stat-card-content">
+              <div class="task-icon-wrapper">
+                <v-icon class="task-stat-icon">mdi-clipboard-list</v-icon>
+              </div>
+              <h3 class="stat-number">{{ totalTasks }}</h3>
               <p class="text-caption">إجمالي المهام</p>
-            </v-card-text>
+            </div>
           </v-card>
         </v-col>
+
+        <!-- Completed Tasks -->
         <v-col cols="12" sm="6" md="3">
-          <v-card class="stat-card">
-            <v-card-text class="text-center">
-              <v-icon size="40" color="success" class="mb-2">mdi-check-circle</v-icon>
-              <h3 class="text-h4 font-weight-bold stat-number">{{ completedTasks }}</h3>
+          <v-card class="stat-card stat-card-success" elevation="2">
+            <div class="stat-card-background"></div>
+            <div class="stat-card-content">
+              <div class="task-icon-wrapper">
+                <v-icon class="task-stat-icon">mdi-check-circle</v-icon>
+              </div>
+              <h3 class="stat-number">{{ completedTasks }}</h3>
               <p class="text-caption">مهام مكتملة</p>
-            </v-card-text>
+            </div>
           </v-card>
         </v-col>
+
+        <!-- Pending Tasks -->
         <v-col cols="12" sm="6" md="3">
-          <v-card class="stat-card">
-            <v-card-text class="text-center">
-              <v-icon size="40" color="warning" class="mb-2">mdi-clock</v-icon>
-              <h3 class="text-h4 font-weight-bold stat-number">{{ pendingTasks }}</h3>
+          <v-card class="stat-card stat-card-warning" elevation="2">
+            <div class="stat-card-background"></div>
+            <div class="stat-card-content">
+              <div class="task-icon-wrapper">
+                <v-icon class="task-stat-icon">mdi-clock</v-icon>
+              </div>
+              <h3 class="stat-number">{{ pendingTasks }}</h3>
               <p class="text-caption">مهام معلقة</p>
-            </v-card-text>
+            </div>
           </v-card>
         </v-col>
+
+        <!-- Overdue Tasks -->
         <v-col cols="12" sm="6" md="3">
-          <v-card class="stat-card">
-            <v-card-text class="text-center">
-              <v-icon size="40" color="error" class="mb-2">mdi-alert-circle</v-icon>
-              <h3 class="text-h4 font-weight-bold stat-number">{{ overdueTasks }}</h3>
+          <v-card class="stat-card stat-card-error" elevation="2">
+            <div class="stat-card-background"></div>
+            <div class="stat-card-content">
+              <div class="task-icon-wrapper">
+                <v-icon class="task-stat-icon">mdi-alert-circle</v-icon>
+              </div>
+              <h3 class="stat-number">{{ overdueTasks }}</h3>
               <p class="text-caption">مهام متأخرة</p>
-            </v-card-text>
+            </div>
           </v-card>
         </v-col>
       </v-row>
@@ -64,7 +83,7 @@
 
     <!-- Filters Section -->
     <div class="filters-section">
-      <v-card class="filters-card">
+      <v-card class="filters-card" elevation="2">
         <v-card-title class="filters-header">
           <v-icon size="32" color="white" class="mr-2">mdi-filter</v-icon>
           <span class="text-h4 font-weight-black filter-title-text">فلترة المهام</span>
@@ -128,7 +147,7 @@
           <span class="text-h4 font-weight-black list-title-text">قائمة المهام</span>
           <v-spacer />
           <v-btn
-            color="primary"
+            color="white"
             variant="outlined"
             size="small"
             prepend-icon="mdi-export"

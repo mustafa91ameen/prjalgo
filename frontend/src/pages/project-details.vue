@@ -25,7 +25,7 @@
         <v-col cols="12" lg="6">
           <v-card class="detail-card info-card" elevation="3">
             <v-card-title class="card-header info-header">
-              <v-icon class="me-2">mdi-information</v-icon>
+              <v-icon class="me-2" size="28">mdi-information</v-icon>
               المعلومات الأساسية
             </v-card-title>
             <v-card-text class="card-content">
@@ -52,7 +52,7 @@
         <v-col cols="12" lg="6">
           <v-card class="detail-card status-card" elevation="3">
             <v-card-title class="card-header status-header">
-              <v-icon class="me-2">mdi-flag</v-icon>
+              <v-icon class="me-2" size="28">mdi-flag</v-icon>
               الحالة والأولوية
             </v-card-title>
             <v-card-text class="card-content">
@@ -80,7 +80,7 @@
         <v-col cols="12" lg="6">
           <v-card class="detail-card work-days-card" elevation="3">
             <v-card-title class="card-header work-days-header">
-              <v-icon class="me-2">mdi-calendar</v-icon>
+              <v-icon class="me-2" size="28">mdi-calendar</v-icon>
               أيام العمل
               <v-spacer />
               <v-btn
@@ -113,7 +113,7 @@
                 @click="editWorkDays"
                 class="mt-3"
               >
-                <v-icon class="me-2">mdi-calendar-clock</v-icon>
+                <v-icon class="ms-2">mdi-calendar-clock</v-icon>
                 إدارة أيام العمل
               </v-btn>
             </v-card-text>
@@ -123,7 +123,7 @@
         <v-col cols="12" lg="6">
           <v-card class="detail-card financial-card" elevation="3">
             <v-card-title class="card-header financial-header">
-              <v-icon class="me-2">mdi-chart-line</v-icon>
+              <v-icon class="me-2" size="28">mdi-chart-line</v-icon>
               المعلومات المالية
             </v-card-title>
             <v-card-text class="card-content">
@@ -147,7 +147,7 @@
         <v-col cols="12" v-if="project.description">
           <v-card class="detail-card description-card" elevation="3">
             <v-card-title class="card-header description-header">
-              <v-icon class="me-2">mdi-text</v-icon>
+              <v-icon class="me-2" size="28">mdi-text</v-icon>
               وصف المشروع
             </v-card-title>
             <v-card-text class="card-content">
@@ -160,7 +160,7 @@
         <v-col cols="12">
           <v-card class="detail-card resources-card" elevation="3">
             <v-card-title class="card-header resources-header">
-              <v-icon class="me-2">mdi-view-grid</v-icon>
+              <v-icon class="me-2" size="28">mdi-view-grid</v-icon>
               إدارة موارد المشروع
             </v-card-title>
             <v-card-text class="card-content">
@@ -185,7 +185,7 @@
                         class="mt-2"
                         @click.stop="goToMaterialsExpenses"
                       >
-                        <v-icon class="me-1">mdi-arrow-left</v-icon>
+                        <v-icon class="ms-1">mdi-arrow-left</v-icon>
                         عرض التفاصيل
                       </v-btn>
                     </v-card-text>
@@ -212,7 +212,7 @@
                         class="mt-2"
                         @click.stop="goToLabor"
                       >
-                        <v-icon class="me-1">mdi-arrow-left</v-icon>
+                        <v-icon class="ms-1">mdi-arrow-left</v-icon>
                         عرض التفاصيل
                       </v-btn>
                     </v-card-text>
@@ -239,7 +239,7 @@
                         class="mt-2"
                         @click.stop="goToEquipment"
                       >
-                        <v-icon class="me-1">mdi-arrow-left</v-icon>
+                        <v-icon class="ms-1">mdi-arrow-left</v-icon>
                         عرض التفاصيل
                       </v-btn>
                     </v-card-text>
@@ -256,7 +256,7 @@
                 class="mt-4"
                 @click="goToWorkDayDetails"
               >
-                <v-icon class="me-2">mdi-calendar-clock</v-icon>
+                <v-icon class="ms-2">mdi-calendar-clock</v-icon>
                 تفاصيل يوم العمل الكاملة
               </v-btn>
             </v-card-text>
@@ -275,22 +275,22 @@
       <!-- Actions -->
       <v-row v-if="project" class="mt-6">
         <v-col cols="12" class="text-center">
-          <v-btn 
-            color="primary" 
-            size="large" 
+          <v-btn
+            color="primary"
+            size="large"
             @click="editProject"
-            class="me-4"
+            class="ms-4"
           >
-            <v-icon class="me-2">mdi-pencil</v-icon>
+            <v-icon class="ms-2">mdi-pencil</v-icon>
             تعديل المشروع
           </v-btn>
-          <v-btn 
-            color="error" 
-            size="large" 
+          <v-btn
+            color="error"
+            size="large"
             @click="deleteProject"
             variant="outlined"
           >
-            <v-icon class="me-2">mdi-delete</v-icon>
+            <v-icon class="ms-2">mdi-delete</v-icon>
             حذف المشروع
           </v-btn>
         </v-col>
@@ -451,4 +451,28 @@ onMounted(() => {
 <style scoped>
 /* Import page styles - scoped to this component only */
 @import './styles/project-details.css';
+
+/* Override Vuetify's v-card-title default LTR behavior */
+:deep(.v-card-title) {
+  direction: rtl !important;
+  text-align: right !important;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: flex-start !important;
+}
+
+/* Card header RTL layout */
+.card-header {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  direction: rtl !important;
+}
+
+/* Icon spacing in RTL - icon should be on the right with margin on left */
+.card-header :deep(.v-icon) {
+  margin-left: 8px !important;
+  margin-right: 0 !important;
+}
 </style>
