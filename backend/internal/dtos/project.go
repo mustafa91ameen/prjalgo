@@ -63,3 +63,13 @@ type UpdateProject struct {
 	ProgressPercentage *float64   `json:"progressPercentage"`
 	Notes              *string    `json:"notes"`
 }
+
+// Stats Response DTO
+type ProjectStatsResponse struct {
+	Total           int64   `json:"total"`
+	Pending         int64   `json:"pending"`
+	InProgress      int64   `json:"inProgress"`
+	Completed       int64   `json:"completed"`
+	TotalBudget     float64 `json:"totalBudget"`
+	AverageProgress float64 `json:"averageProgress"`
+}

@@ -11,7 +11,8 @@ import (
 )
 
 var (
-	ErrProjectNotFound = errors.New("project not found")
+	ErrProjectNotFound      = errors.New("project not found")
+	ErrProjectStatsNotFound = errors.New("project stats not found")
 )
 
 type ProjectService struct {
@@ -142,6 +143,22 @@ func (s *ProjectService) Delete(ctx context.Context, id int64) error {
 		return err
 	}
 	return nil
+}
+
+func (s *ProjectService) GetStats(ctx context.Context) (*dtos.ProjectStatsResponse, error) {
+	stats, err := s.projectRepo.GetStats(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dtos.ProjectStatsResponse{
+		Total:           stats.Total,
+		Pending:         stats.Pending,
+		InProgress:      stats.InProgress,
+		Completed:       stats.Completed,
+		TotalBudget:     stats.TotalBudget,
+		AverageProgress: stats.AverageProgress,
+	}, nil
 }
 
 // DTO conversion helpers

@@ -13,6 +13,9 @@ import (
 
 // Container holds all application dependencies
 type Container struct {
+	// Dashboard
+	DashboardHandler *handlers.DashboardHandler
+
 	// Project
 	ProjectHandler *handlers.ProjectHandler
 
@@ -86,6 +89,7 @@ func New(db *pgxpool.Pool, cfg *config.Config) *Container {
 	rolePageRepo := repository.NewRolePageRepository(db)
 	refreshTokenRepo := repository.NewRefreshTokenRepository(db)
 	auditLogRepo := repository.NewAuditLogRepository(db)
+	dashboardRepo := repository.NewDashboardRepository(db)
 
 	// Services
 	projectService := services.NewProjectService(projectRepo)
@@ -106,9 +110,11 @@ func New(db *pgxpool.Pool, cfg *config.Config) *Container {
 	rolePageService := services.NewRolePageService(rolePageRepo)
 	authService := services.NewAuthService(db, userRepo, userRoleRepo, refreshTokenRepo, jwtManager, refreshExpiry)
 	auditLogService := services.NewAuditLogService(auditLogRepo)
+	dashboardService := services.NewDashboardService(dashboardRepo)
 
 	// Handlers
 	return &Container{
+		DashboardHandler:        handlers.NewDashboardHandler(dashboardService),
 		ProjectHandler:          handlers.NewProjectHandler(projectService),
 		WorkDayHandler:          handlers.NewWorkDayHandler(workDayService),
 		WorkDayMaterialHandler:  handlers.NewWorkDayMaterialHandler(workDayMaterialService),

@@ -124,6 +124,21 @@ func (h *DebtorHandler) Delete(c *gin.Context) {
 	response.Success(c, nil)
 }
 
+// GetStats handles GET /debtors/stats
+func (h *DebtorHandler) GetStats(c *gin.Context) {
+	stats, err := h.debtorService.GetStats(c.Request.Context())
+	if err != nil {
+		if errors.Is(err, services.ErrDebtorStatsNotFound) {
+			response.NotFound(c, err.Error())
+			return
+		}
+		response.InternalError(c, "failed to fetch debtor stats")
+		return
+	}
+
+	response.Success(c, stats)
+}
+
 // parseID extracts an int64 ID from the URL path
 func (h *DebtorHandler) parseID(c *gin.Context, param string) (int64, error) {
 	idStr := c.Param(param)

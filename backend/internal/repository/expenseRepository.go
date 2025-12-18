@@ -15,6 +15,18 @@ type ExpenseRepositoryInterface interface {
 	Create(ctx context.Context, expense *models.Expense) (*models.Expense, error)
 	Update(ctx context.Context, id int64, expense *models.Expense) (*models.Expense, error)
 	Delete(ctx context.Context, id int64) error
+	GetStats(ctx context.Context) (*ExpenseStatsResult, error)
+}
+
+// ExpenseStatsResult holds aggregated expense statistics
+type ExpenseStatsResult struct {
+	Total         int64   `json:"total"`
+	TotalAmount   float64 `json:"totalAmount"`
+	Pending       int64   `json:"pending"`
+	Approved      int64   `json:"approved"`
+	Rejected      int64   `json:"rejected"`
+	DebtorCount   int64   `json:"debtorCount"`
+	AverageAmount float64 `json:"averageAmount"`
 }
 
 type ExpenseRepository struct {
@@ -166,4 +178,34 @@ func (r *ExpenseRepository) Delete(ctx context.Context, id int64) error {
 		return pgx.ErrNoRows
 	}
 	return nil
+}
+
+func (r *ExpenseRepository) GetStats(ctx context.Context) (*ExpenseStatsResult, error) {
+	query := `
+		SELECT
+			COUNT(*) as total,
+			COALESCE(SUM(amount), 0) as total_amount,
+			COUNT(*) FILTER (WHERE status = 'pending') as pending,
+			COUNT(*) FILTER (WHERE status = 'approved') as approved,
+			COUNT(*) FILTER (WHERE status = 'rejected') as rejected,
+			COUNT(*) FILTER (WHERE isDebtor = true) as debtor_count,
+			COALESCE(AVG(amount), 0) as average_amount
+		FROM expenses
+	`
+
+	var stats ExpenseStatsResult
+	err := r.db.QueryRow(ctx, query).Scan(
+		&stats.Total,
+		&stats.TotalAmount,
+		&stats.Pending,
+		&stats.Approved,
+		&stats.Rejected,
+		&stats.DebtorCount,
+		&stats.AverageAmount,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &stats, nil
 }

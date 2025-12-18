@@ -14,6 +14,15 @@ type WorkCategoryRepositoryInterface interface {
 	Create(ctx context.Context, category *models.WorkCategory) (*models.WorkCategory, error)
 	Update(ctx context.Context, id int64, category *models.WorkCategory) (*models.WorkCategory, error)
 	Delete(ctx context.Context, id int64) error
+	GetStats(ctx context.Context) (*WorkCategoryStatsResult, error)
+}
+
+// WorkCategoryStatsResult holds aggregated work category statistics
+type WorkCategoryStatsResult struct {
+	Total            int64 `json:"total"`
+	Active           int64 `json:"active"`
+	Inactive         int64 `json:"inactive"`
+	TotalSubcategory int64 `json:"totalSubcategory"`
 }
 
 type WorkCategoryRepository struct {
@@ -128,4 +137,27 @@ func (r *WorkCategoryRepository) Delete(ctx context.Context, id int64) error {
 		return pgx.ErrNoRows
 	}
 	return nil
+}
+
+func (r *WorkCategoryRepository) GetStats(ctx context.Context) (*WorkCategoryStatsResult, error) {
+	query := `
+		SELECT
+			(SELECT COUNT(*) FROM workCategories) as total,
+			(SELECT COUNT(*) FROM workCategories WHERE status = 'active') as active,
+			(SELECT COUNT(*) FROM workCategories WHERE status = 'inactive') as inactive,
+			(SELECT COUNT(*) FROM workSubCategories) as total_subcategory
+	`
+
+	var stats WorkCategoryStatsResult
+	err := r.db.QueryRow(ctx, query).Scan(
+		&stats.Total,
+		&stats.Active,
+		&stats.Inactive,
+		&stats.TotalSubcategory,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &stats, nil
 }

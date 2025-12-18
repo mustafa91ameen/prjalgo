@@ -16,6 +16,17 @@ type ProjectRepositoryInterface interface {
 	Delete(ctx context.Context, id int64) error
 	UpdateProgressPercentage(ctx context.Context, id int64, percentageToAdd float64) error
 	UpdateProgressPercentageWithTx(ctx context.Context, tx pgx.Tx, id int64, percentageToAdd float64) error
+	GetStats(ctx context.Context) (*ProjectStatsResult, error)
+}
+
+// ProjectStatsResult holds aggregated project statistics
+type ProjectStatsResult struct {
+	Total           int64   `json:"total"`
+	Pending         int64   `json:"pending"`
+	InProgress      int64   `json:"inProgress"`
+	Completed       int64   `json:"completed"`
+	TotalBudget     float64 `json:"totalBudget"`
+	AverageProgress float64 `json:"averageProgress"`
 }
 
 type ProjectRepository struct {
@@ -176,4 +187,32 @@ func (r *ProjectRepository) UpdateProgressPercentageWithTx(ctx context.Context, 
 		return pgx.ErrNoRows
 	}
 	return nil
+}
+
+func (r *ProjectRepository) GetStats(ctx context.Context) (*ProjectStatsResult, error) {
+	query := `
+		SELECT
+			COUNT(*) as total,
+			COUNT(*) FILTER (WHERE status = 'pending') as pending,
+			COUNT(*) FILTER (WHERE status = 'in_progress') as in_progress,
+			COUNT(*) FILTER (WHERE status = 'completed') as completed,
+			COALESCE(SUM(totalCost), 0) as total_budget,
+			COALESCE(AVG(progressPercentage), 0) as average_progress
+		FROM projects
+	`
+
+	var stats ProjectStatsResult
+	err := r.db.QueryRow(ctx, query).Scan(
+		&stats.Total,
+		&stats.Pending,
+		&stats.InProgress,
+		&stats.Completed,
+		&stats.TotalBudget,
+		&stats.AverageProgress,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &stats, nil
 }
