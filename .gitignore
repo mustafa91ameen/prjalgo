@@ -1,0 +1,23 @@
+# IDE & Editors
+.vscode/
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Trashes
+Thumbs.db
+
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
