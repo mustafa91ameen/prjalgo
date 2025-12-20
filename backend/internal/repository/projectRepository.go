@@ -18,6 +18,8 @@ type ProjectRepositoryInterface interface {
 	UpdateProgressPercentage(ctx context.Context, id int64, percentageToAdd float64) error
 	UpdateProgressPercentageWithTx(ctx context.Context, tx pgx.Tx, id int64, percentageToAdd float64) error
 	GetStats(ctx context.Context, period string) (*ProjectStatsResult, error)
+	GetActualSpending(ctx context.Context, projectID int64) (float64, error)
+	GetActualSpendingForProjects(ctx context.Context, projectIDs []int64) (map[int64]float64, error)
 }
 
 // ProjectStatsResult holds aggregated project statistics
@@ -218,6 +220,99 @@ func (r *ProjectRepository) GetStats(ctx context.Context, period string) (*Proje
 	}
 
 	return &stats, nil
+}
+
+func (r *ProjectRepository) GetActualSpending(ctx context.Context, projectID int64) (float64, error) {
+	// Calculate spending from workDays
+	workDaysQuery := `
+		SELECT COALESCE(SUM(totalCost), 0)
+		FROM workDays
+		WHERE projectId = $1
+	`
+	var workDaysSpending float64
+	err := r.db.QueryRow(ctx, workDaysQuery, projectID).Scan(&workDaysSpending)
+	if err != nil {
+		return 0, err
+	}
+
+	// Calculate spending from expenses
+	expensesQuery := `
+		SELECT COALESCE(SUM(amount), 0)
+		FROM expenses
+		WHERE projectId = $1
+	`
+	var expensesSpending float64
+	err = r.db.QueryRow(ctx, expensesQuery, projectID).Scan(&expensesSpending)
+	if err != nil {
+		return 0, err
+	}
+
+	return workDaysSpending + expensesSpending, nil
+}
+
+func (r *ProjectRepository) GetActualSpendingForProjects(ctx context.Context, projectIDs []int64) (map[int64]float64, error) {
+	if len(projectIDs) == 0 {
+		return make(map[int64]float64), nil
+	}
+
+	result := make(map[int64]float64)
+
+	// Initialize all project IDs to 0
+	for _, id := range projectIDs {
+		result[id] = 0
+	}
+
+	// Calculate spending from workDays for all projects
+	workDaysQuery := `
+		SELECT projectId, COALESCE(SUM(totalCost), 0) as total
+		FROM workDays
+		WHERE projectId = ANY($1)
+		GROUP BY projectId
+	`
+	rows, err := r.db.Query(ctx, workDaysQuery, projectIDs)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var projectID int64
+		var total float64
+		if err := rows.Scan(&projectID, &total); err != nil {
+			return nil, err
+		}
+		result[projectID] = total
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	// Calculate spending from expenses for all projects and add to existing totals
+	expensesQuery := `
+		SELECT projectId, COALESCE(SUM(amount), 0) as total
+		FROM expenses
+		WHERE projectId = ANY($1)
+		GROUP BY projectId
+	`
+	rows, err = r.db.Query(ctx, expensesQuery, projectIDs)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var projectID int64
+		var total float64
+		if err := rows.Scan(&projectID, &total); err != nil {
+			return nil, err
+		}
+		result[projectID] += total
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 // buildPeriodWhereClause returns a WHERE clause based on the period filter

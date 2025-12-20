@@ -31,9 +31,23 @@ func (s *ProjectService) GetAll(ctx context.Context, limit, offset int) (dtos.Pa
 		return dtos.PaginatedResponse[dtos.ProjectSummary]{}, err
 	}
 
+	// Extract project IDs to fetch spending
+	projectIDs := make([]int64, len(projects))
+	for i, p := range projects {
+		projectIDs[i] = p.ID
+	}
+
+	// Get spending for all projects at once
+	spendingMap, err := s.projectRepo.GetActualSpendingForProjects(ctx, projectIDs)
+	if err != nil {
+		return dtos.PaginatedResponse[dtos.ProjectSummary]{}, err
+	}
+
 	result := make([]dtos.ProjectSummary, len(projects))
 	for i, p := range projects {
-		result[i] = toProjectSummaryDTO(p)
+		dto := toProjectSummaryDTO(p)
+		dto.CurrentSpending = spendingMap[p.ID]
+		result[i] = dto
 	}
 
 	page := (offset / limit) + 1
@@ -48,7 +62,15 @@ func (s *ProjectService) GetByID(ctx context.Context, id int64) (*dtos.Project, 
 		}
 		return nil, err
 	}
+
+	// Get actual spending for this project
+	currentSpending, err := s.projectRepo.GetActualSpending(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
 	dto := toProjectDTO(project)
+	dto.CurrentSpending = currentSpending
 	return &dto, nil
 }
 
@@ -159,6 +181,11 @@ func (s *ProjectService) GetStats(ctx context.Context, period string) (*dtos.Pro
 		TotalBudget:     stats.TotalBudget,
 		AverageProgress: stats.AverageProgress,
 	}, nil
+}
+
+// UpdateProgressPercentageWithTx updates the project progress percentage by adding the specified amount within a transaction
+func (s *ProjectService) UpdateProgressPercentageWithTx(ctx context.Context, tx pgx.Tx, projectID int64, percentageToAdd float64) error {
+	return s.projectRepo.UpdateProgressPercentageWithTx(ctx, tx, projectID, percentageToAdd)
 }
 
 // DTO conversion helpers
