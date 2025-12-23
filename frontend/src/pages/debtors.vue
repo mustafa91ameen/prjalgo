@@ -212,9 +212,9 @@
             </template>
 
             <!-- عمود المبلغ -->
-            <template v-slot:item.amount="{ item }">
+            <template v-slot:item.totalDebt="{ item }">
               <div class="text-right">
-                <div class="font-weight-bold text-h6">{{ formatCurrency(item.amount) }}</div>
+                <div class="font-weight-bold text-h6">{{ formatCurrency(item.totalDebt) }}</div>
                 <div class="text-caption text-grey-darken-1">
                   {{ item.currency }}
                 </div>
@@ -294,7 +294,7 @@
               <v-col cols="12" md="6">
                 <v-text-field
                   v-model="debtorForm.name"
-                  label="الاسم الكامل"
+                  label="الاسم الكامل *"
                   variant="outlined"
                   :rules="[v => !!v || 'الاسم مطلوب']"
                   required
@@ -306,8 +306,7 @@
                   label="البريد الإلكتروني"
                   type="email"
                   variant="outlined"
-                  :rules="[v => !!v || 'البريد الإلكتروني مطلوب']"
-                  required
+                  :rules="[v => !v || /.+@.+\..+/.test(v) || 'البريد الإلكتروني غير صالح']"
                 />
               </v-col>
               <v-col cols="12" md="6">
@@ -319,31 +318,46 @@
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="debtorForm.amount"
-                  label="المبلغ المطلوب"
+                  v-model.number="debtorForm.totalDebt"
+                  label="المبلغ المطلوب *"
                   type="number"
                   variant="outlined"
-                  :rules="[v => !!v || 'المبلغ مطلوب']"
+                  :rules="[v => v > 0 || 'المبلغ مطلوب ويجب أن يكون أكبر من صفر']"
                   required
                 />
               </v-col>
               <v-col cols="12" md="6">
                 <v-select
                   v-model="debtorForm.currency"
-                  label="العملة"
+                  label="العملة *"
                   :items="currencyOptions"
                   variant="outlined"
+                  :rules="[v => !!v || 'العملة مطلوبة']"
                   required
                 />
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="debtorForm.dueDate"
-                  label="تاريخ الاستحقاق"
-                  type="date"
-                  variant="outlined"
-                  required
-                />
+                <v-menu
+                  v-model="dueDateMenu"
+                  :close-on-content-click="false"
+                  location="bottom"
+                >
+                  <template v-slot:activator="{ props }">
+                    <v-text-field
+                      v-model="formattedDueDate"
+                      label="تاريخ الاستحقاق"
+                      readonly
+                      v-bind="props"
+                      variant="outlined"
+                      prepend-inner-icon="mdi-calendar"
+                    />
+                  </template>
+                  <v-date-picker
+                    v-model="selectedDueDate"
+                    @update:model-value="onDueDateSelected"
+                    color="primary"
+                  />
+                </v-menu>
               </v-col>
               <v-col cols="12">
                 <v-textarea
@@ -408,7 +422,7 @@
             <v-col cols="6">
               <strong>المبلغ المطلوب:</strong>
               <p class="text-h6 font-weight-bold text-error">
-                {{ formatCurrency(selectedDebtor.amount) }}
+                {{ formatCurrency(selectedDebtor.totalDebt) }}
               </p>
             </v-col>
             <v-col cols="6">
@@ -457,7 +471,7 @@
               <v-card color="error" variant="tonal" class="pa-3">
                 <div class="text-center">
                   <v-icon size="32" color="error" class="mb-2">mdi-currency-usd</v-icon>
-                  <h3 class="text-h5 font-weight-bold">{{ formatCurrency(selectedDebtor.amount) }}</h3>
+                  <h3 class="text-h5 font-weight-bold">{{ formatCurrency(selectedDebtor.totalDebt) }}</h3>
                   <p class="text-subtitle-2 mb-0">إجمالي المديونية</p>
                 </div>
               </v-card>
@@ -610,7 +624,7 @@
                         <v-list-item>
                           <v-list-item-title>إجمالي المديونية</v-list-item-title>
                           <template v-slot:append>
-                            <span class="font-weight-bold text-error">{{ formatCurrency(selectedDebtor.amount) }}</span>
+                            <span class="font-weight-bold text-error">{{ formatCurrency(selectedDebtor.totalDebt) }}</span>
                           </template>
                         </v-list-item>
                         <v-list-item>
@@ -671,9 +685,9 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { listDebtors, createDebtor, updateDebtor, deleteDebtor as deleteDebtorApi, getDebtorStats } from '@/api/debtors'
 
 // البيانات التفاعلية
-const drawer = ref(true)
 const loading = ref(false)
 const dialog = ref(false)
 const viewDialog = ref(false)
@@ -685,113 +699,35 @@ const statusFilter = ref('')
 const amountFilter = ref('')
 const selectedDebtor = ref(null)
 const activeTab = ref('debts')
+const editingDebtorId = ref(null)
 
-// نموذج المدين
+// نموذج المدين - aligned with backend DTO
 const debtorForm = ref({
   name: '',
   email: '',
   phone: '',
-  amount: '',
+  totalDebt: 0,
   currency: 'IQD',
   dueDate: '',
+  status: 'pending',
   notes: ''
 })
 
-// قائمة المدينين
-const debtors = ref([
-  {
-    id: 1,
-    name: 'أحمد محمد العلي',
-    email: 'ahmed.ali@example.com',
-    phone: '+966501234567',
-    amount: 15000,
-    currency: 'IQD',
-    dueDate: '2024-01-15',
-    status: 'overdue',
-    notes: 'مدين من مشروع تطوير الموقع',
-    debts: [
-      { id: 1, amount: 10000, date: '2024-01-01', description: 'دفعة أولى - تطوير الموقع', status: 'unpaid' },
-      { id: 2, amount: 5000, date: '2024-01-10', description: 'دفعة ثانية - إضافات الموقع', status: 'unpaid' }
-    ],
-    payments: [
-      { id: 1, amount: 2000, date: '2024-01-05', method: 'bank_transfer', description: 'دفعة جزئية' },
-      { id: 2, amount: 1000, date: '2024-01-12', method: 'cash', description: 'دفعة نقدية' }
-    ]
-  },
-  {
-    id: 2,
-    name: 'فاطمة عبدالله السعد',
-    email: 'fatima.saad@example.com',
-    phone: '+966502345678',
-    amount: 8500,
-    currency: 'IQD',
-    dueDate: '2024-02-20',
-    status: 'pending',
-    notes: 'مدين من خدمات الاستشارة',
-    debts: [
-      { id: 3, amount: 8500, date: '2024-01-15', description: 'رسوم الاستشارة', status: 'unpaid' }
-    ],
-    payments: []
-  },
-  {
-    id: 3,
-    name: 'محمد سالم القحطاني',
-    email: 'mohammed.qhtani@example.com',
-    phone: '+966503456789',
-    amount: 25000,
-    currency: 'IQD',
-    dueDate: '2024-01-10',
-    status: 'paid',
-    notes: 'تم السداد كاملاً',
-    debts: [
-      { id: 4, amount: 25000, date: '2024-01-01', description: 'مشروع تطوير تطبيق', status: 'paid' }
-    ],
-    payments: [
-      { id: 3, amount: 25000, date: '2024-01-10', method: 'bank_transfer', description: 'سداد كامل' }
-    ]
-  },
-  {
-    id: 4,
-    name: 'نورا عبدالرحمن الشمري',
-    email: 'nora.shamri@example.com',
-    phone: '+966504567890',
-    amount: 12000,
-    currency: 'IQD',
-    dueDate: '2024-03-05',
-    status: 'pending',
-    notes: 'مدين من مشروع التصميم',
-    debts: [
-      { id: 5, amount: 8000, date: '2024-01-20', description: 'تصميم الهوية البصرية', status: 'unpaid' },
-      { id: 6, amount: 4000, date: '2024-02-01', description: 'تصميم الموقع', status: 'unpaid' }
-    ],
-    payments: [
-      { id: 4, amount: 3000, date: '2024-02-15', method: 'credit_card', description: 'دفعة جزئية' }
-    ]
-  },
-  {
-    id: 5,
-    name: 'خالد أحمد المطيري',
-    email: 'khalid.mutairi@example.com',
-    phone: '+966505678901',
-    amount: 18000,
-    currency: 'IQD',
-    dueDate: '2024-01-25',
-    status: 'overdue',
-    notes: 'مدين من خدمات البرمجة',
-    debts: [
-      { id: 7, amount: 12000, date: '2024-01-01', description: 'برمجة النظام الأساسي', status: 'unpaid' },
-      { id: 8, amount: 6000, date: '2024-01-15', description: 'إضافات النظام', status: 'unpaid' }
-    ],
-    payments: [
-      { id: 5, amount: 5000, date: '2024-01-20', method: 'bank_transfer', description: 'دفعة جزئية' }
-    ]
-  }
-])
+// قائمة المدينين - from backend
+const debtors = ref([])
+const debtorStats = ref({
+  total: 0,
+  active: 0,
+  paid: 0,
+  totalDebt: 0,
+  activeDebt: 0,
+  averageDebt: 0
+})
 
-// عناوين الجدول
+// عناوين الجدول - aligned with backend DTO
 const headers = [
   { title: 'الاسم', key: 'name', sortable: true },
-  { title: 'المبلغ المطلوب', key: 'amount', sortable: true },
+  { title: 'المبلغ المطلوب', key: 'totalDebt', sortable: true },
   { title: 'تاريخ الاستحقاق', key: 'dueDate', sortable: true },
   { title: 'الحالة', key: 'status', sortable: true },
   { title: 'الإجراءات', key: 'actions', sortable: false }
@@ -815,10 +751,10 @@ const paymentHeaders = [
   { title: 'الإجراءات', key: 'actions', sortable: false }
 ]
 
-// خيارات الفلترة
+// خيارات الفلترة - متطابقة مع قيم الـ backend
 const statusOptions = [
   { title: 'جميع الحالات', value: '' },
-  { title: 'متأخر', value: 'overdue' },
+  { title: 'نشط', value: 'active' },
   { title: 'معلق', value: 'pending' },
   { title: 'مدفوع', value: 'paid' }
 ]
@@ -836,17 +772,25 @@ const currencyOptions = [
   { title: 'يورو', value: 'EUR' }
 ]
 
-// عناصر القائمة الرئيسية
-const mainMenuItems = [
-  { title: 'الرئيسية', icon: 'mdi-view-dashboard', to: '/', active: false },
-  { title: 'المشاريع', icon: 'mdi-folder', to: '/project-management', active: false },
-  { title: 'المهندسين', icon: 'mdi-account-hard-hat', to: '/engineers', active: false },
-  { title: 'المصاريف الإدارية', icon: 'mdi-currency-usd', to: '/administrative-expenses', active: false },
-  { title: 'المصروفات العامة', icon: 'mdi-chart-line', to: '/expenses', active: false },
-  { title: 'الإيرادات', icon: 'mdi-trending-up', to: '/income', active: false },
-  { title: 'المدينين', icon: 'mdi-credit-card', to: '/debtors', active: true },
-  { title: 'المستخدمين', icon: 'mdi-account-group', to: '/users', active: false }
-]
+// Date picker state
+const dueDateMenu = ref(false)
+const selectedDueDate = ref(null)
+
+// Computed property for formatted due date display
+const formattedDueDate = computed(() => {
+  if (!debtorForm.value.dueDate) return ''
+  const date = new Date(debtorForm.value.dueDate)
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+})
+
+// Handle due date selection from picker
+const onDueDateSelected = (date) => {
+  if (date) {
+    const d = new Date(date)
+    debtorForm.value.dueDate = d.toISOString().split('T')[0]
+  }
+  dueDateMenu.value = false
+}
 
 // الحسابات
 const filteredDebtors = computed(() => {
@@ -856,7 +800,7 @@ const filteredDebtors = computed(() => {
   if (searchQuery.value) {
     filtered = filtered.filter(debtor =>
       debtor.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      debtor.email.toLowerCase().includes(searchQuery.value.toLowerCase())
+      (debtor.email && debtor.email.toLowerCase().includes(searchQuery.value.toLowerCase()))
     )
   }
 
@@ -868,7 +812,7 @@ const filteredDebtors = computed(() => {
   // فلترة بالمبلغ
   if (amountFilter.value) {
     filtered = filtered.filter(debtor => {
-      const amount = debtor.amount
+      const amount = debtor.totalDebt
       switch (amountFilter.value) {
         case 'low': return amount < 10000
         case 'medium': return amount >= 10000 && amount <= 20000
@@ -882,17 +826,21 @@ const filteredDebtors = computed(() => {
 })
 
 const totalDebt = computed(() => {
-  return debtors.value
-    .filter(debtor => debtor.status !== 'paid')
-    .reduce((sum, debtor) => sum + debtor.amount, 0)
+  return debtorStats.value.totalDebt || 0
 })
 
 const overdueCount = computed(() => {
-  return debtors.value.filter(debtor => debtor.status === 'overdue').length
+  // Calculate overdue based on due date (past dates for unpaid debtors)
+  const today = new Date()
+  return debtors.value.filter(debtor => {
+    if (debtor.status === 'paid') return false
+    if (!debtor.dueDate) return false
+    return new Date(debtor.dueDate) < today
+  }).length
 })
 
 const paidCount = computed(() => {
-  return debtors.value.filter(debtor => debtor.status === 'paid').length
+  return debtorStats.value.paid || 0
 })
 
 // حسابات الديون والتسديدات
@@ -903,29 +851,35 @@ const totalPaid = computed(() => {
 
 const remainingAmount = computed(() => {
   if (!selectedDebtor.value) return 0
-  return selectedDebtor.value.amount - totalPaid.value
+  return (selectedDebtor.value.totalDebt || 0) - totalPaid.value
 })
 
 const paymentPercentage = computed(() => {
-  if (!selectedDebtor.value || selectedDebtor.value.amount === 0) return 0
-  return Math.round((totalPaid.value / selectedDebtor.value.amount) * 100)
+  if (!selectedDebtor.value || !selectedDebtor.value.totalDebt) return 0
+  return Math.round((totalPaid.value / selectedDebtor.value.totalDebt) * 100)
 })
 
 // الدوال
 const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('ar-SA', {
-    style: 'currency',
-    currency: 'IQD'
-  }).format(amount)
+  if (amount == null) return '0 IQD'
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(amount) + ' IQD'
 }
 
 const formatDate = (date) => {
-  return new Date(date).toLocaleDateString('ar-SA')
+  if (!date) return '-'
+  return new Date(date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  })
 }
 
 const getStatusColor = (status) => {
   const colors = {
-    'overdue': 'error',
+    'active': 'info',
     'pending': 'warning',
     'paid': 'success'
   }
@@ -934,7 +888,7 @@ const getStatusColor = (status) => {
 
 const getStatusText = (status) => {
   const texts = {
-    'overdue': 'متأخر',
+    'active': 'نشط',
     'pending': 'معلق',
     'paid': 'مدفوع'
   }
@@ -964,15 +918,39 @@ const getDueDateStatus = (dueDate) => {
   return 'مستقبلي'
 }
 
+// Load debtors from backend
+const loadDebtors = async () => {
+  loading.value = true
+  try {
+    // Load debtors list and stats in parallel
+    const [data, stats] = await Promise.all([
+      listDebtors(),
+      getDebtorStats()
+    ])
+    console.log('Debtors data received:', data)
+    console.log('Debtors stats received:', stats)
+    debtors.value = data
+    if (stats) {
+      debtorStats.value = stats
+    }
+  } catch (err) {
+    console.error('Error loading debtors:', err)
+  } finally {
+    loading.value = false
+  }
+}
+
 const openAddDialog = () => {
   isEdit.value = false
+  editingDebtorId.value = null
   debtorForm.value = {
     name: '',
     email: '',
     phone: '',
-  amount: '',
-  currency: 'IQD',
-  dueDate: '',
+    totalDebt: 0,
+    currency: 'IQD',
+    dueDate: '',
+    status: 'pending',
     notes: ''
   }
   dialog.value = true
@@ -980,7 +958,19 @@ const openAddDialog = () => {
 
 const editDebtor = (debtor) => {
   isEdit.value = true
-  debtorForm.value = { ...debtor }
+  editingDebtorId.value = debtor.id
+  // Format dueDate to YYYY-MM-DD for input field
+  const formattedDueDate = debtor.dueDate ? new Date(debtor.dueDate).toISOString().split('T')[0] : ''
+  debtorForm.value = {
+    name: debtor.name,
+    email: debtor.email || '',
+    phone: debtor.phone || '',
+    totalDebt: debtor.totalDebt,
+    currency: debtor.currency,
+    dueDate: formattedDueDate,
+    status: debtor.status || 'pending',
+    notes: debtor.notes || ''
+  }
   dialog.value = true
 }
 
@@ -989,44 +979,69 @@ const viewDebtor = (debtor) => {
   viewDialog.value = true
 }
 
-const saveDebtor = () => {
-  if (isEdit.value) {
-    const index = debtors.value.findIndex(d => d.id === debtorForm.value.id)
-    if (index !== -1) {
-      debtors.value[index] = { ...debtorForm.value }
+const saveDebtor = async () => {
+  try {
+    const payload = {
+      name: debtorForm.value.name,
+      totalDebt: Number(debtorForm.value.totalDebt),
+      currency: debtorForm.value.currency
     }
-  } else {
-    const newDebtor = {
-      ...debtorForm.value,
-      id: Date.now(),
-      status: 'pending'
+    // Optional fields
+    if (debtorForm.value.email && debtorForm.value.email.trim()) {
+      payload.email = debtorForm.value.email.trim()
     }
-    debtors.value.push(newDebtor)
+    if (debtorForm.value.phone && debtorForm.value.phone.trim()) {
+      payload.phone = debtorForm.value.phone.trim()
+    }
+    if (debtorForm.value.dueDate) {
+      payload.dueDate = new Date(debtorForm.value.dueDate).toISOString()
+    }
+    if (debtorForm.value.status) {
+      payload.status = debtorForm.value.status
+    }
+    if (debtorForm.value.notes && debtorForm.value.notes.trim()) {
+      payload.notes = debtorForm.value.notes.trim()
+    }
+
+    if (isEdit.value && editingDebtorId.value) {
+      await updateDebtor(editingDebtorId.value, payload)
+    } else {
+      await createDebtor(payload)
+    }
+    await loadDebtors()
+    closeDialog()
+  } catch (err) {
+    console.error('Error saving debtor:', err)
   }
-  closeDialog()
 }
 
 const closeDialog = () => {
   dialog.value = false
   valid.value = false
+  editingDebtorId.value = null
 }
 
-const markAsPaid = (debtor) => {
-  debtor.status = 'paid'
-}
-
-const deleteDebtor = (debtor) => {
-  const index = debtors.value.findIndex(d => d.id === debtor.id)
-  if (index !== -1) {
-    debtors.value.splice(index, 1)
+const markAsPaid = async (debtor) => {
+  try {
+    await updateDebtor(debtor.id, { status: 'paid' })
+    await loadDebtors()
+  } catch (err) {
+    console.error('Error marking as paid:', err)
   }
 }
 
-const refreshData = () => {
-  loading.value = true
-  setTimeout(() => {
-    loading.value = false
-  }, 1000)
+const deleteDebtor = async (debtor) => {
+  if (!confirm('هل أنت متأكد من حذف هذا المدين؟')) return
+  try {
+    await deleteDebtorApi(debtor.id)
+    await loadDebtors()
+  } catch (err) {
+    console.error('Error deleting debtor:', err)
+  }
+}
+
+const refreshData = async () => {
+  await loadDebtors()
 }
 
 const exportData = () => {
@@ -1097,8 +1112,9 @@ const deletePayment = (payment) => {
   console.log('حذف التسديد:', payment)
 }
 
+// Load data on mount
 onMounted(() => {
-  // تهيئة البيانات
+  loadDebtors()
 })
 </script>
 

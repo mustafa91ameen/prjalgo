@@ -27,7 +27,7 @@
                 <v-icon size="48" class="stat-icon">mdi-currency-usd</v-icon>
               </div>
               <div class="stat-info">
-                <h3 class="stat-value">{{ totalExpenses || 5 }}</h3>
+                <h3 class="stat-value">{{ totalExpenses }}</h3>
                 <p class="stat-label">إجمالي المصاريف</p>
               </div>
             </div>
@@ -41,7 +41,7 @@
                 <v-icon size="48" class="stat-icon check-icon">mdi-check-circle</v-icon>
               </div>
               <div class="stat-info">
-                <h3 class="stat-value">{{ activeExpenses || 3 }}</h3>
+                <h3 class="stat-value">{{ activeExpenses }}</h3>
                 <p class="stat-label">مصاريف نشطة</p>
               </div>
             </div>
@@ -55,7 +55,7 @@
                 <v-icon size="48" class="stat-icon">mdi-clock-alert</v-icon>
               </div>
               <div class="stat-info">
-                <h3 class="stat-value">{{ pendingExpenses || 2 }}</h3>
+                <h3 class="stat-value">{{ pendingExpenses }}</h3>
                 <p class="stat-label">في الانتظار</p>
               </div>
             </div>
@@ -69,7 +69,7 @@
                 <v-icon size="48" class="stat-icon">mdi-chart-line</v-icon>
               </div>
               <div class="stat-info">
-                <h3 class="stat-value">{{ formatCurrency(totalCost) || '430,000 د.ع' }}</h3>
+                <h3 class="stat-value">{{ formatCurrency(totalCost) }}</h3>
                 <p class="stat-label">إجمالي التكلفة</p>
               </div>
             </div>
@@ -158,16 +158,17 @@
           </div>
         </v-card-title>
 
-        <!-- جدول المشاريع -->
+        <!-- جدول المصاريف -->
         <v-data-table
-          :headers="projectHeaders"
-          :items="projectData"
-          :search="projectSearchQuery"
+          :headers="expenseHeaders"
+          :items="filteredExpenses"
+          :search="expenseSearchQuery"
           class="project-table"
           :items-per-page="10"
-          :loading="false"
+          :loading="loading"
           hover
           no-data-text="لا توجد بيانات"
+          loading-text="جاري التحميل..."
           :header-props="{
             style: 'background: linear-gradient(135deg, #047857 0%, #059669 100%); color: white; font-weight: 700;'
           }"
@@ -177,29 +178,41 @@
             <span class="serial-number">{{ index + 1 }}</span>
           </template>
 
-          <!-- Project Name Column -->
-          <template #item.projectName="{ item }">
-            <span class="project-name">{{ item.projectName }}</span>
+          <!-- Name Column -->
+          <template #item.name="{ item }">
+            <span class="project-name">{{ item.name }}</span>
           </template>
 
-          <!-- Start Date Column -->
-          <template #item.startDate="{ item }">
-            <span class="date-text">{{ item.startDate }}</span>
+          <!-- Amount Column -->
+          <template #item.amount="{ item }">
+            <span class="cost-text">{{ formatCurrency(item.amount) }}</span>
           </template>
 
-          <!-- End Date Column -->
-          <template #item.endDate="{ item }">
-            <span class="date-text">{{ item.endDate }}</span>
+          <!-- Type Column -->
+          <template #item.type="{ item }">
+            <v-chip
+              :color="getExpenseTypeColor(item.type)"
+              size="small"
+              variant="tonal"
+            >
+              {{ item.type || 'غير محدد' }}
+            </v-chip>
           </template>
 
-          <!-- Cost Column -->
-          <template #item.cost="{ item }">
-            <span class="cost-text">{{ item.cost }}</span>
+          <!-- Expense Date Column -->
+          <template #item.expenseDate="{ item }">
+            <span class="date-text">{{ formatDate(item.expenseDate) }}</span>
           </template>
 
-          <!-- Work Location Column -->
-          <template #item.workLocation="{ item }">
-            <span class="location-text">{{ item.workLocation }}</span>
+          <!-- Status Column -->
+          <template #item.status="{ item }">
+            <v-chip
+              :color="getStatusColor(item.status)"
+              size="small"
+              variant="tonal"
+            >
+              {{ getStatusText(item.status) }}
+            </v-chip>
           </template>
 
           <!-- Notes Column -->
@@ -210,28 +223,28 @@
           <!-- Actions Column -->
           <template #item.actions="{ item }">
             <div class="action-buttons">
-            <v-btn
-              size="small"
-              color="primary"
+              <v-btn
+                size="small"
+                color="primary"
                 variant="text"
-                @click="viewProjectDetails(item)"
-                icon
-                class="action-btn details-btn"
-                title="عرض التفاصيل"
-              >
-                <v-icon size="16">mdi-eye</v-icon>
-            </v-btn>
-            <v-btn
-              size="small"
-                color="black"
-                variant="text"
-                @click="editProject(item)"
+                @click="editExpense(item)"
                 icon
                 class="action-btn"
                 title="تعديل"
               >
-                <v-icon size="16">mdi-dots-horizontal</v-icon>
-            </v-btn>
+                <v-icon size="16">mdi-pencil</v-icon>
+              </v-btn>
+              <v-btn
+                size="small"
+                color="error"
+                variant="text"
+                @click="deleteExpense(item)"
+                icon
+                class="action-btn"
+                title="حذف"
+              >
+                <v-icon size="16">mdi-delete</v-icon>
+              </v-btn>
             </div>
           </template>
         </v-data-table>
@@ -253,20 +266,20 @@
               لإتمام {{ isEditingExpense ? 'تعديل' : 'إضافة' }} المصروف الإداري، يرجى توفير المعلومات التالية. يرجى ملاحظة أن جميع الحقول المميزة بعلامة النجمة (*) مطلوبة.
             </p>
 
-            <v-form ref="expenseForm" v-model="expenseFormValid">
-              <!-- الصف الأول: اسم المشروع، التكلفة -->
+            <v-form ref="expenseFormRef" v-model="expenseFormValid">
+              <!-- الصف الأول: الاسم، المبلغ -->
               <v-row class="clean-form-row">
                 <v-col cols="12" md="6" class="clean-form-column">
                   <div class="clean-form-field-wrapper">
                     <label class="clean-form-label">
-                      اسم المشروع <span class="required-star">*</span>
+                      اسم المصروف <span class="required-star">*</span>
                     </label>
                     <v-text-field
-                      v-model="expenseForm.projectName"
+                      v-model="expenseForm.name"
                       variant="outlined"
                       density="comfortable"
-                      placeholder="أدخل اسم المشروع"
-                      :rules="[v => !!v || 'اسم المشروع مطلوب']"
+                      placeholder="أدخل اسم المصروف"
+                      :rules="[v => !!v || 'اسم المصروف مطلوب']"
                       required
                       hide-details="auto"
                       class="clean-form-input"
@@ -277,15 +290,15 @@
                 <v-col cols="12" md="6" class="clean-form-column">
                   <div class="clean-form-field-wrapper">
                     <label class="clean-form-label">
-                      التكلفة (د.ع) <span class="required-star">*</span>
+                      المبلغ (د.ع) <span class="required-star">*</span>
                     </label>
                     <v-text-field
-                      v-model="expenseForm.cost"
+                      v-model.number="expenseForm.amount"
                       variant="outlined"
                       density="comfortable"
                       type="number"
                       placeholder="0"
-                      :rules="[v => !!v || 'التكلفة مطلوبة', v => v > 0 || 'التكلفة يجب أن تكون أكبر من صفر']"
+                      :rules="[v => v > 0 || 'المبلغ مطلوب ويجب أن يكون أكبر من صفر']"
                       required
                       hide-details="auto"
                       class="clean-form-input"
@@ -294,19 +307,19 @@
                 </v-col>
               </v-row>
 
-              <!-- الصف الثاني: تاريخ البداية، تاريخ الانتهاء -->
+              <!-- الصف الثاني: تاريخ المصروف، النوع -->
               <v-row class="clean-form-row">
                 <v-col cols="12" md="6" class="clean-form-column">
                   <div class="clean-form-field-wrapper">
                     <label class="clean-form-label">
-                      تاريخ البداية <span class="required-star">*</span>
+                      تاريخ المصروف <span class="required-star">*</span>
                     </label>
                     <v-text-field
-                      v-model="expenseForm.startDate"
+                      v-model="expenseForm.expenseDate"
                       variant="outlined"
                       density="comfortable"
                       type="date"
-                      :rules="[v => !!v || 'تاريخ البداية مطلوب']"
+                      :rules="[v => !!v || 'تاريخ المصروف مطلوب']"
                       required
                       hide-details="auto"
                       class="clean-form-input"
@@ -317,15 +330,13 @@
                 <v-col cols="12" md="6" class="clean-form-column">
                   <div class="clean-form-field-wrapper">
                     <label class="clean-form-label">
-                      تاريخ الانتهاء <span class="required-star">*</span>
+                      نوع المصروف
                     </label>
                     <v-text-field
-                      v-model="expenseForm.endDate"
+                      v-model="expenseForm.type"
                       variant="outlined"
                       density="comfortable"
-                      type="date"
-                      :rules="[v => !!v || 'تاريخ الانتهاء مطلوب']"
-                      required
+                      placeholder="أدخل نوع المصروف"
                       hide-details="auto"
                       class="clean-form-input"
                     />
@@ -333,60 +344,21 @@
                 </v-col>
               </v-row>
 
-              <!-- الصف الثالث: مكان العمل، نوع المصروف -->
+              <!-- الصف الثالث: الحالة -->
               <v-row class="clean-form-row">
                 <v-col cols="12" md="6" class="clean-form-column">
                   <div class="clean-form-field-wrapper">
                     <label class="clean-form-label">
-                      مكان العمل <span class="required-star">*</span>
-                    </label>
-                    <v-text-field
-                      v-model="expenseForm.workLocation"
-                      variant="outlined"
-                      density="comfortable"
-                      placeholder="أدخل مكان العمل"
-                      :rules="[v => !!v || 'مكان العمل مطلوب']"
-                      required
-                      hide-details="auto"
-                      class="clean-form-input"
-                    />
-                  </div>
-                </v-col>
-
-                <v-col cols="12" md="6" class="clean-form-column">
-                  <div class="clean-form-field-wrapper">
-                    <label class="clean-form-label">
-                      نوع المصروف <span class="required-star">*</span>
-                    </label>
-                    <v-select
-                      v-model="expenseForm.expenseType"
-                      :items="expenseTypes"
-                      variant="outlined"
-                      density="comfortable"
-                      placeholder="اختر نوع المصروف"
-                      :rules="[v => !!v || 'نوع المصروف مطلوب']"
-                      required
-                      hide-details="auto"
-                      class="clean-form-input"
-                    />
-                  </div>
-                </v-col>
-              </v-row>
-
-              <!-- الصف الرابع: الحالة -->
-              <v-row class="clean-form-row">
-                <v-col cols="12" md="6" class="clean-form-column">
-                  <div class="clean-form-field-wrapper">
-                    <label class="clean-form-label">
-                      الحالة <span class="required-star">*</span>
+                      الحالة
                     </label>
                     <v-select
                       v-model="expenseForm.status"
-                      :items="statusOptions"
+                      :items="statusOptions.filter(s => s.value)"
+                      item-title="title"
+                      item-value="value"
                       variant="outlined"
                       density="comfortable"
                       placeholder="اختر الحالة"
-                      :rules="[v => !!v || 'الحالة مطلوبة']"
                       required
                       hide-details="auto"
                       class="clean-form-input"
@@ -443,6 +415,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { listExpenses, createExpense, updateExpense, deleteExpense as deleteExpenseApi, getExpenseStats } from '@/api/expenses'
 
 const router = useRouter()
 
@@ -458,141 +431,49 @@ const selectedExpense = ref(null)
 const selectedExpenseType = ref('')
 const selectedStatus = ref('')
 
-// جدول المصاريف الإدارية
+// جدول المصاريف الإدارية - aligned with backend DTO
 const expenseHeaders = [
   { title: 'التسلسل', key: 'serial', sortable: false, width: '80px' },
-  { title: 'اسم المشروع', key: 'projectName', sortable: true, width: '180px' },
-  { title: 'نوع المصروف', key: 'expenseType', sortable: true, width: '120px' },
-  { title: 'تاريخ بدء المشروع', key: 'startDate', sortable: true, width: '130px' },
-  { title: 'تاريخ انتهاء المشروع', key: 'endDate', sortable: true, width: '130px' },
-  { title: 'التكلفة', key: 'cost', sortable: true, width: '120px' },
-  { title: 'مكان العمل', key: 'workLocation', sortable: true, width: '100px' },
+  { title: 'الاسم', key: 'name', sortable: true, width: '180px' },
+  { title: 'المبلغ', key: 'amount', sortable: true, width: '120px' },
+  { title: 'النوع', key: 'type', sortable: true, width: '120px' },
+  { title: 'التاريخ', key: 'expenseDate', sortable: true, width: '130px' },
   { title: 'الحالة', key: 'status', sortable: true, width: '100px' },
   { title: 'الملاحظات', key: 'notes', sortable: false, width: '150px' },
   { title: 'الإجراءات', key: 'actions', sortable: false, width: '100px' }
 ]
 
-// نموذج المصاريف الإدارية
+// نموذج المصاريف الإدارية - aligned with backend CreateExpense DTO
 const expenseForm = ref({
-  projectName: '',
-  startDate: '',
-  endDate: '',
-  cost: '',
-  workLocation: '',
-  expenseType: '',
-  status: 'معلق',
+  name: '',
+  amount: 0,
+  type: '',
+  expenseDate: new Date().toISOString().split('T')[0],
+  projectId: null,
+  status: 'pending',
   notes: ''
 })
 
-// بيانات المصاريف الإدارية التجريبية
-const administrativeExpenses = ref([
-  {
-    id: 1,
-    projectName: 'المشروع الأول',
-    startDate: '2022-03-10',
-    endDate: '2024-03-07',
-    cost: 500000,
-    workLocation: 'لعقوبة',
-    expenseType: 'تطوير',
-    status: 'معتمد',
-    notes: 'لايوجد'
-  },
-  {
-    id: 2,
-    projectName: 'dfghjkl',
-    startDate: '2022-04-03',
-    endDate: '2022-04-03',
-    cost: 12.313,
-    workLocation: 'akjsda',
-    expenseType: 'تحديث',
-    status: 'معلق',
-    notes: 'لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد'
-  },
-  {
-    id: 3,
-    projectName: 'gfdhcgh',
-    startDate: '2025-08-25',
-    endDate: '2025-08-25',
-    cost: 2000000000,
-    workLocation: 'aqz',
-    expenseType: 'بناء',
-    status: 'مرفوض',
-    notes: 'لايوجد'
-  },
-  {
-    id: 4,
-    projectName: 'مشروع تحديث المختبرات',
-    startDate: '2024-04-01',
-    endDate: '2024-07-01',
-    cost: 125000,
-    workLocation: 'الرياض',
-    expenseType: 'تحديث',
-    status: 'معتمد',
-    notes: 'تحديث وتطوير المختبرات العلمية'
-  },
-  {
-    id: 5,
-    projectName: 'مشروع الأمن السيبراني',
-    startDate: '2024-05-01',
-    endDate: '2024-08-01',
-    cost: 80000,
-    workLocation: 'جدة',
-    expenseType: 'أمن',
-    status: 'معلق',
-    notes: 'تطوير أنظمة الأمن السيبراني'
-  }
-])
+// Stats from backend API
+const expenseStats = ref({
+  total: 0,
+  totalAmount: 0,
+  pending: 0,
+  approved: 0,
+  rejected: 0,
+  averageAmount: 0
+})
 
-// بيانات المشاريع
-const projectData = ref([
-  {
-    id: 1,
-    projectName: 'المشروع الأول',
-    startDate: '10/03/2022',
-    endDate: '07/03/2024',
-    cost: '500000',
-    workLocation: 'لعقوبة',
-    notes: 'لايوجد'
-  },
-  {
-    id: 2,
-    projectName: 'dfghjkl',
-    startDate: '03/04/2022',
-    endDate: '03/04/2022',
-    cost: '12.313',
-    workLocation: 'akjsda',
-    notes: 'لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد لايوجد'
-  },
-  {
-    id: 3,
-    projectName: 'gfdhcgh',
-    startDate: '25/08/2025',
-    endDate: '25/08/2025',
-    cost: '2000000000',
-    workLocation: 'aqz',
-    notes: 'لايوجد'
-  }
-])
-
-// عناوين جدول المشاريع
-const projectHeaders = ref([
-  { title: 'التسلسل', key: 'serial', sortable: false, align: 'center' },
-  { title: 'اسم المشروع', key: 'projectName', sortable: true, align: 'right' },
-  { title: 'تاريخ بدء المشروع', key: 'startDate', sortable: true, align: 'center' },
-  { title: 'تاريخ انتهاء المشروع', key: 'endDate', sortable: true, align: 'center' },
-  { title: 'التكلفة', key: 'cost', sortable: true, align: 'center' },
-  { title: 'مكان العمل', key: 'workLocation', sortable: true, align: 'center' },
-  { title: 'الملاحظات', key: 'notes', sortable: false, align: 'right' },
-  { title: 'الاجراءات', key: 'actions', sortable: false, align: 'center' }
-])
+// بيانات المصاريف الإدارية - from backend API
+const expenses = ref([])
 
 // استعلام البحث للمشاريع
 const projectSearchQuery = ref('')
 
 // خيارات فلترة المصاريف
 const projectFilterOptions = computed(() => {
-  const projects = [...new Set(administrativeExpenses.value.map(expense => expense.projectName))]
-  return projects.map(project => ({ title: project, value: project }))
+  const projects = [...new Set(expenses.value.filter(e => e.projectId).map(expense => expense.projectId))]
+  return projects.map(project => ({ title: `مشروع ${project}`, value: project }))
 })
 
 const costRangeOptions = [
@@ -627,33 +508,17 @@ const expenseTypeOptions = ref([
 ])
 
 const statusOptions = ref([
-  'جميع الحالات',
-  'معتمد',
-  'معلق',
-  'مرفوض',
-  'مسودة'
+  { title: 'جميع الحالات', value: '' },
+  { title: 'معتمد', value: 'approved' },
+  { title: 'معلق', value: 'pending' },
+  { title: 'مرفوض', value: 'rejected' }
 ])
 
-// إحصائيات المصاريف
-const totalExpenses = computed(() => administrativeExpenses.value.length)
-const activeExpenses = computed(() => {
-  const today = new Date()
-  return administrativeExpenses.value.filter(expense => {
-    const startDate = new Date(expense.startDate)
-    const endDate = new Date(expense.endDate)
-    return startDate <= today && endDate >= today
-  }).length
-})
-const pendingExpenses = computed(() => {
-  const today = new Date()
-  return administrativeExpenses.value.filter(expense => {
-    const startDate = new Date(expense.startDate)
-    return startDate > today
-  }).length
-})
-const totalCost = computed(() => {
-  return administrativeExpenses.value.reduce((sum, expense) => sum + expense.cost, 0)
-})
+// إحصائيات المصاريف - from backend API
+const totalExpenses = computed(() => expenseStats.value.total || expenses.value.length)
+const activeExpenses = computed(() => expenseStats.value.approved || 0)
+const pendingExpenses = computed(() => expenseStats.value.pending || 0)
+const totalCost = computed(() => expenseStats.value.totalAmount || 0)
 
 // دوال المصاريف الإدارية
 const searchExpenses = () => {
@@ -666,13 +531,12 @@ const openAddExpenseDialog = () => {
   isEditingExpense.value = false
   selectedExpense.value = null
   expenseForm.value = {
-    projectName: '',
-    startDate: '',
-    endDate: '',
-    cost: '',
-    workLocation: '',
-    expenseType: '',
-    status: 'معلق',
+    name: '',
+    amount: 0,
+    type: '',
+    expenseDate: new Date().toISOString().split('T')[0],
+    projectId: null,
+    status: 'pending',
     notes: ''
   }
 }
@@ -682,13 +546,12 @@ const closeExpenseDialog = () => {
   isEditingExpense.value = false
   selectedExpense.value = null
   expenseForm.value = {
-    projectName: '',
-    startDate: '',
-    endDate: '',
-    cost: '',
-    workLocation: '',
-    expenseType: '',
-    status: 'معلق',
+    name: '',
+    amount: 0,
+    type: '',
+    expenseDate: new Date().toISOString().split('T')[0],
+    projectId: null,
+    status: 'pending',
     notes: ''
   }
 }
@@ -696,8 +559,23 @@ const closeExpenseDialog = () => {
 const editExpense = (expense) => {
   selectedExpense.value = expense
   isEditingExpense.value = true
-  expenseForm.value = { ...expense }
+  expenseForm.value = {
+    name: expense.name || '',
+    amount: expense.amount || 0,
+    type: expense.type || '',
+    expenseDate: expense.expenseDate ? formatDateForInput(expense.expenseDate) : new Date().toISOString().split('T')[0],
+    projectId: expense.projectId || null,
+    status: expense.status || 'pending',
+    notes: expense.notes || ''
+  }
   expenseDialog.value = true
+}
+
+// Helper function to format date for input field
+const formatDateForInput = (dateString) => {
+  if (!dateString) return new Date().toISOString().split('T')[0]
+  const date = new Date(dateString)
+  return date.toISOString().split('T')[0]
 }
 
 // دالة تعديل المشروع
@@ -730,52 +608,83 @@ const viewProjectDetails = (project) => {
   })
 }
 
-const deleteExpense = (expense) => {
-  const index = administrativeExpenses.value.findIndex(e => e.id === expense.id)
-    if (index > -1) {
-    administrativeExpenses.value.splice(index, 1)
+const deleteExpense = async (expense) => {
+  if (confirm(`هل أنت متأكد من حذف المصروف "${expense.name}"؟`)) {
+    try {
+      await deleteExpenseApi(expense.id)
+      await loadExpenses()
+    } catch (err) {
+      console.error('Error deleting expense:', err)
+    }
   }
 }
 
 const saveExpense = async () => {
-  const { valid } = await expenseForm.value.validate()
-  if (valid) {
-    if (isEditingExpense.value) {
-      // تحديث المصروف
-      const index = administrativeExpenses.value.findIndex(e => e.id === selectedExpense.value.id)
-      if (index > -1) {
-        administrativeExpenses.value[index] = {
-          ...expenseForm.value,
-          id: selectedExpense.value.id
-        }
+  if (expenseFormValid.value) {
+    try {
+      // Convert date to ISO format for backend
+      const dateValue = expenseForm.value.expenseDate
+      const isoDate = dateValue ? new Date(dateValue).toISOString() : new Date().toISOString()
+
+      const payload = {
+        name: expenseForm.value.name,
+        amount: Number(expenseForm.value.amount),
+        expenseDate: isoDate
       }
-    } else {
-      // إضافة مصروف جديد
-      const newExpense = {
-        ...expenseForm.value,
-        id: Date.now(),
-        cost: parseFloat(expenseForm.value.cost)
+
+      // Add optional fields if provided
+      if (expenseForm.value.type) payload.type = expenseForm.value.type
+      if (expenseForm.value.projectId) payload.projectId = expenseForm.value.projectId
+      if (expenseForm.value.status) payload.status = expenseForm.value.status
+      if (expenseForm.value.notes) payload.notes = expenseForm.value.notes
+
+      if (isEditingExpense.value && selectedExpense.value) {
+        // Update existing expense
+        await updateExpense(selectedExpense.value.id, payload)
+      } else {
+        // Create new expense
+        await createExpense(payload)
       }
-      administrativeExpenses.value.push(newExpense)
+
+      await loadExpenses()
+      closeExpenseDialog()
+    } catch (err) {
+      console.error('Error saving expense:', err)
     }
-    if (expenseForm.value) {
-      expenseForm.value.reset()
-    }
-    closeExpenseDialog()
   }
 }
 
 // فلترة المصاريف
 const filteredExpenses = computed(() => {
-  let filtered = administrativeExpenses.value
+  let filtered = expenses.value
 
-  if (selectedProjectFilter.value) {
-    filtered = filtered.filter(expense => expense.projectName === selectedProjectFilter.value)
+  // Filter by search query
+  if (expenseSearchQuery.value) {
+    filtered = filtered.filter(expense =>
+      expense.name?.toLowerCase().includes(expenseSearchQuery.value.toLowerCase()) ||
+      expense.notes?.toLowerCase().includes(expenseSearchQuery.value.toLowerCase())
+    )
   }
 
+  // Filter by type
+  if (selectedExpenseType.value && selectedExpenseType.value !== 'جميع الأنواع') {
+    filtered = filtered.filter(expense => expense.type === selectedExpenseType.value)
+  }
+
+  // Filter by status
+  if (selectedStatus.value) {
+    filtered = filtered.filter(expense => expense.status === selectedStatus.value)
+  }
+
+  // Filter by project
+  if (selectedProjectFilter.value) {
+    filtered = filtered.filter(expense => expense.projectId === selectedProjectFilter.value)
+  }
+
+  // Filter by cost range
   if (selectedCostRange.value) {
     filtered = filtered.filter(expense => {
-      const cost = expense.cost
+      const cost = expense.amount
       switch (selectedCostRange.value) {
         case 'low':
           return cost < 50000
@@ -794,16 +703,21 @@ const filteredExpenses = computed(() => {
 
 // دوال مساعدة
 const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('ar-SA', {
-    style: 'currency',
-    currency: 'IQD',
-    minimumFractionDigits: 0
-  }).format(amount).replace('IQD', 'د.ع')
+  if (amount == null) return '0 IQD'
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(amount) + ' IQD'
 }
 
 const formatDate = (dateString) => {
+  if (!dateString) return '-'
   const date = new Date(dateString)
-  return date.toLocaleDateString('ar-SA')
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  })
 }
 
 // دالة الحصول على لون نوع المصروف
@@ -823,6 +737,9 @@ const getExpenseTypeColor = (type) => {
 // دالة الحصول على لون الحالة
 const getStatusColor = (status) => {
   const colors = {
+    'approved': 'success',
+    'pending': 'warning',
+    'rejected': 'error',
     'معتمد': 'success',
     'معلق': 'warning',
     'مرفوض': 'error',
@@ -833,11 +750,38 @@ const getStatusColor = (status) => {
 
 // دالة الحصول على نص الحالة
 const getStatusText = (status) => {
-  return status || 'غير محدد'
+  const texts = {
+    'approved': 'معتمد',
+    'pending': 'معلق',
+    'rejected': 'مرفوض'
+  }
+  return texts[status] || status || 'غير محدد'
+}
+
+// ============ Load Data from Backend ============
+const loadExpenses = async () => {
+  loading.value = true
+  try {
+    // Load expenses list and stats in parallel
+    const [data, stats] = await Promise.all([
+      listExpenses(),
+      getExpenseStats()
+    ])
+    console.log('Expenses data received:', data)
+    console.log('Expenses stats received:', stats)
+    expenses.value = data
+    if (stats) {
+      expenseStats.value = stats
+    }
+  } catch (err) {
+    console.error('Error loading expenses:', err)
+  } finally {
+    loading.value = false
+  }
 }
 
 onMounted(() => {
-  // تهيئة الصفحة
+  loadExpenses()
 })
 </script>
 
@@ -3983,6 +3927,107 @@ onMounted(() => {
   font-size: 0.85rem !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
   letter-spacing: 0.3px !important;
+}
+
+/* ========================================
+   Dialog Form Styles - تنسيقات نموذج الحوار
+   ======================================== */
+.clean-dialog-card {
+  background: #ffffff !important;
+  border-radius: 16px !important;
+}
+
+.clean-form-header {
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
+  color: #ffffff !important;
+  padding: 20px 24px !important;
+}
+
+.clean-form-title {
+  color: #ffffff !important;
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  margin: 0 !important;
+}
+
+.clean-form-content {
+  padding: 24px !important;
+  background: #ffffff !important;
+}
+
+.clean-form-instruction {
+  color: #666666 !important;
+  font-size: 0.9rem !important;
+  margin-bottom: 24px !important;
+  line-height: 1.6 !important;
+}
+
+.clean-form-row {
+  margin-bottom: 16px !important;
+}
+
+.clean-form-field-wrapper {
+  margin-bottom: 8px !important;
+}
+
+.clean-form-label {
+  display: block !important;
+  color: #333333 !important;
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  margin-bottom: 8px !important;
+}
+
+.required-star {
+  color: #f44336 !important;
+}
+
+.clean-form-input {
+  background: #ffffff !important;
+}
+
+.clean-form-input :deep(.v-field) {
+  background: #ffffff !important;
+  color: #333333 !important;
+}
+
+.clean-form-input :deep(.v-field__input) {
+  color: #333333 !important;
+}
+
+.clean-form-input :deep(.v-field__outline) {
+  color: #e0e0e0 !important;
+}
+
+.clean-form-input :deep(.v-field--focused .v-field__outline) {
+  color: #1976d2 !important;
+}
+
+.clean-form-input :deep(input),
+.clean-form-input :deep(textarea),
+.clean-form-input :deep(.v-select__selection-text) {
+  color: #333333 !important;
+}
+
+.clean-form-input :deep(input::placeholder),
+.clean-form-input :deep(textarea::placeholder) {
+  color: #999999 !important;
+}
+
+.clean-form-actions {
+  padding: 16px 24px !important;
+  background: #f5f5f5 !important;
+  border-top: 1px solid #e0e0e0 !important;
+}
+
+.clean-form-cancel-btn {
+  color: #666666 !important;
+  border-color: #cccccc !important;
+}
+
+.clean-form-continue-btn {
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
+  color: #ffffff !important;
 }
 </style>
 

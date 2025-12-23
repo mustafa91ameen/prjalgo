@@ -12,8 +12,6 @@ type ExpenseSummary struct {
 	Type        *string   `json:"type"`
 	ExpenseDate time.Time `json:"expenseDate"`
 	ProjectID   *int64    `json:"projectId"`
-	IsDebtor    bool      `json:"isDebtor"`
-	DebtorID    *int64    `json:"debtorId"`
 	Status      *string   `json:"status"`
 }
 
@@ -24,8 +22,6 @@ type Expense struct {
 	Type        *string   `json:"type"`
 	ExpenseDate time.Time `json:"expenseDate"`
 	ProjectID   *int64    `json:"projectId"`
-	IsDebtor    bool      `json:"isDebtor"`
-	DebtorID    *int64    `json:"debtorId"`
 	Status      *string   `json:"status"`
 	Notes       *string   `json:"notes"`
 	CreatedBy   *int64    `json:"createdBy"`
@@ -39,8 +35,6 @@ type CreateExpense struct {
 	Type        *string   `json:"type"`
 	ExpenseDate time.Time `json:"expenseDate" binding:"required"`
 	ProjectID   *int64    `json:"projectId"`
-	IsDebtor    bool      `json:"isDebtor"`
-	DebtorID    *int64    `json:"debtorId"`
 	Status      *string   `json:"status"`
 	Notes       *string   `json:"notes"`
 	CreatedBy   *int64    `json:"createdBy"`
@@ -52,8 +46,6 @@ type UpdateExpense struct {
 	Type        *string    `json:"type"`
 	ExpenseDate *time.Time `json:"expenseDate"`
 	ProjectID   *int64     `json:"projectId"`
-	IsDebtor    *bool      `json:"isDebtor"`
-	DebtorID    *int64     `json:"debtorId"`
 	Status      *string    `json:"status"`
 	Notes       *string    `json:"notes"`
 }
@@ -110,7 +102,6 @@ type ExpenseStatsResponse struct {
 	Pending       int64   `json:"pending"`
 	Approved      int64   `json:"approved"`
 	Rejected      int64   `json:"rejected"`
-	DebtorCount   int64   `json:"debtorCount"`
 	AverageAmount float64 `json:"averageAmount"`
 }
 

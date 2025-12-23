@@ -320,29 +320,30 @@
               </div>
             </v-col>
 
-            <!-- الاسم الأول -->
+            <!-- اسم المستخدم -->
             <v-col cols="12" md="6">
               <v-text-field
-                v-model="newUser.firstName"
-                label="الاسم الأول *"
-                :rules="nameRules"
+                v-model="newUser.username"
+                label="اسم المستخدم *"
+                :rules="usernameRules"
                 required
                 variant="outlined"
                 density="compact"
                 prepend-inner-icon="mdi-account"
+                hint="يستخدم لتسجيل الدخول"
               />
             </v-col>
 
-            <!-- الاسم الأخير -->
+            <!-- الاسم الكامل -->
             <v-col cols="12" md="6">
               <v-text-field
-                v-model="newUser.lastName"
-                label="الاسم الأخير *"
-                :rules="nameRules"
+                v-model="newUser.fullName"
+                label="الاسم الكامل *"
+                :rules="fullNameRules"
                 required
                 variant="outlined"
                 density="compact"
-                prepend-inner-icon="mdi-account"
+                prepend-inner-icon="mdi-account-outline"
               />
             </v-col>
 
@@ -364,7 +365,9 @@
             <v-col cols="12" md="6">
               <v-text-field
                 v-model="newUser.phone"
-                label="رقم الهاتف"
+                label="رقم الهاتف *"
+                :rules="phoneRules"
+                required
                 variant="outlined"
                 density="compact"
                 prepend-inner-icon="mdi-phone"
@@ -372,33 +375,17 @@
               />
             </v-col>
 
-            <!-- الدور -->
+            <!-- المسمى الوظيفي -->
             <v-col cols="12" md="6">
-              <v-select
-                v-model="newUser.role"
-                :items="roleOptions"
-                label="الدور *"
-                :rules="requiredRules"
+              <v-text-field
+                v-model="newUser.jobTitle"
+                label="المسمى الوظيفي *"
+                :rules="jobTitleRules"
                 required
                 variant="outlined"
                 density="compact"
-                prepend-inner-icon="mdi-account-tie"
-                class="black-dropdown-select"
-              />
-            </v-col>
-
-            <!-- القسم -->
-            <v-col cols="12" md="6">
-              <v-select
-                v-model="newUser.department"
-                :items="departmentOptions"
-                label="القسم *"
-                :rules="requiredRules"
-                required
-                variant="outlined"
-                density="compact"
-                prepend-inner-icon="mdi-office-building"
-                class="black-dropdown-select"
+                prepend-inner-icon="mdi-briefcase"
+                hint="مثال: مهندس، محاسب، مدير مشروع"
               />
             </v-col>
 
@@ -433,18 +420,6 @@
               />
             </v-col>
 
-            <!-- ملاحظات -->
-            <v-col cols="12">
-              <v-textarea
-                v-model="newUser.notes"
-                label="ملاحظات"
-                variant="outlined"
-                prepend-inner-icon="mdi-note-text"
-                rows="2"
-                auto-grow
-                density="compact"
-              />
-            </v-col>
           </v-row>
         </v-form>
       </v-card-text>
@@ -610,29 +585,40 @@
                 <v-img :src="selectedUser.avatar" />
               </v-avatar>
             </v-col>
-            
+
+            <!-- اسم المستخدم -->
             <v-col cols="12" md="6">
               <v-text-field
-                v-model="selectedUser.name"
-                label="الاسم *"
-                :rules="nameRules"
-                required
+                v-model="selectedUser.username"
+                label="اسم المستخدم"
                 variant="outlined"
                 prepend-inner-icon="mdi-account"
+                hint="يستخدم لتسجيل الدخول"
               />
             </v-col>
-            
+
+            <!-- الاسم الكامل -->
+            <v-col cols="12" md="6">
+              <v-text-field
+                v-model="selectedUser.fullName"
+                label="الاسم الكامل"
+                variant="outlined"
+                prepend-inner-icon="mdi-account-outline"
+              />
+            </v-col>
+
+            <!-- البريد الإلكتروني -->
             <v-col cols="12" md="6">
               <v-text-field
                 v-model="selectedUser.email"
-                label="البريد الإلكتروني *"
+                label="البريد الإلكتروني"
                 :rules="emailRules"
-                required
                 variant="outlined"
                 prepend-inner-icon="mdi-email"
               />
             </v-col>
-            
+
+            <!-- رقم الهاتف -->
             <v-col cols="12" md="6">
               <v-text-field
                 v-model="selectedUser.phone"
@@ -641,38 +627,23 @@
                 prepend-inner-icon="mdi-phone"
               />
             </v-col>
-            
+
+            <!-- المسمى الوظيفي -->
             <v-col cols="12" md="6">
-              <v-select
-                v-model="selectedUser.role"
-                :items="roleOptions"
-                label="الدور *"
-                :rules="requiredRules"
-                required
+              <v-text-field
+                v-model="selectedUser.jobTitle"
+                label="المسمى الوظيفي"
                 variant="outlined"
-                prepend-inner-icon="mdi-account-tie"
+                prepend-inner-icon="mdi-briefcase"
               />
             </v-col>
-            
-            <v-col cols="12" md="6">
-              <v-select
-                v-model="selectedUser.department"
-                :items="departmentOptions"
-                label="القسم *"
-                :rules="requiredRules"
-                required
-                variant="outlined"
-                prepend-inner-icon="mdi-office-building"
-              />
-            </v-col>
-            
+
+            <!-- الحالة -->
             <v-col cols="12" md="6">
               <v-select
                 v-model="selectedUser.status"
                 :items="statusOptions"
-                label="الحالة *"
-                :rules="requiredRules"
-                required
+                label="الحالة"
                 variant="outlined"
                 prepend-inner-icon="mdi-account-check"
               />
@@ -836,10 +807,11 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { listUsers, createUser, updateUser, updateUserPassword, deleteUser as deleteUserApi } from '@/api/users'
 
 // البيانات التفاعلية
-const drawer = ref(true)
+const loading = ref(false)
 const searchQuery = ref('')
 const selectedRole = ref(null)
 const selectedStatus = ref(null)
@@ -863,22 +835,6 @@ const editFormValid = ref(false)
 const editSaving = ref(false)
 const resetLoading = ref(false)
 const deleteLoading = ref(false)
-
-// قائمة القوائم الرئيسية
-const mainMenuItems = ref([
-  { title: 'الرئيسية', icon: 'mdi-view-dashboard', to: '/', active: false },
-  { title: 'المدينون', icon: 'mdi-account-group', to: '/debtors', active: false },
-  { title: 'المشاريع', icon: 'mdi-folder-multiple', to: '/projects', active: false },
-  { title: 'المهندسين', icon: 'mdi-account-hard-hat', to: '/engineers', active: false },
-  { title: 'المصاريف الإدارية', icon: 'mdi-cash-multiple', to: '/administrative-expenses', active: false },
-  { title: 'المستخدمين', icon: 'mdi-account-multiple', to: '/users', active: true }
-])
-
-// المشاريع
-const projects = ref([
-  { name: 'تخطيط الحدث', color: 'purple' },
-  { name: 'خطة الإفطار', color: 'green' }
-])
 
 // خيارات الفلاتر
 const roles = ref([
@@ -911,109 +867,24 @@ const headers = ref([
   { title: 'الإجراءات', key: 'actions', sortable: false }
 ])
 
-// بيانات المستخدمين
-const users = ref([
-  {
-    id: 1,
-    name: 'أحمد محمد العلي',
-    email: 'ahmed@example.com',
-    phone: '+966501234567',
-    role: 'admin',
-    department: 'تقنية المعلومات',
-    status: 'active',
-    lastLogin: '2024-01-25T10:30:00',
-    avatar: 'https://randomuser.me/api/portraits/men/1.jpg'
-  },
-  {
-    id: 2,
-    name: 'فاطمة السعد',
-    email: 'fatima@example.com',
-    phone: '+966507654321',
-    role: 'project_manager',
-    department: 'المشاريع',
-    status: 'active',
-    lastLogin: '2024-01-25T09:15:00',
-    avatar: 'https://randomuser.me/api/portraits/women/1.jpg'
-  },
-  {
-    id: 3,
-    name: 'محمد عبدالله',
-    email: 'mohammed@example.com',
-    phone: '+966509876543',
-    role: 'engineer',
-    department: 'تقنية المعلومات',
-    status: 'inactive',
-    lastLogin: '2024-01-20T14:45:00',
-    avatar: 'https://randomuser.me/api/portraits/men/2.jpg'
-  },
-  {
-    id: 4,
-    name: 'نورا أحمد',
-    email: 'nora@example.com',
-    phone: '+966501112233',
-    role: 'accountant',
-    department: 'المحاسبة',
-    status: 'active',
-    lastLogin: '2024-01-25T11:20:00',
-    avatar: 'https://randomuser.me/api/portraits/women/2.jpg'
-  },
-  {
-    id: 5,
-    name: 'خالد السالم',
-    email: 'khalid@example.com',
-    phone: '+966504445566',
-    role: 'admin',
-    department: 'الإدارة',
-    status: 'active',
-    lastLogin: '2024-01-25T08:30:00',
-    avatar: 'https://randomuser.me/api/portraits/men/3.jpg'
-  },
-  {
-    id: 6,
-    name: 'سارة محمد',
-    email: 'sara@example.com',
-    phone: '+966505556677',
-    role: 'employee',
-    department: 'الموارد البشرية',
-    status: 'pending',
-    lastLogin: null,
-    avatar: 'https://randomuser.me/api/portraits/women/3.jpg'
-  },
-  {
-    id: 7,
-    name: 'عبدالرحمن علي',
-    email: 'abdulrahman@example.com',
-    phone: '+966506667788',
-    role: 'engineer',
-    department: 'الصيانة',
-    status: 'active',
-    lastLogin: '2024-01-24T16:10:00',
-    avatar: 'https://randomuser.me/api/portraits/men/4.jpg'
-  },
-  {
-    id: 8,
-    name: 'مريم حسن',
-    email: 'mariam@example.com',
-    phone: '+966507778899',
-    role: 'reviewer',
-    department: 'التسويق',
-    status: 'active',
-    lastLogin: '2024-01-25T12:45:00',
-    avatar: 'https://randomuser.me/api/portraits/women/4.jpg'
-  }
-])
+// بيانات المستخدمين - يتم تحميلها من الـ API
+const users = ref([])
+const pagination = ref({
+  total: 0,
+  page: 1,
+  limit: 20,
+  totalPages: 0
+})
 
-// بيانات المستخدم الجديد
+// بيانات المستخدم الجديد (متوافق مع Backend CreateUser DTO)
 const newUser = ref({
-  firstName: '',
-  lastName: '',
+  username: '',
+  fullName: '',
   email: '',
   phone: '',
-  role: '',
-  department: '',
+  jobTitle: '',
   status: 'active',
   password: '',
-  notes: '',
   avatar: ''
 })
 
@@ -1039,30 +910,43 @@ const departmentOptions = [
   { title: 'تكنولوجيا المعلومات', value: 'تكنولوجيا المعلومات' }
 ]
 
+// خيارات الحالة (متوافقة مع Backend - active أو inactive فقط)
 const statusOptions = [
   { title: 'نشط', value: 'active' },
-  { title: 'غير نشط', value: 'inactive' },
-  { title: 'معلق', value: 'pending' },
-  { title: 'محظور', value: 'banned' }
+  { title: 'غير نشط', value: 'inactive' }
 ]
 
-// قواعد التحقق من صحة البيانات
-const nameRules = [
-  v => !!v || 'الاسم مطلوب',
+// قواعد التحقق من صحة البيانات (متوافقة مع Backend validations)
+const usernameRules = [
+  v => !!v || 'اسم المستخدم مطلوب',
+  v => (v && v.length >= 3) || 'اسم المستخدم يجب أن يكون على الأقل 3 أحرف',
+  v => (v && v.length <= 50) || 'اسم المستخدم يجب أن يكون أقل من 50 حرف',
+  v => /^[a-zA-Z0-9_]+$/.test(v) || 'اسم المستخدم يجب أن يحتوي على حروف وأرقام و _ فقط'
+]
+
+const fullNameRules = [
+  v => !!v || 'الاسم الكامل مطلوب',
   v => (v && v.length >= 2) || 'الاسم يجب أن يكون على الأقل حرفين',
-  v => (v && v.length <= 50) || 'الاسم يجب أن يكون أقل من 50 حرف'
+  v => (v && v.length <= 100) || 'الاسم يجب أن يكون أقل من 100 حرف'
 ]
 
 const emailRules = [
   v => !!v || 'البريد الإلكتروني مطلوب',
-  v => /.+@.+\..+/.test(v) || 'البريد الإلكتروني غير صحيح',
-  v => !users.value.some(user => user.email === v) || 'البريد الإلكتروني مستخدم بالفعل'
+  v => /.+@.+\..+/.test(v) || 'البريد الإلكتروني غير صحيح'
+]
+
+const phoneRules = [
+  v => !!v || 'رقم الهاتف مطلوب',
+  v => (v && v.length >= 7) || 'رقم الهاتف غير صحيح'
+]
+
+const jobTitleRules = [
+  v => !!v || 'المسمى الوظيفي مطلوب'
 ]
 
 const passwordRules = [
   v => !!v || 'كلمة المرور مطلوبة',
-  v => (v && v.length >= 6) || 'كلمة المرور يجب أن تكون على الأقل 6 أحرف',
-  v => (v && v.length <= 20) || 'كلمة المرور يجب أن تكون أقل من 20 حرف'
+  v => (v && v.length >= 8) || 'كلمة المرور يجب أن تكون على الأقل 8 أحرف'
 ]
 
 const requiredRules = [
@@ -1102,10 +986,10 @@ const filteredUsers = computed(() => {
 // الدوال المساعدة
 const formatDate = (date) => {
   if (!date) return 'لم يسجل دخول'
-  return new Date(date).toLocaleDateString('ar-SA', {
+  return new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
-    month: 'short',
-    day: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
     hour: '2-digit',
     minute: '2-digit'
   })
@@ -1195,15 +1079,13 @@ const closeAddUserDialog = () => {
 
 const resetForm = () => {
   newUser.value = {
-    firstName: '',
-    lastName: '',
+    username: '',
+    fullName: '',
     email: '',
     phone: '',
-    role: '',
-    department: '',
+    jobTitle: '',
     status: 'active',
     password: '',
-    notes: '',
     avatar: ''
   }
   if (addUserForm.value) {
@@ -1221,32 +1103,26 @@ const saveNewUser = async () => {
   saving.value = true
 
   try {
-    // محاكاة عملية الحفظ
-    await new Promise(resolve => setTimeout(resolve, 1500))
-
-    // إنشاء المستخدم الجديد
-    const user = {
-      id: users.value.length + 1,
-      name: `${newUser.value.firstName} ${newUser.value.lastName}`,
+    // إنشاء payload للـ API (متوافق مع Backend CreateUser DTO)
+    const userData = {
+      username: newUser.value.username,
       email: newUser.value.email,
-      phone: newUser.value.phone || 'غير محدد',
-      role: newUser.value.role,
-      department: newUser.value.department,
-      status: newUser.value.status,
-      lastLogin: null,
-      avatar: newUser.value.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(newUser.value.firstName + '+' + newUser.value.lastName)}&background=667eea&color=fff&size=128`,
-      notes: newUser.value.notes,
-      createdAt: new Date().toISOString()
+      password: newUser.value.password,
+      fullName: newUser.value.fullName,
+      phone: newUser.value.phone,
+      jobTitle: newUser.value.jobTitle
     }
 
-    // إضافة المستخدم إلى القائمة
-    users.value.unshift(user)
+    // إرسال البيانات إلى الـ API
+    await createUser(userData)
+
+    // إعادة تحميل البيانات من الـ API
+    await loadUsers()
 
     // إغلاق النافذة وإعادة تعيين النموذج
     closeAddUserDialog()
 
-    // عرض رسالة نجاح (يمكن استخدام مكتبة toast)
-    console.log('تم إضافة المستخدم بنجاح:', user)
+    console.log('تم إضافة المستخدم بنجاح')
 
   } catch (error) {
     console.error('خطأ في إضافة المستخدم:', error)
@@ -1275,14 +1151,22 @@ const saveEditUser = async () => {
   editSaving.value = true
 
   try {
-    // محاكاة عملية الحفظ
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
-    // العثور على المستخدم وتحديثه
-    const index = users.value.findIndex(u => u.id === selectedUser.value.id)
-    if (index !== -1) {
-      users.value[index] = { ...selectedUser.value }
+    // إنشاء payload للتحديث (متوافق مع Backend UpdateUser DTO)
+    // جميع الحقول اختيارية في التحديث
+    const userData = {
+      username: selectedUser.value.username || undefined,
+      email: selectedUser.value.email || undefined,
+      fullName: selectedUser.value.fullName || undefined,
+      phone: selectedUser.value.phone || undefined,
+      jobTitle: selectedUser.value.jobTitle || undefined,
+      status: selectedUser.value.status || undefined
     }
+
+    // إرسال التحديث إلى الـ API
+    await updateUser(selectedUser.value.id, userData)
+
+    // إعادة تحميل البيانات
+    await loadUsers()
 
     closeEditUserDialog()
     console.log('تم تحديث المستخدم بنجاح')
@@ -1303,8 +1187,11 @@ const confirmResetPassword = async () => {
   resetLoading.value = true
 
   try {
-    // محاكاة عملية إعادة تعيين كلمة المرور
-    await new Promise(resolve => setTimeout(resolve, 1500))
+    // Generate a random password (in production, you might want to use a more secure method)
+    const newPassword = Math.random().toString(36).slice(-10) + 'A1!'
+
+    // إرسال كلمة المرور الجديدة إلى الـ API
+    await updateUserPassword(selectedUser.value.id, newPassword)
 
     closeResetPasswordDialog()
     console.log('تم إعادة تعيين كلمة المرور بنجاح')
@@ -1325,14 +1212,11 @@ const confirmDeleteUser = async () => {
   deleteLoading.value = true
 
   try {
-    // محاكاة عملية الحذف
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    // حذف المستخدم من الـ API
+    await deleteUserApi(selectedUser.value.id)
 
-    // حذف المستخدم من القائمة
-    const index = users.value.findIndex(u => u.id === selectedUser.value.id)
-    if (index !== -1) {
-      users.value.splice(index, 1)
-    }
+    // إعادة تحميل البيانات
+    await loadUsers()
 
     closeDeleteConfirmDialog()
     console.log('تم حذف المستخدم بنجاح')
@@ -1343,6 +1227,70 @@ const confirmDeleteUser = async () => {
     deleteLoading.value = false
   }
 }
+
+// ========================================
+// دالة تحميل البيانات من الـ API
+// ========================================
+const loadUsers = async () => {
+  loading.value = true
+  try {
+    const response = await listUsers({ page: pagination.value.page, limit: pagination.value.limit })
+    console.log('Users data received:', response)
+
+    // Map backend data to frontend format
+    const mapUser = (user) => ({
+      id: user.id,
+      // Backend fields (للتعديل)
+      username: user.userName || user.username || '',
+      fullName: user.fullName || '',
+      email: user.email || '',
+      phone: user.phone || '',
+      jobTitle: user.jobTitle || '',
+      status: user.status || 'active',
+      lastLogin: user.lastLogin,
+      createdAt: user.createdAt,
+      // Display fields (للعرض في الجدول)
+      name: user.fullName || '',
+      role: mapJobTitleToRole(user.jobTitle),
+      avatar: user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.fullName || 'User')}&background=667eea&color=fff&size=128`
+    })
+
+    if (response.data) {
+      users.value = response.data.map(mapUser)
+      pagination.value = {
+        total: response.total || 0,
+        page: response.page || 1,
+        limit: response.limit || 20,
+        totalPages: response.totalPages || 0
+      }
+    } else if (Array.isArray(response)) {
+      users.value = response.map(mapUser)
+    }
+  } catch (error) {
+    console.error('Error loading users:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+// Helper function to map job title to role
+const mapJobTitleToRole = (jobTitle) => {
+  if (!jobTitle) return 'user'
+  const title = jobTitle.toLowerCase()
+  if (title.includes('admin') || title.includes('مدير')) return 'admin'
+  if (title.includes('manager') || title.includes('مشروع')) return 'project_manager'
+  if (title.includes('engineer') || title.includes('مهندس')) return 'engineer'
+  if (title.includes('accountant') || title.includes('محاسب')) return 'accountant'
+  if (title.includes('reviewer') || title.includes('مراجع')) return 'reviewer'
+  return 'employee'
+}
+
+// ========================================
+// دورة الحياة
+// ========================================
+onMounted(() => {
+  loadUsers()
+})
 </script>
 
 <style scoped>

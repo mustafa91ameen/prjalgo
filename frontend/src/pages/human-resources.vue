@@ -1897,18 +1897,18 @@ const filteredEmployees = computed(() => {
 // Methods
 // ========================================
 const formatCurrency = (amount) => {
-  if (!amount) return '0 د.ع'
-  const formatted = new Intl.NumberFormat('ar-IQ', {
+  if (!amount) return '0 IQD'
+  const formatted = new Intl.NumberFormat('en-US', {
     style: 'decimal',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   }).format(amount)
-  return formatted + ' د.ع'
+  return formatted + ' IQD'
 }
 
 const formatNumber = (number) => {
   if (!number) return '0'
-  return new Intl.NumberFormat('ar-IQ', {
+  return new Intl.NumberFormat('en-US', {
     style: 'decimal',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0

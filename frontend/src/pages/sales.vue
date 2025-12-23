@@ -616,11 +616,11 @@ const saveSale = () => {
 
 // دوال مساعدة
 const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('ar-SA', {
-    style: 'currency',
-    currency: 'IQD',
-    minimumFractionDigits: 0
-  }).format(amount).replace('IQD', 'د.ع')
+  if (amount == null) return '0 IQD'
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(amount) + ' IQD'
 }
 
 const getStatusText = (status) => {

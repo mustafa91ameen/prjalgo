@@ -7,16 +7,12 @@
 // Composables
 import { createRouter, createWebHistory } from 'vue-router/auto'
 import { routes } from 'vue-router/auto-routes'
+import { isAuthenticated } from '@/services/authService'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 })
-
-// دالة للتحقق من تسجيل الدخول
-function isAuthenticated() {
-  return localStorage.getItem('isAuthenticated') === 'true'
-}
 
 // Navigation Guard - حماية الصفحات
 router.beforeEach((to, from, next) => {

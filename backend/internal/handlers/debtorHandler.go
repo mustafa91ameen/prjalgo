@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/auth"
 	"github.com/mustafa91ameen/prjalgo/backend/internal/dtos"
 	"github.com/mustafa91ameen/prjalgo/backend/internal/response"
 	"github.com/mustafa91ameen/prjalgo/backend/internal/services"
@@ -67,11 +68,16 @@ func (h *DebtorHandler) Create(c *gin.Context) {
 		return
 	}
 
+	req.CreatedBy = auth.GetUserIDPtrFromContext(c.Request.Context())
+
 	debtor, err := h.debtorService.Create(c.Request.Context(), req)
 	if err != nil {
 		response.InternalError(c, "failed to create debtor")
 		return
 	}
+
+	// Set target ID in context for audit middleware
+	c.Set(auth.TargetIDKey, debtor.ID)
 
 	response.Created(c, debtor)
 }

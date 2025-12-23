@@ -190,8 +190,6 @@ CREATE TABLE expenses (
     type VARCHAR(255),
     expenseDate DATE NOT NULL,
     projectId INTEGER REFERENCES projects(id) ON DELETE SET NULL,
-    isDebtor BOOLEAN DEFAULT FALSE,
-    debtorId INTEGER DEFAULT NULL REFERENCES debtors(id) ON DELETE SET NULL,
     status VARCHAR(50) DEFAULT 'pending',
     notes TEXT,
     createdBy INTEGER REFERENCES users(id) ON DELETE SET NULL,
@@ -227,7 +225,6 @@ CREATE INDEX idx_workDayMaterials_workDayId ON workDayMaterials(workDayId);
 CREATE INDEX idx_workDayLabor_workDayId ON workDayLabor(workDayId);
 CREATE INDEX idx_workDayEquipment_workDayId ON workDayEquipment(workDayId);
 CREATE INDEX idx_expenses_projectId ON expenses(projectId);
-CREATE INDEX idx_expenses_debtorId ON expenses(debtorId);
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_username ON users(username);
 CREATE INDEX idx_projects_status ON projects(status);

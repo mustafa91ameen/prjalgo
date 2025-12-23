@@ -245,27 +245,56 @@
             </p>
 
             <v-form ref="form" v-model="formValid">
-              <!-- الصف الأول: اسم المهندس، البريد الإلكتروني، الهاتف -->
+              <!-- الصف الأول: اسم المستخدم، الاسم الكامل -->
               <v-row class="profile-form-row">
-                <v-col cols="12" md="4" class="profile-form-column">
+                <v-col cols="12" md="6" class="profile-form-column">
                   <div class="profile-form-field-wrapper">
                     <label class="profile-form-label">
-                      اسم المهندس <span class="required-star">*</span>
+                      اسم المستخدم <span class="required-star">*</span>
                     </label>
                     <v-text-field
-                      v-model="engineerForm.name"
-                      variant="outlined"
+                      v-model="engineerForm.username"
+                      variant="solo-filled"
+                      flat
                       density="comfortable"
-                      :rules="[v => !!v || 'اسم المهندس مطلوب']"
+                      :rules="[
+                        v => !!v || 'اسم المستخدم مطلوب',
+                        v => (v && v.length >= 3) || 'اسم المستخدم يجب أن يكون 3 أحرف على الأقل',
+                        v => /^[a-zA-Z0-9_]+$/.test(v) || 'اسم المستخدم يجب أن يحتوي على حروف وأرقام و _ فقط'
+                      ]"
                       required
                       prepend-inner-icon="mdi-account"
                       hide-details="auto"
                       class="profile-form-input"
+                      placeholder="اسم المستخدم لتسجيل الدخول"
                     />
                   </div>
                 </v-col>
 
-                <v-col cols="12" md="4" class="profile-form-column">
+                <v-col cols="12" md="6" class="profile-form-column">
+                  <div class="profile-form-field-wrapper">
+                    <label class="profile-form-label">
+                      الاسم الكامل <span class="required-star">*</span>
+                    </label>
+                    <v-text-field
+                      v-model="engineerForm.fullName"
+                      variant="solo-filled"
+                      flat
+                      density="comfortable"
+                      :rules="[v => !!v || 'الاسم الكامل مطلوب']"
+                      required
+                      prepend-inner-icon="mdi-account-outline"
+                      hide-details="auto"
+                      class="profile-form-input"
+                      placeholder="الاسم الكامل للمهندس"
+                    />
+                  </div>
+                </v-col>
+              </v-row>
+
+              <!-- الصف الثاني: البريد الإلكتروني، رقم الهاتف -->
+              <v-row class="profile-form-row">
+                <v-col cols="12" md="6" class="profile-form-column">
                   <div class="profile-form-field-wrapper">
                     <label class="profile-form-label">
                       البريد الإلكتروني <span class="required-star">*</span>
@@ -273,77 +302,46 @@
                     <v-text-field
                       v-model="engineerForm.email"
                       type="email"
-                      variant="outlined"
+                      variant="solo-filled"
+                      flat
                       density="comfortable"
                       :rules="[
                         v => !!v || 'البريد الإلكتروني مطلوب',
-                        v => /.+@.+\\..+/.test(v) || 'البريد الإلكتروني غير صحيح'
+                        v => /.+@.+\..+/.test(v) || 'البريد الإلكتروني غير صحيح'
                       ]"
                       required
                       prepend-inner-icon="mdi-email"
                       hide-details="auto"
                       class="profile-form-input"
+                      placeholder="example@domain.com"
                     />
                   </div>
                 </v-col>
 
-                <v-col cols="12" md="4" class="profile-form-column">
+                <v-col cols="12" md="6" class="profile-form-column">
                   <div class="profile-form-field-wrapper">
                     <label class="profile-form-label">
-                      رقم الهاتف
+                      رقم الهاتف <span class="required-star">*</span>
                     </label>
                     <v-text-field
                       v-model="engineerForm.phone"
-                      variant="outlined"
+                      variant="solo-filled"
+                      flat
                       density="comfortable"
-                      placeholder="07XX XXX XXXX"
+                      :rules="[v => !!v || 'رقم الهاتف مطلوب']"
+                      required
                       prepend-inner-icon="mdi-phone"
                       hide-details="auto"
                       class="profile-form-input"
+                      placeholder="07XX XXX XXXX"
                     />
                   </div>
                 </v-col>
               </v-row>
 
-              <!-- الصف الثاني: التخصص، الحالة، كلمة المرور -->
+              <!-- الصف الثالث: كلمة المرور -->
               <v-row class="profile-form-row">
-                <v-col cols="12" md="4" class="profile-form-column">
-                  <div class="profile-form-field-wrapper">
-                    <label class="profile-form-label">
-                      التخصص <span class="required-star">*</span>
-                    </label>
-                    <v-text-field
-                      v-model="engineerForm.specialization"
-                      variant="outlined"
-                      density="comfortable"
-                      :rules="[v => !!v || 'التخصص مطلوب']"
-                      required
-                      prepend-inner-icon="mdi-briefcase"
-                      hide-details="auto"
-                      class="profile-form-input"
-                    />
-                  </div>
-                </v-col>
-
-                <v-col cols="12" md="4" class="profile-form-column">
-                  <div class="profile-form-field-wrapper">
-                    <label class="profile-form-label">
-                      حالة الحساب
-                    </label>
-                    <v-select
-                      v-model="engineerForm.status"
-                      :items="statusOptions"
-                      item-title="title"
-                      item-value="value"
-                      variant="outlined"
-                      density="comfortable"
-                      hide-details="auto"
-                      class="profile-form-input"
-                    />
-                  </div>
-                </v-col>
-
-                <v-col cols="12" md="4" class="profile-form-column">
+                <v-col cols="12" md="6" class="profile-form-column">
                   <div class="profile-form-field-wrapper">
                     <label class="profile-form-label">
                       كلمة المرور <span class="required-star" v-if="!isEditing">*</span>
@@ -351,36 +349,19 @@
                     <v-text-field
                       v-model="engineerForm.password"
                       :type="showPassword ? 'text' : 'password'"
-                      variant="outlined"
+                      variant="solo-filled"
+                      flat
                       density="comfortable"
                       :rules="[
-                        v => isEditing || !!v || 'كلمة المرور مطلوبة'
+                        v => isEditing || !!v || 'كلمة المرور مطلوبة',
+                        v => isEditing || (v && v.length >= 8) || 'كلمة المرور يجب أن تكون 8 أحرف على الأقل'
                       ]"
                       prepend-inner-icon="mdi-lock"
                       :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                       @click:append-inner="showPassword = !showPassword"
                       hide-details="auto"
                       class="profile-form-input"
-                    />
-                  </div>
-                </v-col>
-              </v-row>
-
-              <!-- الصف الثالث: الخبرة -->
-              <v-row class="profile-form-row">
-                <v-col cols="12" class="profile-form-column">
-                  <div class="profile-form-field-wrapper">
-                    <label class="profile-form-label">
-                      الخبرة
-                    </label>
-                    <v-textarea
-                      v-model="engineerForm.experience"
-                      variant="outlined"
-                      rows="3"
-                      density="comfortable"
-                      placeholder="سنوات الخبرة أو نبذة عن المهندس"
-                      hide-details="auto"
-                      class="profile-form-input"
+                      placeholder="كلمة المرور (8 أحرف على الأقل)"
                     />
                   </div>
                 </v-col>
@@ -394,13 +375,15 @@
               class="profile-form-cancel-btn"
               variant="outlined"
               @click="closeDialog"
+              :disabled="saving"
             >
               إلغاء
             </v-btn>
             <v-btn
               class="profile-form-continue-btn"
               variant="elevated"
-              :disabled="!formValid"
+              :disabled="!formValid || saving"
+              :loading="saving"
               @click="saveEngineer"
             >
               {{ isEditing ? 'تحديث' : 'حفظ' }}
@@ -670,46 +653,11 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { listUsers, createUser, updateUser, deleteUser as deleteUserApi } from '@/api/users'
 
-// Reactive data
-const engineers = ref([
-  {
-    id: 1,
-    name: 'أحمد محمد',
-    email: 'ahmed@example.com',
-    phone: '0501234567',
-    specialization: 'مهندس برمجيات',
-    rating: 4.5,
-    status: 'active',
-    skills: ['JavaScript', 'Vue.js', 'Node.js', 'Python'],
-    experience: '5 سنوات خبرة في تطوير التطبيقات',
-    avatar: null
-  },
-  {
-    id: 2,
-    name: 'فاطمة علي',
-    email: 'fatima@example.com',
-    phone: '0507654321',
-    specialization: 'مهندسة معمارية',
-    rating: 4.8,
-    status: 'active',
-    skills: ['AutoCAD', 'Revit', 'SketchUp', 'Photoshop'],
-    experience: '7 سنوات خبرة في التصميم المعماري',
-    avatar: null
-  },
-  {
-    id: 3,
-    name: 'محمد السعيد',
-    email: 'mohamed@example.com',
-    phone: '0509876543',
-    specialization: 'مهندس كهربائي',
-    rating: 4.2,
-    status: 'inactive',
-    skills: ['PLC', 'Automation', 'Electrical Design'],
-    experience: '3 سنوات خبرة في الهندسة الكهربائية',
-    avatar: null
-  }
-])
+// Reactive data - يتم تحميل البيانات من API المستخدمين
+const engineers = ref([])
+const loading = ref(false)
 
 const searchQuery = ref('')
 const dialog = ref(false)
@@ -717,6 +665,7 @@ const deleteDialog = ref(false)
 const detailsDialog = ref(false)
 const isEditing = ref(false)
 const formValid = ref(false)
+const form = ref(null)
 const selectedEngineer = ref(null)
 const showPassword = ref(false)
 const projectsDialog = ref(false)
@@ -730,17 +679,16 @@ const availableProjects = ref([
 ])
 const selectedProject = ref(null)
 
+// نموذج المهندس (متوافق مع Backend CreateUser DTO)
+// المسمى الوظيفي يتم تعيينه تلقائياً كـ "مهندس"
 const engineerForm = ref({
-  name: '',
+  username: '',
+  fullName: '',
   email: '',
   phone: '',
-  specialization: '',
-  rating: 0,
-  status: 'active',
-  skills: [],
-  experience: '',
   password: ''
 })
+const saving = ref(false)
 
 const statusOptions = [
   { title: 'نشط', value: 'active' },
@@ -771,11 +719,15 @@ const activeEngineers = computed(() => {
 })
 
 const totalProjects = computed(() => {
-  return engineers.value.reduce((total, engineer) => total + Math.floor(Math.random() * 5) + 1, 0)
+  // عدد المشاريع المرتبطة بالمهندسين
+  return engineers.value.reduce((total, engineer) => {
+    return total + (engineer.projects?.length || 0)
+  }, 0)
 })
 
 const averageRating = computed(() => {
-  const total = engineers.value.reduce((sum, engineer) => sum + engineer.rating, 0)
+  if (engineers.value.length === 0) return '0.0'
+  const total = engineers.value.reduce((sum, engineer) => sum + (engineer.rating || 0), 0)
   return (total / engineers.value.length).toFixed(1)
 })
 
@@ -783,7 +735,10 @@ const averageRating = computed(() => {
 const openAddEngineerDialog = () => {
   isEditing.value = false
   engineerForm.value = {
-    name: '',
+    username: '',
+    fullName: '',
+    email: '',
+    phone: '',
     password: ''
   }
   dialog.value = true
@@ -797,7 +752,13 @@ const viewEngineer = (engineer) => {
 
 const editEngineer = (engineer) => {
   isEditing.value = true
-  engineerForm.value = { ...engineer }
+  engineerForm.value = {
+    username: engineer.username || '',
+    fullName: engineer.fullName || engineer.name || '',
+    email: engineer.email || '',
+    phone: engineer.phone || '',
+    password: ''
+  }
   selectedEngineer.value = engineer
   dialog.value = true
 }
@@ -807,33 +768,42 @@ const deleteEngineer = (engineer) => {
   deleteDialog.value = true
 }
 
-const saveEngineer = () => {
-  if (isEditing.value) {
-    const index = engineers.value.findIndex(e => e.id === selectedEngineer.value.id)
-    if (index !== -1) {
-      engineers.value[index] = { 
-        ...engineers.value[index],
-        name: engineerForm.value.name,
-        password: engineerForm.value.password
+const saveEngineer = async () => {
+  if (!form.value.validate()) return
+
+  saving.value = true
+  try {
+    if (isEditing.value) {
+      // تحديث المهندس
+      const userData = {
+        username: engineerForm.value.username || undefined,
+        fullName: engineerForm.value.fullName || undefined,
+        email: engineerForm.value.email || undefined,
+        phone: engineerForm.value.phone || undefined
       }
+      await updateUser(selectedEngineer.value.id, userData)
+    } else {
+      // إضافة مهندس جديد - المسمى الوظيفي "مهندس" تلقائياً
+      const userData = {
+        username: engineerForm.value.username,
+        fullName: engineerForm.value.fullName,
+        email: engineerForm.value.email,
+        phone: engineerForm.value.phone,
+        password: engineerForm.value.password,
+        jobTitle: 'مهندس'  // يتم تعيينه تلقائياً
+      }
+      await createUser(userData)
     }
-  } else {
-    const newEngineer = {
-      id: Date.now(),
-      name: engineerForm.value.name,
-      email: `${engineerForm.value.name.toLowerCase().replace(/\s+/g, '')}@example.com`,
-      phone: '0500000000',
-      specialization: 'مهندس',
-      rating: 0,
-      status: 'active',
-      skills: [],
-      experience: 'خبرة جديدة',
-      avatar: null,
-      password: engineerForm.value.password
-    }
-    engineers.value.push(newEngineer)
+
+    // إعادة تحميل البيانات
+    await loadEngineers()
+    closeDialog()
+    console.log('تم حفظ المهندس بنجاح')
+  } catch (error) {
+    console.error('خطأ في حفظ المهندس:', error)
+  } finally {
+    saving.value = false
   }
-  closeDialog()
 }
 
 const closeDialog = () => {
@@ -841,16 +811,22 @@ const closeDialog = () => {
   isEditing.value = false
   selectedEngineer.value = null
   engineerForm.value = {
-    name: '',
+    username: '',
+    fullName: '',
+    email: '',
+    phone: '',
     password: ''
   }
 }
 
-const confirmDelete = () => {
+const confirmDelete = async () => {
   if (selectedEngineer.value) {
-    const index = engineers.value.findIndex(e => e.id === selectedEngineer.value.id)
-    if (index !== -1) {
-      engineers.value.splice(index, 1)
+    try {
+      await deleteUserApi(selectedEngineer.value.id)
+      await loadEngineers()
+      console.log('تم حذف المهندس بنجاح')
+    } catch (error) {
+      console.error('خطأ في حذف المهندس:', error)
     }
   }
   deleteDialog.value = false
@@ -889,9 +865,60 @@ const removeProjectFromEngineer = (projectId) => {
   }
 }
 
+// ========================================
+// دالة تحميل المهندسين من API المستخدمين
+// ========================================
+
+// دالة للتحقق إذا كان المستخدم مهندس بناءً على المسمى الوظيفي
+const isEngineer = (jobTitle) => {
+  if (!jobTitle) return false
+  const title = jobTitle.toLowerCase()
+  // التحقق من الكلمات المفتاحية للمهندسين بالعربية والإنجليزية
+  const engineerKeywords = [
+    'engineer', 'مهندس', 'مهندسة', 'هندسة',
+    'engineering', 'eng.', 'eng '
+  ]
+  return engineerKeywords.some(keyword => title.includes(keyword))
+}
+
+const loadEngineers = async () => {
+  loading.value = true
+  try {
+    const response = await listUsers({ limit: 100 })
+    console.log('Users data received for engineers:', response)
+
+    if (response.data) {
+      // فلترة المستخدمين الذين هم مهندسين فقط بناءً على المسمى الوظيفي
+      const engineerUsers = response.data.filter(user => isEngineer(user.jobTitle))
+
+      // تحويل بيانات المستخدمين إلى تنسيق المهندسين
+      engineers.value = engineerUsers.map(user => ({
+        id: user.id,
+        name: user.fullName || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        specialization: user.jobTitle || 'مهندس',
+        rating: 0,
+        status: user.status || 'active',
+        skills: [],
+        experience: '',
+        avatar: user.avatar || null,
+        // حفظ البيانات الأصلية للتعديل
+        username: user.userName || user.username || '',
+        fullName: user.fullName || '',
+        jobTitle: user.jobTitle || ''
+      }))
+    }
+  } catch (error) {
+    console.error('Error loading engineers:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
 // Lifecycle
 onMounted(() => {
-  // Initialize data if needed
+  loadEngineers()
 })
 </script>
 

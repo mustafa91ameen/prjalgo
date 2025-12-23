@@ -26,7 +26,6 @@ type ExpenseStatsResult struct {
 	Pending       int64   `json:"pending"`
 	Approved      int64   `json:"approved"`
 	Rejected      int64   `json:"rejected"`
-	DebtorCount   int64   `json:"debtorCount"`
 	AverageAmount float64 `json:"averageAmount"`
 }
 
@@ -47,7 +46,7 @@ func (r *ExpenseRepository) GetAll(ctx context.Context, limit, offset int) ([]mo
 	}
 
 	query := `
-		SELECT id, name, amount, type, expenseDate, projectId, isDebtor, debtorId, status
+		SELECT id, name, amount, type, expenseDate, projectId, status
 		FROM expenses
 		ORDER BY createdAt DESC
 		LIMIT $1 OFFSET $2
@@ -64,7 +63,7 @@ func (r *ExpenseRepository) GetAll(ctx context.Context, limit, offset int) ([]mo
 		var e models.Expense
 		err := rows.Scan(
 			&e.ID, &e.Name, &e.Amount, &e.Type, &e.ExpenseDate,
-			&e.ProjectID, &e.IsDebtor, &e.DebtorID, &e.Status,
+			&e.ProjectID, &e.Status,
 		)
 		if err != nil {
 			return nil, 0, err
@@ -77,7 +76,7 @@ func (r *ExpenseRepository) GetAll(ctx context.Context, limit, offset int) ([]mo
 
 func (r *ExpenseRepository) GetByID(ctx context.Context, id int64) (*models.Expense, error) {
 	query := `
-		SELECT id, name, amount, type, expenseDate, projectId, isDebtor, debtorId, status, notes, createdBy, createdAt
+		SELECT id, name, amount, type, expenseDate, projectId, status, notes, createdBy, createdAt
 		FROM expenses
 		WHERE id = $1
 	`
@@ -85,7 +84,7 @@ func (r *ExpenseRepository) GetByID(ctx context.Context, id int64) (*models.Expe
 	var e models.Expense
 	err := r.db.QueryRow(ctx, query, id).Scan(
 		&e.ID, &e.Name, &e.Amount, &e.Type, &e.ExpenseDate, &e.ProjectID,
-		&e.IsDebtor, &e.DebtorID, &e.Status, &e.Notes, &e.CreatedBy, &e.CreatedAt,
+		&e.Status, &e.Notes, &e.CreatedBy, &e.CreatedAt,
 	)
 
 	if err != nil {
@@ -97,7 +96,7 @@ func (r *ExpenseRepository) GetByID(ctx context.Context, id int64) (*models.Expe
 
 func (r *ExpenseRepository) GetByProjectID(ctx context.Context, projectID int64) ([]models.Expense, error) {
 	query := `
-		SELECT id, name, amount, type, expenseDate, projectId, isDebtor, debtorId, status
+		SELECT id, name, amount, type, expenseDate, projectId, status
 		FROM expenses
 		WHERE projectId = $1
 		ORDER BY expenseDate DESC
@@ -114,7 +113,7 @@ func (r *ExpenseRepository) GetByProjectID(ctx context.Context, projectID int64)
 		var e models.Expense
 		err := rows.Scan(
 			&e.ID, &e.Name, &e.Amount, &e.Type, &e.ExpenseDate,
-			&e.ProjectID, &e.IsDebtor, &e.DebtorID, &e.Status,
+			&e.ProjectID, &e.Status,
 		)
 		if err != nil {
 			return nil, err
@@ -127,14 +126,14 @@ func (r *ExpenseRepository) GetByProjectID(ctx context.Context, projectID int64)
 
 func (r *ExpenseRepository) Create(ctx context.Context, expense *models.Expense) (*models.Expense, error) {
 	query := `
-		INSERT INTO expenses (name, amount, type, expenseDate, projectId, isDebtor, debtorId, status, notes, createdBy)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+		INSERT INTO expenses (name, amount, type, expenseDate, projectId, status, notes, createdBy)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 		RETURNING id, createdAt
 	`
 
 	err := r.db.QueryRow(ctx, query,
 		expense.Name, expense.Amount, expense.Type, expense.ExpenseDate, expense.ProjectID,
-		expense.IsDebtor, expense.DebtorID, expense.Status, expense.Notes, expense.CreatedBy,
+		expense.Status, expense.Notes, expense.CreatedBy,
 	).Scan(&expense.ID, &expense.CreatedAt)
 
 	if err != nil {
@@ -148,17 +147,17 @@ func (r *ExpenseRepository) Update(ctx context.Context, id int64, expense *model
 	query := `
 		UPDATE expenses
 		SET name = $1, amount = $2, type = $3, expenseDate = $4, projectId = $5,
-		    isDebtor = $6, debtorId = $7, status = $8, notes = $9
-		WHERE id = $10
-		RETURNING id, name, amount, type, expenseDate, projectId, isDebtor, debtorId, status, notes, createdBy, createdAt
+		    status = $6, notes = $7
+		WHERE id = $8
+		RETURNING id, name, amount, type, expenseDate, projectId, status, notes, createdBy, createdAt
 	`
 
 	err := r.db.QueryRow(ctx, query,
 		expense.Name, expense.Amount, expense.Type, expense.ExpenseDate, expense.ProjectID,
-		expense.IsDebtor, expense.DebtorID, expense.Status, expense.Notes, id,
+		expense.Status, expense.Notes, id,
 	).Scan(
 		&expense.ID, &expense.Name, &expense.Amount, &expense.Type, &expense.ExpenseDate,
-		&expense.ProjectID, &expense.IsDebtor, &expense.DebtorID, &expense.Status, &expense.Notes,
+		&expense.ProjectID, &expense.Status, &expense.Notes,
 		&expense.CreatedBy, &expense.CreatedAt,
 	)
 
@@ -191,7 +190,6 @@ func (r *ExpenseRepository) GetStats(ctx context.Context, period string) (*Expen
 			COUNT(*) FILTER (WHERE status = 'pending') as pending,
 			COUNT(*) FILTER (WHERE status = 'approved') as approved,
 			COUNT(*) FILTER (WHERE status = 'rejected') as rejected,
-			COUNT(*) FILTER (WHERE isDebtor = true) as debtor_count,
 			COALESCE(AVG(amount), 0) as average_amount
 		FROM expenses
 	` + whereClause
@@ -203,7 +201,6 @@ func (r *ExpenseRepository) GetStats(ctx context.Context, period string) (*Expen
 		&stats.Pending,
 		&stats.Approved,
 		&stats.Rejected,
-		&stats.DebtorCount,
 		&stats.AverageAmount,
 	)
 	if err != nil {

@@ -121,16 +121,16 @@
           </template>
 
           <!-- Status Column -->
-          <template v-slot:item.isActive="{ item }">
+          <template v-slot:item.status="{ item }">
             <v-chip
-              :color="item.isActive ? 'success' : 'warning'"
+              :color="item.status === 'active' ? 'success' : 'warning'"
               size="x-small"
               variant="tonal"
               class="status-chip"
-              :class="item.isActive ? 'active-chip' : 'inactive-chip'"
+              :class="item.status === 'active' ? 'active-chip' : 'inactive-chip'"
             >
-              <v-icon :icon="item.isActive ? 'mdi-check-circle' : 'mdi-pause-circle'" size="x-small" class="me-1" />
-              {{ item.isActive ? 'نشط' : 'معطل' }}
+              <v-icon :icon="item.status === 'active' ? 'mdi-check-circle' : 'mdi-pause-circle'" size="x-small" class="me-1" />
+              {{ item.status === 'active' ? 'نشط' : 'معطل' }}
             </v-chip>
           </template>
 
@@ -190,13 +190,13 @@
       </v-card>
 
       <!-- Add/Edit Category Dialog -->
-      <v-dialog v-model="dialog" max-width="500" class="simple-category-dialog">
+      <v-dialog v-model="dialog" :max-width="isEditing ? 700 : 500" class="simple-category-dialog">
         <v-card class="simple-dialog-card">
           <!-- Header -->
           <v-card-title class="simple-dialog-header">
             <div class="d-flex align-center justify-space-between w-100">
               <h3 class="text-h6 font-weight-bold text-white mb-0">
-                إضافة صنف جديد
+                {{ isEditing ? 'تعديل التصنيف' : 'إضافة صنف جديد' }}
               </h3>
               <v-btn
                 icon
@@ -226,19 +226,93 @@
                 </div>
               </div>
             </v-form>
+
+            <!-- Subcategories Section (only when editing) -->
+            <div v-if="isEditing && categoryForm.id" class="subcategories-section mt-6">
+              <div class="d-flex align-center justify-space-between mb-3">
+                <h4 class="text-subtitle-1 font-weight-bold" style="color: #333;">
+                  <v-icon class="me-2" size="small" color="primary">mdi-folder-multiple</v-icon>
+                  الأصناف الفرعية
+                </h4>
+                <v-btn
+                  size="small"
+                  color="primary"
+                  variant="tonal"
+                  @click="openAddSubCategoryFromEdit"
+                >
+                  <v-icon class="me-1" size="small">mdi-plus</v-icon>
+                  إضافة فرعي
+                </v-btn>
+              </div>
+
+              <!-- Subcategories List -->
+              <div class="subcategories-list" style="max-height: 250px; overflow-y: auto;">
+                <div
+                  v-for="(subCat, index) in getSubCategories(categoryForm.id)"
+                  :key="subCat.id"
+                  class="subcategory-item d-flex align-center justify-space-between pa-3 mb-2"
+                  style="background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef;"
+                >
+                  <div class="d-flex align-center">
+                    <span class="subcategory-number me-3" style="background: #e3f2fd; color: #1976d2; padding: 4px 10px; border-radius: 50%; font-weight: bold; font-size: 0.8rem;">
+                      {{ index + 1 }}
+                    </span>
+                    <div>
+                      <div class="font-weight-medium" style="color: #333;">{{ subCat.name }}</div>
+                      <div class="text-caption" style="color: #666;">نسبة الإنجاز: {{ subCat.percentage || 0 }}%</div>
+                    </div>
+                  </div>
+                  <div class="d-flex">
+                    <v-btn
+                      icon="mdi-pencil"
+                      size="x-small"
+                      color="primary"
+                      variant="text"
+                      @click="editSubCategoryFromEdit(subCat)"
+                    />
+                    <v-btn
+                      icon="mdi-delete"
+                      size="x-small"
+                      color="error"
+                      variant="text"
+                      @click="deleteSubCategoryHandler(subCat)"
+                    />
+                  </div>
+                </div>
+
+                <!-- Empty state -->
+                <div
+                  v-if="getSubCategories(categoryForm.id).length === 0"
+                  class="text-center pa-4"
+                  style="color: #999;"
+                >
+                  <v-icon size="40" color="grey-lighten-1">mdi-folder-open-outline</v-icon>
+                  <p class="mt-2 mb-0">لا توجد أصناف فرعية</p>
+                </div>
+              </div>
+            </div>
           </v-card-text>
 
           <!-- Actions -->
           <v-card-actions class="simple-dialog-actions pa-6 pt-0">
-            <v-spacer />
             <v-btn
               color="grey-darken-1"
               variant="text"
-              @click="saveCategory"
-              :disabled="!categoryForm.name"
+              @click="closeDialog"
               class="save-btn-simple"
             >
-              حفظ
+              إلغاء
+            </v-btn>
+            <v-spacer />
+            <v-btn
+              color="primary"
+              variant="elevated"
+              @click="saveCategory"
+              :disabled="!categoryForm.name"
+              :loading="saving"
+              class="save-btn-simple"
+            >
+              {{ isEditing ? 'تحديث' : 'حفظ' }}
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -279,7 +353,7 @@
                   <div class="sub-category-name">{{ subCategory.name }}</div>
                   <div class="sub-category-progress">
                     <span class="progress-label">نسبة الإنجاز:</span>
-                    <span class="progress-value">{{ subCategory.progress || 0 }}%</span>
+                    <span class="progress-value">{{ subCategory.percentage || 0 }}%</span>
                   </div>
                 </div>
                 <div class="sub-category-actions">
@@ -296,7 +370,7 @@
                     variant="text"
                     size="small"
                     color="error"
-                    @click="deleteSubCategory(subCategory)"
+                    @click="deleteSubCategoryHandler(subCategory)"
                     class="sub-action-btn"
                   />
                 </div>
@@ -344,7 +418,7 @@
 
           <!-- Body -->
           <v-card-text class="simple-dialog-body pa-6">
-            <v-form ref="subCategoryForm" v-model="subCategoryFormValid">
+            <v-form ref="subCatFormRef">
               <div class="form-field-simple mb-4">
                 <label class="field-label">اسم الصنف :</label>
                 <div class="custom-input-container">
@@ -353,7 +427,6 @@
                     type="text"
                     class="custom-input-field"
                     placeholder="أدخل اسم الصنف الثانوي"
-                    required
                   />
                 </div>
               </div>
@@ -361,25 +434,24 @@
                 <label class="field-label">نسبة الإنجاز (%) :</label>
                 <div class="custom-input-container">
                   <input
-                    v-model="subCategoryForm.progress"
+                    v-model="subCategoryForm.percentage"
                     type="number"
                     class="custom-input-field"
                     placeholder="0"
                     min="0"
                     max="100"
-                    required
                   />
                 </div>
                 <!-- Progress Bar Display -->
                 <div class="progress-display-container mt-3">
                   <div class="progress-bar-wrapper">
-                    <div 
-                      class="progress-bar-fill" 
-                      :style="{ width: (subCategoryForm.progress || 0) + '%' }"
+                    <div
+                      class="progress-bar-fill"
+                      :style="{ width: (subCategoryForm.percentage || 0) + '%' }"
                     ></div>
                   </div>
                   <div class="progress-text-display">
-                    <span class="progress-percentage">{{ subCategoryForm.progress || 0 }}%</span>
+                    <span class="progress-percentage">{{ subCategoryForm.percentage || 0 }}%</span>
                   </div>
                 </div>
               </div>
@@ -401,7 +473,8 @@
               color="primary"
               variant="elevated"
               @click="saveSubCategory"
-              :disabled="!subCategoryFormValid || !subCategoryForm.name"
+              :disabled="!subCategoryForm.name"
+              :loading="saving"
               class="save-btn-simple"
             >
               {{ isEditingSubCategory ? 'تحديث' : 'حفظ' }}
@@ -577,6 +650,17 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import {
+  listCategories,
+  createCategory,
+  updateCategory,
+  deleteCategory as apiDeleteCategory,
+  getCategoryStats,
+  listSubCategories,
+  createSubCategory,
+  updateSubCategory,
+  deleteSubCategory as apiDeleteSubCategory
+} from '@/api/categories'
 
 // State variables
 const dialog = ref(false)
@@ -593,19 +677,32 @@ const searchQuery = ref('')
 const selectedStatus = ref('')
 const selectedCategory = ref(null)
 
-// Category form
-const categoryForm = ref({
-  name: '',
-  colorName: '',
-  color: '#3b82f6',
-  isActive: true,
-  description: ''
+// Loading and error states
+const loading = ref(false)
+const saving = ref(false)
+const error = ref('')
+
+// Stats from backend
+const stats = ref({
+  total: 0,
+  active: 0,
+  inactive: 0,
+  totalSubcategory: 0
 })
 
-// Sub Category form
+// Category form - aligned with backend CreateWorkCategory DTO
+const categoryForm = ref({
+  id: null,
+  name: '',
+  description: '',
+  status: 'active'
+})
+
+// Sub Category form - aligned with backend CreateWorkSubCategory DTO
 const subCategoryForm = ref({
   name: '',
-  progress: 0
+  description: '',
+  percentage: 0
 })
 
 // Headers for data table
@@ -621,166 +718,104 @@ const statusOptions = [
   { title: 'معطل', value: 'inactive' }
 ]
 
-// Categories data
-const categories = ref([
-  {
-    id: 1,
-    name: 'الأعمال الترابية',
-    colorName: 'أزرق',
-    color: '#3b82f6',
-    description: 'جميع الأعمال المتعلقة بالتربة والحفر',
-    isActive: true,
-    projectsCount: 12,
-    createdAt: '2024-01-15'
-  },
-  {
-    id: 2,
-    name: 'الحصى الخابط',
-    colorName: 'أخضر',
-    color: '#10b981',
-    description: 'أعمال الحصى والمواد الخابطية',
-    isActive: true,
-    projectsCount: 8,
-    createdAt: '2024-01-20'
-  },
-  {
-    id: 3,
-    name: 'اعمال الباور كيرير',
-    colorName: 'برتقالي',
-    color: '#f59e0b',
-    description: 'أعمال الطاقة والكهرباء',
-    isActive: true,
-    projectsCount: 15,
-    createdAt: '2024-01-25'
-  },
-  {
-    id: 4,
-    name: 'اعمال التبليط',
-    colorName: 'بنفسجي',
-    color: '#8b5cf6',
-    description: 'أعمال التبليط والتسوية',
-    isActive: true,
-    projectsCount: 6,
-    createdAt: '2024-02-01'
-  },
-  {
-    id: 5,
-    name: 'أعمال المقرنص',
-    colorName: 'أحمر',
-    color: '#ef4444',
-    description: 'أعمال المقرنص والزخارف',
-    isActive: false,
-    projectsCount: 4,
-    createdAt: '2024-02-05'
-  },
-  {
-    id: 6,
-    name: 'اعمال المحاري',
-    colorName: 'أزرق',
-    color: '#06b6d4',
-    description: 'أعمال المحاري والمواد المحارية',
-    isActive: true,
-    projectsCount: 9,
-    createdAt: '2024-02-10'
-  },
-  {
-    id: 7,
-    name: 'اعمال شبكات الماء',
-    colorName: 'أخضر',
-    color: '#059669',
-    description: 'أعمال شبكات المياه والصرف',
-    isActive: true,
-    projectsCount: 11,
-    createdAt: '2024-02-15'
-  }
-])
+// Categories data from backend
+const categories = ref([])
 
-// Sub Categories data
-const subCategories = ref([
-  {
-    id: 1,
-    parentId: 1,
-    name: 'حفر الأساسات',
-    description: 'حفر أساسات المباني',
-    progress: 75
-  },
-  {
-    id: 2,
-    parentId: 1,
-    name: 'ردم التربة',
-    progress: 50,
-    description: 'ردم وتنعيم التربة'
-  },
-  {
-    id: 3,
-    parentId: 2,
-    name: 'حصى خابط ناعم',
-    description: 'حصى خابط ناعم الحبيبات'
-  },
-  {
-    id: 4,
-    parentId: 2,
-    name: 'حصى خابط خشن',
-    description: 'حصى خابط خشن الحبيبات'
-  },
-  {
-    id: 5,
-    parentId: 3,
-    name: 'أسلاك كهربائية',
-    description: 'توصيل الأسلاك الكهربائية'
-  },
-  {
-    id: 6,
-    parentId: 3,
-    name: 'عدادات الكهرباء',
-    description: 'تركيب عداد الكهرباء'
-  }
-])
+// Sub Categories data from backend
+const subCategories = ref([])
 
-// Computed properties
-const totalCategories = computed(() => categories.value.length)
-const activeCategories = computed(() => categories.value.filter(c => c.isActive).length)
-const inactiveCategories = computed(() => categories.value.filter(c => !c.isActive).length)
-const totalProjects = computed(() => categories.value.reduce((sum, c) => sum + c.projectsCount, 0))
+// Computed properties - use stats from backend
+const totalCategories = computed(() => stats.value.total)
+const activeCategories = computed(() => stats.value.active)
+const inactiveCategories = computed(() => stats.value.inactive)
+const totalProjects = computed(() => stats.value.totalSubcategory)
 
 const filteredCategories = computed(() => {
   let filtered = categories.value
 
   if (searchQuery.value) {
     filtered = filtered.filter(category =>
-      category.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      category.description.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      category.colorName.toLowerCase().includes(searchQuery.value.toLowerCase())
+      category.name?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      (category.description && category.description.toLowerCase().includes(searchQuery.value.toLowerCase()))
     )
   }
 
   if (selectedStatus.value) {
-    if (selectedStatus.value === 'active') {
-      filtered = filtered.filter(category => category.isActive)
-    } else if (selectedStatus.value === 'inactive') {
-      filtered = filtered.filter(category => !category.isActive)
-    }
+    filtered = filtered.filter(category => category.status === selectedStatus.value)
   }
 
   return filtered
 })
 
-// Methods
+// ============ Load Data from Backend ============
+const loadCategories = async () => {
+  loading.value = true
+  error.value = ''
+  try {
+    const result = await listCategories()
+    // Response structure: { success: true, data: { data: [...], total, page, limit, totalPages } }
+    if (Array.isArray(result?.data?.data)) {
+      categories.value = result.data.data
+    } else if (Array.isArray(result?.data)) {
+      categories.value = result.data
+    } else if (Array.isArray(result)) {
+      categories.value = result
+    } else {
+      categories.value = []
+    }
+  } catch (err) {
+    console.error('Failed to load categories:', err)
+    error.value = err?.message || 'فشل تحميل التصنيفات'
+  } finally {
+    loading.value = false
+  }
+}
+
+const loadStats = async () => {
+  try {
+    const result = await getCategoryStats()
+    if (result) {
+      stats.value = {
+        total: result.total || 0,
+        active: result.active || 0,
+        inactive: result.inactive || 0,
+        totalSubcategory: result.totalSubcategory || 0
+      }
+    }
+  } catch (err) {
+    console.error('Failed to load stats:', err)
+  }
+}
+
+const loadSubCategories = async () => {
+  try {
+    const result = await listSubCategories()
+    subCategories.value = result
+  } catch (err) {
+    console.error('Failed to load subcategories:', err)
+  }
+}
+
+// ============ Category Methods ============
 const openAddCategoryDialog = () => {
   isEditing.value = false
   categoryForm.value = {
+    id: null,
     name: '',
-    colorName: '',
-    color: '#3b82f6',
-    isActive: true,
-    description: ''
+    description: '',
+    status: 'active'
   }
   dialog.value = true
 }
 
 const editCategory = (category) => {
   isEditing.value = true
-  categoryForm.value = { ...category }
+  categoryForm.value = {
+    id: category.id,
+    name: category.name,
+    description: category.description || '',
+    status: category.status || 'active'
+  }
   dialog.value = true
 }
 
@@ -792,34 +827,37 @@ const viewCategoryDetails = (category) => {
 const closeDialog = () => {
   dialog.value = false
   categoryForm.value = {
+    id: null,
     name: '',
-    colorName: '',
-    color: '#3b82f6',
-    isActive: true,
-    description: ''
+    description: '',
+    status: 'active'
   }
 }
 
-const saveCategory = () => {
-  if (isEditing.value) {
-    const index = categories.value.findIndex(c => c.id === categoryForm.value.id)
-    if (index !== -1) {
-      categories.value[index] = {
-        ...categories.value[index],
-        ...categoryForm.value,
-        updatedAt: new Date().toISOString().split('T')[0]
-      }
+const saveCategory = async () => {
+  saving.value = true
+  try {
+    const payload = {
+      name: categoryForm.value.name,
+      description: categoryForm.value.description || null,
+      status: categoryForm.value.status
     }
-  } else {
-    const newCategory = {
-      id: Date.now(),
-      ...categoryForm.value,
-      projectsCount: 0,
-      createdAt: new Date().toISOString().split('T')[0]
+
+    if (isEditing.value && categoryForm.value.id) {
+      await updateCategory(categoryForm.value.id, payload)
+    } else {
+      await createCategory(payload)
     }
-    categories.value.push(newCategory)
+
+    await loadCategories()
+    await loadStats()
+    closeDialog()
+  } catch (err) {
+    console.error('Failed to save category:', err)
+    error.value = err?.message || 'فشل حفظ التصنيف'
+  } finally {
+    saving.value = false
   }
-  closeDialog()
 }
 
 const deleteCategory = (category) => {
@@ -827,14 +865,32 @@ const deleteCategory = (category) => {
   deleteDialog.value = true
 }
 
-// Sub Categories functions
+const confirmDelete = async () => {
+  if (!selectedCategory.value) return
+
+  saving.value = true
+  try {
+    await apiDeleteCategory(selectedCategory.value.id)
+    await loadCategories()
+    await loadStats()
+    deleteDialog.value = false
+    selectedCategory.value = null
+  } catch (err) {
+    console.error('Failed to delete category:', err)
+    error.value = err?.message || 'فشل حذف التصنيف'
+  } finally {
+    saving.value = false
+  }
+}
+
+// ============ Sub Categories Functions ============
 const showSubCategories = (category) => {
   selectedCategory.value = category
   subCategoriesDialog.value = true
 }
 
-const getSubCategories = (parentId) => {
-  return subCategories.value.filter(sub => sub.parentId === parentId)
+const getSubCategories = (categoryId) => {
+  return subCategories.value.filter(sub => sub.categoryId === categoryId)
 }
 
 const openAddSubCategoryDialog = () => {
@@ -842,9 +898,23 @@ const openAddSubCategoryDialog = () => {
   editingSubCategoryId.value = null
   subCategoryForm.value = {
     name: '',
-    progress: 0
+    description: '',
+    percentage: 0
   }
   addSubCategoryDialog.value = true
+}
+
+// Open add subcategory from edit category dialog
+const openAddSubCategoryFromEdit = () => {
+  // Set selectedCategory to current category being edited
+  selectedCategory.value = { id: categoryForm.value.id, name: categoryForm.value.name }
+  openAddSubCategoryDialog()
+}
+
+// Edit subcategory from edit category dialog
+const editSubCategoryFromEdit = (subCat) => {
+  selectedCategory.value = { id: categoryForm.value.id, name: categoryForm.value.name }
+  editSubCategory(subCat)
 }
 
 const closeAddSubCategoryDialog = () => {
@@ -853,80 +923,82 @@ const closeAddSubCategoryDialog = () => {
   editingSubCategoryId.value = null
   subCategoryForm.value = {
     name: '',
-    progress: 0
+    description: '',
+    percentage: 0
   }
 }
 
-const saveSubCategory = () => {
+const saveSubCategory = async () => {
   if (!subCategoryForm.value.name) return
-  
-  if (isEditingSubCategory.value && editingSubCategoryId.value) {
-    // تعديل صنف ثانوي موجود
-    const index = subCategories.value.findIndex(sub => sub.id === editingSubCategoryId.value)
-    if (index !== -1) {
-      subCategories.value[index].name = subCategoryForm.value.name
-      subCategories.value[index].progress = parseFloat(subCategoryForm.value.progress) || 0
+
+  saving.value = true
+  try {
+    if (isEditingSubCategory.value && editingSubCategoryId.value) {
+      // Update existing subcategory
+      const payload = {
+        name: subCategoryForm.value.name,
+        description: subCategoryForm.value.description || null,
+        percentage: parseFloat(subCategoryForm.value.percentage) || 0
+      }
+      await updateSubCategory(editingSubCategoryId.value, payload)
+    } else {
+      // Create new subcategory
+      const payload = {
+        categoryId: selectedCategory.value.id,
+        name: subCategoryForm.value.name,
+        description: subCategoryForm.value.description || null,
+        percentage: parseFloat(subCategoryForm.value.percentage) || 0,
+        status: 'active'
+      }
+      await createSubCategory(payload)
     }
-  } else {
-    // إضافة صنف ثانوي جديد
-    const newSubCategory = {
-      id: Date.now(),
-      parentId: selectedCategory.value.id,
-      name: subCategoryForm.value.name,
-      progress: parseFloat(subCategoryForm.value.progress) || 0,
-      description: ''
-    }
-    subCategories.value.push(newSubCategory)
+
+    await loadSubCategories()
+    await loadStats()
+    closeAddSubCategoryDialog()
+  } catch (err) {
+    console.error('Failed to save subcategory:', err)
+    error.value = err?.message || 'فشل حفظ التصنيف الفرعي'
+  } finally {
+    saving.value = false
   }
-  closeAddSubCategoryDialog()
 }
 
 const editSubCategory = (subCategory) => {
-  console.log('Editing sub category:', subCategory)
   isEditingSubCategory.value = true
   editingSubCategoryId.value = subCategory.id
   subCategoryForm.value = {
     name: subCategory.name || '',
-    progress: subCategory.progress || 0
+    description: subCategory.description || '',
+    percentage: subCategory.percentage || 0
   }
   addSubCategoryDialog.value = true
-  console.log('Dialog opened, form:', subCategoryForm.value)
 }
 
-const deleteSubCategory = (subCategory) => {
+const deleteSubCategoryHandler = async (subCategory) => {
   if (confirm(`هل أنت متأكد من حذف "${subCategory.name}"؟`)) {
-    const index = subCategories.value.findIndex(sub => sub.id === subCategory.id)
-    if (index !== -1) {
-      subCategories.value.splice(index, 1)
+    saving.value = true
+    try {
+      await apiDeleteSubCategory(subCategory.id)
+      await loadSubCategories()
+      await loadStats()
+    } catch (err) {
+      console.error('Failed to delete subcategory:', err)
+      error.value = err?.message || 'فشل حذف التصنيف الفرعي'
+    } finally {
+      saving.value = false
     }
   }
 }
 
-const confirmDelete = () => {
-  const index = categories.value.findIndex(c => c.id === selectedCategory.value.id)
-  if (index !== -1) {
-    categories.value.splice(index, 1)
-  }
-  deleteDialog.value = false
-  selectedCategory.value = null
-}
-
-// Load data from localStorage on mount
-onMounted(() => {
-  const savedCategories = localStorage.getItem('categories')
-  if (savedCategories) {
-    categories.value = JSON.parse(savedCategories)
-  }
+// ============ Load data on mount ============
+onMounted(async () => {
+  await Promise.all([
+    loadCategories(),
+    loadStats(),
+    loadSubCategories()
+  ])
 })
-
-// Save to localStorage when categories change
-const saveToLocalStorage = () => {
-  localStorage.setItem('categories', JSON.stringify(categories.value))
-}
-
-// Watch for changes and save
-import { watch } from 'vue'
-watch(categories, saveToLocalStorage, { deep: true })
 </script>
 
 <style scoped>

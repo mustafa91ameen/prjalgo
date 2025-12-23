@@ -370,11 +370,11 @@
                 <div class="chart-stats">
                   <div class="stat-item">
                     <span class="stat-label">مكتملة</span>
-                    <span class="stat-number">49,225</span>
+                    <span class="stat-number">{{ totalCompletedTasks.toLocaleString() }}</span>
                   </div>
                   <div class="stat-item">
                     <span class="stat-label">معلقة</span>
-                    <span class="stat-number">82,214</span>
+                    <span class="stat-number">{{ totalPendingTasks.toLocaleString() }}</span>
                   </div>
                 </div>
               </div>
@@ -441,46 +441,293 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
+import {
+  getDashboardStats,
+  getFinancialStats,
+  getProjectProgress,
+  getTaskSummary,
+  getActivities
+} from '@/api/dashboard'
 
-// Sample data - in real app, this would come from API
-const incomeData = ref(175000) // Total income
-const expenseData = ref(103000) // Total expenses
-
-const projectStats = ref({
-  totalProjects: 24,
-  completedProjects: 18,
-  activeProjects: 6,
-  totalEngineers: 12
+// Loading states
+const loading = ref({
+  stats: true,
+  financial: true,
+  progress: true,
+  tasks: true,
+  activities: true
 })
 
-// Recent Activities
-const recentActivities = ref([
-  {
-    icon: 'mdi-check-circle',
-    color: 'success',
-    text: 'تم إكمال مشروع "بناء مجمع سكني"',
-    time: 'منذ ساعتين'
-  },
-  {
-    icon: 'mdi-folder-plus',
-    color: 'primary',
-    text: 'تم إضافة مشروع جديد "مركز تجاري"',
-    time: 'منذ 4 ساعات'
-  },
-  {
-    icon: 'mdi-account-plus',
-    color: 'info',
-    text: 'تم إضافة مهندس جديد للفريق',
-    time: 'منذ يوم'
-  },
-  {
-    icon: 'mdi-currency-usd',
-    color: 'success',
-    text: 'تم تسجيل إيراد جديد بقيمة 50,000 د.ع',
-    time: 'منذ يومين'
+// Error states
+const errors = ref({
+  stats: null,
+  financial: null,
+  progress: null,
+  tasks: null,
+  activities: null
+})
+
+// Financial data from API
+const incomeData = ref(0)
+const expenseData = ref(0)
+
+// Project stats from API
+const projectStats = ref({
+  totalProjects: 0,
+  completedProjects: 0,
+  activeProjects: 0,
+  totalEngineers: 0
+})
+
+// Task summary data from API
+const taskSummaryData = ref({
+  labels: [],
+  completed: [],
+  pending: []
+})
+
+// Recent Activities from API
+const recentActivities = ref([])
+
+// Action translation map for Arabic
+const actionMapAr = {
+  create: 'أضاف',
+  update: 'حدّث',
+  delete: 'حذف',
+  login: 'سجّل دخول',
+  logout: 'سجّل خروج',
+  status_change: 'غيّر الحالة',
+  refresh: 'جدّد الجلسة'
+}
+
+// Target type translation map for Arabic
+const targetTypeMapAr = {
+  project: 'مشروع',
+  expense: 'مصروف',
+  income: 'دخل',
+  debtor: 'مدين',
+  user: 'مستخدم',
+  work_category: 'فئة عمل',
+  work_subcategory: 'فئة فرعية',
+  team_member: 'عضو فريق',
+  auth: 'الحساب',
+  role: 'دور',
+  role_page: 'صلاحية الدور',
+  page: 'صفحة',
+  user_role: 'دور المستخدم',
+  workday: 'يوم عمل',
+  workday_material: 'مواد يوم العمل',
+  workday_labor: 'عمالة يوم العمل',
+  workday_equipment: 'معدات يوم العمل'
+}
+
+// Action icon map
+const actionIconMap = {
+  create: 'mdi-plus-circle',
+  update: 'mdi-pencil',
+  delete: 'mdi-delete',
+  login: 'mdi-login',
+  logout: 'mdi-logout',
+  status_change: 'mdi-swap-horizontal',
+  refresh: 'mdi-refresh'
+}
+
+// Action color map
+const actionColorMap = {
+  create: 'success',
+  update: 'primary',
+  delete: 'error',
+  login: 'info',
+  logout: 'warning',
+  status_change: 'primary',
+  refresh: 'info'
+}
+
+// Target type icon map (for better visual representation)
+const targetIconMap = {
+  project: 'mdi-folder-multiple',
+  expense: 'mdi-cash-minus',
+  income: 'mdi-cash-plus',
+  debtor: 'mdi-account-cash',
+  user: 'mdi-account',
+  work_category: 'mdi-shape',
+  work_subcategory: 'mdi-shape-outline',
+  team_member: 'mdi-account-group',
+  auth: 'mdi-shield-account',
+  role: 'mdi-badge-account',
+  role_page: 'mdi-key',
+  page: 'mdi-file-document',
+  user_role: 'mdi-account-key',
+  workday: 'mdi-calendar-today',
+  workday_material: 'mdi-package-variant',
+  workday_labor: 'mdi-account-hard-hat',
+  workday_equipment: 'mdi-tools'
+}
+
+// Format activity for display
+function formatActivity(activity) {
+  const action = actionMapAr[activity.action] || activity.action
+  const targetType = targetTypeMapAr[activity.targetType] || activity.targetType
+  return `${activity.actorName} ${action} ${targetType} "${activity.targetName}"`
+}
+
+// Format relative time in Arabic
+function formatRelativeTime(dateString) {
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffMs = now - date
+  const diffSecs = Math.floor(diffMs / 1000)
+  const diffMins = Math.floor(diffSecs / 60)
+  const diffHours = Math.floor(diffMins / 60)
+  const diffDays = Math.floor(diffHours / 24)
+
+  if (diffSecs < 60) return 'الآن'
+  if (diffMins < 60) return `منذ ${diffMins} دقيقة`
+  if (diffHours < 24) return `منذ ${diffHours} ساعة`
+  if (diffDays === 1) return 'منذ يوم'
+  if (diffDays < 7) return `منذ ${diffDays} أيام`
+  if (diffDays < 30) return `منذ ${Math.floor(diffDays / 7)} أسبوع`
+  return `منذ ${Math.floor(diffDays / 30)} شهر`
+}
+
+// Fetch dashboard stats
+async function fetchDashboardStats() {
+  loading.value.stats = true
+  errors.value.stats = null
+  try {
+    const response = await getDashboardStats()
+    if (response.success && response.data) {
+      projectStats.value = {
+        totalProjects: response.data.totalProjects || 0,
+        completedProjects: response.data.completedProjects || 0,
+        activeProjects: response.data.activeProjects || 0,
+        totalEngineers: response.data.totalEngineers || 0
+      }
+    }
+  } catch (error) {
+    console.error('Failed to fetch dashboard stats:', error)
+    errors.value.stats = error.message
+  } finally {
+    loading.value.stats = false
   }
-])
+}
+
+// Fetch financial stats
+async function fetchFinancialStats() {
+  loading.value.financial = true
+  errors.value.financial = null
+  try {
+    const response = await getFinancialStats()
+    if (response.success && response.data) {
+      incomeData.value = response.data.totalIncome || 0
+      expenseData.value = response.data.totalExpenses || 0
+    }
+  } catch (error) {
+    console.error('Failed to fetch financial stats:', error)
+    errors.value.financial = error.message
+  } finally {
+    loading.value.financial = false
+  }
+}
+
+// Fetch project progress
+async function fetchProjectProgress() {
+  loading.value.progress = true
+  errors.value.progress = null
+  try {
+    const status = progressFilter.value === 'قيد التنفيذ' ? 'in_progress'
+      : progressFilter.value === 'مكتمل' ? 'completed'
+      : progressFilter.value === 'في الانتظار' ? 'pending'
+      : 'all'
+    const response = await getProjectProgress({ status, limit: 4 })
+    if (response.success && response.data?.projects) {
+      projectProgressData.value = response.data.projects
+    }
+  } catch (error) {
+    console.error('Failed to fetch project progress:', error)
+    errors.value.progress = error.message
+  } finally {
+    loading.value.progress = false
+  }
+}
+
+// Project progress data from API
+const projectProgressData = ref([])
+
+// Fetch task summary
+async function fetchTaskSummary() {
+  loading.value.tasks = true
+  errors.value.tasks = null
+  try {
+    // Convert Arabic month filter to YYYY-MM format
+    const monthMap = {
+      'ديسمبر 2025': '2025-12',
+      'نوفمبر 2025': '2025-11',
+      'أكتوبر 2025': '2025-10',
+      'سبتمبر 2025': '2025-09',
+      'أغسطس 2025': '2025-08',
+      'يوليو 2025': '2025-07',
+      'يونيو 2025': '2025-06',
+      'مايو 2025': '2025-05',
+      'أبريل 2025': '2025-04',
+      'مارس 2025': '2025-03',
+      'فبراير 2025': '2025-02',
+      'يناير 2025': '2025-01'
+    }
+    const month = monthMap[taskSummaryFilter.value] || getCurrentMonth()
+    const response = await getTaskSummary(month)
+    if (response.success && response.data) {
+      taskSummaryData.value = {
+        labels: response.data.labels || [],
+        completed: response.data.completed || [],
+        pending: response.data.pending || []
+      }
+    }
+  } catch (error) {
+    console.error('Failed to fetch task summary:', error)
+    errors.value.tasks = error.message
+  } finally {
+    loading.value.tasks = false
+  }
+}
+
+// Helper to get current month in YYYY-MM format
+function getCurrentMonth() {
+  const now = new Date()
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+}
+
+// Fetch activities
+async function fetchActivities() {
+  loading.value.activities = true
+  errors.value.activities = null
+  try {
+    const response = await getActivities({ limit: 5 })
+    if (response.success && response.data?.data) {
+      recentActivities.value = response.data.data.map(activity => ({
+        icon: targetIconMap[activity.targetType] || actionIconMap[activity.action] || 'mdi-information',
+        color: actionColorMap[activity.action] || 'grey',
+        text: formatActivity(activity),
+        time: formatRelativeTime(activity.createdAt)
+      }))
+    }
+  } catch (error) {
+    console.error('Failed to fetch activities:', error)
+    errors.value.activities = error.message
+  } finally {
+    loading.value.activities = false
+  }
+}
+
+// Fetch all data on mount
+onMounted(() => {
+  fetchDashboardStats()
+  fetchFinancialStats()
+  fetchProjectProgress()
+  fetchTaskSummary()
+  fetchActivities()
+})
 
 // Reminders
 const reminders = ref([
@@ -508,12 +755,23 @@ const reminders = ref([
 const progressFilter = ref('قيد التنفيذ')
 const progressFilterItems = ['قيد التنفيذ', 'مكتمل', 'في الانتظار', 'الكل']
 
-const progressBars = computed(() => [
-  { height: 75, value: '+12%', label: 'مشروع 1', color: '#3b82f6' },
-  { height: 45, value: '+4%', label: 'مشروع 2', color: '#8b5cf6' },
-  { height: 85, value: '+17%', label: 'مشروع 3', color: '#3b82f6' },
-  { height: 60, value: '+8%', label: 'مشروع 4', color: '#8b5cf6' }
-])
+// Watch progress filter and refetch data
+watch(progressFilter, () => {
+  fetchProjectProgress()
+})
+
+const progressBars = computed(() => {
+  const colors = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b']
+  if (projectProgressData.value.length === 0) {
+    return []
+  }
+  return projectProgressData.value.map((project, index) => ({
+    height: project.progress || 0,
+    value: `${Math.round(project.progress || 0)}%`,
+    label: project.name || `مشروع ${index + 1}`,
+    color: colors[index % colors.length]
+  }))
+})
 
 // Donut Chart Data
 const completedColor = ref('#8b5cf6')
@@ -557,30 +815,51 @@ const pendingOffset = computed(() => {
 })
 
 // Task Summary Chart Data
-const taskSummaryFilter = ref('أبريل 2025')
-const taskSummaryFilterItems = ['أبريل 2025', 'مارس 2025', 'فبراير 2025', 'يناير 2025']
+const taskSummaryFilter = ref('ديسمبر 2025')
+const taskSummaryFilterItems = ['ديسمبر 2025', 'نوفمبر 2025', 'أكتوبر 2025', 'سبتمبر 2025']
 
-const chartLabels = ref(['18', '19', '20', '21', '22', '23', '24', '25'])
+// Watch task summary filter and refetch data
+watch(taskSummaryFilter, () => {
+  fetchTaskSummary()
+})
 
-const completedTasksPoints = computed(() => [
-  { x: 50, y: 120 },
-  { x: 100, y: 100 },
-  { x: 150, y: 90 },
-  { x: 200, y: 85 },
-  { x: 250, y: 80 },
-  { x: 300, y: 75 },
-  { x: 350, y: 70 }
-])
+const chartLabels = computed(() => {
+  if (taskSummaryData.value.labels.length === 0) {
+    return ['1', '2', '3', '4']
+  }
+  return taskSummaryData.value.labels
+})
 
-const pendingTasksPoints = computed(() => [
-  { x: 50, y: 160 },
-  { x: 100, y: 150 },
-  { x: 150, y: 140 },
-  { x: 200, y: 130 },
-  { x: 250, y: 125 },
-  { x: 300, y: 120 },
-  { x: 350, y: 115 }
-])
+// Convert task data to chart points
+const completedTasksPoints = computed(() => {
+  const data = taskSummaryData.value.completed
+  if (data.length === 0) return []
+
+  const maxValue = Math.max(...data, ...taskSummaryData.value.pending, 1)
+  const chartHeight = 160
+  const startX = 50
+  const stepX = 300 / Math.max(data.length - 1, 1)
+
+  return data.map((value, index) => ({
+    x: startX + index * stepX,
+    y: 180 - (value / maxValue) * chartHeight
+  }))
+})
+
+const pendingTasksPoints = computed(() => {
+  const data = taskSummaryData.value.pending
+  if (data.length === 0) return []
+
+  const maxValue = Math.max(...taskSummaryData.value.completed, ...data, 1)
+  const chartHeight = 160
+  const startX = 50
+  const stepX = 300 / Math.max(data.length - 1, 1)
+
+  return data.map((value, index) => ({
+    x: startX + index * stepX,
+    y: 180 - (value / maxValue) * chartHeight
+  }))
+})
 
 const completedTasksLine = computed(() => {
   return completedTasksPoints.value.map(p => `${p.x},${p.y}`).join(' ')
@@ -588,6 +867,15 @@ const completedTasksLine = computed(() => {
 
 const pendingTasksLine = computed(() => {
   return pendingTasksPoints.value.map(p => `${p.x},${p.y}`).join(' ')
+})
+
+// Total tasks for display
+const totalCompletedTasks = computed(() => {
+  return taskSummaryData.value.completed.reduce((sum, val) => sum + val, 0)
+})
+
+const totalPendingTasks = computed(() => {
+  return taskSummaryData.value.pending.reduce((sum, val) => sum + val, 0)
 })
 
 // Computed properties

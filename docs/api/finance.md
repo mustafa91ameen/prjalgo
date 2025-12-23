@@ -32,8 +32,6 @@ GET /api/v1/expenses
       "type": "operational",
       "expenseDate": "2024-01-15T00:00:00Z",
       "projectId": 1,
-      "isDebtor": false,
-      "debtorId": null,
       "status": "paid"
     }
   ],
@@ -74,7 +72,6 @@ GET /api/v1/expenses/stats
     "pending": 50,
     "approved": 180,
     "rejected": 20,
-    "debtorCount": 15,
     "averageAmount": 600.00
   }
 }
@@ -100,8 +97,6 @@ GET /api/v1/expenses/:id
     "type": "operational",
     "expenseDate": "2024-01-15T00:00:00Z",
     "projectId": 1,
-    "isDebtor": false,
-    "debtorId": null,
     "status": "paid",
     "notes": "Monthly supplies",
     "createdBy": 1,
@@ -127,8 +122,6 @@ POST /api/v1/expenses
   "type": "operational",
   "expenseDate": "2024-01-15T00:00:00Z",
   "projectId": 1,
-  "isDebtor": false,
-  "debtorId": null,
   "status": "paid",
   "notes": "string",
   "createdBy": 1
@@ -142,8 +135,6 @@ POST /api/v1/expenses
 | `type` | string | No | Expense type |
 | `expenseDate` | datetime | Yes | Date of expense |
 | `projectId` | int | No | Related project ID |
-| `isDebtor` | bool | No | Is this a debtor expense |
-| `debtorId` | int | No | Related debtor ID (if isDebtor is true) |
 | `status` | string | No | Payment status |
 | `notes` | string | No | Additional notes |
 
@@ -164,8 +155,6 @@ PUT /api/v1/expenses/:id
   "type": "string",
   "expenseDate": "2024-01-15T00:00:00Z",
   "projectId": 1,
-  "isDebtor": false,
-  "debtorId": null,
   "status": "string",
   "notes": "string"
 }

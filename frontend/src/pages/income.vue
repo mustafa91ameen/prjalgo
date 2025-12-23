@@ -119,8 +119,11 @@
           <template v-slot:item.amount="{ item }">
             <span class="font-weight-bold text-success">{{ formatCurrency(item.amount) }}</span>
           </template>
-          <template v-slot:item.date="{ item }">
-            {{ formatDate(item.date) }}
+          <template v-slot:item.incomeDate="{ item }">
+            {{ formatDate(item.incomeDate) }}
+          </template>
+          <template v-slot:item.status="{ item }">
+            {{ getStatusText(item.status) }}
           </template>
           <template v-slot:item.actions="{ item }">
             <v-btn
@@ -163,14 +166,14 @@
                 <v-col cols="12" md="6" class="clean-form-column">
                   <div class="clean-form-field-wrapper">
                     <label class="clean-form-label">
-                      وصف الإيراد <span class="required-star">*</span>
+                      اسم الإيراد <span class="required-star">*</span>
                     </label>
                     <v-text-field
-                      v-model="incomeForm.description"
+                      v-model="incomeForm.name"
                       variant="outlined"
                       density="comfortable"
-                      placeholder="أدخل وصف الإيراد"
-                      :rules="[v => !!v || 'الوصف مطلوب']"
+                      placeholder="أدخل اسم الإيراد"
+                      :rules="[v => !!v || 'الاسم مطلوب']"
                       required
                       hide-details="auto"
                       class="clean-form-input"
@@ -202,16 +205,62 @@
                 <v-col cols="12" md="6" class="clean-form-column">
                   <div class="clean-form-field-wrapper">
                     <label class="clean-form-label">
-                      الفئة <span class="required-star">*</span>
+                      تاريخ الإيراد <span class="required-star">*</span>
                     </label>
-                    <v-select
-                      v-model="incomeForm.category"
-                      :items="incomeCategories"
+                    <v-menu
+                      v-model="incomeDateMenu"
+                      :close-on-content-click="false"
+                      location="bottom"
+                    >
+                      <template v-slot:activator="{ props }">
+                        <v-text-field
+                          v-model="formattedIncomeDate"
+                          readonly
+                          v-bind="props"
+                          variant="outlined"
+                          density="comfortable"
+                          :rules="[v => !!v || 'التاريخ مطلوب']"
+                          required
+                          hide-details="auto"
+                          class="clean-form-input"
+                          prepend-inner-icon="mdi-calendar"
+                        />
+                      </template>
+                      <v-date-picker
+                        v-model="selectedIncomeDate"
+                        @update:model-value="onIncomeDateSelected"
+                        color="primary"
+                      />
+                    </v-menu>
+                  </div>
+                </v-col>
+
+                <v-col cols="12" md="6" class="clean-form-column">
+                  <div class="clean-form-field-wrapper">
+                    <label class="clean-form-label">النوع</label>
+                    <v-text-field
+                      v-model="incomeForm.type"
                       variant="outlined"
                       density="comfortable"
-                      placeholder="اختر الفئة"
-                      :rules="[v => !!v || 'الفئة مطلوبة']"
-                      required
+                      placeholder="أدخل نوع الإيراد"
+                      hide-details="auto"
+                      class="clean-form-input"
+                    />
+                  </div>
+                </v-col>
+              </v-row>
+
+              <v-row class="clean-form-row">
+                <v-col cols="12" md="6" class="clean-form-column">
+                  <div class="clean-form-field-wrapper">
+                    <label class="clean-form-label">الحالة</label>
+                    <v-select
+                      v-model="incomeForm.status"
+                      :items="statusOptions"
+                      variant="outlined"
+                      density="comfortable"
+                      placeholder="اختر الحالة"
+                      clearable
                       hide-details="auto"
                       class="clean-form-input"
                     />
@@ -261,7 +310,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { listIncome, createIncome, updateIncome, deleteIncome as deleteIncomeApi, getIncomeStats } from '@/api/income'
 
 // ========================================
 // متغيرات الحالة الأساسية
@@ -275,71 +325,51 @@ const selectedCategory = ref('')
 const dateRange = ref([])
 
 // ========================================
-// نموذج البيانات
+// نموذج البيانات - aligned with backend DTO
 // ========================================
 const incomeForm = ref({
-  description: '',
+  name: '',
   amount: 0,
-  category: '',
-  notes: '',
-  date: new Date().toISOString().split('T')[0]
+  type: '',
+  incomeDate: new Date().toISOString().split('T')[0],
+  status: 'received',
+  notes: ''
 })
+
+// ========================================
+// Date picker state
+// ========================================
+const incomeDateMenu = ref(false)
+const selectedIncomeDate = ref(null)
+
+// Computed property for formatted income date display
+const formattedIncomeDate = computed(() => {
+  if (!incomeForm.value.incomeDate) return ''
+  const date = new Date(incomeForm.value.incomeDate)
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+})
+
+// Handle income date selection from picker
+const onIncomeDateSelected = (date) => {
+  if (date) {
+    const d = new Date(date)
+    incomeForm.value.incomeDate = d.toISOString().split('T')[0]
+  }
+  incomeDateMenu.value = false
+}
 
 // ========================================
 // البيانات الأساسية
 // ========================================
-const incomeSources = ref([
-  {
-    id: 1,
-    description: 'رسوم التسجيل',
-    amount: 50000,
-    category: 'رسوم طلابية',
-    date: '2024-01-15',
-    notes: 'رسوم الفصل الدراسي الأول',
-    status: 'confirmed',
-    source: 'طلاب'
-  },
-  {
-    id: 2,
-    description: 'منحة حكومية',
-    amount: 100000,
-    category: 'منح',
-    date: '2024-01-10',
-    notes: 'منحة وزارة التعليم العالي',
-    status: 'confirmed',
-    source: 'حكومي'
-  },
-  {
-    id: 3,
-    description: 'استشارات أكاديمية',
-    amount: 25000,
-    category: 'خدمات',
-    date: '2024-01-05',
-    notes: 'استشارات للقطاع الخاص',
-    status: 'confirmed',
-    source: 'خاص'
-  },
-  {
-    id: 4,
-    description: 'إيرادات الكافتيريا',
-    amount: 15000,
-    category: 'خدمات',
-    date: '2024-01-20',
-    notes: 'إيرادات شهر يناير',
-    status: 'pending',
-    source: 'داخلي'
-  },
-  {
-    id: 5,
-    description: 'تبرع خيري',
-    amount: 75000,
-    category: 'تبرعات',
-    date: '2024-01-25',
-    notes: 'تبرع من مؤسسة خيرية',
-    status: 'confirmed',
-    source: 'خيري'
-  }
-])
+const incomeSources = ref([])
+const incomeStats = ref({
+  total: 0,
+  totalAmount: 0,
+  pending: 0,
+  approved: 0,
+  rejected: 0,
+  averageAmount: 0
+})
 
 // ========================================
 // قوائم الاختيار
@@ -354,9 +384,10 @@ const incomeCategories = [
 ]
 
 const statusOptions = [
-  { title: 'مؤكد', value: 'confirmed', color: 'success' },
+  { title: 'مستلم', value: 'received', color: 'success' },
   { title: 'معلق', value: 'pending', color: 'warning' },
-  { title: 'ملغي', value: 'cancelled', color: 'error' }
+  { title: 'مؤكد', value: 'approved', color: 'info' },
+  { title: 'مرفوض', value: 'rejected', color: 'error' }
 ]
 
 const sourceOptions = [
@@ -368,114 +399,78 @@ const sourceOptions = [
 ]
 
 // ========================================
-// عناوين الجدول
+// عناوين الجدول - aligned with backend DTO
 // ========================================
 const headers = [
-  { title: 'الوصف', key: 'description', align: 'start', sortable: true },
+  { title: 'الاسم', key: 'name', align: 'start', sortable: true },
   { title: 'المبلغ', key: 'amount', align: 'center', sortable: true },
-  { title: 'الفئة', key: 'category', align: 'center', sortable: true },
-  { title: 'المصدر', key: 'source', align: 'center', sortable: true },
+  { title: 'النوع', key: 'type', align: 'center', sortable: true },
   { title: 'الحالة', key: 'status', align: 'center', sortable: true },
-  { title: 'التاريخ', key: 'date', align: 'center', sortable: true },
+  { title: 'التاريخ', key: 'incomeDate', align: 'center', sortable: true },
   { title: 'الإجراءات', key: 'actions', align: 'center', sortable: false }
 ]
 
 // ========================================
-// الخصائص المحسوبة
+// الخصائص المحسوبة - تستخدم البيانات من الـ API
 // ========================================
 const totalIncome = computed(() => {
-  return incomeSources.value
-    .filter(item => item.status === 'confirmed')
-    .reduce((sum, item) => sum + item.amount, 0)
+  return incomeStats.value.totalAmount || 0
 })
 
 const monthlyIncome = computed(() => {
-  const currentMonth = new Date().getMonth()
-  const currentYear = new Date().getFullYear()
-  
-  return incomeSources.value
-    .filter(item => {
-      const itemDate = new Date(item.date)
-      return itemDate.getMonth() === currentMonth && 
-             itemDate.getFullYear() === currentYear &&
-             item.status === 'confirmed'
-    })
-    .reduce((sum, item) => sum + item.amount, 0)
+  // This will show monthly stats when using period=month in the API
+  return incomeStats.value.totalAmount || 0
 })
 
 const pendingIncome = computed(() => {
-  return incomeSources.value
-    .filter(item => item.status === 'pending')
-    .reduce((sum, item) => sum + item.amount, 0)
+  return incomeStats.value.pending || 0
 })
 
 const incomeGrowth = computed(() => {
-  const currentMonth = new Date().getMonth()
-  const currentYear = new Date().getFullYear()
-  const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1
-  const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear
-  
-  const currentMonthIncome = incomeSources.value
-    .filter(item => {
-      const itemDate = new Date(item.date)
-      return itemDate.getMonth() === currentMonth && 
-             itemDate.getFullYear() === currentYear &&
-             item.status === 'confirmed'
-    })
-    .reduce((sum, item) => sum + item.amount, 0)
-  
-  const lastMonthIncome = incomeSources.value
-    .filter(item => {
-      const itemDate = new Date(item.date)
-      return itemDate.getMonth() === lastMonth && 
-             itemDate.getFullYear() === lastMonthYear &&
-             item.status === 'confirmed'
-    })
-    .reduce((sum, item) => sum + item.amount, 0)
-  
-  if (lastMonthIncome === 0) return 0
-  return ((currentMonthIncome - lastMonthIncome) / lastMonthIncome * 100).toFixed(1)
+  // Calculate growth based on average - could be enhanced with historical API data
+  if (incomeStats.value.total === 0) return 0
+  return 0 // Growth would need comparison data from API
 })
 
 const filteredIncomeSources = computed(() => {
   let filtered = incomeSources.value
-  
+
   // فلترة حسب البحث
   if (searchQuery.value) {
     filtered = filtered.filter(item =>
-      item.description.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      item.category.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      item.notes.toLowerCase().includes(searchQuery.value.toLowerCase())
+      (item.name || '').toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      (item.type || '').toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      (item.notes || '').toLowerCase().includes(searchQuery.value.toLowerCase())
     )
   }
-  
-  // فلترة حسب الفئة
+
+  // فلترة حسب النوع
   if (selectedCategory.value) {
-    filtered = filtered.filter(item => item.category === selectedCategory.value)
+    filtered = filtered.filter(item => item.type === selectedCategory.value)
   }
-  
+
   // فلترة حسب التاريخ
   if (dateRange.value && dateRange.value.length === 2) {
     const startDate = new Date(dateRange.value[0])
     const endDate = new Date(dateRange.value[1])
     filtered = filtered.filter(item => {
-      const itemDate = new Date(item.date)
+      const itemDate = new Date(item.incomeDate)
       return itemDate >= startDate && itemDate <= endDate
     })
   }
-  
+
   return filtered
 })
 
 const incomeByCategory = computed(() => {
   const categories = {}
   incomeSources.value
-    .filter(item => item.status === 'confirmed')
+    .filter(item => item.status === 'received')
     .forEach(item => {
-      if (!categories[item.category]) {
-        categories[item.category] = 0
+      if (!categories[item.type]) {
+        categories[item.type] = 0
       }
-      categories[item.category] += item.amount
+      categories[item.type] += item.amount
     })
   return categories
 })
@@ -484,14 +479,20 @@ const incomeByCategory = computed(() => {
 // الدوال المساعدة
 // ========================================
 const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('ar-SA', {
-    style: 'currency',
-    currency: 'IQD'
-  }).format(amount)
+  if (amount == null) return '0 IQD'
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(amount) + ' IQD'
 }
 
 const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleDateString('ar-SA')
+  if (!dateString) return '-'
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  })
 }
 
 const formatDateForInput = (dateString) => {
@@ -514,67 +515,105 @@ const getStatusText = (status) => {
 }
 
 // ========================================
+// دوال تحميل البيانات من API
+// ========================================
+const loadIncome = async () => {
+  loading.value = true
+  try {
+    // Load income list and stats in parallel
+    const [data, stats] = await Promise.all([
+      listIncome(),
+      getIncomeStats()
+    ])
+    console.log('Income data received:', data)
+    console.log('Income stats received:', stats)
+    incomeSources.value = data
+    if (stats) {
+      incomeStats.value = stats
+    }
+  } catch (err) {
+    console.error('Error loading income:', err)
+  } finally {
+    loading.value = false
+  }
+}
+
+// ========================================
 // دوال إدارة البيانات
 // ========================================
 const openAddDialog = () => {
   editingIncome.value = null
   incomeForm.value = {
-    description: '',
+    name: '',
     amount: 0,
-    category: '',
-    notes: '',
-    date: new Date().toISOString().split('T')[0]
+    type: '',
+    incomeDate: new Date().toISOString().split('T')[0],
+    status: 'received',
+    notes: ''
   }
   showAddDialog.value = true
 }
 
 const editIncome = (item) => {
   editingIncome.value = item
-  incomeForm.value = { 
-    ...item,
-    date: formatDateForInput(item.date)
+  incomeForm.value = {
+    name: item.name || '',
+    amount: item.amount || 0,
+    type: item.type || '',
+    incomeDate: item.incomeDate ? formatDateForInput(item.incomeDate) : new Date().toISOString().split('T')[0],
+    status: item.status || 'received',
+    notes: item.notes || ''
   }
   showAddDialog.value = true
 }
 
-const deleteIncome = (item) => {
-  if (confirm(`هل أنت متأكد من حذف الإيراد "${item.description}"؟`)) {
-    const index = incomeSources.value.findIndex(i => i.id === item.id)
-    if (index > -1) {
-      incomeSources.value.splice(index, 1)
-      // حفظ في localStorage
-      saveToLocalStorage()
+const deleteIncome = async (item) => {
+  if (confirm(`هل أنت متأكد من حذف الإيراد "${item.name}"؟`)) {
+    try {
+      await deleteIncomeApi(item.id)
+      await loadIncome()
+    } catch (err) {
+      console.error('Error deleting income:', err)
     }
   }
 }
 
-const saveIncome = () => {
+const saveIncome = async () => {
   if (valid.value) {
-    if (editingIncome.value) {
-      // تحديث الإيراد الموجود
-      const index = incomeSources.value.findIndex(i => i.id === editingIncome.value.id)
-      if (index > -1) {
-        incomeSources.value[index] = {
-          ...incomeForm.value,
-          id: editingIncome.value.id,
-          status: editingIncome.value.status,
-          source: editingIncome.value.source
-        }
+    try {
+      // Convert date string to ISO datetime format for backend
+      const dateValue = incomeForm.value.incomeDate
+      const isoDate = dateValue ? new Date(dateValue).toISOString() : new Date().toISOString()
+
+      // Build payload with required fields
+      const payload = {
+        name: incomeForm.value.name,
+        amount: Number(incomeForm.value.amount),
+        incomeDate: isoDate
       }
-    } else {
-      // إضافة إيراد جديد
-      const newIncome = {
-        ...incomeForm.value,
-        id: Date.now(),
-        status: 'confirmed',
-        source: 'داخلي'
+
+      // Add optional fields if they have values
+      if (incomeForm.value.type) {
+        payload.type = incomeForm.value.type
       }
-      incomeSources.value.unshift(newIncome)
+      if (incomeForm.value.status) {
+        payload.status = incomeForm.value.status
+      }
+      if (incomeForm.value.notes) {
+        payload.notes = incomeForm.value.notes
+      }
+
+      if (editingIncome.value) {
+        await updateIncome(editingIncome.value.id, payload)
+      } else {
+        await createIncome(payload)
+      }
+
+      await loadIncome()
+      closeDialog()
+    } catch (err) {
+      console.error('Error saving income:', err)
     }
-    
-    // حفظ في localStorage
-    saveToLocalStorage()
-    closeDialog()
   }
 }
 
@@ -582,41 +621,12 @@ const closeDialog = () => {
   showAddDialog.value = false
   editingIncome.value = null
   incomeForm.value = {
-    description: '',
+    name: '',
     amount: 0,
-    category: '',
-    notes: '',
-    date: new Date().toISOString().split('T')[0]
-  }
-}
-
-const updateIncomeStatus = (item, newStatus) => {
-  const index = incomeSources.value.findIndex(i => i.id === item.id)
-  if (index > -1) {
-    incomeSources.value[index].status = newStatus
-    saveToLocalStorage()
-  }
-}
-
-// ========================================
-// دوال التخزين المحلي
-// ========================================
-const saveToLocalStorage = () => {
-  try {
-    localStorage.setItem('incomeSources', JSON.stringify(incomeSources.value))
-  } catch (error) {
-    console.error('خطأ في حفظ البيانات:', error)
-  }
-}
-
-const loadFromLocalStorage = () => {
-  try {
-    const saved = localStorage.getItem('incomeSources')
-    if (saved) {
-      incomeSources.value = JSON.parse(saved)
-    }
-  } catch (error) {
-    console.error('خطأ في تحميل البيانات:', error)
+    type: '',
+    incomeDate: new Date().toISOString().split('T')[0],
+    status: 'received',
+    notes: ''
   }
 }
 
@@ -624,20 +634,19 @@ const loadFromLocalStorage = () => {
 // دوال التصدير والطباعة
 // ========================================
 const exportToCSV = () => {
-  const headers = ['الوصف', 'المبلغ', 'الفئة', 'المصدر', 'الحالة', 'التاريخ', 'ملاحظات']
+  const csvHeaders = ['الاسم', 'المبلغ', 'النوع', 'الحالة', 'التاريخ', 'ملاحظات']
   const csvContent = [
-    headers.join(','),
+    csvHeaders.join(','),
     ...filteredIncomeSources.value.map(item => [
-      `"${item.description}"`,
+      `"${item.name || ''}"`,
       item.amount,
-      `"${item.category}"`,
-      `"${item.source}"`,
+      `"${item.type || ''}"`,
       `"${getStatusText(item.status)}"`,
-      `"${formatDate(item.date)}"`,
+      `"${formatDate(item.incomeDate)}"`,
       `"${item.notes || ''}"`
     ].join(','))
   ].join('\n')
-  
+
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
   const link = document.createElement('a')
   link.href = URL.createObjectURL(blob)
@@ -655,24 +664,24 @@ const printReport = () => {
 const getIncomeTrend = (months = 6) => {
   const trends = []
   const currentDate = new Date()
-  
+
   for (let i = months - 1; i >= 0; i--) {
     const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1)
     const monthIncome = incomeSources.value
       .filter(item => {
-        const itemDate = new Date(item.date)
+        const itemDate = new Date(item.incomeDate)
         return itemDate.getMonth() === date.getMonth() &&
                itemDate.getFullYear() === date.getFullYear() &&
-               item.status === 'confirmed'
+               item.status === 'received'
       })
       .reduce((sum, item) => sum + item.amount, 0)
-    
+
     trends.push({
-      month: date.toLocaleDateString('ar-SA', { month: 'short' }),
+      month: date.toLocaleDateString('en-US', { month: 'short' }),
       amount: monthIncome
     })
   }
-  
+
   return trends
 }
 
@@ -684,25 +693,10 @@ const getTopCategories = (limit = 5) => {
 }
 
 // ========================================
-// مراقبة التغييرات
-// ========================================
-watch(incomeSources, () => {
-  // إعادة حساب الإحصائيات عند تغيير البيانات
-}, { deep: true })
-
-// ========================================
 // دورة الحياة
 // ========================================
 onMounted(() => {
-  loading.value = true
-  
-  // تحميل البيانات من localStorage
-  loadFromLocalStorage()
-  
-  // محاكاة تحميل البيانات
-  setTimeout(() => {
-    loading.value = false
-  }, 1000)
+  loadIncome()
 })
 </script>
 

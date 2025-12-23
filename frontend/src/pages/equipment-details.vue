@@ -67,229 +67,277 @@
         </div>
       </v-card-text>
 
-      <!-- Equipment Table -->
+    </v-card>
+
+    <!-- Equipment Table Card -->
+    <v-card class="data-table-card" elevation="2">
+      <v-card-title class="table-title indigo-title">
+        <span class="title-text">قائمة الآليات</span>
+      </v-card-title>
+
       <v-data-table
         :headers="equipmentHeaders"
         :items="equipmentData"
         :search="equipmentSearch"
         :items-per-page="10"
-        class="data-table equipment-table"
+        class="project-table"
         no-data-text="لا توجد بيانات متاحة"
         loading-text="جاري التحميل..."
-        density="comfortable"
+        hover
       >
-        <template v-slot:item.actions="{ item }">
-          <v-btn
-            icon="mdi-delete"
-            size="small"
-            color="error"
-            variant="text"
-            @click="deleteEquipment(item)"
-            title="حذف الآلة"
-          />
+        <!-- Serial Number Column -->
+        <template #item.id="{ index }">
+          <span class="serial-number">{{ index + 1 }}</span>
+        </template>
+
+        <!-- Equipment Name Column -->
+        <template #item.equipmentName="{ item }">
+          <span class="project-name">{{ item.equipmentName }}</span>
+        </template>
+
+        <!-- Quantity Column -->
+        <template #item.quantity="{ item }">
+          <span class="date-text">{{ item.quantity }}</span>
+        </template>
+
+        <!-- Cost Column -->
+        <template #item.cost="{ item }">
+          <span class="cost-text">{{ formatCurrency(item.cost) }}</span>
+        </template>
+
+        <!-- Total Column -->
+        <template #item.total="{ item }">
+          <span class="cost-text">{{ formatCurrency(item.total) }}</span>
+        </template>
+
+        <!-- Notes Column -->
+        <template #item.notes="{ item }">
+          <span class="project-name">{{ item.notes || '-' }}</span>
+        </template>
+
+        <!-- Actions Column -->
+        <template #item.actions="{ item }">
+          <div class="action-buttons">
+            <v-btn
+              icon="mdi-delete"
+              size="small"
+              color="error"
+              variant="text"
+              @click="deleteEquipment(item)"
+              title="حذف الآلة"
+              class="action-btn"
+            />
+          </div>
         </template>
       </v-data-table>
     </v-card>
 
-    <!-- Add New Equipment Dialog -->
-    <v-dialog v-model="showAddDialog" max-width="600" persistent>
-      <v-card class="dialog-card">
-        <v-card-title class="dialog-title">
-          <v-icon class="me-2">mdi-truck-plus</v-icon>
-          إضافة آلة جديدة
+    <!-- Add New Equipment Dialog - Clean Form Style -->
+    <v-dialog v-model="showAddDialog" max-width="900" scrollable persistent>
+      <v-card class="clean-dialog-card clean-form-card">
+        <!-- Header Section -->
+        <v-card-title class="clean-dialog-header clean-form-header">
+          <h2 class="clean-form-title">معلومات الآلة</h2>
         </v-card-title>
-        <v-card-text class="dialog-content">
+
+        <!-- Form Content -->
+        <v-card-text class="clean-form-content">
+          <p class="clean-form-instruction">
+            لإتمام إضافة الآلة، يرجى توفير المعلومات التالية. يرجى ملاحظة أن جميع الحقول المميزة بعلامة النجمة (*) مطلوبة.
+          </p>
+
           <v-form ref="form" v-model="formValid">
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="newEquipment.name"
-                  label="اسم الآلة"
-                  variant="outlined"
-                  :rules="[v => !!v || 'اسم الآلة مطلوب']"
-                  required
-                />
+            <!-- الصف الأول: اسم الآلة -->
+            <v-row class="clean-form-row">
+              <v-col cols="12" md="6" class="clean-form-column">
+                <div class="clean-form-field-wrapper">
+                  <label class="clean-form-label">
+                    اسم الآلة <span class="required-star">*</span>
+                  </label>
+                  <v-text-field
+                    v-model="newEquipment.equipmentName"
+                    variant="outlined"
+                    density="comfortable"
+                    placeholder="أدخل اسم الآلة"
+                    :rules="[v => !!v || 'اسم الآلة مطلوب']"
+                    required
+                    hide-details="auto"
+                    class="clean-form-input"
+                  />
+                </div>
               </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="newEquipment.type"
-                  label="نوع الآلة"
-                  variant="outlined"
-                  :rules="[v => !!v || 'نوع الآلة مطلوب']"
-                  required
-                />
+            </v-row>
+
+            <!-- الصف الثاني: العدد، التكلفة -->
+            <v-row class="clean-form-row">
+              <v-col cols="12" md="6" class="clean-form-column">
+                <div class="clean-form-field-wrapper">
+                  <label class="clean-form-label">
+                    العدد <span class="required-star">*</span>
+                  </label>
+                  <v-text-field
+                    v-model.number="newEquipment.quantity"
+                    variant="outlined"
+                    density="comfortable"
+                    type="number"
+                    placeholder="0"
+                    :rules="[v => (v > 0) || 'العدد يجب أن يكون أكبر من صفر']"
+                    required
+                    hide-details="auto"
+                    class="clean-form-input"
+                  />
+                </div>
               </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="newEquipment.model"
-                  label="الموديل"
-                  variant="outlined"
-                  :rules="[v => !!v || 'الموديل مطلوب']"
-                  required
-                />
+              <v-col cols="12" md="6" class="clean-form-column">
+                <div class="clean-form-field-wrapper">
+                  <label class="clean-form-label">
+                    التكلفة (د.ع) <span class="required-star">*</span>
+                  </label>
+                  <v-text-field
+                    v-model.number="newEquipment.cost"
+                    variant="outlined"
+                    density="comfortable"
+                    type="number"
+                    placeholder="0"
+                    :rules="[v => (v > 0) || 'التكلفة يجب أن تكون أكبر من صفر']"
+                    required
+                    hide-details="auto"
+                    class="clean-form-input"
+                  />
+                </div>
               </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="newEquipment.rentalCost"
-                  label="تكلفة الإيجار اليومية"
-                  variant="outlined"
-                  type="number"
-                  :rules="[v => !!v || 'تكلفة الإيجار مطلوبة']"
-                  required
-                />
+            </v-row>
+
+            <!-- الصف الثالث: المجموع -->
+            <v-row class="clean-form-row">
+              <v-col cols="12" md="6" class="clean-form-column">
+                <div class="clean-form-field-wrapper">
+                  <label class="clean-form-label">
+                    المجموع (د.ع)
+                  </label>
+                  <v-text-field
+                    :value="(newEquipment.quantity * newEquipment.cost) || 0"
+                    variant="outlined"
+                    density="comfortable"
+                    type="number"
+                    placeholder="0"
+                    readonly
+                    hide-details="auto"
+                    class="clean-form-input"
+                  />
+                </div>
               </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="newEquipment.operator"
-                  label="اسم السائق/المشغل"
-                  variant="outlined"
-                  :rules="[v => !!v || 'اسم المشغل مطلوب']"
-                  required
-                />
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="newEquipment.status"
-                  label="الحالة"
-                  variant="outlined"
-                  :rules="[v => !!v || 'الحالة مطلوبة']"
-                  required
-                />
+            </v-row>
+
+            <!-- الصف الرابع: الملاحظات -->
+            <v-row class="clean-form-row">
+              <v-col cols="12" class="clean-form-column">
+                <div class="clean-form-field-wrapper">
+                  <label class="clean-form-label">ملاحظات</label>
+                  <v-textarea
+                    v-model="newEquipment.notes"
+                    variant="outlined"
+                    rows="4"
+                    density="comfortable"
+                    placeholder="أدخل ملاحظات إضافية"
+                    hide-details="auto"
+                    class="clean-form-input"
+                  />
+                </div>
               </v-col>
             </v-row>
           </v-form>
         </v-card-text>
-        <v-card-actions class="dialog-actions">
-          <v-spacer></v-spacer>
-          <v-btn @click="closeAddDialog" color="grey">
+
+        <v-card-actions class="clean-form-actions">
+          <v-spacer />
+          <v-btn
+            class="clean-form-cancel-btn"
+            variant="outlined"
+            @click="closeAddDialog"
+          >
             إلغاء
           </v-btn>
-          <v-btn @click="saveEquipment" color="primary" :disabled="!formValid">
-            حفظ
+          <v-btn
+            class="clean-form-continue-btn"
+            variant="elevated"
+            :disabled="!formValid"
+            @click="saveEquipment"
+          >
+            حفظ الآلة
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-
-    <!-- Simple Dialog for Add Equipment -->
-    <SimpleDialog
-      :open="showAddDialog"
-      title="إضافة آلة"
-      save-text="حفظ"
-      icon="mdi-truck-plus"
-      @close="closeAddDialog"
-      @save="saveEquipmentModern"
-    >
-      <EquipmentForm
-        v-model="newEquipment"
-        ref="equipmentFormRef"
-      />
-    </SimpleDialog>
 
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import SimpleDialog from '@/components/SimpleDialog.vue'
-import EquipmentForm from '@/components/EquipmentForm.vue'
+import { ref, computed, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { listEquipmentByWorkDay, createEquipment, deleteEquipment as deleteEquipmentApi } from '@/api/materials'
 
 const router = useRouter()
+const route = useRoute()
+
+// Get workDayId and projectId from route query
+const workDayId = computed(() => route.query.workDayId || null)
+const projectId = computed(() => route.query.projectId || null)
 
 // Reactive data
 const equipmentSearch = ref('')
 const showAddDialog = ref(false)
 const formValid = ref(false)
+const loading = ref(false)
+const form = ref(null)
 
-// Modern dialog data
+// Form data - aligned with backend DTO
 const newEquipment = ref({
-  type: '',
-  dailyCost: '',
-  daysUsed: '',
-  totalCost: '',
-  driverName: '',
-  driverPhone: '',
+  equipmentName: '',
+  quantity: 0,
+  cost: 0,
   notes: ''
 })
 
-const equipmentFormRef = ref(null)
-
-// Form data
-const newEquipmentItem = ref({
-  name: '',
-  type: '',
-  model: '',
-  rentalCost: '',
-  operator: '',
-  status: ''
-})
-
-// Table headers
+// Table headers - aligned with backend fields
 const equipmentHeaders = [
   { title: 'التسلسل', key: 'id', sortable: false },
-  { title: 'اسم الآلة', key: 'name', sortable: true },
-  { title: 'نوع الآلة', key: 'type', sortable: true },
-  { title: 'الموديل', key: 'model', sortable: true },
-  { title: 'تكلفة الإيجار اليومية', key: 'rentalCost', sortable: true },
-  { title: 'المشغل', key: 'operator', sortable: true },
-  { title: 'الحالة', key: 'status', sortable: true },
+  { title: 'اسم الآلة', key: 'equipmentName', sortable: true },
+  { title: 'العدد', key: 'quantity', sortable: true },
+  { title: 'التكلفة', key: 'cost', sortable: true },
+  { title: 'المجموع', key: 'total', sortable: true },
+  { title: 'الملاحظات', key: 'notes', sortable: false },
   { title: 'الإجراءات', key: 'actions', sortable: false }
 ]
 
-// Sample data
-const equipmentData = ref([
-  {
-    id: 1,
-    name: 'حفار هيدروليكي',
-    type: 'حفار',
-    model: 'CAT 320D',
-    rentalCost: 150000,
-    operator: 'أحمد محمد',
-    status: 'نشط'
-  },
-  {
-    id: 2,
-    name: 'رافعة برجية',
-    type: 'رافعة',
-    model: 'Potain MDT 178',
-    rentalCost: 200000,
-    operator: 'محمد علي',
-    status: 'نشط'
-  },
-  {
-    id: 3,
-    name: 'خلاطة خرسانة',
-    type: 'خلاطة',
-    model: 'Schwing SP 1000',
-    rentalCost: 80000,
-    operator: 'علي حسن',
-    status: 'نشط'
-  },
-  {
-    id: 4,
-    name: 'شاحنة نقل',
-    type: 'شاحنة',
-    model: 'Mercedes Actros',
-    rentalCost: 60000,
-    operator: 'حسن أحمد',
-    status: 'نشط'
-  },
-  {
-    id: 5,
-    name: 'جرافة',
-    type: 'جرافة',
-    model: 'Caterpillar D6T',
-    rentalCost: 120000,
-    operator: 'أحمد علي',
-    status: 'صيانة'
-  }
-])
+// Data from backend
+const equipmentData = ref([])
 
 // Methods
 const goBack = () => {
-  router.push('/work-day-details')
+  const query = {}
+  if (workDayId.value) query.id = workDayId.value
+  if (projectId.value) query.projectId = projectId.value
+  router.push({ path: '/work-day-details', query })
+}
+
+// Load data from backend
+const loadEquipment = async () => {
+  if (!workDayId.value) return
+  loading.value = true
+  try {
+    const data = await listEquipmentByWorkDay(workDayId.value)
+    equipmentData.value = data.map(item => ({
+      ...item,
+      total: item.quantity * item.cost
+    }))
+  } catch (err) {
+    console.error('Error loading equipment:', err)
+  } finally {
+    loading.value = false
+  }
 }
 
 const searchEquipment = () => {
@@ -297,22 +345,10 @@ const searchEquipment = () => {
 }
 
 const openAddDialog = () => {
-  newEquipmentItem.value = {
-    name: '',
-    type: '',
-    model: '',
-    rentalCost: '',
-    operator: '',
-    status: ''
-  }
-  // Reset modern form data
   newEquipment.value = {
-    type: '',
-    dailyCost: '',
-    daysUsed: '',
-    totalCost: '',
-    driverName: '',
-    driverPhone: '',
+    equipmentName: '',
+    quantity: 0,
+    cost: 0,
     notes: ''
   }
   showAddDialog.value = true
@@ -320,78 +356,83 @@ const openAddDialog = () => {
 
 const closeAddDialog = () => {
   showAddDialog.value = false
+  if (form.value) {
+    form.value.reset()
+  }
   newEquipment.value = {
-    name: '',
-    type: '',
-    model: '',
-    rentalCost: '',
-    operator: '',
-    status: ''
+    equipmentName: '',
+    quantity: 0,
+    cost: 0,
+    notes: ''
   }
 }
 
-const saveEquipment = () => {
-  const newMachine = {
-    id: equipmentData.value.length + 1,
-    name: newEquipmentItem.value.name,
-    type: newEquipmentItem.value.type,
-    model: newEquipmentItem.value.model,
-    rentalCost: parseInt(newEquipmentItem.value.rentalCost),
-    operator: newEquipmentItem.value.operator,
-    status: newEquipmentItem.value.status
-  }
-  equipmentData.value.push(newMachine)
-  closeAddDialog()
-}
+const saveEquipment = async () => {
+  const { valid } = await form.value.validate()
+  if (valid) {
+    try {
+      const wdId = parseInt(workDayId.value)
+      if (!wdId || isNaN(wdId)) {
+        console.error('Invalid workDayId:', workDayId.value)
+        return
+      }
 
-// Modern dialog function for equipment
-const saveEquipmentModern = () => {
-  if (equipmentFormRef.value && equipmentFormRef.value.isValid()) {
-    const newMachine = {
-      id: equipmentData.value.length + 1,
-      name: newEquipment.value.type,
-      type: newEquipment.value.type,
-      model: '-',
-      rentalCost: parseInt(newEquipment.value.dailyCost),
-      operator: newEquipment.value.driverName,
-      status: 'نشط',
-      daysUsed: parseInt(newEquipment.value.daysUsed),
-      totalCost: parseInt(newEquipment.value.totalCost),
-      driverPhone: newEquipment.value.driverPhone,
-      notes: newEquipment.value.notes
+      const payload = {
+        workDayId: wdId,
+        equipmentName: newEquipment.value.equipmentName,
+        quantity: Number(newEquipment.value.quantity),
+        cost: Number(newEquipment.value.cost)
+      }
+      // Optional field
+      if (newEquipment.value.notes && newEquipment.value.notes.trim()) {
+        payload.notes = newEquipment.value.notes.trim()
+      }
+
+      await createEquipment(payload)
+      await loadEquipment()
+
+      // Reset form
+      form.value.reset()
+      newEquipment.value = {
+        equipmentName: '',
+        quantity: 0,
+        cost: 0,
+        notes: ''
+      }
+
+      showAddDialog.value = false
+    } catch (err) {
+      console.error('Error creating equipment:', err)
     }
-    
-    equipmentData.value.push(newMachine)
-    
-    // Reset form
-    equipmentFormRef.value.resetForm()
-    newEquipment.value = {
-      type: '',
-      dailyCost: '',
-      daysUsed: '',
-      totalCost: '',
-      driverName: '',
-      driverPhone: '',
-      notes: ''
-    }
-    
-    showAddDialog.value = false
   }
 }
 
-const deleteEquipment = (item) => {
+const deleteEquipment = async (item) => {
   if (confirm('هل أنت متأكد من حذف هذه الآلة؟')) {
-    const index = equipmentData.value.findIndex(e => e.id === item.id)
-    if (index > -1) {
-      equipmentData.value.splice(index, 1)
+    try {
+      await deleteEquipmentApi(item.id)
+      await loadEquipment()
+    } catch (err) {
+      console.error('Error deleting equipment:', err)
     }
   }
 }
 
-// Lifecycle
-onMounted(() => {
-  console.log('✅ صفحة تفاصيل الآليات تم تحميلها بنجاح!')
-})
+// Format currency
+const formatCurrency = (value) => {
+  if (!value) return '0 IQD'
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(value) + ' IQD'
+}
+
+// Lifecycle - watch workDayId and load data when available
+watch(workDayId, (newId) => {
+  if (newId) {
+    loadEquipment()
+  }
+}, { immediate: true })
 </script>
 
 <style scoped>
@@ -842,39 +883,316 @@ onMounted(() => {
   50% { opacity: 0.6; transform: scale(1.2); }
 }
 
+/* ========================================
+   Table Card Styles - Same as Materials/Labor
+   ======================================== */
+.data-table-card {
+  background: rgba(255, 249, 249, 0.95);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin-top: 24px;
+}
+
+.table-title {
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
+  color: #ffffff !important;
+  padding: 8px 12px !important;
+  border-radius: 8px 8px 0 0 !important;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25) !important;
+  margin: 0 !important;
+  font-weight: 600 !important;
+  font-size: 0.95rem !important;
+  text-align: right !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  min-height: 36px !important;
+}
+
+.indigo-title {
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+.title-text {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  font-size: 0.95rem !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25) !important;
+}
+
+.project-table {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100% !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.project-table :deep(.v-data-table__th) {
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  font-size: 0.55rem !important;
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  padding: 2px 4px !important;
+  min-height: 20px !important;
+  border-bottom: 1px solid #0d47a1 !important;
+  position: relative;
+}
+
+.project-table :deep(.v-data-table__td) {
+  color: #1a1a1a !important;
+  font-weight: 500 !important;
+  font-size: 0.6rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  padding: 3px 4px !important;
+  min-height: 32px !important;
+}
+
+.project-table .v-data-table__wrapper tbody tr:nth-child(even) {
+  background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%) !important;
+}
+
+.project-table .v-data-table__wrapper tbody tr:nth-child(odd) {
+  background: linear-gradient(135deg, #ffffff 0%, #faf5ff 100%) !important;
+}
+
+.project-table .v-data-table__wrapper tbody tr:hover {
+  background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15) !important;
+  transition: all 0.3s ease !important;
+}
+
+.project-table .serial-number {
+  color: #000000 !important;
+  font-weight: 600 !important;
+  font-size: 0.6rem !important;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%) !important;
+  padding: 3px 6px !important;
+  border-radius: 6px !important;
+  display: inline-block !important;
+  min-width: 30px !important;
+  text-align: center !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+.project-table .project-name {
+  color: #000000 !important;
+  font-weight: 500 !important;
+  font-size: 0.6rem !important;
+  text-align: right !important;
+  padding: 2px 4px !important;
+  border-radius: 4px !important;
+  display: inline-block !important;
+  max-width: 200px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.project-table .date-text {
+  color: #000000 !important;
+  font-weight: 500 !important;
+  font-size: 0.6rem !important;
+  font-family: 'Arial', 'Helvetica', sans-serif !important;
+}
+
+.project-table .cost-text {
+  color: #000000 !important;
+  font-weight: 600 !important;
+  font-size: 0.6rem !important;
+  font-family: 'Arial', 'Helvetica', sans-serif !important;
+  direction: ltr !important;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%) !important;
+  padding: 3px 6px !important;
+  border-radius: 6px !important;
+  display: inline-block !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid #d1d5db !important;
+  white-space: nowrap !important;
+  min-width: 80px !important;
+  text-align: center !important;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-btn {
+  min-width: 28px !important;
+  height: 28px !important;
+  border-radius: 4px !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
+}
+
+.action-btn .v-icon {
+  font-size: 16px !important;
+}
+
+.action-btn:hover {
+  transform: translateY(-2px) scale(1.05) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* ========================================
+   Clean Form Styles - Same as Materials/Labor
+   ======================================== */
+.clean-form-card {
+  background: #ffffff !important;
+}
+
+.clean-dialog-header,
+.clean-form-header {
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
+  color: #ffffff !important;
+  padding: 1rem 1.5rem !important;
+}
+
+.clean-form-title {
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  margin: 0 !important;
+  color: #ffffff !important;
+}
+
+.clean-form-content {
+  padding: 1.5rem !important;
+  background: #ffffff !important;
+}
+
+.clean-form-instruction {
+  color: #666666 !important;
+  font-size: 0.9rem !important;
+  margin-bottom: 1.5rem !important;
+  line-height: 1.6 !important;
+}
+
+.clean-form-row {
+  margin-bottom: 0.5rem !important;
+}
+
+.clean-form-column {
+  padding: 0.5rem !important;
+}
+
+.clean-form-field-wrapper {
+  margin-bottom: 0.5rem;
+}
+
+.clean-form-label {
+  display: block;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  color: #333333 !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.required-star {
+  color: #d32f2f !important;
+}
+
+.clean-form-input :deep(.v-field) {
+  background-color: #f5f5f5 !important;
+  border-radius: 8px !important;
+}
+
+.clean-form-input :deep(.v-field__input) {
+  color: #333333 !important;
+  font-size: 0.95rem !important;
+}
+
+.clean-form-input :deep(.v-field__outline) {
+  border-color: #e0e0e0 !important;
+}
+
+.clean-form-input :deep(.v-field--focused .v-field__outline) {
+  border-color: #1976d2 !important;
+  border-width: 2px !important;
+}
+
+.clean-form-input :deep(.v-label) {
+  color: #666666 !important;
+}
+
+.clean-form-input :deep(input::placeholder),
+.clean-form-input :deep(textarea::placeholder) {
+  color: #999999 !important;
+}
+
+.clean-form-actions {
+  padding: 1rem 1.5rem !important;
+  background: #f5f5f5 !important;
+  border-top: 1px solid #e0e0e0 !important;
+}
+
+.clean-form-cancel-btn {
+  color: #666666 !important;
+  border-color: #cccccc !important;
+}
+
+.clean-form-cancel-btn:hover {
+  background: #eeeeee !important;
+}
+
+.clean-form-continue-btn {
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
+  color: #ffffff !important;
+}
+
+.clean-form-continue-btn:hover {
+  background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%) !important;
+}
+
+.clean-form-continue-btn:disabled {
+  background: #cccccc !important;
+  color: #999999 !important;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .equipment-details-page {
     padding: 1rem;
   }
-  
+
   .page-title {
     font-size: 2rem;
   }
-  
+
   .header-content {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .dialog-content {
     padding: 1rem;
   }
-  
+
   .search-box {
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .search-btn, .add-btn {
     width: 100%;
     min-width: auto;
   }
-  
+
   .search-container {
     padding: 0.75rem;
   }
-  
+
   .search-field {
     margin-bottom: 0.5rem;
   }

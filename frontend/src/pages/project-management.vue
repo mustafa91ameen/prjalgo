@@ -293,7 +293,7 @@
                   <v-icon size="48" class="stat-icon">mdi-folder-multiple</v-icon>
                 </div>
                 <div class="stat-info">
-                  <h3 class="stat-value">{{ totalProjects || 3 }}</h3>
+                  <h3 class="stat-value">{{ displayTotalProjects }}</h3>
                   <p class="stat-label">إجمالي المشاريع</p>
                 </div>
               </div>
@@ -305,7 +305,7 @@
                   <v-icon size="48" class="stat-icon check-icon">mdi-check-circle</v-icon>
                 </div>
                 <div class="stat-info">
-                  <h3 class="stat-value">{{ activeProjects || 1 }}</h3>
+                  <h3 class="stat-value">{{ displayActiveProjects }}</h3>
                   <p class="stat-label">مشاريع نشطة</p>
                 </div>
               </div>
@@ -317,7 +317,7 @@
                   <v-icon size="48" class="stat-icon">mdi-clock-alert</v-icon>
                 </div>
                 <div class="stat-info">
-                  <h3 class="stat-value">{{ pendingProjects || 1 }}</h3>
+                  <h3 class="stat-value">{{ displayPendingProjects }}</h3>
                   <p class="stat-label">في الانتظار</p>
                 </div>
               </div>
@@ -329,7 +329,7 @@
                   <v-icon size="48" class="stat-icon">mdi-currency-usd</v-icon>
                 </div>
                 <div class="stat-info">
-                  <h3 class="stat-value">{{ formatCurrency(totalBudget) || '225,000 د.ع' }}</h3>
+                  <h3 class="stat-value">{{ displayTotalBudget }}</h3>
                   <p class="stat-label">إجمالي الميزانية</p>
                 </div>
               </div>
@@ -341,7 +341,7 @@
                   <v-icon size="48" class="stat-icon">mdi-chart-line</v-icon>
                 </div>
                 <div class="stat-info">
-                  <h3 class="stat-value">{{ averageProgress || 0 }}%</h3>
+                  <h3 class="stat-value">{{ displayAverageProgress }}</h3>
                   <p class="stat-label">متوسط التقدم</p>
                 </div>
               </div>
@@ -356,7 +356,7 @@
           <div class="d-flex align-center">
             <v-icon class="me-2" style="color: #4338ca;" size="28">mdi-folder-multiple</v-icon>
             <span class="text-h4 font-weight-black" style="color: #ffffff; font-family: 'Arial', 'Helvetica', sans-serif; text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2); letter-spacing: 0.5px;">قائمة مشاريع</span>
-            <v-chip class="ms-3" color="primary" size="small" variant="elevated">{{ projects.length || 3 }}</v-chip>
+            <v-chip class="ms-3" color="primary" size="small" variant="elevated">{{ projects.length }}</v-chip>
           </div>
           <v-btn
             class="add-button btn-glow light-sweep smooth-transition"
@@ -441,9 +441,9 @@
         </v-card-text>
 
         <!-- Projects Grid -->
-        <v-row v-if="(filteredProjects.length > 0) || true" class="projects-grid-row">
+        <v-row v-if="filteredProjects.length > 0" class="projects-grid-row">
           <v-col
-            v-for="project in (filteredProjects.length > 0 ? filteredProjects : sampleProjects)"
+            v-for="project in filteredProjects"
             :key="project.id"
             cols="12"
             sm="6"
@@ -456,12 +456,25 @@
               elevation="4"
               hover
               min-height="400"
+              :class="{ 'warning-border': project.currentSpending >= project.warningCost && project.warningCost > 0 }"
             >
+              <!-- Warning Banner -->
+              <v-alert
+                v-if="project.currentSpending >= project.warningCost && project.warningCost > 0"
+                type="warning"
+                variant="tonal"
+                density="compact"
+                class="ma-0 rounded-0"
+              >
+                <v-icon class="me-1">mdi-alert</v-icon>
+                تحذير: المصروفات تجاوزت حد التحذير!
+              </v-alert>
+
               <!-- Project Header -->
               <v-card-title class="project-card-title">
                 <div class="d-flex align-center">
-                  <v-avatar size="40" color="primary" variant="tonal">
-                    <v-icon>mdi-folder-multiple</v-icon>
+                  <v-avatar size="40" :color="project.currentSpending >= project.warningCost && project.warningCost > 0 ? 'warning' : 'primary'" variant="tonal">
+                    <v-icon>{{ project.currentSpending >= project.warningCost && project.warningCost > 0 ? 'mdi-alert' : 'mdi-folder-multiple' }}</v-icon>
                   </v-avatar>
                   <div class="ms-3 flex-grow-1">
                     <h3 class="project-name">{{ project.name }}</h3>
@@ -488,17 +501,17 @@
                 <div class="project-details">
                   <div class="detail-item">
                     <v-icon size="small" color="primary">mdi-map-marker</v-icon>
-                    <span class="detail-text">{{ project.location }}</span>
+                    <span class="detail-text">{{ project.location || 'غير محدد' }}</span>
                   </div>
 
                   <div class="detail-item">
                     <v-icon size="small" color="success">mdi-currency-usd</v-icon>
-                    <span class="detail-text">{{ formatCurrency(project.initialCost) }}</span>
+                    <span class="detail-text">الميزانية: {{ formatCurrency(project.totalCost) }}</span>
                   </div>
 
                   <div class="detail-item">
-                    <v-icon size="small" color="warning">mdi-alert</v-icon>
-                    <span class="detail-text">{{ formatCurrency(project.criticalCost || project.initialCost * 1.5) }}</span>
+                    <v-icon size="small" :color="project.currentSpending > project.warningCost ? 'error' : 'info'">mdi-cash</v-icon>
+                    <span class="detail-text" :class="project.currentSpending > project.warningCost ? 'text-error' : ''">المصروف: {{ formatCurrency(project.currentSpending) }}</span>
                   </div>
 
                   <div class="detail-item">
@@ -507,8 +520,8 @@
                   </div>
 
                   <div class="detail-item">
-                    <v-icon size="small" color="secondary">mdi-account</v-icon>
-                    <span class="detail-text">{{ project.user || project.manager || 'غير محدد' }}</span>
+                    <v-icon size="small" color="secondary">mdi-phone</v-icon>
+                    <span class="detail-text">{{ project.clientPhone || 'غير محدد' }}</span>
                   </div>
                 </div>
 
@@ -545,15 +558,11 @@
             </v-card>
           </v-col>
         </v-row>
-
-        <!-- No Projects Message -->
-        <v-card v-else class="no-projects-card" elevation="2">
-          <v-card-text class="text-center py-8">
-            <v-icon size="4rem" color="grey-lighten-1">mdi-folder-open-outline</v-icon>
-            <h3 class="text-h5 text-grey-lighten-1 mt-4">لا يوجد مشاريع</h3>
-            <p class="text-body-1 text-grey-lighten-1">لم يتم العثور على أي مشاريع تطابق معايير البحث</p>
-          </v-card-text>
-        </v-card>
+        <div v-else class="pa-6 text-center text-medium-emphasis">
+          <v-icon size="4rem" color="grey-lighten-1">mdi-folder-open-outline</v-icon>
+          <h3 class="text-h5 text-grey-lighten-1 mt-4">لا يوجد مشاريع</h3>
+          <p class="text-body-1 text-grey-lighten-1">لم يتم العثور على أي مشاريع تطابق معايير البحث</p>
+        </div>
 
       </v-card>
 
@@ -745,171 +754,130 @@
             <v-form ref="form" v-model="formValid">
               <!-- الصف الأول: اسم، نوع، مكان المشروع -->
               <v-row class="profile-form-row">
-                <v-col cols="12" md="4" class="profile-form-column">
-                  <div class="profile-form-field-wrapper">
-                    <label class="profile-form-label">
-                      اسم المشروع <span class="required-star">*</span>
-                    </label>
-                    <v-text-field
-                      v-model="projectForm.name"
-                      variant="outlined"
-                      density="comfortable"
-                      placeholder="أدخل اسم المشروع"
-                      :rules="[v => !!v || 'اسم المشروع مطلوب']"
-                      required
-                      hide-details="auto"
-                      class="profile-form-input"
-                    />
-                  </div>
+                <v-col cols="12" md="4">
+                  <v-text-field
+                    v-model="projectForm.name"
+                    label="اسم المشروع *"
+                    variant="outlined"
+                    density="comfortable"
+                    :rules="[v => !!v || 'اسم المشروع مطلوب']"
+                    required
+                    hide-details="auto"
+                  />
                 </v-col>
 
-                <v-col cols="12" md="4" class="profile-form-column">
-                  <div class="profile-form-field-wrapper">
-                    <label class="profile-form-label">
-                      نوع المشروع
-                    </label>
-                    <v-text-field
-                      v-model="projectForm.type"
-                      variant="outlined"
-                      density="comfortable"
-                      placeholder="أدخل نوع المشروع"
-                      hide-details="auto"
-                      class="profile-form-input"
-                    />
-                  </div>
+                <v-col cols="12" md="4">
+                  <v-text-field
+                    v-model="projectForm.type"
+                    label="نوع المشروع"
+                    variant="outlined"
+                    density="comfortable"
+                    hide-details="auto"
+                  />
                 </v-col>
 
-                <v-col cols="12" md="4" class="profile-form-column">
-                  <div class="profile-form-field-wrapper">
-                    <label class="profile-form-label">
-                      مكان المشروع <span class="required-star">*</span>
-                    </label>
-                    <v-text-field
-                      v-model="projectForm.location"
-                      variant="outlined"
-                      density="comfortable"
-                      placeholder="أدخل مكان المشروع"
-                      :rules="[v => !!v || 'مكان المشروع مطلوب']"
-                      required
-                      hide-details="auto"
-                      class="profile-form-input"
-                    />
-                  </div>
+                <v-col cols="12" md="4">
+                  <v-text-field
+                    v-model="projectForm.location"
+                    label="مكان المشروع *"
+                    variant="outlined"
+                    density="comfortable"
+                    :rules="[v => !!v || 'مكان المشروع مطلوب']"
+                    required
+                    hide-details="auto"
+                  />
                 </v-col>
               </v-row>
 
               <!-- الصف الثاني: التكلفة والمدة والإجمالي -->
               <v-row class="profile-form-row">
-                <v-col cols="12" md="4" class="profile-form-column">
-                  <div class="profile-form-field-wrapper">
-                    <label class="profile-form-label">
-                      التكلفة المبدئية (د.ع) <span class="required-star">*</span>
-                    </label>
-                    <v-text-field
-                      v-model.number="projectForm.initialCost"
-                      type="number"
-                      variant="outlined"
-                      density="comfortable"
-                      placeholder="0"
-                      :rules="[v => v > 0 || 'التكلفة يجب أن تكون أكبر من صفر']"
-                      required
-                      hide-details="auto"
-                      class="profile-form-input"
-                    />
-                  </div>
+                <v-col cols="12" md="4">
+                  <v-text-field
+                    v-model.number="projectForm.initialCost"
+                    label="التكلفة المبدئية (د.ع) *"
+                    type="number"
+                    variant="outlined"
+                    density="comfortable"
+                    :rules="[v => v > 0 || 'التكلفة يجب أن تكون أكبر من صفر']"
+                    required
+                    hide-details="auto"
+                  />
                 </v-col>
 
-                <v-col cols="12" md="4" class="profile-form-column">
-                  <div class="profile-form-field-wrapper">
-                    <label class="profile-form-label">
-                      مدة المشروع (أيام)
-                    </label>
-                    <v-text-field
-                      v-model.number="projectForm.duration"
-                      type="number"
-                      variant="outlined"
-                      density="comfortable"
-                      placeholder="0"
-                      hide-details="auto"
-                      class="profile-form-input"
-                    />
-                  </div>
+                <v-col cols="12" md="4">
+                  <v-text-field
+                    v-model.number="projectForm.duration"
+                    label="مدة المشروع (أيام)"
+                    type="number"
+                    variant="outlined"
+                    density="comfortable"
+                    hide-details="auto"
+                  />
                 </v-col>
 
-                <v-col cols="12" md="4" class="profile-form-column">
-                  <div class="profile-form-field-wrapper">
-                    <label class="profile-form-label">
-                      التكلفة الإجمالية (د.ع)
-                    </label>
-                    <v-text-field
-                      :value="projectForm.initialCost * (projectForm.duration || 1)"
-                      variant="outlined"
-                      density="comfortable"
-                      readonly
-                      hide-details="auto"
-                      class="profile-form-input"
-                    />
-                  </div>
+                <v-col cols="12" md="4">
+                  <v-text-field
+                    v-model.number="projectForm.totalCost"
+                    label="التكلفة الإجمالية (د.ع) *"
+                    type="number"
+                    variant="outlined"
+                    density="comfortable"
+                    :rules="[v => v > 0 || 'التكلفة يجب أن تكون أكبر من صفر']"
+                    required
+                    hide-details="auto"
+                  />
                 </v-col>
               </v-row>
 
-              <!-- الصف الثالث: نسبة الإنجاز ورقم الهاتف -->
+              <!-- الصف الثالث: تاريخ البدء ورقم الهاتف -->
               <v-row class="profile-form-row">
-                <v-col cols="12" md="6" class="profile-form-column">
-                  <div class="profile-form-field-wrapper">
-                    <div class="profile-form-label-row">
-                      <label class="profile-form-label">
-                        نسبة الإنجاز
-                      </label>
-                      <span class="progress-value">{{ projectForm.progress || 0 }}%</span>
-                    </div>
-                    <v-slider
-                      v-model="projectForm.progress"
-                      min="0"
-                      max="100"
-                      step="5"
-                      thumb-label
-                      color="primary"
-                      class="profile-form-slider"
-                      hide-details="auto"
-                    />
-                  </div>
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model="projectForm.startDate"
+                    label="تاريخ البدء"
+                    type="date"
+                    variant="outlined"
+                    density="comfortable"
+                    hide-details="auto"
+                  />
                 </v-col>
 
-                <v-col cols="12" md="6" class="profile-form-column">
-                  <div class="profile-form-field-wrapper">
-                    <label class="profile-form-label">
-                      رقم الهاتف
-                    </label>
-                    <v-text-field
-                      v-model="projectForm.phone"
-                      variant="outlined"
-                      density="comfortable"
-                      placeholder="07XX XXX XXXX"
-                      hide-details="auto"
-                      class="profile-form-input"
-                    />
-                  </div>
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model="projectForm.phone"
+                    label="رقم العميل"
+                    variant="outlined"
+                    density="comfortable"
+                    hide-details="auto"
+                  />
                 </v-col>
               </v-row>
 
-              <!-- الصف الرابع: الملاحظات -->
+              <!-- الصف الرابع: الوصف -->
               <v-row class="profile-form-row">
-                <v-col cols="12" class="profile-form-column">
-                  <div class="profile-form-field-wrapper">
-                    <label class="profile-form-label">
-                      ملاحظات
-                    </label>
-                    <v-textarea
-                      v-model="projectForm.description"
-                      variant="outlined"
-                      rows="4"
-                      density="comfortable"
-                      placeholder="أدخل ملاحظات إضافية"
-                      hide-details="auto"
-                      class="profile-form-input"
-                    />
-                  </div>
+                <v-col cols="12">
+                  <v-textarea
+                    v-model="projectForm.description"
+                    label="وصف المشروع"
+                    variant="outlined"
+                    rows="3"
+                    density="comfortable"
+                    hide-details="auto"
+                  />
+                </v-col>
+              </v-row>
+
+              <!-- الصف الخامس: الملاحظات -->
+              <v-row class="profile-form-row">
+                <v-col cols="12">
+                  <v-textarea
+                    v-model="projectForm.notes"
+                    label="ملاحظات"
+                    variant="outlined"
+                    rows="2"
+                    density="comfortable"
+                    hide-details="auto"
+                  />
                 </v-col>
               </v-row>
             </v-form>
@@ -972,17 +940,20 @@
                       <span class="info-label">الموقع:</span>
                       <span class="info-value">
                         <v-icon size="small" class="me-1">mdi-map-marker</v-icon>
-                        {{ selectedProjectDetails.location }}
+                        {{ selectedProjectDetails.location || 'غير محدد' }}
                       </span>
         </div>
                     <div class="info-item">
-                      <span class="info-label">المسؤول:</span>
-                      <span class="info-value">{{ selectedProjectDetails.user }}</span>
+                      <span class="info-label">رقم العميل:</span>
+                      <span class="info-value">
+                        <v-icon size="small" class="me-1">mdi-phone</v-icon>
+                        {{ selectedProjectDetails.clientPhone || 'غير محدد' }}
+                      </span>
                     </div>
                     <div class="info-item">
-                      <span class="info-label">فئة المشروع:</span>
+                      <span class="info-label">نوع المشروع:</span>
                       <span class="info-value">
-                        <v-chip size="small" color="primary">{{ selectedProjectDetails.category }}</v-chip>
+                        <v-chip size="small" color="primary">{{ selectedProjectDetails.type || selectedProjectDetails.category || 'غير محدد' }}</v-chip>
                       </span>
                     </div>
                   </v-card-text>
@@ -1032,24 +1003,24 @@
                   </v-card-title>
                   <v-card-text>
                     <div class="info-item">
-                      <span class="info-label">التكلفة المبدئية:</span>
+                      <span class="info-label">الميزانية الإجمالية:</span>
                       <span class="info-value text-success font-weight-bold">
-                        {{ formatCurrency(selectedProjectDetails.initialCost) }}
+                        {{ formatCurrency(selectedProjectDetails.totalCost) }}
                       </span>
                     </div>
                     <div class="info-item">
-                      <span class="info-label">التكلفة الحرجة:</span>
+                      <span class="info-label">حد التحذير:</span>
                       <span class="info-value text-warning font-weight-bold">
-                        {{ formatCurrency(selectedProjectDetails.criticalCost) }}
+                        {{ formatCurrency(selectedProjectDetails.warningCost) }}
                       </span>
                     </div>
                     <div class="info-item">
-                      <span class="info-label">الفرق:</span>
-                      <span 
+                      <span class="info-label">المصروفات الحالية:</span>
+                      <span
                         class="info-value font-weight-bold"
-                        :class="selectedProjectDetails.criticalCost - selectedProjectDetails.initialCost > 0 ? 'text-error' : 'text-success'"
+                        :class="selectedProjectDetails.currentSpending > selectedProjectDetails.warningCost ? 'text-error' : 'text-success'"
                       >
-                        {{ formatCurrency(selectedProjectDetails.criticalCost - selectedProjectDetails.initialCost) }}
+                        {{ formatCurrency(selectedProjectDetails.currentSpending) }}
                       </span>
                     </div>
                   </v-card-text>
@@ -1387,6 +1358,24 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+
+      <!-- Snackbar for error/success messages -->
+      <v-snackbar
+        v-model="showSuccessMessage"
+        :timeout="5000"
+        color="error"
+        location="top"
+      >
+        {{ successMessage }}
+        <template v-slot:actions>
+          <v-btn
+            variant="text"
+            @click="showSuccessMessage = false"
+          >
+            إغلاق
+          </v-btn>
+        </template>
+      </v-snackbar>
     </div>
   </v-container>
 </template>
@@ -1394,6 +1383,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { listProjects, getProjectStats, getProjectWorkdays, getProject, createProject, updateProject } from '@/api/projects'
 
 // عنوان الصفحة
 document.title = 'إدارة المشاريع الهندسية - نظام إدارة المشاريع'
@@ -1412,6 +1402,12 @@ const selectedCategory = ref('')
 const selectedStatus = ref('')
 const selectedProject = ref(null)
 const selectedProjectDetails = ref(null)
+const detailsLoading = ref(false)
+const savingProject = ref(false)
+const showSuccessMessage = ref(false)
+const successMessage = ref('')
+const workdaysLoading = ref(false)
+const workdaysError = ref('')
 
 // Team Management
 const showTeamManagement = ref(false)
@@ -1643,153 +1639,28 @@ const tableHeaders = [
 ]
 
 
-// Sample projects data
-const sampleProjects = [
-    {
-      id: 1,
-    name: 'مشروع تطوير الموقع الإلكتروني',
-    description: 'تطوير موقع إلكتروني جديد للجامعة',
-    location: 'بغداد',
-    status: 'active',
-    initialCost: 50000,
-    criticalCost: 75000,
-    startDate: '2024-01-15',
-    user: 'أحمد محمد'
-    },
-    {
-      id: 2,
-    name: 'مشروع تحديث النظام الأكاديمي',
-    description: 'تحديث النظام الأكاديمي الحالي',
-    location: 'البصرة',
-    status: 'pending',
-    initialCost: 75000,
-    criticalCost: 100000,
-    startDate: '2024-02-01',
-    user: 'فاطمة علي'
-    },
-    {
-      id: 3,
-    name: 'مشروع بناء المكتبة الرقمية',
-    description: 'بناء مكتبة رقمية شاملة',
-    location: 'أربيل',
-    status: 'completed',
-    initialCost: 100000,
-    criticalCost: 150000,
-    startDate: '2024-01-30',
-    user: 'محمد السعيد'
-  }
-]
-
 // نموذج البيانات
 const projectForm = ref({
   name: '',
   type: '',
   location: '',
   initialCost: 0,
+  totalCost: 0,
   duration: 0,
   startDate: '',
-  criticalCost: 0,
   phone: '',
   user: '',
   status: 'pending',
   priority: 'medium',
   progress: 0,
   description: '',
+  notes: '',
   category: ''
 })
 
-// البيانات الأساسية
-const projects = ref([
-    {
-      id: 1,
-    name: 'مشروع تطوير الموقع الإلكتروني',
-    location: 'بغداد',
-    initialCost: 50000,
-    startDate: '2024-01-15',
-    criticalCost: 75000,
-    user: 'أحمد محمد',
-    status: 'active',
-    priority: 'high',
-    progress: 65,
-    description: 'تطوير موقع إلكتروني جديد للجامعة',
-    category: 'تطوير',
-    workingDays: [
-      { name: 'السبت', hours: '8 ساعات', isActive: true },
-      { name: 'الأحد', hours: '8 ساعات', isActive: true },
-      { name: 'الاثنين', hours: '8 ساعات', isActive: true },
-      { name: 'الثلاثاء', hours: '8 ساعات', isActive: true },
-      { name: 'الأربعاء', hours: '6 ساعات', isActive: true },
-      { name: 'الخميس', hours: '0 ساعة', isActive: false },
-      { name: 'الجمعة', hours: '0 ساعة', isActive: false }
-    ],
-    actions: [
-      { id: 1, title: 'تحليل المتطلبات', description: 'تحليل متطلبات المشروع وتحديد المواصفات', status: 'completed', dueDate: '2024-01-20' },
-      { id: 2, title: 'تصميم الواجهة', description: 'تصميم واجهة المستخدم وتجربة المستخدم', status: 'in-progress', dueDate: '2024-02-15' },
-      { id: 3, title: 'تطوير الواجهة الأمامية', description: 'تطوير واجهة المستخدم باستخدام React', status: 'pending', dueDate: '2024-03-01' },
-      { id: 4, title: 'تطوير الخادم الخلفي', description: 'تطوير API والخادم الخلفي', status: 'pending', dueDate: '2024-03-15' },
-      { id: 5, title: 'الاختبار والمراجعة', description: 'اختبار النظام ومراجعة الكود', status: 'pending', dueDate: '2024-04-01' }
-      ]
-    },
-    {
-      id: 2,
-    name: 'مشروع تحديث النظام الأكاديمي',
-    location: 'البصرة',
-    initialCost: 75000,
-    startDate: '2024-02-01',
-    criticalCost: 100000,
-    user: 'فاطمة علي',
-    status: 'pending',
-    priority: 'medium',
-    progress: 30,
-    description: 'تحديث النظام الأكاديمي الحالي',
-    category: 'تحديث',
-    workingDays: [
-      { name: 'السبت', hours: '6 ساعات', isActive: true },
-      { name: 'الأحد', hours: '8 ساعات', isActive: true },
-      { name: 'الاثنين', hours: '8 ساعات', isActive: true },
-      { name: 'الثلاثاء', hours: '8 ساعات', isActive: true },
-      { name: 'الأربعاء', hours: '8 ساعات', isActive: true },
-      { name: 'الخميس', hours: '4 ساعات', isActive: true },
-      { name: 'الجمعة', hours: '0 ساعة', isActive: false }
-    ],
-    actions: [
-      { id: 1, title: 'مراجعة النظام الحالي', description: 'مراجعة النظام الأكاديمي الموجود وتحديد نقاط التحسين', status: 'completed', dueDate: '2024-01-25' },
-      { id: 2, title: 'تحديث قاعدة البيانات', description: 'تحديث هيكل قاعدة البيانات وتحسين الأداء', status: 'in-progress', dueDate: '2024-02-20' },
-      { id: 3, title: 'تطوير واجهات جديدة', description: 'تطوير واجهات مستخدم محسنة', status: 'pending', dueDate: '2024-03-10' },
-      { id: 4, title: 'تدريب المستخدمين', description: 'تدريب الموظفين على النظام الجديد', status: 'pending', dueDate: '2024-03-25' }
-      ]
-    },
-    {
-      id: 3,
-    name: 'مشروع بناء المكتبة الرقمية',
-    location: 'أربيل',
-    initialCost: 100000,
-    startDate: '2024-01-30',
-    criticalCost: 150000,
-    user: 'محمد السعيد',
-    status: 'completed',
-    priority: 'high',
-    progress: 100,
-    description: 'بناء مكتبة رقمية شاملة',
-    category: 'بناء',
-    workingDays: [
-      { name: 'السبت', hours: '8 ساعات', isActive: true },
-      { name: 'الأحد', hours: '8 ساعات', isActive: true },
-      { name: 'الاثنين', hours: '8 ساعات', isActive: true },
-      { name: 'الثلاثاء', hours: '8 ساعات', isActive: true },
-      { name: 'الأربعاء', hours: '8 ساعات', isActive: true },
-      { name: 'الخميس', hours: '0 ساعة', isActive: false },
-      { name: 'الجمعة', hours: '0 ساعة', isActive: false }
-    ],
-    actions: [
-      { id: 1, title: 'تصميم المكتبة الرقمية', description: 'تصميم هيكل المكتبة الرقمية وتحديد الميزات المطلوبة', status: 'completed', dueDate: '2024-01-30' },
-      { id: 2, title: 'تطوير نظام البحث', description: 'تطوير نظام بحث متقدم للكتب والمصادر', status: 'completed', dueDate: '2024-02-10' },
-      { id: 3, title: 'إضافة الكتب والمصادر', description: 'إضافة مجموعة شاملة من الكتب والمصادر الرقمية', status: 'in-progress', dueDate: '2024-02-28' },
-      { id: 4, title: 'تطوير نظام الإعارة', description: 'تطوير نظام إعارة الكتب الإلكترونية', status: 'pending', dueDate: '2024-03-15' },
-      { id: 5, title: 'الاختبار النهائي', description: 'اختبار جميع وظائف المكتبة الرقمية', status: 'pending', dueDate: '2024-03-30' }
-    ]
-  }
-])
+// البيانات الأساسية (يتم جلبها من الـ API)
+const projects = ref([])
+const projectStats = ref({})
 
 console.log('Projects data loaded:', projects.value.length, 'projects')
 
@@ -1820,20 +1691,17 @@ const filterStatuses = [
 
 
 // الخصائص المحسوبة
-const totalProjects = computed(() => {
-  console.log('totalProjects computed:', projects.value.length)
-  return projects.value.length
-})
-
+const totalProjects = computed(() => projectStats.value.total ?? projects.value.length)
 const activeProjects = computed(() => {
-  return projects.value.filter(p => p.status === 'active').length
+  if (projectStats.value.inProgress != null) return projectStats.value.inProgress
+  return projects.value.filter(p => p.status === 'active' || p.status === 'in_progress').length
 })
-
 const pendingProjects = computed(() => {
+  if (projectStats.value.pending != null) return projectStats.value.pending
   return projects.value.filter(p => p.status === 'pending').length
 })
-
 const averageProgress = computed(() => {
+  if (projectStats.value.averageProgress != null) return projectStats.value.averageProgress
   if (projects.value.length === 0) return 0
   const totalProgress = projects.value.reduce((sum, project) => sum + (project.progress || 0), 0)
   return Math.round(totalProgress / projects.value.length)
@@ -1849,7 +1717,18 @@ const completedProjects = computed(() => {
 })
 
 const totalBudget = computed(() => {
-  return projects.value.reduce((sum, project) => sum + project.initialCost, 0)
+  if (projectStats.value.totalBudget != null) return projectStats.value.totalBudget
+  return projects.value.reduce((sum, project) => sum + (project.budget ?? project.initialCost ?? 0), 0)
+})
+
+const displayTotalProjects = computed(() => (loading.value ? '...' : totalProjects.value ?? 0))
+const displayActiveProjects = computed(() => (loading.value ? '...' : activeProjects.value ?? 0))
+const displayPendingProjects = computed(() => (loading.value ? '...' : pendingProjects.value ?? 0))
+const displayAverageProgress = computed(() => (loading.value ? '...' : (averageProgress.value ?? 0) + '%'))
+const displayTotalBudget = computed(() => {
+  if (loading.value) return '...'
+  if (totalBudget.value != null) return formatCurrency(totalBudget.value)
+  return '-'
 })
 
 const filteredProjects = computed(() => {
@@ -1973,14 +1852,10 @@ const getDefaultActions = () => {
 }
 
 const getTotalWorkingHours = () => {
-  if (!selectedProjectDetails.value?.workingDays) {
-    return getDefaultWorkingDays().reduce((total, day) => {
-      return day.isActive ? total + parseInt(day.hours) : total
-    }, 0)
-  }
-  
-  return selectedProjectDetails.value.workingDays.reduce((total, day) => {
-    return day.isActive ? total + parseInt(day.hours) : total
+  const workingDays = selectedProjectDetails.value?.workingDays || getDefaultWorkingDays()
+  return workingDays.reduce((total, day) => {
+    const hours = parseInt(day.hours) || 0
+    return day.isActive ? total + hours : total
   }, 0)
 }
 
@@ -1993,7 +1868,7 @@ const exportWorkingDaysToExcel = () => {
     // إعداد البيانات للتصدير
     const excelData = [
       ['اسم المشروع', projectName],
-      ['تاريخ التصدير', new Date().toLocaleDateString('ar-SA')],
+      ['تاريخ التصدير', new Date().toLocaleDateString('en-US')],
       [''],
       ['يوم العمل', 'الحالة', 'عدد الساعات', 'ملاحظات']
     ]
@@ -2059,19 +1934,48 @@ const getActionStatusColor = (status) => {
   return statusColors[status] || 'grey'
 }
 
+async function loadWorkdays(projectId) {
+  if (!projectId) return
+  workdaysLoading.value = true
+  workdaysError.value = ''
+  try {
+    const data = await getProjectWorkdays(projectId)
+    if (Array.isArray(data) && data.length) {
+      selectedProjectDetails.value = {
+        ...selectedProjectDetails.value,
+        workingDays: data.map(day => ({
+          name: day.dayName || day.name || '',
+          hours: day.hours ? `${day.hours}` : '0',
+          isActive: day.isActive ?? true,
+        })),
+      }
+    }
+  } catch (err) {
+    console.error('فشل تحميل أيام العمل', err)
+    workdaysError.value = 'فشل تحميل أيام العمل من الخادم'
+  } finally {
+    workdaysLoading.value = false
+  }
+}
+
 // دوال إدارة البيانات
 const openAddProjectDialog = () => {
   isEditing.value = false
   projectForm.value = {
     name: '',
+    type: '',
     location: '',
     initialCost: 0,
+    totalCost: 0,
+    duration: 0,
     startDate: '',
-    criticalCost: 0,
+    phone: '',
     user: '',
     status: 'pending',
     priority: 'medium',
+    progress: 0,
     description: '',
+    notes: '',
     category: ''
   }
   dialog.value = true
@@ -2082,8 +1986,8 @@ const viewProject = (project) => {
 }
 
 const viewProjectDetails = (project) => {
-  // Navigate directly to work days management page
-  router.push('/work-days')
+  if (!project?.id) return
+  router.push({ path: '/work-days', query: { projectId: project.id } })
 }
 
 const closeDetailsDialog = () => {
@@ -2110,21 +2014,61 @@ const deleteProject = (project) => {
   deleteDialog.value = true
 }
 
-const saveProject = () => {
-  if (formValid.value) {
-    if (isEditing.value) {
-      const index = projects.value.findIndex(p => p.id === selectedProject.value.id)
-      if (index > -1) {
-        projects.value[index] = { ...projectForm.value, id: selectedProject.value.id }
-      }
-    } else {
-      const newProject = {
-        ...projectForm.value,
-        id: Date.now()
-      }
-      projects.value.unshift(newProject)
+const saveProject = async () => {
+  if (!formValid.value) return
+  savingProject.value = true
+  try {
+    // Raw values - no calculations
+    const payload = {
+      name: projectForm.value.name,
+      type: projectForm.value.type || '',
+      description: projectForm.value.description || '',
+      clientPhone: projectForm.value.phone || '',
+      location: projectForm.value.location || '',
+      startDate: projectForm.value.startDate ? new Date(projectForm.value.startDate).toISOString() : null,
+      duration: projectForm.value.duration ? Number(projectForm.value.duration) : null,
+      warningCost: Number(projectForm.value.initialCost || 0),
+      totalCost: Number(projectForm.value.totalCost || 0),
+      notes: projectForm.value.notes || '',
     }
+
+    if (isEditing.value && selectedProject.value?.id) {
+      await updateProject(selectedProject.value.id, payload)
+    } else {
+      await createProject(payload)
+    }
+
+    await loadProjectsFromApi()
     closeDialog()
+  } catch (err) {
+    console.error('فشل حفظ المشروع', err)
+
+    // Handle validation errors from backend
+    let errorMessage = 'فشل حفظ المشروع'
+    if (err?.data?.errors && typeof err.data.errors === 'object') {
+      const fieldNames = {
+        name: 'اسم المشروع',
+        warningCost: 'تكلفة التحذير',
+        totalCost: 'التكلفة الإجمالية',
+        location: 'الموقع',
+        startDate: 'تاريخ البدء',
+        duration: 'المدة',
+        clientPhone: 'رقم الهاتف',
+        description: 'الوصف',
+      }
+      const errorMessages = Object.entries(err.data.errors).map(([field, msg]) => {
+        const fieldName = fieldNames[field] || field
+        return `${fieldName} مطلوب`
+      })
+      errorMessage = errorMessages.join('، ')
+    } else if (err?.message) {
+      errorMessage = err.message
+    }
+
+    successMessage.value = errorMessage
+    showSuccessMessage.value = true
+  } finally {
+    savingProject.value = false
   }
 }
 
@@ -2134,14 +2078,19 @@ const closeDialog = () => {
   selectedProject.value = null
   projectForm.value = {
     name: '',
+    type: '',
     location: '',
     initialCost: 0,
+    totalCost: 0,
+    duration: 0,
     startDate: '',
-    criticalCost: 0,
+    phone: '',
     user: '',
     status: 'pending',
     priority: 'medium',
+    progress: 0,
     description: '',
+    notes: '',
     category: ''
   }
 }
@@ -2316,11 +2265,64 @@ const saveTeamMember = () => {
   }
 }
 
+const statusMap = {
+  pending: 'pending',
+  in_progress: 'active',
+  completed: 'completed',
+}
+
+function mapStatus(status) {
+  return statusMap[status] || status || 'pending'
+}
+
+async function loadProjectsFromApi() {
+  loading.value = true
+  try {
+    const [list, stats] = await Promise.all([
+      listProjects({ page: 1, limit: 50 }),
+      getProjectStats({ period: 'all' })
+    ])
+    const listData = Array.isArray(list)
+      ? list
+      : (Array.isArray(list?.data) ? list.data : [])
+
+    const mapped = listData.map(p => ({
+      id: p.id,
+      name: p.name,
+      description: p.description || '',
+      location: p.location || '',
+      status: mapStatus(p.status),
+      totalCost: p.totalCost ?? 0,
+      warningCost: p.warningCost ?? 0,
+      currentSpending: p.currentSpending ?? 0,
+      initialCost: p.totalCost ?? p.initialCost ?? 0,
+      budget: p.totalCost ?? p.initialCost ?? 0,
+      criticalCost: p.warningCost ?? p.criticalCost ?? 0,
+      startDate: p.startDate,
+      duration: p.duration ?? null,
+      clientPhone: p.clientPhone || '',
+      type: p.type || '',
+      user: p.createdByName || p.createdBy || p.manager || '',
+      manager: p.createdByName || p.createdBy || p.manager || '',
+      progress: p.progressPercentage ?? p.progress ?? 0,
+      category: p.type || '',
+      notes: p.notes || '',
+      createdBy: p.createdBy,
+      createdAt: p.createdAt,
+    }))
+    if (mapped.length) {
+      projects.value = mapped
+    }
+    projectStats.value = stats?.data || stats || {}
+  } catch (err) {
+    console.error('فشل تحميل المشاريع من الخادم', err)
+  } finally {
+    loading.value = false
+  }
+}
+
 onMounted(() => {
-  // Initialize data if needed
-  console.log('تم تحميل صفحة إدارة المشاريع')
-  console.log('عدد المشاريع:', projects.value.length)
-  console.log('المشاريع:', projects.value)
+  loadProjectsFromApi()
 })
 </script>
 
@@ -4788,6 +4790,16 @@ onMounted(() => {
   border-radius: 16px !important;
   transition: all 0.3s ease !important;
   border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+.project-card.warning-border {
+  border: 2px solid #f59e0b !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25) !important;
+}
+
+.project-card.warning-border:hover {
+  border-color: #d97706 !important;
+  box-shadow: 0 12px 24px rgba(245, 158, 11, 0.35) !important;
 }
 
 .project-card:hover {
@@ -9002,11 +9014,38 @@ onMounted(() => {
 
 .profile-form-content {
   padding: 16px !important;
-  background: #ffffff !important;
+  background: #f8fafc !important;
   border: 2px solid #d1d5db !important;
   border-radius: 8px !important;
   margin: 12px !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+.profile-form-content :deep(.v-text-field),
+.profile-form-content :deep(.v-textarea) {
+  background: #ffffff !important;
+  border-radius: 8px !important;
+}
+
+.profile-form-content :deep(.v-field) {
+  background: #ffffff !important;
+}
+
+.profile-form-content :deep(.v-field__outline) {
+  color: #cbd5e1 !important;
+}
+
+.profile-form-content :deep(.v-field--focused .v-field__outline) {
+  color: #3b82f6 !important;
+}
+
+.profile-form-content :deep(.v-label) {
+  color: #475569 !important;
+  font-weight: 500 !important;
+}
+
+.profile-form-content :deep(.v-field__input) {
+  color: #1e293b !important;
 }
 
 .profile-form-instruction {

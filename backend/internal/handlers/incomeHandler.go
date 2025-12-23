@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/auth"
 	"github.com/mustafa91ameen/prjalgo/backend/internal/dtos"
 	"github.com/mustafa91ameen/prjalgo/backend/internal/response"
 	"github.com/mustafa91ameen/prjalgo/backend/internal/services"
@@ -67,11 +68,16 @@ func (h *IncomeHandler) Create(c *gin.Context) {
 		return
 	}
 
+	req.CreatedBy = auth.GetUserIDPtrFromContext(c.Request.Context())
+
 	income, err := h.incomeService.Create(c.Request.Context(), req)
 	if err != nil {
 		response.InternalError(c, "failed to create income")
 		return
 	}
+
+	// Set target ID in context for audit middleware
+	c.Set(auth.TargetIDKey, income.ID)
 
 	response.Created(c, income)
 }

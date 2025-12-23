@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/auth"
 	"github.com/mustafa91ameen/prjalgo/backend/internal/dtos"
 	"github.com/mustafa91ameen/prjalgo/backend/internal/response"
 	"github.com/mustafa91ameen/prjalgo/backend/internal/services"
@@ -38,9 +39,9 @@ func (h *WorkDayMaterialHandler) GetAll(c *gin.Context) {
 	response.Success(c, materials)
 }
 
-// GetByWorkDayID handles GET /workdays/:workDayId/materials
+// GetByWorkDayID handles GET /workdays/:id/materials
 func (h *WorkDayMaterialHandler) GetByWorkDayID(c *gin.Context) {
-	workDayID, err := h.parseID(c, "workDayId")
+	workDayID, err := h.parseID(c, "id")
 	if err != nil {
 		response.BadRequest(c, "invalid work day id")
 		return
@@ -89,6 +90,9 @@ func (h *WorkDayMaterialHandler) Create(c *gin.Context) {
 		response.InternalError(c, "failed to create material")
 		return
 	}
+
+	// Set target ID in context for audit middleware
+	c.Set(auth.TargetIDKey, material.ID)
 
 	response.Created(c, material)
 }

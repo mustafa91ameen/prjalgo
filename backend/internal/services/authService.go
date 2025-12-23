@@ -164,18 +164,28 @@ func (s *AuthService) RefreshToken(ctx context.Context, refreshToken string) (*L
 	}, nil
 }
 
-func (s *AuthService) Logout(ctx context.Context, refreshToken string) error {
+// LogoutResult contains information about the logged out user
+type LogoutResult struct {
+	UserID int64 `json:"userId"`
+}
+
+func (s *AuthService) Logout(ctx context.Context, refreshToken string) (*LogoutResult, error) {
 	tokenHash := s.hashToken(refreshToken)
 
 	storedToken, err := s.refreshTokenRepo.GetByTokenHash(ctx, tokenHash)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil
+			return nil, nil
 		}
-		return err
+		return nil, err
 	}
 
-	return s.refreshTokenRepo.Revoke(ctx, storedToken.ID)
+	err = s.refreshTokenRepo.Revoke(ctx, storedToken.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &LogoutResult{UserID: storedToken.UserID}, nil
 }
 
 func (s *AuthService) generateRefreshToken() (string, error) {

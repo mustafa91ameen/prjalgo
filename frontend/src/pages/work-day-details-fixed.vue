@@ -102,7 +102,7 @@ const currentTime = ref('')
 
 onMounted(() => {
   workDayId.value = route.params.id || 'test-123'
-  currentTime.value = new Date().toLocaleString('ar-SA')
+  currentTime.value = new Date().toLocaleString('en-US')
   
   console.log('Page loaded successfully!')
   console.log('Work Day ID:', workDayId.value)

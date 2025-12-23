@@ -62,6 +62,12 @@ export default defineConfig({
   },
   server: {
     port: 3004,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:6000',
+        changeOrigin: true,
+      },
+    },
   },
   css: {
     preprocessorOptions: {

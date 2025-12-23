@@ -137,6 +137,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { handleLogout as logoutUser, getCurrentUser } from '@/services/authService'
 
 const route = useRoute()
 const router = useRouter()
@@ -144,7 +145,8 @@ const drawer = ref(true)
 
 // اسم المستخدم الحالي
 const currentUsername = computed(() => {
-  return localStorage.getItem('username') || ''
+  const user = getCurrentUser()
+  return user?.username || localStorage.getItem('username') || ''
 })
 
 // التحقق من صفحة تسجيل الدخول
@@ -153,20 +155,15 @@ const isLoginPage = computed(() => {
 })
 
 // دالة تسجيل الخروج
-const handleLogout = () => {
-  // حذف بيانات تسجيل الدخول
-  localStorage.removeItem('isAuthenticated')
-  localStorage.removeItem('username')
-  localStorage.removeItem('loginTime')
-  
-  // إعادة التوجيه إلى صفحة تسجيل الدخول
+const handleLogout = async () => {
+  await logoutUser()
   router.push('/login')
 }
 
 // قائمة التنقل الرئيسية
 const mainMenuItems = ref([
   { title: 'الرئيسية', icon: 'mdi-view-dashboard', to: '/', active: false },
-  { title: 'المشاريع', icon: 'mdi-folder-multiple', to: '/project-management', active: false },
+{ title: 'المشاريع', icon: 'mdi-folder-multiple', to: '/project-management', active: false },
   { title: 'إدارة المهام', icon: 'mdi-clipboard-list', to: '/task-management', active: false },
   { title: 'المهندسين', icon: 'mdi-account-hard-hat', to: '/engineers', active: false },
   { title: 'التصنيفات', icon: 'mdi-tag-multiple', to: '/categories', active: false },

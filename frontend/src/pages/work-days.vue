@@ -30,150 +30,89 @@
           </p>
 
           <v-form ref="form" v-model="formValid">
-            <!-- الصف الأول: مكان العمل، رقم الاستمارة، التاريخ -->
+            <!-- الصف الأول: التاريخ -->
             <v-row class="clean-form-row">
-              <v-col cols="12" md="4" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    مكان العمل <span class="required-star">*</span>
-                  </label>
-                  <v-text-field
-                    v-model="workDayForm.workLocation"
-                    variant="outlined"
-                    density="comfortable"
-                    :rules="[v => !!v || 'مكان العمل مطلوب']"
-                    required
-                    hide-details="auto"
-                    class="clean-form-input"
+              <v-col cols="12" md="6">
+                <v-menu
+                  v-model="dateMenu"
+                  :close-on-content-click="false"
+                  location="bottom"
+                >
+                  <template v-slot:activator="{ props }">
+                    <v-text-field
+                      v-model="formattedDate"
+                      label="التاريخ *"
+                      readonly
+                      v-bind="props"
+                      variant="outlined"
+                      density="comfortable"
+                      :rules="[v => !!v || 'التاريخ مطلوب']"
+                      required
+                      hide-details="auto"
+                      prepend-inner-icon="mdi-calendar"
+                    />
+                  </template>
+                  <v-date-picker
+                    v-model="selectedDate"
+                    @update:model-value="onDateSelected"
+                    color="primary"
                   />
-                </div>
+                </v-menu>
               </v-col>
 
-              <v-col cols="12" md="4" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    رقم الاستمارة <span class="required-star">*</span>
-                  </label>
-                  <v-text-field
-                    v-model="workDayForm.formNumber"
-                    variant="outlined"
-                    density="comfortable"
-                    :rules="[v => !!v || 'رقم الاستمارة مطلوب']"
-                    required
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-
-              <v-col cols="12" md="4" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    التاريخ <span class="required-star">*</span>
-                  </label>
-                  <v-text-field
-                    v-model="workDayForm.date"
-                    type="date"
-                    variant="outlined"
-                    density="comfortable"
-                    :rules="[v => !!v || 'التاريخ مطلوب']"
-                    required
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
+              <v-col cols="12" md="6">
+                <v-select
+                  v-model="workDayForm.status"
+                  label="الحالة"
+                  :items="statusOptions"
+                  variant="outlined"
+                  density="comfortable"
+                  hide-details="auto"
+                />
               </v-col>
             </v-row>
 
-            <!-- الصف الثاني: اليوم، نوع العمل، فترة العمل -->
+            <!-- الصف الثاني: تصنيف العمل -->
             <v-row class="clean-form-row">
-              <v-col cols="12" md="4" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    اليوم <span class="required-star">*</span>
-                  </label>
-                  <v-select
-                    v-model="workDayForm.day"
-                    :items="dayOptions"
-                    variant="outlined"
-                    density="comfortable"
-                    :rules="[v => !!v || 'اليوم مطلوب']"
-                    required
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-
-              <v-col cols="12" md="4" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    نوع العمل <span class="required-star">*</span>
-                  </label>
-                  <v-select
-                    v-model="workDayForm.workType"
-                    :items="workTypeOptions"
-                    variant="outlined"
-                    density="comfortable"
-                    :rules="[v => !!v || 'نوع العمل مطلوب']"
-                    required
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-
-              <v-col cols="12" md="4" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    فترة العمل
-                  </label>
-                  <div class="work-period-section">
-                    <div class="period-inputs">
-                      <v-text-field
-                        v-model="workDayForm.workPeriodFrom"
-                        label="من"
-                        variant="outlined"
-                        type="time"
-                        density="comfortable"
-                        class="clean-form-input"
-                        hide-details="auto"
-                      />
-                      <span class="period-separator">-</span>
-                      <v-text-field
-                        v-model="workDayForm.workPeriodTo"
-                        label="إلى"
-                        variant="outlined"
-                        type="time"
-                        density="comfortable"
-                        class="clean-form-input"
-                        hide-details="auto"
-                      />
-                    </div>
-                  </div>
-                </div>
+              <v-col cols="12">
+                <v-select
+                  v-model="workDayForm.workSubCategoryId"
+                  label="تصنيف العمل"
+                  :items="workSubCategories"
+                  :loading="loadingSubCategories"
+                  variant="outlined"
+                  density="comfortable"
+                  hide-details="auto"
+                  clearable
+                />
               </v-col>
             </v-row>
 
-            <!-- الصف الثالث: وصف العمل -->
+            <!-- الصف الثالث: الوصف -->
             <v-row class="clean-form-row">
-              <v-col cols="12" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    عن <span class="required-star">*</span>
-                  </label>
-                  <v-textarea
-                    v-model="workDayForm.about"
-                    variant="outlined"
-                    rows="4"
-                    density="comfortable"
-                    placeholder="وصف العمل"
-                    :rules="[v => !!v || 'الوصف مطلوب']"
-                    required
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
+              <v-col cols="12">
+                <v-textarea
+                  v-model="workDayForm.description"
+                  label="الوصف"
+                  variant="outlined"
+                  rows="3"
+                  density="comfortable"
+                  hide-details="auto"
+                />
+              </v-col>
+            </v-row>
+
+            <!-- الصف الثالث: الملاحظات -->
+            <v-row class="clean-form-row">
+              <v-col cols="12">
+                <v-textarea
+                  v-model="workDayForm.notes"
+                  label="ملاحظات"
+                  variant="outlined"
+                  rows="2"
+                  density="comfortable"
+                  hide-details="auto"
+                />
               </v-col>
             </v-row>
           </v-form>
@@ -342,10 +281,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { listWorkDays, createWorkDay, updateWorkDay, deleteWorkDay as apiDeleteWorkDay, listWorkSubCategories } from '@/api/workdays'
 
 const router = useRouter()
+const route = useRoute()
 
 // State
 const showAddForm = ref(false)
@@ -355,6 +296,9 @@ const saving = ref(false)
 const searchQuery = ref('')
 const showSuccessMessage = ref(false)
 const successMessage = ref('')
+const loading = ref(false)
+const error = ref('')
+const projectId = computed(() => route.query.projectId || '')
 
 // Table headers
 const tableHeaders = [
@@ -367,73 +311,49 @@ const tableHeaders = [
   { title: 'الاجراءات', key: 'actions', sortable: false, width: '120px' }
 ]
 
-// Work days data (matching the image)
-const workDaysData = ref([
-  {
-    id: 1,
-    serial: 1,
-    date: '10/03/2022',
-    day: 'الثلاثاء',
-    workPeriod: '8-2',
-    workType: 'الاعمال الترابية',
-    about: 'اعمال المسوحات الهندسية'
-  },
-  {
-    id: 2,
-    serial: 2,
-    date: '30/04/2022',
-    day: 'الخميس',
-    workPeriod: '2-10',
-    workType: 'اعمال الباور كيربر',
-    about: 'اعمال صب الباور كيربر'
-  },
-  {
-    id: 3,
-    serial: 3,
-    date: '15/05/2022',
-    day: 'السبت',
-    workPeriod: '6-12',
-    workType: 'اعمال الحفر',
-    about: 'حفر اساسات المبنى الرئيسي'
-  },
-  {
-    id: 4,
-    serial: 4,
-    date: '22/05/2022',
-    day: 'الأحد',
-    workPeriod: '8-4',
-    workType: 'اعمال الخرسانة',
-    about: 'صب خرسانة الاساسات'
-  }
-])
+// Work days data
+const workDaysData = ref([])
 
 // Form data
 const workDayForm = ref({
-  workLocation: '',
-  formNumber: '',
-  workPeriodFrom: '',
-  workPeriodTo: '',
-  day: '',
-  workType: '',
-  about: '',
-  date: ''
+  date: '',
+  description: '',
+  notes: '',
+  status: 'draft',
+  workSubCategoryId: null
 })
 
+// Work subcategories
+const workSubCategories = ref([])
+const loadingSubCategories = ref(false)
+
 // Options
-const dayOptions = [
-  'السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'
+const statusOptions = [
+  { title: 'مسودة', value: 'draft' },
+  { title: 'قيد التنفيذ', value: 'in_progress' },
+  { title: 'مكتمل', value: 'completed' }
 ]
 
-const workTypeOptions = [
-  'الاعمال الترابية',
-  'اعمال الباور كيربر',
-  'اعمال الحفر',
-  'اعمال الخرسانة',
-  'اعمال البناء',
-  'اعمال الكهرباء',
-  'اعمال السباكة',
-  'اعمال التشطيبات'
-]
+// Date picker state
+const dateMenu = ref(false)
+const selectedDate = ref(null)
+
+// Computed property for formatted date display
+const formattedDate = computed(() => {
+  if (!workDayForm.value.date) return ''
+  const date = new Date(workDayForm.value.date)
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+})
+
+// Handle date selection from picker
+const onDateSelected = (date) => {
+  if (date) {
+    // Convert to YYYY-MM-DD format for the form
+    const d = new Date(date)
+    workDayForm.value.date = d.toISOString().split('T')[0]
+  }
+  dateMenu.value = false
+}
 
 // دالة تصدير البيانات إلى Excel
 const exportToExcel = () => {
@@ -490,7 +410,7 @@ const createAllSheetsCSV = () => {
   
   // إضافة عنوان رئيسي
   allSheets += 'تقرير شامل - أيام العمل والمصاريف\n'
-  allSheets += `تاريخ التصدير: ${new Date().toLocaleDateString('ar-SA')}\n`
+  allSheets += `تاريخ التصدير: ${new Date().toLocaleDateString('en-US')}\n`
   allSheets += '='.repeat(80) + '\n\n'
   
   // إضافة كل شيت مع عنوان واضح
@@ -533,7 +453,7 @@ const createWorkDaysCSV = () => {
   const workDaysData = getWorkDaysData()
   const csvData = [
     ['تقرير أيام العمل'],
-    ['تاريخ التصدير', new Date().toLocaleDateString('ar-SA')],
+    ['تاريخ التصدير', new Date().toLocaleDateString('en-US')],
     [''],
     ['التسلسل', 'التاريخ', 'اليوم', 'فترة العمل', 'نوع العمل', 'الوصف', 'التكلفة']
   ]
@@ -563,7 +483,7 @@ const createMachineryCSV = () => {
   const machineryData = getMachineryData()
   const csvData = [
     ['تقرير الآليات والمعدات'],
-    ['تاريخ التصدير', new Date().toLocaleDateString('ar-SA')],
+    ['تاريخ التصدير', new Date().toLocaleDateString('en-US')],
     [''],
     ['اسم الآلة', 'نوع الآلة', 'ساعات التشغيل', 'التكلفة/ساعة', 'إجمالي التكلفة', 'الحالة', 'ملاحظات']
   ]
@@ -593,7 +513,7 @@ const createDailyExpensesCSV = () => {
   const dailyExpenses = getDailyExpenses()
   const csvData = [
     ['تقرير المصاريف اليومية'],
-    ['تاريخ التصدير', new Date().toLocaleDateString('ar-SA')],
+    ['تاريخ التصدير', new Date().toLocaleDateString('en-US')],
     [''],
     ['التاريخ', 'نوع المصروف', 'المبلغ', 'الوصف', 'المشروع', 'المسؤول', 'الحالة']
   ]
@@ -623,7 +543,7 @@ const createMaterialsCSV = () => {
   const materialsData = getMaterialsData()
   const csvData = [
     ['تقرير المواد والمواد الخام'],
-    ['تاريخ التصدير', new Date().toLocaleDateString('ar-SA')],
+    ['تاريخ التصدير', new Date().toLocaleDateString('en-US')],
     [''],
     ['اسم المادة', 'الكمية', 'الوحدة', 'سعر الوحدة', 'إجمالي التكلفة', 'المورد', 'تاريخ الشراء']
   ]
@@ -653,7 +573,7 @@ const createLaborCSV = () => {
   const laborData = getLaborData()
   const csvData = [
     ['تقرير الأيدي العاملة'],
-    ['تاريخ التصدير', new Date().toLocaleDateString('ar-SA')],
+    ['تاريخ التصدير', new Date().toLocaleDateString('en-US')],
     [''],
     ['اسم العامل', 'المهنة', 'ساعات العمل', 'أجر الساعة', 'إجمالي الأجر', 'المشروع', 'التاريخ']
   ]
@@ -689,7 +609,7 @@ const createSummaryCSV = () => {
   
   const csvData = [
     ['ملخص التكاليف الشامل'],
-    ['تاريخ التصدير', new Date().toLocaleDateString('ar-SA')],
+    ['تاريخ التصدير', new Date().toLocaleDateString('en-US')],
     [''],
     ['نوع التكلفة', 'المبلغ', 'النسبة المئوية'],
     ['تكلفة العمل', totalWorkCost, ''],
@@ -778,6 +698,11 @@ const goBack = () => {
 }
 
 const addWorkDay = () => {
+  if (!projectId.value) {
+    successMessage.value = 'يجب اختيار مشروع أولاً'
+    showSuccessMessage.value = true
+    return
+  }
   isEditing.value = false
   resetForm()
   showAddForm.value = true
@@ -790,13 +715,16 @@ const closeAddForm = () => {
 
 const editWorkDay = (item) => {
   isEditing.value = true
-  workDayForm.value = { ...item }
+  workDayForm.value = {
+    ...item,
+    workPeriodFrom: item.workPeriod?.split('-')[0] || '',
+    workPeriodTo: item.workPeriod?.split('-')[1] || '',
+  }
   showAddForm.value = true
 }
 
 const viewWorkDay = (item) => {
-  // Navigate to work day details page using Vue Router
-  router.push('/work-day-details')
+  router.push({ path: '/work-day-details', query: { id: item.id, projectId: projectId.value } })
 }
 
 const testDetailsPage = () => {
@@ -819,17 +747,12 @@ const testHtmlPage = () => {
   window.location.href = '/test-work-details.html'
 }
 
-const deleteWorkDay = (item) => {
-  const index = workDaysData.value.findIndex(day => day.id === item.id)
-  if (index > -1) {
-    workDaysData.value.splice(index, 1)
-    // Update serial numbers
-    workDaysData.value.forEach((day, idx) => {
-      day.serial = idx + 1
-    })
-    successMessage.value = 'تم حذف يوم العمل بنجاح'
-    showSuccessMessage.value = true
-  }
+const deleteWorkDay = async (item) => {
+  if (!item?.id) return
+  await apiDeleteWorkDay(item.id)
+  await loadWorkDays()
+  successMessage.value = 'تم حذف يوم العمل بنجاح'
+  showSuccessMessage.value = true
 }
 
 const toggleStatus = (item) => {
@@ -837,67 +760,130 @@ const toggleStatus = (item) => {
 }
 
 const saveWorkDay = async () => {
-  saving.value = true
-  
-  // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 1000))
-  
-  if (isEditing.value) {
-    // Update existing work day
-    const index = workDaysData.value.findIndex(day => day.id === workDayForm.value.id)
-    if (index > -1) {
-      workDaysData.value[index] = { ...workDayForm.value }
-    }
-    successMessage.value = 'تم تحديث يوم العمل بنجاح'
-  } else {
-    // Add new work day
-    const newWorkDay = {
-      ...workDayForm.value,
-      id: Date.now(),
-      serial: workDaysData.value.length + 1,
-      workPeriod: `${workDayForm.value.workPeriodFrom}-${workDayForm.value.workPeriodTo}`
-    }
-    workDaysData.value.push(newWorkDay)
-    successMessage.value = 'تم إضافة يوم العمل بنجاح'
+  if (!projectId.value) {
+    successMessage.value = 'يجب اختيار مشروع أولاً'
+    showSuccessMessage.value = true
+    return
   }
-  
-  saving.value = false
-  showAddForm.value = false
-  showSuccessMessage.value = true
-  resetForm()
+
+  saving.value = true
+  try {
+    const payload = {
+      projectId: Number(projectId.value),
+      workSubCategoryId: workDayForm.value.workSubCategoryId ? Number(workDayForm.value.workSubCategoryId) : null,
+      workDate: workDayForm.value.date ? new Date(workDayForm.value.date).toISOString() : new Date().toISOString(),
+      description: workDayForm.value.description || null,
+      notes: workDayForm.value.notes || null,
+    }
+
+    if (isEditing.value && workDayForm.value.id) {
+      const updatePayload = {
+        workSubCategoryId: payload.workSubCategoryId,
+        workDate: payload.workDate,
+        description: payload.description,
+        notes: payload.notes,
+        status: workDayForm.value.status || null,
+      }
+      await updateWorkDay(workDayForm.value.id, updatePayload)
+      successMessage.value = 'تم تحديث يوم العمل بنجاح'
+    } else {
+      await createWorkDay(payload)
+      successMessage.value = 'تم إضافة يوم العمل بنجاح'
+    }
+
+    await loadWorkDays()
+    showAddForm.value = false
+    showSuccessMessage.value = true
+    resetForm()
+  } catch (error) {
+    console.error('Failed to save work day', error)
+    successMessage.value = error?.message || 'فشل حفظ يوم العمل'
+    showSuccessMessage.value = true
+  } finally {
+    saving.value = false
+  }
 }
 
 
 const resetForm = () => {
   workDayForm.value = {
-    workLocation: '',
-    formNumber: '',
-    workPeriodFrom: '',
-    workPeriodTo: '',
-    day: '',
-    workType: '',
-    about: '',
-    date: ''
+    date: '',
+    description: '',
+    notes: '',
+    status: 'draft',
+    workSubCategoryId: null
   }
   formValid.value = false
 }
 
-// Load data on mount
+const loadWorkDays = async () => {
+  loading.value = true
+  error.value = ''
+  try {
+    const data = await listWorkDays({ projectId: projectId.value })
+    const normalized = Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : [])
+    workDaysData.value = normalized.map((w, idx) => ({
+      id: w.id,
+      serial: idx + 1,
+      date: formatDate(w.workDate),
+      day: formatDayName(w.workDate),
+      workPeriod: '-', // backend does not provide; keep placeholder
+      workType: w.status || '',
+      about: w.description || w.notes || '',
+    }))
+  } catch (err) {
+    console.error('فشل جلب أيام العمل', err)
+    error.value = 'فشل جلب أيام العمل من الخادم'
+  } finally {
+    loading.value = false
+  }
+}
+
+const formatDate = (value) => {
+  if (!value) return ''
+  const d = new Date(value)
+  if (Number.isNaN(d.getTime())) return value
+  return d.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  })
+}
+
+const formatDayName = (value) => {
+  if (!value) return ''
+  const d = new Date(value)
+  if (Number.isNaN(d.getTime())) return ''
+  const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']
+  return days[d.getDay()] || ''
+}
+
+// Load work subcategories
+const loadWorkSubCategories = async () => {
+  loadingSubCategories.value = true
+  try {
+    const data = await listWorkSubCategories()
+    workSubCategories.value = data.map(item => ({
+      title: item.name,
+      value: item.id
+    }))
+  } catch (err) {
+    console.error('Failed to load work subcategories:', err)
+  } finally {
+    loadingSubCategories.value = false
+  }
+}
+
 onMounted(() => {
-  const savedData = localStorage.getItem('workDaysData')
-  if (savedData) {
-    workDaysData.value = JSON.parse(savedData)
+  loadWorkSubCategories()
+  if (projectId.value) {
+    loadWorkDays()
   }
 })
 
-// Save data when changed
-const saveToLocalStorage = () => {
-  localStorage.setItem('workDaysData', JSON.stringify(workDaysData.value))
-}
-
-// Watch for changes and save
-import { watch } from 'vue'
-watch(workDaysData, saveToLocalStorage, { deep: true })
+watch(projectId, (val, prev) => {
+  if (val && val !== prev) loadWorkDays()
+})
 </script>
 
 
@@ -906,6 +892,47 @@ watch(workDaysData, saveToLocalStorage, { deep: true })
   background: #f5f5f5;
   min-height: 100vh;
   direction: rtl;
+}
+
+/* Form Content Styling */
+.clean-form-content {
+  padding: 16px !important;
+  background: #f8fafc !important;
+  border: 2px solid #d1d5db !important;
+  border-radius: 8px !important;
+  margin: 12px !important;
+}
+
+.clean-form-content :deep(.v-text-field),
+.clean-form-content :deep(.v-textarea),
+.clean-form-content :deep(.v-select) {
+  background: #ffffff !important;
+  border-radius: 8px !important;
+}
+
+.clean-form-content :deep(.v-field) {
+  background: #ffffff !important;
+}
+
+.clean-form-content :deep(.v-field__outline) {
+  color: #cbd5e1 !important;
+}
+
+.clean-form-content :deep(.v-field--focused .v-field__outline) {
+  color: #3b82f6 !important;
+}
+
+.clean-form-content :deep(.v-label) {
+  color: #475569 !important;
+  font-weight: 500 !important;
+}
+
+.clean-form-content :deep(.v-field__input) {
+  color: #1e293b !important;
+}
+
+.clean-form-row {
+  margin-bottom: 12px !important;
 }
 
 /* Top Navigation Bar */

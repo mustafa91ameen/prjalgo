@@ -203,10 +203,15 @@ The `targetType` field contains one of these values. **Frontend should translate
 | `work_category` | Work Category | فئة عمل |
 | `work_subcategory` | Work Subcategory | فئة فرعية |
 | `team_member` | Team Member | عضو فريق |
-| `auth` | Authentication | المصادقة |
+| `auth` | Authentication | الحساب |
 | `role` | Role | دور |
 | `role_page` | Role Permission | صلاحية الدور |
 | `page` | Page | صفحة |
+| `user_role` | User Role | دور المستخدم |
+| `workday` | Work Day | يوم عمل |
+| `workday_material` | Work Day Material | مواد يوم العمل |
+| `workday_labor` | Work Day Labor | عمالة يوم العمل |
+| `workday_equipment` | Work Day Equipment | معدات يوم العمل |
 
 ### Frontend Translation Example
 
@@ -231,10 +236,15 @@ const targetTypeMapAr = {
   work_category: "فئة عمل",
   work_subcategory: "فئة فرعية",
   team_member: "عضو فريق",
-  auth: "المصادقة",
+  auth: "الحساب",
   role: "دور",
   role_page: "صلاحية الدور",
-  page: "صفحة"
+  page: "صفحة",
+  user_role: "دور المستخدم",
+  workday: "يوم عمل",
+  workday_material: "مواد يوم العمل",
+  workday_labor: "عمالة يوم العمل",
+  workday_equipment: "معدات يوم العمل"
 };
 
 // Build activity text

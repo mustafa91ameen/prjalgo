@@ -268,9 +268,16 @@ func (r *DashboardRepository) GetRecentActivities(ctx context.Context, limit, of
 					WHEN 'work_subcategory' THEN (SELECT name FROM workSubCategories WHERE id = a.targetId)
 					WHEN 'user' THEN (SELECT username FROM users WHERE id = a.targetId)
 					WHEN 'team_member' THEN (SELECT u2.username FROM teamMembers tm JOIN users u2 ON tm.userId = u2.id WHERE tm.id = a.targetId)
+					WHEN 'role' THEN (SELECT name FROM roles WHERE id = a.targetId)
+					WHEN 'page' THEN (SELECT name FROM pages WHERE id = a.targetId)
+					WHEN 'workday' THEN (SELECT TO_CHAR(workDate, 'YYYY-MM-DD') FROM workDays WHERE id = a.targetId)
+					WHEN 'workday_material' THEN (SELECT materialName FROM workDayMaterials WHERE id = a.targetId)
+					WHEN 'workday_labor' THEN (SELECT workerName FROM workDayLabor WHERE id = a.targetId)
+					WHEN 'workday_equipment' THEN (SELECT equipmentName FROM workDayEquipment WHERE id = a.targetId)
+					WHEN 'auth' THEN u.username
 					ELSE NULL
 				END,
-				'Unknown'
+				'غير معروف'
 			) as targetName,
 			a.createdAt
 		FROM auditLogs a

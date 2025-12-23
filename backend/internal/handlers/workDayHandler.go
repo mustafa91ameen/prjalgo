@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/mustafa91ameen/prjalgo/backend/internal/auth"
 	"github.com/mustafa91ameen/prjalgo/backend/internal/dtos"
 	"github.com/mustafa91ameen/prjalgo/backend/internal/response"
 	"github.com/mustafa91ameen/prjalgo/backend/internal/services"
@@ -84,11 +85,16 @@ func (h *WorkDayHandler) Create(c *gin.Context) {
 		return
 	}
 
+	req.CreatedBy = auth.GetUserIDPtrFromContext(c.Request.Context())
+
 	workDay, err := h.workDayService.Create(c.Request.Context(), req)
 	if err != nil {
 		response.InternalError(c, "failed to create work day")
 		return
 	}
+
+	// Set target ID in context for audit middleware
+	c.Set(auth.TargetIDKey, workDay.ID)
 
 	response.Created(c, workDay)
 }

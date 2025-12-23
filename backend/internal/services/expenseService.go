@@ -72,8 +72,6 @@ func (s *ExpenseService) Create(ctx context.Context, req dtos.CreateExpense) (*d
 		Type:        req.Type,
 		ExpenseDate: req.ExpenseDate,
 		ProjectID:   req.ProjectID,
-		IsDebtor:    req.IsDebtor,
-		DebtorID:    req.DebtorID,
 		Status:      req.Status,
 		Notes:       req.Notes,
 		CreatedBy:   req.CreatedBy,
@@ -112,12 +110,6 @@ func (s *ExpenseService) Update(ctx context.Context, id int64, req dtos.UpdateEx
 	}
 	if req.ProjectID != nil {
 		existing.ProjectID = req.ProjectID
-	}
-	if req.IsDebtor != nil {
-		existing.IsDebtor = *req.IsDebtor
-	}
-	if req.DebtorID != nil {
-		existing.DebtorID = req.DebtorID
 	}
 	if req.Status != nil {
 		existing.Status = req.Status
@@ -158,7 +150,6 @@ func (s *ExpenseService) GetStats(ctx context.Context, period string) (*dtos.Exp
 		Pending:       stats.Pending,
 		Approved:      stats.Approved,
 		Rejected:      stats.Rejected,
-		DebtorCount:   stats.DebtorCount,
 		AverageAmount: stats.AverageAmount,
 	}, nil
 }
@@ -172,8 +163,6 @@ func toExpenseSummaryDTO(e models.Expense) dtos.ExpenseSummary {
 		Type:        e.Type,
 		ExpenseDate: e.ExpenseDate,
 		ProjectID:   e.ProjectID,
-		IsDebtor:    e.IsDebtor,
-		DebtorID:    e.DebtorID,
 		Status:      e.Status,
 	}
 }
@@ -186,8 +175,6 @@ func toExpenseDTO(e *models.Expense) dtos.Expense {
 		Type:        e.Type,
 		ExpenseDate: e.ExpenseDate,
 		ProjectID:   e.ProjectID,
-		IsDebtor:    e.IsDebtor,
-		DebtorID:    e.DebtorID,
 		Status:      e.Status,
 		Notes:       e.Notes,
 		CreatedBy:   e.CreatedBy,

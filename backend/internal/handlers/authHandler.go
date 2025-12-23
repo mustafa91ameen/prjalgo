@@ -51,6 +51,9 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
+	// Set user ID in context for audit middleware
+	c.Set(auth.UserIDKey, result.UserID)
+
 	response.Success(c, result)
 }
 
@@ -73,6 +76,9 @@ func (h *AuthHandler) Refresh(c *gin.Context) {
 		return
 	}
 
+	// Set user ID in context for audit middleware
+	c.Set(auth.UserIDKey, result.UserID)
+
 	response.Success(c, result)
 }
 
@@ -83,10 +89,15 @@ func (h *AuthHandler) Logout(c *gin.Context) {
 		return
 	}
 
-	err := h.authService.Logout(c.Request.Context(), req.RefreshToken)
+	result, err := h.authService.Logout(c.Request.Context(), req.RefreshToken)
 	if err != nil {
 		response.InternalError(c, "logout failed")
 		return
+	}
+
+	// Set user ID in context for audit middleware
+	if result != nil {
+		c.Set(auth.UserIDKey, result.UserID)
 	}
 
 	response.Success(c, nil)

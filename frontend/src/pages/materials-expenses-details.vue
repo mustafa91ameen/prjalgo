@@ -72,11 +72,15 @@
         :items="materialsData"
         :search="materialsSearch"
         :items-per-page="10"
+        :loading="loading"
         class="data-table materials-table"
         no-data-text="لا توجد بيانات متاحة"
         loading-text="جاري التحميل..."
         density="comfortable"
       >
+        <template v-slot:item.notes="{ item }">
+          {{ item.notes || '-' }}
+        </template>
         <template v-slot:item.actions="{ item }">
           <v-btn
             icon="mdi-delete"
@@ -90,13 +94,13 @@
       </v-data-table>
     </v-card>
 
-    <!-- Daily Expenses Section -->
+    <!-- Project Expenses Section -->
     <v-card class="section-card mb-4" elevation="2">
       <v-card-title class="section-title">
-        <v-icon class="me-2" color="error">mdi-cash-multiple</v-icon>
-        المصاريف اليومية
+        <v-icon class="me-2" color="warning">mdi-cash-multiple</v-icon>
+        مصاريف المشروع
       </v-card-title>
-      
+
       <!-- Search Bar and Add Button -->
       <v-card-text class="pb-0">
         <div class="search-container">
@@ -112,9 +116,9 @@
               class="search-field"
               @keyup.enter="searchExpenses"
             />
-            <v-btn 
-              color="primary" 
-              variant="elevated" 
+            <v-btn
+              color="primary"
+              variant="elevated"
               class="search-btn"
               @click="searchExpenses"
               size="small"
@@ -122,9 +126,9 @@
               <v-icon class="me-2" size="18">mdi-magnify</v-icon>
               بحث
             </v-btn>
-            <v-btn 
-              color="warning" 
-              variant="elevated" 
+            <v-btn
+              color="warning"
+              variant="elevated"
               class="add-btn"
               @click="openAddExpenseDialog"
               size="small"
@@ -142,11 +146,30 @@
         :items="expensesData"
         :search="expensesSearch"
         :items-per-page="10"
+        :loading="expensesLoading"
         class="data-table expenses-table"
         no-data-text="لا توجد بيانات متاحة"
         loading-text="جاري التحميل..."
         density="comfortable"
       >
+        <template v-slot:item.expenseDate="{ item }">
+          {{ formatDate(item.expenseDate) }}
+        </template>
+        <template v-slot:item.amount="{ item }">
+          {{ formatCurrency(item.amount) }}
+        </template>
+        <template v-slot:item.status="{ item }">
+          <v-chip
+            :color="getStatusColor(item.status)"
+            size="small"
+            variant="tonal"
+          >
+            {{ getStatusText(item.status) }}
+          </v-chip>
+        </template>
+        <template v-slot:item.notes="{ item }">
+          {{ item.notes || '-' }}
+        </template>
         <template v-slot:item.actions="{ item }">
           <v-btn
             icon="mdi-delete"
@@ -175,19 +198,19 @@
           </p>
 
           <v-form ref="form" v-model="formValid">
-            <!-- الصف الأول: نوع المادة، الكمية، السعر -->
+            <!-- الصف الأول: اسم المادة، الكمية، التكلفة -->
             <v-row class="clean-form-row">
               <v-col cols="12" md="4" class="clean-form-column">
                 <div class="clean-form-field-wrapper">
                   <label class="clean-form-label">
-                    نوع المادة <span class="required-star">*</span>
+                    اسم المادة <span class="required-star">*</span>
                   </label>
                   <v-text-field
-                    v-model="newMaterial.type"
+                    v-model="newMaterial.materialName"
                     variant="outlined"
                     density="comfortable"
-                    placeholder="أدخل نوع المادة"
-                    :rules="[v => !!v || 'نوع المادة مطلوب']"
+                    placeholder="أدخل اسم المادة"
+                    :rules="[v => !!v || 'اسم المادة مطلوب']"
                     required
                     hide-details="auto"
                     class="clean-form-input"
@@ -217,15 +240,15 @@
               <v-col cols="12" md="4" class="clean-form-column">
                 <div class="clean-form-field-wrapper">
                   <label class="clean-form-label">
-                    السعر (د.ع) <span class="required-star">*</span>
+                    التكلفة (د.ع) <span class="required-star">*</span>
                   </label>
                   <v-text-field
-                    v-model.number="newMaterial.price"
+                    v-model.number="newMaterial.cost"
                     type="number"
                     variant="outlined"
                     density="comfortable"
                     placeholder="0"
-                    :rules="[v => (v > 0) || 'السعر يجب أن يكون أكبر من صفر']"
+                    :rules="[v => (v > 0) || 'التكلفة يجب أن تكون أكبر من صفر']"
                     required
                     hide-details="auto"
                     class="clean-form-input"
@@ -234,7 +257,7 @@
               </v-col>
             </v-row>
 
-            <!-- الصف الثاني: السعر الكلي، اسم السائق -->
+            <!-- الصف الثاني: السعر الكلي -->
             <v-row class="clean-form-row">
               <v-col cols="12" md="6" class="clean-form-column">
                 <div class="clean-form-field-wrapper">
@@ -242,7 +265,7 @@
                     السعر الكلي (د.ع)
                   </label>
                   <v-text-field
-                    :value="(newMaterial.quantity * newMaterial.price) || 0"
+                    :value="(newMaterial.quantity * newMaterial.cost) || 0"
                     variant="outlined"
                     density="comfortable"
                     placeholder="0"
@@ -252,37 +275,19 @@
                   />
                 </div>
               </v-col>
-
-              <v-col cols="12" md="6" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    اسم السائق <span class="required-star">*</span>
-                  </label>
-                  <v-text-field
-                    v-model="newMaterial.driver"
-                    variant="outlined"
-                    density="comfortable"
-                    placeholder="أدخل اسم السائق"
-                    :rules="[v => !!v || 'اسم السائق مطلوب']"
-                    required
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
             </v-row>
 
-            <!-- الصف الرابع: التفاصيل -->
+            <!-- الصف الثالث: الملاحظات -->
             <v-row class="clean-form-row">
               <v-col cols="12" class="clean-form-column">
                 <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">التفاصيل</label>
+                  <label class="clean-form-label">الملاحظات</label>
                   <v-textarea
-                    v-model="newMaterial.details"
+                    v-model="newMaterial.notes"
                     variant="outlined"
                     rows="4"
                     density="comfortable"
-                    placeholder="أدخل التفاصيل الإضافية"
+                    placeholder="أدخل الملاحظات الإضافية"
                     hide-details="auto"
                     class="clean-form-input"
                   />
@@ -319,7 +324,7 @@
       <v-card class="clean-dialog-card clean-form-card">
         <!-- Header Section -->
         <v-card-title class="clean-dialog-header clean-form-header">
-          <h2 class="clean-form-title">معلومات المصروف</h2>
+          <h2 class="clean-form-title">معلومات مصروف المشروع</h2>
         </v-card-title>
 
         <!-- Form Content -->
@@ -329,58 +334,76 @@
           </p>
 
           <v-form ref="expenseForm" v-model="expenseFormValid">
-            <!-- الصف الأول: نوع المصروف -->
+            <!-- الصف الأول: الاسم، المبلغ -->
             <v-row class="clean-form-row">
-              <v-col cols="12" md="4" class="clean-form-column">
+              <v-col cols="12" md="6" class="clean-form-column">
                 <div class="clean-form-field-wrapper">
                   <label class="clean-form-label">
-                    نوع المصروف <span class="required-star">*</span>
+                    اسم المصروف <span class="required-star">*</span>
+                  </label>
+                  <v-text-field
+                    v-model="newExpense.name"
+                    variant="outlined"
+                    density="comfortable"
+                    placeholder="أدخل اسم المصروف"
+                    :rules="[v => !!v || 'اسم المصروف مطلوب']"
+                    required
+                    hide-details="auto"
+                    class="clean-form-input"
+                  />
+                </div>
+              </v-col>
+
+              <v-col cols="12" md="6" class="clean-form-column">
+                <div class="clean-form-field-wrapper">
+                  <label class="clean-form-label">
+                    المبلغ (د.ع) <span class="required-star">*</span>
+                  </label>
+                  <v-text-field
+                    v-model.number="newExpense.amount"
+                    type="number"
+                    variant="outlined"
+                    density="comfortable"
+                    placeholder="0"
+                    :rules="[v => (v > 0) || 'المبلغ يجب أن يكون أكبر من صفر']"
+                    required
+                    hide-details="auto"
+                    class="clean-form-input"
+                  />
+                </div>
+              </v-col>
+            </v-row>
+
+            <!-- الصف الثاني: تاريخ المصروف، النوع -->
+            <v-row class="clean-form-row">
+              <v-col cols="12" md="6" class="clean-form-column">
+                <div class="clean-form-field-wrapper">
+                  <label class="clean-form-label">
+                    تاريخ المصروف <span class="required-star">*</span>
+                  </label>
+                  <v-text-field
+                    v-model="newExpense.expenseDate"
+                    variant="outlined"
+                    density="comfortable"
+                    type="date"
+                    :rules="[v => !!v || 'تاريخ المصروف مطلوب']"
+                    required
+                    hide-details="auto"
+                    class="clean-form-input"
+                  />
+                </div>
+              </v-col>
+
+              <v-col cols="12" md="6" class="clean-form-column">
+                <div class="clean-form-field-wrapper">
+                  <label class="clean-form-label">
+                    نوع المصروف
                   </label>
                   <v-text-field
                     v-model="newExpense.type"
                     variant="outlined"
                     density="comfortable"
                     placeholder="أدخل نوع المصروف"
-                    :rules="[v => !!v || 'نوع المصروف مطلوب']"
-                    required
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-
-              <v-col cols="12" md="4" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    العدد <span class="required-star">*</span>
-                  </label>
-                  <v-text-field
-                    v-model.number="newExpense.quantity"
-                    type="number"
-                    variant="outlined"
-                    density="comfortable"
-                    placeholder="0"
-                    :rules="[v => (v > 0) || 'العدد يجب أن يكون أكبر من صفر']"
-                    required
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-
-              <v-col cols="12" md="4" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    الأجرة اليومية (د.ع) <span class="required-star">*</span>
-                  </label>
-                  <v-text-field
-                    v-model.number="newExpense.price"
-                    type="number"
-                    variant="outlined"
-                    density="comfortable"
-                    placeholder="0"
-                    :rules="[v => (v > 0) || 'الأجرة اليومية يجب أن تكون أكبر من صفر']"
-                    required
                     hide-details="auto"
                     class="clean-form-input"
                   />
@@ -388,38 +411,18 @@
               </v-col>
             </v-row>
 
-            <!-- الصف الثاني: المجموع والتفاصيل -->
+            <!-- الصف الثالث: الحالة -->
             <v-row class="clean-form-row">
               <v-col cols="12" md="6" class="clean-form-column">
                 <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    المجموع (د.ع)
-                  </label>
-                  <v-text-field
-                    :value="(newExpense.quantity * newExpense.price) || 0"
-                    type="number"
+                  <label class="clean-form-label">الحالة</label>
+                  <v-select
+                    v-model="newExpense.status"
+                    :items="statusOptions"
+                    item-title="title"
+                    item-value="value"
                     variant="outlined"
                     density="comfortable"
-                    placeholder="0"
-                    readonly
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-
-              <v-col cols="12" md="6" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    التفاصيل <span class="required-star">*</span>
-                  </label>
-                  <v-text-field
-                    v-model="newExpense.details"
-                    variant="outlined"
-                    density="comfortable"
-                    placeholder="أدخل التفاصيل"
-                    :rules="[v => !!v || 'التفاصيل مطلوبة']"
-                    required
                     hide-details="auto"
                     class="clean-form-input"
                   />
@@ -427,17 +430,17 @@
               </v-col>
             </v-row>
 
-            <!-- الصف الثالث: الملاحظات -->
+            <!-- الصف الرابع: الملاحظات -->
             <v-row class="clean-form-row">
               <v-col cols="12" class="clean-form-column">
                 <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">ملاحظات إضافية</label>
+                  <label class="clean-form-label">الملاحظات</label>
                   <v-textarea
-                    v-model="newExpense.additionalNotes"
+                    v-model="newExpense.notes"
                     variant="outlined"
-                    rows="4"
+                    rows="3"
                     density="comfortable"
-                    placeholder="أدخل ملاحظات إضافية"
+                    placeholder="أدخل الملاحظات"
                     hide-details="auto"
                     class="clean-form-input"
                   />
@@ -473,129 +476,124 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import SimpleDialog from '@/components/SimpleDialog.vue'
-import MaterialForm from '@/components/MaterialForm.vue'
-import ExpenseForm from '@/components/ExpenseForm.vue'
+import { ref, computed, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { listMaterialsByWorkDay, createMaterial, deleteMaterial as deleteMaterialApi } from '@/api/materials'
+import { listExpensesByProject, createExpense, deleteExpense as deleteExpenseApi } from '@/api/expenses'
 
 const router = useRouter()
+const route = useRoute()
+
+// Get workDayId and projectId from route query - use computed to be reactive
+const workDayId = computed(() => route.query.workDayId || null)
+const projectId = computed(() => route.query.projectId || null)
+
+// Debug: log when route changes
+watch(() => route.query, (newQuery) => {
+  console.log('[materials-expenses] Route query changed:', newQuery)
+}, { immediate: true })
 
 // Reactive data
 const materialsSearch = ref('')
 const expensesSearch = ref('')
 const showAddDialog = ref(false)
 const showAddExpenseDialog = ref(false)
-const isMaterial = ref(true)
 const formValid = ref(false)
-
-// Form data
-const newItem = ref({
-  type: '',
-  quantity: '',
-  price: '',
-  totalPrice: '',
-  driver: '',
-  details: ''
-})
-
-// Modern dialog data
-const newMaterial = ref({
-  type: '',
-  quantity: '',
-  price: '',
-  totalPrice: '',
-  driver: '',
-  details: ''
-})
-
-const newExpense = ref({
-  type: '',
-  quantity: '',
-  price: '',
-  totalPrice: '',
-  details: '',
-  additionalNotes: ''
-})
-
-const expenseForm = ref(null)
 const expenseFormValid = ref(false)
+const loading = ref(false)
+const form = ref(null)
+const expenseForm = ref(null)
 
-// Table headers
+// Form data - aligned with backend DTOs
+const newMaterial = ref({
+  materialName: '',
+  quantity: 0,
+  cost: 0,
+  notes: ''
+})
+
+// Form data for project expenses - aligned with backend CreateExpense DTO
+const newExpense = ref({
+  name: '',
+  amount: 0,
+  type: '',
+  expenseDate: new Date().toISOString().split('T')[0],
+  status: 'pending',
+  notes: ''
+})
+
+// Status options for expenses
+const statusOptions = [
+  { title: 'معلق', value: 'pending' },
+  { title: 'معتمد', value: 'approved' },
+  { title: 'مرفوض', value: 'rejected' }
+]
+
+// Loading state for expenses
+const expensesLoading = ref(false)
+
+// Table headers - aligned with backend fields
 const materialsHeaders = [
   { title: 'التسلسل', key: 'id', sortable: false },
-  { title: 'نوع المادة', key: 'type', sortable: true },
+  { title: 'اسم المادة', key: 'materialName', sortable: true },
   { title: 'الكمية', key: 'quantity', sortable: true },
-  { title: 'السعر', key: 'price', sortable: true },
+  { title: 'السعر', key: 'cost', sortable: true },
   { title: 'السعر الكلي', key: 'total', sortable: true },
-  { title: 'اسم السائق', key: 'driver', sortable: true },
-  { title: 'التفاصيل', key: 'details', sortable: true },
+  { title: 'الملاحظات', key: 'notes', sortable: true },
   { title: 'الإجراءات', key: 'actions', sortable: false }
 ]
 
 const expensesHeaders = [
   { title: 'التسلسل', key: 'id', sortable: false },
-  { title: 'نوع النثرية', key: 'type', sortable: true },
-  { title: 'العدد', key: 'quantity', sortable: true },
-  { title: 'الأجرة اليومية', key: 'price', sortable: true },
-  { title: 'المجموع', key: 'total', sortable: true },
-  { title: 'التفاصيل', key: 'details', sortable: true },
+  { title: 'الاسم', key: 'name', sortable: true },
+  { title: 'المبلغ', key: 'amount', sortable: true },
+  { title: 'النوع', key: 'type', sortable: true },
+  { title: 'التاريخ', key: 'expenseDate', sortable: true },
+  { title: 'الحالة', key: 'status', sortable: true },
+  { title: 'الملاحظات', key: 'notes', sortable: true },
   { title: 'الإجراءات', key: 'actions', sortable: false }
 ]
 
-// Sample data
-const materialsData = ref([
-  {
-    id: 1,
-    type: 'أسمنت',
-    quantity: 30,
-    price: 120,
-    total: 3600,
-    driver: 'أحمد علي',
-    details: 'أسمنت عالي الجودة'
-  },
-  {
-    id: 2,
-    type: 'رمل',
-    quantity: 50,
-    price: 2500,
-    total: 125000,
-    driver: 'محمد حسن',
-    details: 'رمل ناعم للبناء'
-  },
-  {
-    id: 3,
-    type: 'حديد',
-    quantity: 2,
-    price: 50000,
-    total: 100000,
-    driver: 'علي أحمد',
-    details: 'حديد تسليح 12 مم'
-  }
-])
-
-const expensesData = ref([
-  {
-    id: 1,
-    type: 'وجبة غداء',
-    quantity: 8,
-    price: 5000,
-    total: 40000,
-    details: 'وجبة غداء للعمال'
-  },
-  {
-    id: 2,
-    type: 'نقل',
-    quantity: 4,
-    price: 10000,
-    total: 40000,
-    details: 'تكلفة النقل اليومية'
-  }
-])
+// Data from backend
+const materialsData = ref([])
+const expensesData = ref([])
 
 // Methods
 const goBack = () => {
-  router.push('/work-day-details')
+  const query = {}
+  if (workDayId.value) query.id = workDayId.value
+  if (projectId.value) query.projectId = projectId.value
+  router.push({ path: '/work-day-details', query })
+}
+
+// Load data from backend
+const loadMaterials = async () => {
+  if (!workDayId.value) return
+  loading.value = true
+  try {
+    const data = await listMaterialsByWorkDay(workDayId.value)
+    materialsData.value = data.map(item => ({
+      ...item,
+      total: item.quantity * item.cost
+    }))
+  } catch (err) {
+    console.error('Error loading materials:', err)
+  } finally {
+    loading.value = false
+  }
+}
+
+const loadExpenses = async () => {
+  if (!projectId.value) return
+  expensesLoading.value = true
+  try {
+    const data = await listExpensesByProject(projectId.value)
+    expensesData.value = data
+  } catch (err) {
+    console.error('Error loading expenses:', err)
+  } finally {
+    expensesLoading.value = false
+  }
 }
 
 const searchMaterials = () => {
@@ -606,32 +604,28 @@ const searchExpenses = () => {
   console.log('البحث في المصاريف:', expensesSearch.value)
 }
 
-const openAddDialog = (material) => {
-  isMaterial.value = material
-  newItem.value = {
-    type: '',
-    quantity: '',
-    price: '',
-    driver: ''
-  }
-  showAddDialog.value = true
-}
-
 const openAddMaterialDialog = () => {
   showAddDialog.value = true
   // Reset form data
   newMaterial.value = {
-    type: '',
-    quantity: '',
-    price: '',
-    totalPrice: '',
-    driver: '',
-    details: ''
+    materialName: '',
+    quantity: 0,
+    cost: 0,
+    notes: ''
   }
 }
 
 const openAddExpenseDialog = () => {
   showAddExpenseDialog.value = true
+  // Reset form data
+  newExpense.value = {
+    name: '',
+    amount: 0,
+    type: '',
+    expenseDate: new Date().toISOString().split('T')[0],
+    status: 'pending',
+    notes: ''
+  }
 }
 
 const closeAddDialog = () => {
@@ -640,12 +634,10 @@ const closeAddDialog = () => {
     form.value.reset()
   }
   newMaterial.value = {
-    type: '',
-    quantity: '',
-    price: '',
-    totalPrice: '',
-    driver: '',
-    details: ''
+    materialName: '',
+    quantity: 0,
+    cost: 0,
+    notes: ''
   }
 }
 
@@ -655,125 +647,183 @@ const closeAddExpenseDialog = () => {
     expenseForm.value.reset()
   }
   newExpense.value = {
+    name: '',
+    amount: 0,
     type: '',
-    quantity: '',
-    price: '',
-    totalPrice: '',
-    details: '',
-    additionalNotes: ''
+    expenseDate: new Date().toISOString().split('T')[0],
+    status: 'pending',
+    notes: ''
   }
 }
 
-const saveItem = () => {
-  if (isMaterial.value) {
-    const newMaterial = {
-      id: materialsData.value.length + 1,
-      type: newItem.value.type,
-      quantity: parseInt(newItem.value.quantity),
-      price: parseInt(newItem.value.price),
-      total: parseInt(newItem.value.totalPrice) || (parseInt(newItem.value.quantity) * parseInt(newItem.value.price)),
-      driver: newItem.value.driver,
-      details: newItem.value.details
-    }
-    materialsData.value.push(newMaterial)
-  } else {
-    const newExpense = {
-      id: expensesData.value.length + 1,
-      type: newItem.value.type,
-      quantity: parseInt(newItem.value.quantity),
-      price: parseInt(newItem.value.price),
-      total: parseInt(newItem.value.totalPrice) || (parseInt(newItem.value.quantity) * parseInt(newItem.value.price)),
-      details: newItem.value.details
-    }
-    expensesData.value.push(newExpense)
-  }
-  closeAddDialog()
-}
-
-// Modern dialog functions
+// Save functions
 const saveMaterial = async () => {
   const { valid } = await form.value.validate()
   if (valid) {
-    const newMaterialItem = {
-      id: materialsData.value.length + 1,
-      type: newMaterial.value.type,
-      quantity: parseInt(newMaterial.value.quantity),
-      price: parseInt(newMaterial.value.price),
-      total: parseInt(newMaterial.value.quantity) * parseInt(newMaterial.value.price),
-      driver: newMaterial.value.driver,
-      details: newMaterial.value.details
+    try {
+      const wdId = parseInt(workDayId.value)
+      if (!wdId || isNaN(wdId)) {
+        console.error('Invalid workDayId:', workDayId.value)
+        return
+      }
+
+      const payload = {
+        workDayId: wdId,
+        materialName: newMaterial.value.materialName,
+        quantity: Number(newMaterial.value.quantity),
+        cost: Number(newMaterial.value.cost)
+      }
+      // Only include notes if not empty
+      if (newMaterial.value.notes && newMaterial.value.notes.trim()) {
+        payload.notes = newMaterial.value.notes.trim()
+      }
+
+      console.log('Creating material with payload:', payload)
+      await createMaterial(payload)
+      await loadMaterials()
+
+      // Reset form
+      form.value.reset()
+      newMaterial.value = {
+        materialName: '',
+        quantity: 0,
+        cost: 0,
+        notes: ''
+      }
+
+      showAddDialog.value = false
+    } catch (err) {
+      console.error('Error creating material:', err)
     }
-    
-    materialsData.value.push(newMaterialItem)
-    
-    // Reset form
-    form.value.reset()
-    newMaterial.value = {
-      type: '',
-      quantity: '',
-      price: '',
-      totalPrice: '',
-      driver: '',
-      details: ''
-    }
-    
-    showAddDialog.value = false
   }
 }
 
-// Modern dialog functions for expenses
+// Save expense function - uses expense API with projectId
 const saveExpense = async () => {
   const { valid } = await expenseForm.value.validate()
   if (valid) {
-    const newExpenseItem = {
-      id: expensesData.value.length + 1,
-      type: newExpense.value.type,
-      quantity: parseInt(newExpense.value.quantity),
-      price: parseInt(newExpense.value.price),
-      total: parseInt(newExpense.value.quantity) * parseInt(newExpense.value.price),
-      details: newExpense.value.details,
-      additionalNotes: newExpense.value.additionalNotes
+    try {
+      const pId = parseInt(projectId.value)
+      if (!pId || isNaN(pId)) {
+        console.error('Invalid projectId:', projectId.value)
+        return
+      }
+
+      // Build payload aligned with backend CreateExpense DTO
+      const payload = {
+        name: newExpense.value.name,
+        amount: Number(newExpense.value.amount),
+        expenseDate: new Date(newExpense.value.expenseDate).toISOString(),
+        projectId: pId
+      }
+
+      // Add optional fields if provided
+      if (newExpense.value.type && newExpense.value.type.trim()) {
+        payload.type = newExpense.value.type.trim()
+      }
+      if (newExpense.value.status) {
+        payload.status = newExpense.value.status
+      }
+      if (newExpense.value.notes && newExpense.value.notes.trim()) {
+        payload.notes = newExpense.value.notes.trim()
+      }
+
+      console.log('Creating expense with payload:', payload)
+      await createExpense(payload)
+      await loadExpenses()
+
+      // Reset form
+      expenseForm.value.reset()
+      newExpense.value = {
+        name: '',
+        amount: 0,
+        type: '',
+        expenseDate: new Date().toISOString().split('T')[0],
+        status: 'pending',
+        notes: ''
+      }
+
+      showAddExpenseDialog.value = false
+    } catch (err) {
+      console.error('Error creating expense:', err)
     }
-    
-    expensesData.value.push(newExpenseItem)
-    
-    // Reset form
-    expenseForm.value.reset()
-    newExpense.value = {
-      type: '',
-      quantity: '',
-      price: '',
-      totalPrice: '',
-      details: '',
-      additionalNotes: ''
-    }
-    
-    showAddExpenseDialog.value = false
   }
 }
 
-const deleteMaterial = (item) => {
+const deleteMaterial = async (item) => {
   if (confirm('هل أنت متأكد من حذف هذه المادة؟')) {
-    const index = materialsData.value.findIndex(m => m.id === item.id)
-    if (index > -1) {
-      materialsData.value.splice(index, 1)
+    try {
+      await deleteMaterialApi(item.id)
+      await loadMaterials()
+    } catch (err) {
+      console.error('Error deleting material:', err)
     }
   }
 }
 
-const deleteExpense = (item) => {
+const deleteExpense = async (item) => {
   if (confirm('هل أنت متأكد من حذف هذا المصروف؟')) {
-    const index = expensesData.value.findIndex(e => e.id === item.id)
-    if (index > -1) {
-      expensesData.value.splice(index, 1)
+    try {
+      await deleteExpenseApi(item.id)
+      await loadExpenses()
+    } catch (err) {
+      console.error('Error deleting expense:', err)
     }
   }
 }
 
-// Lifecycle
-onMounted(() => {
-  console.log('✅ صفحة المواد والمصاريف تم تحميلها بنجاح!')
-})
+// Helper functions for formatting
+const formatDate = (dateString) => {
+  if (!dateString) return '-'
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  })
+}
+
+const formatCurrency = (amount) => {
+  if (amount == null) return '0 IQD'
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(amount) + ' IQD'
+}
+
+const getStatusColor = (status) => {
+  const colors = {
+    pending: 'warning',
+    approved: 'success',
+    rejected: 'error'
+  }
+  return colors[status] || 'grey'
+}
+
+const getStatusText = (status) => {
+  const texts = {
+    pending: 'معلق',
+    approved: 'معتمد',
+    rejected: 'مرفوض'
+  }
+  return texts[status] || status || 'غير محدد'
+}
+
+// Lifecycle - watch workDayId to load materials
+watch(workDayId, (newId) => {
+  if (newId) {
+    console.log('[materials-expenses] workDayId available:', newId)
+    loadMaterials()
+  }
+}, { immediate: true })
+
+// Watch projectId to load expenses
+watch(projectId, (newId) => {
+  if (newId) {
+    console.log('[materials-expenses] projectId available:', newId)
+    loadExpenses()
+  }
+}, { immediate: true })
 </script>
 
 <style scoped>
@@ -1672,6 +1722,123 @@ onMounted(() => {
 
 .search-btn:hover :deep(.v-icon) {
   transform: scale(1.1);
+}
+
+/* Clean Form Dialog Styles */
+.clean-dialog-card {
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+
+.clean-form-card {
+  background: #ffffff !important;
+}
+
+.clean-dialog-header,
+.clean-form-header {
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
+  color: #ffffff !important;
+  padding: 1rem 1.5rem !important;
+}
+
+.clean-form-title {
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  margin: 0 !important;
+  color: #ffffff !important;
+}
+
+.clean-form-content {
+  padding: 1.5rem !important;
+  background: #ffffff !important;
+}
+
+.clean-form-instruction {
+  color: #666666 !important;
+  font-size: 0.9rem !important;
+  margin-bottom: 1.5rem !important;
+  line-height: 1.6 !important;
+}
+
+.clean-form-row {
+  margin-bottom: 0.5rem !important;
+}
+
+.clean-form-column {
+  padding: 0.5rem !important;
+}
+
+.clean-form-field-wrapper {
+  margin-bottom: 0.5rem;
+}
+
+.clean-form-label {
+  display: block;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  color: #333333 !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.required-star {
+  color: #d32f2f !important;
+}
+
+.clean-form-input :deep(.v-field) {
+  background-color: #f5f5f5 !important;
+  border-radius: 8px !important;
+}
+
+.clean-form-input :deep(.v-field__input) {
+  color: #333333 !important;
+  font-size: 0.95rem !important;
+}
+
+.clean-form-input :deep(.v-field__outline) {
+  border-color: #e0e0e0 !important;
+}
+
+.clean-form-input :deep(.v-field--focused .v-field__outline) {
+  border-color: #1976d2 !important;
+  border-width: 2px !important;
+}
+
+.clean-form-input :deep(.v-label) {
+  color: #666666 !important;
+}
+
+.clean-form-input :deep(input::placeholder),
+.clean-form-input :deep(textarea::placeholder) {
+  color: #999999 !important;
+}
+
+.clean-form-actions {
+  padding: 1rem 1.5rem !important;
+  background: #f5f5f5 !important;
+  border-top: 1px solid #e0e0e0 !important;
+}
+
+.clean-form-cancel-btn {
+  color: #666666 !important;
+  border-color: #cccccc !important;
+}
+
+.clean-form-cancel-btn:hover {
+  background: #eeeeee !important;
+}
+
+.clean-form-continue-btn {
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
+  color: #ffffff !important;
+}
+
+.clean-form-continue-btn:hover {
+  background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%) !important;
+}
+
+.clean-form-continue-btn:disabled {
+  background: #cccccc !important;
+  color: #999999 !important;
 }
 
 /* Responsive */

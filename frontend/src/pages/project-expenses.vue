@@ -584,7 +584,7 @@ const saveNewExpense = () => {
       type: newExpense.value.type,
       description: getExpenseTypeLabel(newExpense.value.type),
       amount: parseInt(newExpense.value.amount),
-      date: new Date().toLocaleDateString('ar-SA'),
+      date: new Date().toLocaleDateString('en-US'),
       status: 'pending', // حالة افتراضية: في الانتظار
       notes: newExpense.value.notes
     }

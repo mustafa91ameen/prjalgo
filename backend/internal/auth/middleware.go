@@ -15,7 +15,28 @@ const (
 	BearerPrefix        = "Bearer "
 	UserIDKey           = "user_id"
 	UsernameKey         = "username"
+	TargetIDKey         = "target_id"
 )
+
+// Context key type for type-safe context values
+type contextKey string
+
+// ContextKeyUserID is the key for storing userId in standard context
+const ContextKeyUserID contextKey = "userId"
+
+// GetUserIDFromContext extracts userId from standard context (for use in services)
+func GetUserIDFromContext(ctx context.Context) (int64, bool) {
+	userID, ok := ctx.Value(ContextKeyUserID).(int64)
+	return userID, ok
+}
+
+// GetUserIDPtrFromContext extracts userId as pointer from standard context
+func GetUserIDPtrFromContext(ctx context.Context) *int64 {
+	if userID, ok := ctx.Value(ContextKeyUserID).(int64); ok {
+		return &userID
+	}
+	return nil
+}
 
 // PermissionChecker interface for checking user permissions
 type PermissionChecker interface {
@@ -47,6 +68,11 @@ func JWTMiddleware(jwtManager *JWTManager) gin.HandlerFunc {
 
 		c.Set(UserIDKey, claims.UserID)
 		c.Set(UsernameKey, claims.Username)
+
+		// Add userID to standard context so it's accessible from services
+		ctx := context.WithValue(c.Request.Context(), ContextKeyUserID, claims.UserID)
+		c.Request = c.Request.WithContext(ctx)
+
 		c.Next()
 	}
 }
@@ -109,7 +135,13 @@ func AuditMiddleware(auditService AuditLogger, action, targetType string) gin.Ha
 		}
 
 		var targetID *int64
-		if idStr := c.Param("id"); idStr != "" {
+		// First check if handler set target ID in context (for create actions)
+		if tid, exists := c.Get(TargetIDKey); exists {
+			if id, ok := tid.(int64); ok {
+				targetID = &id
+			}
+		} else if idStr := c.Param("id"); idStr != "" {
+			// Fall back to URL param for update/delete actions
 			if id, err := strconv.ParseInt(idStr, 10, 64); err == nil {
 				targetID = &id
 			}
@@ -128,7 +160,8 @@ func AuditMiddleware(auditService AuditLogger, action, targetType string) gin.Ha
 	}
 }
 
-// AuditAuthMiddleware for login/logout (no authenticated user yet)
+// AuditAuthMiddleware for login/logout/refresh
+// After handler runs, it tries to get user ID from context (set by auth handler on success)
 func AuditAuthMiddleware(auditService AuditLogger, action string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Next()
@@ -138,12 +171,21 @@ func AuditAuthMiddleware(auditService AuditLogger, action string) gin.HandlerFun
 			status = "failure"
 		}
 
+		// Try to get user ID from context (set by auth handler after successful login/logout)
+		var actorID *int64
+		var targetID *int64
+		if userID, exists := c.Get(UserIDKey); exists {
+			id := userID.(int64)
+			actorID = &id
+			targetID = &id // For auth actions, the target is the user themselves
+		}
+
 		auditService.Log(
 			c.Request.Context(),
-			nil,
+			actorID,
 			action,
 			"auth",
-			nil,
+			targetID,
 			c.Request.Method,
 			status,
 			c.ClientIP(),

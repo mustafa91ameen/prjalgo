@@ -9,8 +9,6 @@ type Expense struct {
 	Type        *string   `json:"type" db:"type"`
 	ExpenseDate time.Time `json:"expenseDate" db:"expensedate"`
 	ProjectID   *int64    `json:"projectId" db:"projectid"`
-	IsDebtor    bool      `json:"isDebtor" db:"isdebtor"`
-	DebtorID    *int64    `json:"debtorId" db:"debtorid"`
 	Status      *string   `json:"status" db:"status"`
 	Notes       *string   `json:"notes" db:"notes"`
 	CreatedBy   *int64    `json:"createdBy" db:"createdby"`

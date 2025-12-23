@@ -318,9 +318,18 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
+const route = useRoute()
+
+// Get workDayId and projectId from query params
+const workDayId = ref(route.query.id || null)
+const projectId = ref(route.query.projectId || null)
+
+// Debug: log the route query params
+console.log('[work-day-details] Route query:', route.query)
+console.log('[work-day-details] workDayId:', workDayId.value, 'projectId:', projectId.value)
 
 // Reactive data for categories toggle
 const categoriesEnabled = ref({
@@ -361,7 +370,11 @@ const workDayInfo = ref({
 
 // Methods
 const goBack = () => {
-  router.push('/work-days')
+  if (projectId.value) {
+    router.push({ path: '/work-days', query: { projectId: projectId.value } })
+  } else {
+    router.push('/work-days')
+  }
 }
 
 // دالة للحصول على الحالة العامة للكروت
@@ -395,19 +408,19 @@ const showCategoryDetails = (category) => {
   
   if (category === 'materials-expenses') {
     // الانتقال إلى صفحة المواد والمصاريف
-    router.push('/materials-expenses-details')
+    router.push({ path: '/materials-expenses-details', query: { workDayId: workDayId.value, projectId: projectId.value } })
     return
   }
-  
+
   if (category === 'labor') {
     // الانتقال إلى صفحة الأيدي العاملة
-    router.push('/labor-details')
+    router.push({ path: '/labor-details', query: { workDayId: workDayId.value, projectId: projectId.value } })
     return
   }
-  
+
   if (category === 'equipment') {
     // الانتقال إلى صفحة الآليات
-    router.push('/equipment-details')
+    router.push({ path: '/equipment-details', query: { workDayId: workDayId.value, projectId: projectId.value } })
     return
   }
   

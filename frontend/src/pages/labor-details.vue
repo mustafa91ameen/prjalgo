@@ -89,36 +89,39 @@
           <span class="serial-number">{{ index + 1 }}</span>
         </template>
 
-        <!-- Name Column -->
-        <template #item.name="{ item }">
-          <span class="project-name">{{ item.name }}</span>
+        <!-- Worker Name Column -->
+        <template #item.workerName="{ item }">
+          <span class="project-name">{{ item.workerName }}</span>
         </template>
 
-        <!-- Position Column -->
-        <template #item.position="{ item }">
-          <span class="project-name">{{ item.position }}</span>
+        <!-- Job Title Column -->
+        <template #item.jobTitle="{ item }">
+          <span class="project-name">{{ item.jobTitle || '-' }}</span>
         </template>
 
-        <!-- Experience Column -->
-        <template #item.experience="{ item }">
-          <span class="date-text">{{ item.experience }}</span>
+        <!-- Quantity Column -->
+        <template #item.quantity="{ item }">
+          <span class="date-text">{{ item.quantity }}</span>
         </template>
 
-        <!-- Salary Column -->
-        <template #item.salary="{ item }">
-          <span class="cost-text">{{ formatCurrency(item.salary) }}</span>
+        <!-- Cost Column -->
+        <template #item.cost="{ item }">
+          <span class="cost-text">{{ formatCurrency(item.cost) }}</span>
+        </template>
+
+        <!-- Total Column -->
+        <template #item.total="{ item }">
+          <span class="cost-text">{{ formatCurrency(item.total) }}</span>
         </template>
 
         <!-- Phone Column -->
         <template #item.phone="{ item }">
-          <span class="date-text">{{ item.phone }}</span>
+          <span class="date-text">{{ item.phone || '-' }}</span>
         </template>
 
-        <!-- Specialty Column -->
-        <template #item.specialty="{ item }">
-          <v-chip class="category-chip" size="small">
-            {{ item.specialty }}
-          </v-chip>
+        <!-- Address Column -->
+        <template #item.address="{ item }">
+          <span class="project-name">{{ item.address || '-' }}</span>
         </template>
 
         <!-- Actions Column -->
@@ -161,7 +164,7 @@
                     اسم العامل <span class="required-star">*</span>
                   </label>
                   <v-text-field
-                    v-model="newLabor.name"
+                    v-model="newLabor.workerName"
                     variant="outlined"
                     density="comfortable"
                     placeholder="أدخل اسم العامل"
@@ -175,15 +178,13 @@
               <v-col cols="12" md="6" class="clean-form-column">
                 <div class="clean-form-field-wrapper">
                   <label class="clean-form-label">
-                    المهنة <span class="required-star">*</span>
+                    المهنة
                   </label>
                   <v-text-field
-                    v-model="newLabor.position"
+                    v-model="newLabor.jobTitle"
                     variant="outlined"
                     density="comfortable"
                     placeholder="أدخل المهنة"
-                    :rules="[v => !!v || 'المهنة مطلوبة']"
-                    required
                     hide-details="auto"
                     class="clean-form-input"
                   />
@@ -191,20 +192,20 @@
               </v-col>
             </v-row>
 
-            <!-- الصف الثاني: الراتب اليومي، عدد الأيام -->
+            <!-- الصف الثاني: العدد، الأجرة اليومية -->
             <v-row class="clean-form-row">
               <v-col cols="12" md="6" class="clean-form-column">
                 <div class="clean-form-field-wrapper">
                   <label class="clean-form-label">
-                    الراتب اليومي (د.ع) <span class="required-star">*</span>
+                    العدد <span class="required-star">*</span>
                   </label>
                   <v-text-field
-                    v-model="newLabor.salary"
+                    v-model.number="newLabor.quantity"
                     variant="outlined"
                     density="comfortable"
                     type="number"
                     placeholder="0"
-                    :rules="[v => !!v || 'الراتب مطلوب', v => v > 0 || 'الراتب يجب أن يكون أكبر من صفر']"
+                    :rules="[v => (v > 0) || 'العدد يجب أن يكون أكبر من صفر']"
                     required
                     hide-details="auto"
                     class="clean-form-input"
@@ -214,15 +215,15 @@
               <v-col cols="12" md="6" class="clean-form-column">
                 <div class="clean-form-field-wrapper">
                   <label class="clean-form-label">
-                    عدد الأيام <span class="required-star">*</span>
+                    الأجرة اليومية (د.ع) <span class="required-star">*</span>
                   </label>
                   <v-text-field
-                    v-model="newLabor.experience"
+                    v-model.number="newLabor.cost"
                     variant="outlined"
                     density="comfortable"
                     type="number"
                     placeholder="0"
-                    :rules="[v => !!v || 'عدد الأيام مطلوب', v => v > 0 || 'عدد الأيام يجب أن يكون أكبر من صفر']"
+                    :rules="[v => (v > 0) || 'الأجرة يجب أن تكون أكبر من صفر']"
                     required
                     hide-details="auto"
                     class="clean-form-input"
@@ -239,7 +240,7 @@
                     المجموع (د.ع)
                   </label>
                   <v-text-field
-                    :value="(newLabor.salary * newLabor.experience) || 0"
+                    :value="(newLabor.quantity * newLabor.cost) || 0"
                     variant="outlined"
                     density="comfortable"
                     type="number"
@@ -253,15 +254,13 @@
               <v-col cols="12" md="6" class="clean-form-column">
                 <div class="clean-form-field-wrapper">
                   <label class="clean-form-label">
-                    رقم الهاتف <span class="required-star">*</span>
+                    رقم الهاتف
                   </label>
                   <v-text-field
                     v-model="newLabor.phone"
                     variant="outlined"
                     density="comfortable"
                     placeholder="07XX XXX XXXX"
-                    :rules="[v => !!v || 'رقم الهاتف مطلوب']"
-                    required
                     hide-details="auto"
                     class="clean-form-input"
                   />
@@ -274,15 +273,13 @@
               <v-col cols="12" md="6" class="clean-form-column">
                 <div class="clean-form-field-wrapper">
                   <label class="clean-form-label">
-                    العنوان <span class="required-star">*</span>
+                    العنوان
                   </label>
                   <v-text-field
-                    v-model="newLabor.specialty"
+                    v-model="newLabor.address"
                     variant="outlined"
                     density="comfortable"
                     placeholder="أدخل العنوان"
-                    :rules="[v => !!v || 'العنوان مطلوب']"
-                    required
                     hide-details="auto"
                     class="clean-form-input"
                   />
@@ -351,107 +348,74 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import SimpleDialog from '@/components/SimpleDialog.vue'
-import LaborForm from '@/components/LaborForm.vue'
+import { ref, computed, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { listLaborByWorkDay, createLabor, deleteLabor as deleteLaborApi } from '@/api/materials'
 
 const router = useRouter()
+const route = useRoute()
+
+// Get workDayId and projectId from route query
+const workDayId = computed(() => route.query.workDayId || null)
+const projectId = computed(() => route.query.projectId || null)
 
 // Reactive data
 const laborSearch = ref('')
 const showAddDialog = ref(false)
 const formValid = ref(false)
+const loading = ref(false)
+const form = ref(null)
 
-// Modern dialog data
-const newWorker = ref({
-  name: '',
-  profession: '',
-  salary: '',
-  daysWorked: '',
-  totalSalary: '',
+// Form data - aligned with backend DTO
+const newLabor = ref({
+  workerName: '',
+  jobTitle: '',
+  quantity: 0,
+  cost: 0,
   phone: '',
   address: '',
   notes: ''
 })
 
-const laborFormRef = ref(null)
-
-// Form data
-const newLabor = ref({
-  name: '',
-  position: '',
-  experience: '',
-  salary: '',
-  phone: '',
-  specialty: '',
-  notes: ''
-})
-
-// Table headers
+// Table headers - aligned with backend fields
 const laborHeaders = [
   { title: 'التسلسل', key: 'id', sortable: false },
-  { title: 'اسم العامل', key: 'name', sortable: true },
-  { title: 'المنصب', key: 'position', sortable: true },
-  { title: 'سنوات الخبرة', key: 'experience', sortable: true },
-  { title: 'الراتب اليومي', key: 'salary', sortable: true },
+  { title: 'اسم العامل', key: 'workerName', sortable: true },
+  { title: 'المهنة', key: 'jobTitle', sortable: true },
+  { title: 'العدد', key: 'quantity', sortable: true },
+  { title: 'الأجرة اليومية', key: 'cost', sortable: true },
+  { title: 'المجموع', key: 'total', sortable: true },
   { title: 'رقم الهاتف', key: 'phone', sortable: true },
-  { title: 'التخصص', key: 'specialty', sortable: true },
+  { title: 'العنوان', key: 'address', sortable: true },
   { title: 'الإجراءات', key: 'actions', sortable: false }
 ]
 
-// Sample data
-const laborData = ref([
-  {
-    id: 1,
-    name: 'أحمد محمد علي',
-    position: 'مهندس مدني',
-    experience: 5,
-    salary: 50000,
-    phone: '07701234567',
-    specialty: 'البناء والتشييد'
-  },
-  {
-    id: 2,
-    name: 'محمد حسن أحمد',
-    position: 'عامل بناء',
-    experience: 3,
-    salary: 25000,
-    phone: '07801234567',
-    specialty: 'البناء العام'
-  },
-  {
-    id: 3,
-    name: 'علي أحمد محمد',
-    position: 'عامل بناء',
-    experience: 2,
-    salary: 20000,
-    phone: '07901234567',
-    specialty: 'البناء العام'
-  },
-  {
-    id: 4,
-    name: 'حسن علي محمد',
-    position: 'عامل بناء',
-    experience: 4,
-    salary: 30000,
-    phone: '07501234567',
-    specialty: 'البناء العام'
-  },
-  {
-    id: 5,
-    name: 'أحمد علي حسن',
-    position: 'عامل بناء',
-    salary: 22000,
-    experience: 1,
-    phone: '07301234567',
-    specialty: 'البناء العام'
-  }
-])
+// Data from backend
+const laborData = ref([])
 
 // Methods
 const goBack = () => {
-  router.push('/work-day-details')
+  const query = {}
+  if (workDayId.value) query.id = workDayId.value
+  if (projectId.value) query.projectId = projectId.value
+  router.push({ path: '/work-day-details', query })
+}
+
+// Load data from backend
+const loadLabor = async () => {
+  if (!workDayId.value) return
+  loading.value = true
+  try {
+    const data = await listLaborByWorkDay(workDayId.value)
+    laborData.value = data.map(item => ({
+      ...item,
+      total: item.quantity * item.cost
+    }))
+  } catch (err) {
+    console.error('Error loading labor:', err)
+  } finally {
+    loading.value = false
+  }
 }
 
 const searchLabor = () => {
@@ -460,20 +424,10 @@ const searchLabor = () => {
 
 const openAddDialog = () => {
   newLabor.value = {
-    name: '',
-    position: '',
-    experience: '',
-    salary: '',
-    phone: '',
-    specialty: ''
-  }
-  // Reset modern form data
-  newWorker.value = {
-    name: '',
-    profession: '',
-    salary: '',
-    daysWorked: '',
-    totalSalary: '',
+    workerName: '',
+    jobTitle: '',
+    quantity: 0,
+    cost: 0,
     phone: '',
     address: '',
     notes: ''
@@ -483,90 +437,98 @@ const openAddDialog = () => {
 
 const closeAddDialog = () => {
   showAddDialog.value = false
+  if (form.value) {
+    form.value.reset()
+  }
   newLabor.value = {
-    name: '',
-    position: '',
-    experience: '',
-    salary: '',
+    workerName: '',
+    jobTitle: '',
+    quantity: 0,
+    cost: 0,
     phone: '',
-    specialty: '',
+    address: '',
     notes: ''
   }
 }
 
-const saveLabor = () => {
-  const newWorker = {
-    id: laborData.value.length + 1,
-    name: newLabor.value.name,
-    position: newLabor.value.position,
-    experience: parseInt(newLabor.value.experience),
-    salary: parseInt(newLabor.value.salary),
-    phone: newLabor.value.phone,
-    specialty: newLabor.value.specialty
+const saveLabor = async () => {
+  const { valid } = await form.value.validate()
+  if (valid) {
+    try {
+      const wdId = parseInt(workDayId.value)
+      if (!wdId || isNaN(wdId)) {
+        console.error('Invalid workDayId:', workDayId.value)
+        return
+      }
+
+      const payload = {
+        workDayId: wdId,
+        workerName: newLabor.value.workerName,
+        quantity: Number(newLabor.value.quantity),
+        cost: Number(newLabor.value.cost)
+      }
+      // Optional fields
+      if (newLabor.value.jobTitle && newLabor.value.jobTitle.trim()) {
+        payload.jobTitle = newLabor.value.jobTitle.trim()
+      }
+      if (newLabor.value.phone && newLabor.value.phone.trim()) {
+        payload.phone = newLabor.value.phone.trim()
+      }
+      if (newLabor.value.address && newLabor.value.address.trim()) {
+        payload.address = newLabor.value.address.trim()
+      }
+      if (newLabor.value.notes && newLabor.value.notes.trim()) {
+        payload.notes = newLabor.value.notes.trim()
+      }
+
+      await createLabor(payload)
+      await loadLabor()
+
+      // Reset form
+      form.value.reset()
+      newLabor.value = {
+        workerName: '',
+        jobTitle: '',
+        quantity: 0,
+        cost: 0,
+        phone: '',
+        address: '',
+        notes: ''
+      }
+
+      showAddDialog.value = false
+    } catch (err) {
+      console.error('Error creating labor:', err)
+    }
   }
-  laborData.value.push(newWorker)
-  closeAddDialog()
 }
 
-// Modern dialog function for workers
-const saveWorker = () => {
-  if (laborFormRef.value && laborFormRef.value.isValid()) {
-    const newWorkerItem = {
-      id: laborData.value.length + 1,
-      name: newWorker.value.name,
-      position: newWorker.value.profession,
-      experience: `${newWorker.value.daysWorked} يوم`,
-      salary: parseInt(newWorker.value.salary),
-      phone: newWorker.value.phone,
-      specialty: newWorker.value.address,
-      status: 'نشط',
-      totalSalary: parseInt(newWorker.value.totalSalary),
-      notes: newWorker.value.notes
-    }
-    
-    laborData.value.push(newWorkerItem)
-    
-    // Reset form
-    laborFormRef.value.resetForm()
-    newWorker.value = {
-      name: '',
-      profession: '',
-      salary: '',
-      daysWorked: '',
-      totalSalary: '',
-      phone: '',
-      address: '',
-      notes: ''
-    }
-    
-    showAddDialog.value = false
-  }
-}
-
-const deleteLabor = (item) => {
+const deleteLabor = async (item) => {
   if (confirm('هل أنت متأكد من حذف هذا العامل؟')) {
-    const index = laborData.value.findIndex(l => l.id === item.id)
-    if (index > -1) {
-      laborData.value.splice(index, 1)
+    try {
+      await deleteLaborApi(item.id)
+      await loadLabor()
+    } catch (err) {
+      console.error('Error deleting labor:', err)
     }
   }
 }
 
 // Format currency
 const formatCurrency = (value) => {
-  if (!value) return '0 د.ع'
-  return new Intl.NumberFormat('ar-IQ', {
-    style: 'currency',
-    currency: 'IQD',
+  if (!value) return '0 IQD'
+  return new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
-  }).format(value).replace('IQD', 'د.ع')
+  }).format(value) + ' IQD'
 }
 
-// Lifecycle
-onMounted(() => {
-  console.log('✅ صفحة تفاصيل الأيدي العاملة تم تحميلها بنجاح!')
-})
+// Lifecycle - watch workDayId and load data when available
+watch(workDayId, (newId) => {
+  if (newId) {
+    loadLabor()
+  }
+}, { immediate: true })
 </script>
 
 <style scoped>
@@ -1361,14 +1323,128 @@ onMounted(() => {
     width: 100%;
     min-width: auto;
   }
-  
+
   .search-container {
     padding: 0.75rem;
   }
-  
+
   .search-field {
     margin-bottom: 0.5rem;
   }
+}
+
+/* ========================================
+   Clean Form Styles - Same as Materials
+   ======================================== */
+.clean-form-card {
+  background: #ffffff !important;
+}
+
+.clean-dialog-header,
+.clean-form-header {
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
+  color: #ffffff !important;
+  padding: 1rem 1.5rem !important;
+}
+
+.clean-form-title {
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  margin: 0 !important;
+  color: #ffffff !important;
+}
+
+.clean-form-content {
+  padding: 1.5rem !important;
+  background: #ffffff !important;
+}
+
+.clean-form-instruction {
+  color: #666666 !important;
+  font-size: 0.9rem !important;
+  margin-bottom: 1.5rem !important;
+  line-height: 1.6 !important;
+}
+
+.clean-form-row {
+  margin-bottom: 0.5rem !important;
+}
+
+.clean-form-column {
+  padding: 0.5rem !important;
+}
+
+.clean-form-field-wrapper {
+  margin-bottom: 0.5rem;
+}
+
+.clean-form-label {
+  display: block;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  color: #333333 !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.required-star {
+  color: #d32f2f !important;
+}
+
+.clean-form-input :deep(.v-field) {
+  background-color: #f5f5f5 !important;
+  border-radius: 8px !important;
+}
+
+.clean-form-input :deep(.v-field__input) {
+  color: #333333 !important;
+  font-size: 0.95rem !important;
+}
+
+.clean-form-input :deep(.v-field__outline) {
+  border-color: #e0e0e0 !important;
+}
+
+.clean-form-input :deep(.v-field--focused .v-field__outline) {
+  border-color: #1976d2 !important;
+  border-width: 2px !important;
+}
+
+.clean-form-input :deep(.v-label) {
+  color: #666666 !important;
+}
+
+.clean-form-input :deep(input::placeholder),
+.clean-form-input :deep(textarea::placeholder) {
+  color: #999999 !important;
+}
+
+.clean-form-actions {
+  padding: 1rem 1.5rem !important;
+  background: #f5f5f5 !important;
+  border-top: 1px solid #e0e0e0 !important;
+}
+
+.clean-form-cancel-btn {
+  color: #666666 !important;
+  border-color: #cccccc !important;
+}
+
+.clean-form-cancel-btn:hover {
+  background: #eeeeee !important;
+}
+
+.clean-form-continue-btn {
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
+  color: #ffffff !important;
+}
+
+.clean-form-continue-btn:hover {
+  background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%) !important;
+}
+
+.clean-form-continue-btn:disabled {
+  background: #cccccc !important;
+  color: #999999 !important;
 }
 
 </style>
