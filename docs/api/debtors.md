@@ -21,6 +21,7 @@ GET /api/v1/debtors
 
 ```json
 {
+  "success": true,
   "data": [
     {
       "id": 1,
@@ -52,6 +53,7 @@ GET /api/v1/debtors/:id
 
 ```json
 {
+  "success": true,
   "data": {
     "id": 1,
     "name": "ABC Company",
@@ -159,6 +161,7 @@ GET /api/v1/debtors/stats
 
 ```json
 {
+  "success": true,
   "data": {
     "total": 30,
     "active": 20,

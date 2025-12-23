@@ -16,6 +16,7 @@ GET /api/v1/roles
 
 ```json
 {
+  "success": true,
   "data": [
     {
       "id": 1,
@@ -100,6 +101,7 @@ GET /api/v1/pages
 
 ```json
 {
+  "success": true,
   "data": [
     {
       "id": 1,
@@ -192,6 +194,7 @@ GET /api/v1/role-pages
 
 ```json
 {
+  "success": true,
   "data": [
     {
       "id": 1,
@@ -278,6 +281,7 @@ GET /api/v1/user-roles
 
 ```json
 {
+  "success": true,
   "data": [
     {
       "id": 1,

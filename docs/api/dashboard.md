@@ -14,6 +14,7 @@ GET /api/v1/dashboard/stats
 
 ```json
 {
+  "success": true,
   "data": {
     "totalProjects": 50,
     "activeProjects": 20,
@@ -42,6 +43,7 @@ GET /api/v1/dashboard/financial
 
 ```json
 {
+  "success": true,
   "data": {
     "totalIncome": 150000.00,
     "totalExpenses": 85000.00
@@ -68,6 +70,7 @@ GET /api/v1/dashboard/project-progress
 
 ```json
 {
+  "success": true,
   "data": {
     "projects": [
       {
@@ -103,6 +106,7 @@ GET /api/v1/dashboard/task-summary
 
 ```json
 {
+  "success": true,
   "data": {
     "labels": ["Week 1", "Week 2", "Week 3", "Week 4"],
     "completed": [10, 15, 8, 12],
@@ -132,6 +136,7 @@ GET /api/v1/dashboard/activities
 
 ```json
 {
+  "success": true,
   "data": {
     "data": [
       {

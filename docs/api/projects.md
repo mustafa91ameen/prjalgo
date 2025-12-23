@@ -21,6 +21,7 @@ GET /api/v1/projects
 
 ```json
 {
+  "success": true,
   "data": [
     {
       "id": 1,
@@ -32,7 +33,8 @@ GET /api/v1/projects
       "status": "in_progress",
       "progressPercentage": 75.5,
       "warningCost": 80000.00,
-      "totalCost": 100000.00
+      "totalCost": 100000.00,
+      "currentSpending": 60000.00
     }
   ],
   "total": 50,
@@ -54,6 +56,7 @@ GET /api/v1/projects/:id
 
 ```json
 {
+  "success": true,
   "data": {
     "id": 1,
     "name": "Project Alpha",
@@ -69,7 +72,8 @@ GET /api/v1/projects/:id
     "progressPercentage": 75.5,
     "notes": "On track",
     "createdBy": 1,
-    "createdAt": "2024-01-10T08:00:00Z"
+    "createdAt": "2024-01-10T08:00:00Z",
+      "currentSpending": 60000.00
   }
 }
 ```
@@ -97,6 +101,7 @@ GET /api/v1/projects/stats
 
 ```json
 {
+  "success": true,
   "data": {
     "total": 50,
     "pending": 10,
@@ -201,6 +206,7 @@ DELETE /api/v1/projects/:id
 
 ```json
 {
+  "success": true,
   "data": null
 }
 ```

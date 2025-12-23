@@ -41,6 +41,16 @@ All list endpoints support pagination with query parameters:
 
 ```json
 {
+  "success": true,
+  "data": { ... }
+}
+```
+
+### Created Response (201)
+
+```json
+{
+  "success": true,
   "data": { ... }
 }
 ```
@@ -49,7 +59,20 @@ All list endpoints support pagination with query parameters:
 
 ```json
 {
+  "success": false,
   "error": "error message"
+}
+```
+
+### Validation Error Response
+
+```json
+{
+  "success": false,
+  "errors": {
+    "fieldName": "field is required",
+    "email": "email must be a valid email"
+  }
 }
 ```
 

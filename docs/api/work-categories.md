@@ -16,6 +16,7 @@ GET /api/v1/work-categories
 
 ```json
 {
+  "success": true,
   "data": [
     {
       "id": 1,
@@ -43,6 +44,7 @@ GET /api/v1/work-categories/:id
 
 ```json
 {
+  "success": true,
   "data": {
     "id": 1,
     "name": "Foundation",
@@ -128,6 +130,7 @@ GET /api/v1/work-categories/stats
 
 ```json
 {
+  "success": true,
   "data": {
     "total": 20,
     "active": 15,
@@ -151,6 +154,7 @@ GET /api/v1/work-subcategories
 
 ```json
 {
+  "success": true,
   "data": [
     {
       "id": 1,
@@ -180,6 +184,7 @@ GET /api/v1/work-subcategories/:id
 
 ```json
 {
+  "success": true,
   "data": {
     "id": 1,
     "categoryId": 1,

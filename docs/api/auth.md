@@ -21,21 +21,43 @@ POST /api/v1/auth/login
 
 ```json
 {
+  "success": true,
   "data": {
-    "accessToken": "jwt_token_here",
-    "refreshToken": "refresh_token_here",
-    "userId": 1,
-    "username": "john_doe"
+    "accessToken": "eyJhbGciOiJIUzI1NiIs...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIs...",
+    "user": {
+      "id": 1,
+      "username": "john_doe",
+      "fullName": "John Doe",
+      "email": "john@example.com",
+      "phone": "+1234567890",
+      "avatar": null,
+      "jobTitle": "Project Manager",
+      "status": "active",
+      "lastLogin": "2025-12-23T10:30:00Z",
+      "createdAt": "2025-01-01T00:00:00Z"
+    }
   }
 }
 ```
 
-### Errors
+### Error Responses
 
-| Status | Message |
-|--------|---------|
-| 401 | invalid username or password |
-| 401 | user account is inactive |
+**401 - Invalid Credentials:**
+```json
+{
+  "success": false,
+  "error": "invalid username or password"
+}
+```
+
+**401 - Inactive Account:**
+```json
+{
+  "success": false,
+  "error": "user account is inactive"
+}
+```
 
 ---
 
@@ -59,20 +81,29 @@ POST /api/v1/auth/refresh
 
 ```json
 {
+  "success": true,
   "data": {
-    "accessToken": "new_jwt_token",
-    "refreshToken": "new_refresh_token",
-    "userId": 1,
-    "username": "john_doe"
+    "accessToken": "eyJhbGciOiJIUzI1NiIs...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIs...",
+    "user": {
+      "id": 1,
+      "username": "john_doe",
+      "fullName": "John Doe",
+      "email": "john@example.com"
+    }
   }
 }
 ```
 
-### Errors
+### Error Response
 
-| Status | Message |
-|--------|---------|
-| 401 | invalid or expired refresh token |
+**401 - Invalid Token:**
+```json
+{
+  "success": false,
+  "error": "invalid or expired refresh token"
+}
+```
 
 ---
 
@@ -96,6 +127,7 @@ POST /api/v1/auth/logout
 
 ```json
 {
+  "success": true,
   "data": null
 }
 ```
@@ -116,14 +148,43 @@ GET /api/v1/auth/pages
 
 ```json
 {
+  "success": true,
   "data": [
     {
       "id": 1,
       "name": "Dashboard",
       "route": "/dashboard",
-      "icon": "dashboard",
+      "icon": "mdi-view-dashboard",
+      "permissions": ["read"]
+    },
+    {
+      "id": 2,
+      "name": "Projects",
+      "route": "/projects",
+      "icon": "mdi-folder-multiple",
+      "permissions": ["read", "write", "delete"]
+    },
+    {
+      "id": 3,
+      "name": "Users",
+      "route": "/users",
+      "icon": "mdi-account-multiple",
       "permissions": ["read", "write"]
     }
   ]
 }
+```
+
+### Permissions Array
+
+The `permissions` field is an array of strings indicating allowed actions:
+- `"read"` - Can view/GET the resource
+- `"write"` - Can create (POST) and update (PUT/PATCH) the resource
+- `"delete"` - Can delete (DELETE) the resource
+
+**Frontend Usage:**
+```javascript
+const hasRead = page.permissions.includes('read');
+const hasWrite = page.permissions.includes('write');
+const hasDelete = page.permissions.includes('delete');
 ```

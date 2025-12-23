@@ -21,6 +21,7 @@ GET /api/v1/team-members
 
 ```json
 {
+  "success": true,
   "data": [
     {
       "id": 1,
@@ -49,6 +50,7 @@ GET /api/v1/team-members/:id
 
 ```json
 {
+  "success": true,
   "data": {
     "id": 1,
     "projectId": 1,
@@ -132,6 +134,7 @@ GET /api/v1/team-members/stats
 
 ```json
 {
+  "success": true,
   "data": {
     "total": 50,
     "uniqueUsers": 25,

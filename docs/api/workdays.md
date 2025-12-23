@@ -23,6 +23,7 @@ GET /api/v1/workdays
 
 ```json
 {
+  "success": true,
   "data": [
     {
       "id": 1,
@@ -52,6 +53,7 @@ GET /api/v1/workdays/:id
 
 ```json
 {
+  "success": true,
   "data": {
     "id": 1,
     "projectId": 1,
@@ -153,6 +155,7 @@ GET /api/v1/workday-materials
 
 ```json
 {
+  "success": true,
   "data": [
     {
       "id": 1,
@@ -248,6 +251,7 @@ GET /api/v1/workday-labor
 
 ```json
 {
+  "success": true,
   "data": [
     {
       "id": 1,
@@ -355,6 +359,7 @@ GET /api/v1/workday-equipment
 
 ```json
 {
+  "success": true,
   "data": [
     {
       "id": 1,

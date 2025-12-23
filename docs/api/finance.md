@@ -23,6 +23,7 @@ GET /api/v1/expenses
 
 ```json
 {
+  "success": true,
   "data": [
     {
       "id": 1,
@@ -66,6 +67,7 @@ GET /api/v1/expenses/stats
 
 ```json
 {
+  "success": true,
   "data": {
     "total": 250,
     "totalAmount": 150000.00,
@@ -90,6 +92,7 @@ GET /api/v1/expenses/:id
 
 ```json
 {
+  "success": true,
   "data": {
     "id": 1,
     "name": "Office Supplies",
@@ -197,6 +200,7 @@ GET /api/v1/income
 
 ```json
 {
+  "success": true,
   "data": [
     {
       "id": 1,
@@ -226,6 +230,7 @@ GET /api/v1/income/:id
 
 ```json
 {
+  "success": true,
   "data": {
     "id": 1,
     "name": "Project Payment",
@@ -323,6 +328,7 @@ GET /api/v1/income/stats
 
 ```json
 {
+  "success": true,
   "data": {
     "total": 50,
     "totalAmount": 500000.00,

@@ -21,6 +21,7 @@ GET /api/v1/users
 
 ```json
 {
+  "success": true,
   "data": [
     {
       "id": 1,
@@ -52,6 +53,7 @@ GET /api/v1/users/:id
 
 ```json
 {
+  "success": true,
   "data": {
     "id": 1,
     "username": "john_doe",
