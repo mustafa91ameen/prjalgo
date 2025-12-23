@@ -1,611 +1,424 @@
 <template>
-  <div class="task-management-page">
+  <v-container fluid class="task-management-page">
     <!-- Header Section -->
-    <PageHeader
-      title="إدارة المهام"
-      subtitle="نظام شامل لإدارة المهام والمشاريع"
-      mdi-icon="mdi-clipboard-list"
-    />
-
-    <!-- Add Button -->
-    <div class="d-flex justify-end mb-4">
-      <v-btn
-        color="primary"
-        variant="elevated"
-        size="large"
-        prepend-icon="mdi-plus"
-        @click="showAddTaskDialog = true"
-      >
-        إضافة مهمة جديدة
-      </v-btn>
+    <div class="engineers-header-card">
+      <div class="header-gradient-line"></div>
+      <div class="header-content">
+        <div class="header-right">
+          <div class="engineer-emoji">
+            <v-icon size="40" color="white">mdi-clipboard-list</v-icon>
+          </div>
+          <div class="header-text">
+            <h1 class="main-title">إدارة المهام</h1>
+            <p class="subtitle">إدارة شاملة للمهام والمشاريع</p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Statistics Cards -->
     <div class="stats-section">
       <v-row>
         <v-col cols="12" sm="6" md="3">
-          <v-card class="stat-card">
-            <v-card-text class="text-center">
-              <v-icon size="40" color="primary" class="mb-2">mdi-clipboard-list</v-icon>
-              <h3 class="text-h4 font-weight-bold">{{ totalTasks }}</h3>
-              <p class="text-caption">إجمالي المهام</p>
-            </v-card-text>
+          <v-card class="modern-stat-card stat-card-primary" elevation="0">
+            <div class="stat-card-background"></div>
+            <div class="stat-card-content">
+              <div class="stat-icon-wrapper">
+                <v-icon size="48" class="stat-icon">mdi-clipboard-list</v-icon>
+              </div>
+              <div class="stat-info">
+                <h3 class="stat-value">{{ totalTasks }}</h3>
+                <p class="stat-label">إجمالي المهام</p>
+              </div>
+            </div>
           </v-card>
         </v-col>
+        
         <v-col cols="12" sm="6" md="3">
-          <v-card class="stat-card">
-            <v-card-text class="text-center">
-              <v-icon size="40" color="success" class="mb-2">mdi-check-circle</v-icon>
-              <h3 class="text-h4 font-weight-bold stat-number">{{ completedTasks }}</h3>
-              <p class="text-caption">مهام مكتملة</p>
-            </v-card-text>
+          <v-card class="modern-stat-card stat-card-success" elevation="0">
+            <div class="stat-card-background"></div>
+            <div class="stat-card-content">
+              <div class="stat-icon-wrapper">
+                <v-icon size="48" class="stat-icon check-icon">mdi-check-circle</v-icon>
+              </div>
+              <div class="stat-info">
+                <h3 class="stat-value">{{ completedTasks }}</h3>
+                <p class="stat-label">مهام مكتملة</p>
+              </div>
+            </div>
           </v-card>
         </v-col>
+        
         <v-col cols="12" sm="6" md="3">
-          <v-card class="stat-card">
-            <v-card-text class="text-center">
-              <v-icon size="40" color="warning" class="mb-2">mdi-clock</v-icon>
-              <h3 class="text-h4 font-weight-bold stat-number">{{ pendingTasks }}</h3>
-              <p class="text-caption">مهام معلقة</p>
-            </v-card-text>
+          <v-card class="modern-stat-card stat-card-warning" elevation="0">
+            <div class="stat-card-background"></div>
+            <div class="stat-card-content">
+              <div class="stat-icon-wrapper">
+                <v-icon size="48" class="stat-icon">mdi-clock-outline</v-icon>
+              </div>
+              <div class="stat-info">
+                <h3 class="stat-value">{{ inProgressTasks }}</h3>
+                <p class="stat-label">قيد التنفيذ</p>
+              </div>
+            </div>
           </v-card>
         </v-col>
+        
         <v-col cols="12" sm="6" md="3">
-          <v-card class="stat-card">
-            <v-card-text class="text-center">
-              <v-icon size="40" color="error" class="mb-2">mdi-alert-circle</v-icon>
-              <h3 class="text-h4 font-weight-bold stat-number">{{ overdueTasks }}</h3>
-              <p class="text-caption">مهام متأخرة</p>
-            </v-card-text>
+          <v-card class="modern-stat-card stat-card-info" elevation="0">
+            <div class="stat-card-background"></div>
+            <div class="stat-card-content">
+              <div class="stat-icon-wrapper">
+                <v-icon size="48" class="stat-icon">mdi-alert-circle</v-icon>
+              </div>
+              <div class="stat-info">
+                <h3 class="stat-value">{{ pendingTasks }}</h3>
+                <p class="stat-label">مهام معلقة</p>
+              </div>
+            </div>
           </v-card>
         </v-col>
       </v-row>
     </div>
 
-    <!-- Filters Section -->
-    <div class="filters-section">
-      <v-card class="filters-card">
-        <v-card-title class="filters-header">
-          <v-icon size="32" color="white" class="mr-2">mdi-filter</v-icon>
-          <span class="text-h4 font-weight-black filter-title-text">فلترة المهام</span>
-        </v-card-title>
-        <v-card-text>
+    <!-- Search and Filter Section -->
+    <v-card class="search-filter-card">
+      <v-card-text>
+        <div class="search-filter-content">
           <v-row>
-            <v-col cols="12" md="3">
+            <v-col cols="12" md="4">
               <v-text-field
                 v-model="searchQuery"
-                label="البحث في المهام"
+                label="البحث في المهام..."
                 prepend-inner-icon="mdi-magnify"
                 variant="outlined"
                 clearable
-                density="comfortable"
-                class="filter-field"
+                class="search-field"
               />
             </v-col>
             <v-col cols="12" md="3">
               <v-select
-                v-model="statusFilter"
+                v-model="selectedStatus"
                 :items="statusOptions"
-                label="حالة المهمة"
+                label="الحالة"
                 variant="outlined"
-                density="comfortable"
                 clearable
                 class="filter-field"
               />
             </v-col>
             <v-col cols="12" md="3">
               <v-select
-                v-model="priorityFilter"
+                v-model="selectedPriority"
                 :items="priorityOptions"
-                label="أولوية المهمة"
+                label="الأولوية"
                 variant="outlined"
-                density="comfortable"
                 clearable
                 class="filter-field"
               />
             </v-col>
-            <v-col cols="12" md="3">
-              <v-select
-                v-model="assigneeFilter"
-                :items="assigneeOptions"
-                label="المسؤول"
-                variant="outlined"
-                density="comfortable"
-                clearable
-                class="filter-field"
-              />
+            <v-col cols="12" md="2">
+              <v-btn
+                color="primary"
+                variant="elevated"
+                @click="showAddTaskDialog = true"
+                class="add-btn"
+              >
+                <v-icon start>mdi-plus</v-icon>
+                إضافة مهمة
+              </v-btn>
             </v-col>
           </v-row>
-        </v-card-text>
-      </v-card>
-    </div>
+        </div>
+      </v-card-text>
+    </v-card>
 
     <!-- Tasks Table -->
-    <div class="tasks-section">
-      <v-card class="tasks-card">
-        <v-card-title class="tasks-header">
-          <v-icon size="18" color="white" class="mr-2">mdi-clipboard-list</v-icon>
-          <span class="text-h4 font-weight-black list-title-text">قائمة المهام</span>
-          <v-spacer />
-          <v-btn
-            color="primary"
-            variant="outlined"
+    <v-card class="tasks-table-card">
+      <v-card-title class="table-title">
+        <v-icon size="28" color="primary" class="mr-2">mdi-clipboard-list</v-icon>
+        <span class="text-h5 font-weight-bold">قائمة المهام</span>
+        <v-spacer />
+        <v-chip color="primary" variant="elevated" size="large">
+          {{ filteredTasks.length }} مهمة
+        </v-chip>
+      </v-card-title>
+      
+      <v-data-table
+        :headers="headers"
+        :items="filteredTasks"
+        :items-per-page="10"
+        class="tasks-data-table"
+        :loading="loading"
+      >
+        <!-- Status Column -->
+        <template #item.status="{ item }">
+          <v-chip
+            :color="getStatusColor(item.status)"
+            variant="elevated"
             size="small"
-            prepend-icon="mdi-export"
-            @click="exportTasks"
           >
-            تصدير
-          </v-btn>
-        </v-card-title>
-        
-        <v-data-table
-          :headers="taskHeaders"
-          :items="filteredTasks"
-          :items-per-page="10"
-          class="tasks-table"
-          :loading="tasksLoading"
-        >
-          <!-- Task ID Column -->
-          <template #item.id="{ item }">
-            <v-chip
-              color="primary"
-              variant="elevated"
-              size="small"
-            >
-              #{{ item.id }}
-            </v-chip>
-          </template>
+            <v-icon start>{{ getStatusIcon(item.status) }}</v-icon>
+            {{ item.status }}
+          </v-chip>
+        </template>
 
-          <!-- Task Title Column -->
-          <template #item.title="{ item }">
-            <div class="task-title">
-              <h4 class="task-name">{{ item.title }}</h4>
-              <p class="task-description">{{ item.description }}</p>
-            </div>
-          </template>
+        <!-- Priority Column -->
+        <template #item.priority="{ item }">
+          <v-chip
+            :color="getPriorityColor(item.priority)"
+            variant="elevated"
+            size="small"
+          >
+            {{ item.priority }}
+          </v-chip>
+        </template>
 
-          <!-- Status Column -->
-          <template #item.status="{ item }">
-            <v-chip
-              :color="getStatusColor(item.status)"
-              variant="elevated"
-              size="small"
-            >
-              <v-icon start>{{ getStatusIcon(item.status) }}</v-icon>
-              {{ item.status }}
-            </v-chip>
-          </template>
-
-          <!-- Priority Column -->
-          <template #item.priority="{ item }">
-            <v-chip
-              :color="getPriorityColor(item.priority)"
-              variant="elevated"
-              size="small"
-            >
-              {{ item.priority }}
-            </v-chip>
-          </template>
-
-          <!-- Assignee Column -->
-          <template #item.assignee="{ item }">
-            <div class="assignee-info">
-              <v-avatar size="18" class="mr-1">
-                <v-img v-if="item.assigneeAvatar" :src="item.assigneeAvatar" />
-                <v-icon v-else size="12" color="primary">mdi-account</v-icon>
-              </v-avatar>
-              <span>{{ item.assignee }}</span>
-            </div>
-          </template>
-
-          <!-- Due Date Column -->
-          <template #item.dueDate="{ item }">
-            <div class="due-date">
-              <v-icon size="12" color="primary" class="mr-1">mdi-calendar</v-icon>
-              <span>{{ formatDate(item.dueDate) }}</span>
-            </div>
-          </template>
-
-          <!-- Progress Column -->
-          <template #item.progress="{ item }">
-            <div class="progress-container">
-              <v-progress-linear
-                :model-value="item.progress"
-                :color="getProgressColor(item.progress)"
-                height="8"
-                rounded
-                class="mb-1"
-              />
-              <span class="progress-text">{{ item.progress }}%</span>
-            </div>
-          </template>
-
-          <!-- Actions Column -->
-          <template #item.actions="{ item }">
-            <div class="action-buttons">
-              <v-btn
-                icon="mdi-eye"
-                size="x-small"
-                color="info"
-                variant="elevated"
-                @click="viewTask(item)"
-              />
-              <v-btn
-                icon="mdi-pencil"
-                size="x-small"
-                color="warning"
-                variant="elevated"
-                @click="editTask(item)"
-              />
-              <v-btn
-                icon="mdi-delete"
-                size="x-small"
-                color="error"
-                variant="elevated"
-                @click="deleteTask(item)"
-              />
-            </div>
-          </template>
-        </v-data-table>
-      </v-card>
-    </div>
-
-    <!-- Add/Edit Task Dialog -->
-    <v-dialog v-model="showAddTaskDialog" max-width="800" persistent>
-      <v-card class="image-style-dialog">
-        <!-- Header Section -->
-        <div class="dialog-header">
-          <div class="header-content">
-            <div class="header-left">
-              <v-icon size="24" color="white" class="header-icon">{{ isEditing ? 'mdi-pencil' : 'mdi-plus' }}</v-icon>
-              <span class="header-title">{{ isEditing ? 'تعديل المهمة' : 'إضافة مهمة جديدة' }}</span>
-            </div>
+        <!-- Actions Column -->
+        <template #item.actions="{ item }">
+          <div class="action-buttons">
             <v-btn
-              icon="mdi-close"
-              variant="text"
+              icon="mdi-eye"
               size="small"
-              color="white"
-              @click="closeTaskDialog"
-              class="close-btn"
+              color="info"
+              variant="elevated"
+              @click="viewTask(item)"
+              class="action-btn view-btn"
+            />
+            <v-btn
+              icon="mdi-pencil"
+              size="small"
+              color="warning"
+              variant="elevated"
+              @click="editTask(item)"
+              class="action-btn edit-btn"
+            />
+            <v-btn
+              icon="mdi-delete"
+              size="small"
+              color="error"
+              variant="elevated"
+              @click="deleteTask(item)"
+              class="action-btn delete-btn"
             />
           </div>
-        </div>
+        </template>
+      </v-data-table>
+    </v-card>
 
-        <!-- Form Content -->
-        <div class="dialog-body">
-          <v-form ref="taskForm" v-model="taskFormValid">
-            <div class="form-fields">
-              <v-row>
-                <v-col cols="12" md="6">
+    <!-- Add Task Dialog -->
+    <v-dialog v-model="showAddTaskDialog" max-width="600px" persistent>
+      <v-card class="add-task-dialog image-style-dialog">
+        <v-card-title class="dialog-header">
+          <div class="header-content">
+            <div class="header-left">
+              <v-icon size="32" color="white" class="mr-2">mdi-plus-circle</v-icon>
+              <span class="dialog-title">إضافة مهمة جديدة</span>
+            </div>
+          </div>
+        </v-card-title>
+        
+        <v-card-text class="dialog-body">
+          <v-form ref="addTaskForm" v-model="addFormValid">
+            <v-row class="form-fields">
+              <v-col cols="12">
+                <div class="form-field">
                   <v-text-field
-                    v-model="taskForm.title"
+                    v-model="newTask.title"
                     label="عنوان المهمة"
                     variant="outlined"
                     :rules="[v => !!v || 'عنوان المهمة مطلوب']"
                     required
-                    class="form-field"
                   />
-                </v-col>
-                <v-col cols="12" md="6">
+                </div>
+              </v-col>
+              <v-col cols="12" md="6">
+                <div class="form-field">
                   <v-select
-                    v-model="taskForm.status"
+                    v-model="newTask.status"
                     :items="statusOptions"
-                    label="حالة المهمة"
+                    label="الحالة"
                     variant="outlined"
+                    :rules="[v => !!v || 'الحالة مطلوبة']"
                     required
-                    class="form-field"
+                    class="black-dropdown-select"
                   />
-                </v-col>
-                <v-col cols="12">
+                </div>
+              </v-col>
+              <v-col cols="12" md="6">
+                <div class="form-field">
+                  <v-select
+                    v-model="newTask.priority"
+                    :items="priorityOptions"
+                    label="الأولوية"
+                    variant="outlined"
+                    :rules="[v => !!v || 'الأولوية مطلوبة']"
+                    required
+                    class="black-dropdown-select"
+                  />
+                </div>
+              </v-col>
+              <v-col cols="12">
+                <div class="form-field">
                   <v-textarea
-                    v-model="taskForm.description"
+                    v-model="newTask.description"
                     label="وصف المهمة"
                     variant="outlined"
                     rows="3"
-                    class="form-field"
                   />
-                </v-col>
-                <v-col cols="12" md="6">
-                  <v-select
-                    v-model="taskForm.priority"
-                    :items="priorityOptions"
-                    label="أولوية المهمة"
-                    variant="outlined"
-                    required
-                    class="form-field"
-                  />
-                </v-col>
-                <v-col cols="12" md="6">
-                  <v-select
-                    v-model="taskForm.assignee"
-                    :items="assigneeOptions"
-                    label="المسؤول"
-                    variant="outlined"
-                    required
-                    class="form-field"
-                  />
-                </v-col>
-                <v-col cols="12" md="6">
-                  <v-text-field
-                    v-model="taskForm.dueDate"
-                    label="تاريخ الاستحقاق"
-                    type="date"
-                    variant="outlined"
-                    required
-                    class="form-field"
-                  />
-                </v-col>
-                <v-col cols="12" md="6">
-                  <v-slider
-                    v-model="taskForm.progress"
-                    label="نسبة الإنجاز"
-                    min="0"
-                    max="100"
-                    step="5"
-                    thumb-label
-                    color="primary"
-                  />
-                </v-col>
-              </v-row>
-            </div>
+                </div>
+              </v-col>
+            </v-row>
           </v-form>
-        </div>
-
-        <!-- Dialog Actions -->
-        <div class="dialog-actions">
+        </v-card-text>
+        
+        <v-card-actions class="dialog-actions">
+          <v-spacer />
           <v-btn
             color="grey"
             variant="text"
-            @click="closeTaskDialog"
-            class="cancel-btn"
+            @click="closeAddTaskDialog"
           >
             إلغاء
           </v-btn>
           <v-btn
             color="primary"
             variant="elevated"
-            :disabled="!taskFormValid"
-            @click="saveTask"
-            class="save-btn"
+            :disabled="!addFormValid"
+            :loading="saving"
+            @click="saveNewTask"
           >
-            <v-icon class="me-2">mdi-content-save</v-icon>
-            {{ isEditing ? 'تحديث' : 'إضافة' }}
+            حفظ
           </v-btn>
-        </div>
+        </v-card-actions>
       </v-card>
     </v-dialog>
-
-    <!-- Task Details Dialog -->
-    <v-dialog v-model="showTaskDetails" max-width="600" persistent>
-      <v-card class="image-style-dialog">
-        <!-- Header Section -->
-        <div class="dialog-header">
-          <div class="header-content">
-            <div class="header-left">
-              <v-icon size="24" color="white" class="header-icon">mdi-eye</v-icon>
-              <span class="header-title">تفاصيل المهمة</span>
-            </div>
-            <v-btn
-              icon="mdi-close"
-              variant="text"
-              size="small"
-              color="white"
-              @click="showTaskDetails = false"
-              class="close-btn"
-            />
-          </div>
-        </div>
-
-        <!-- Dialog Body -->
-        <div class="dialog-body" v-if="selectedTask">
-          <div class="task-details">
-            <div class="detail-row">
-              <strong>عنوان المهمة:</strong>
-              <span>{{ selectedTask.title }}</span>
-            </div>
-            <div class="detail-row">
-              <strong>الوصف:</strong>
-              <span>{{ selectedTask.description }}</span>
-            </div>
-            <div class="detail-row">
-              <strong>الحالة:</strong>
-              <v-chip
-                :color="getStatusColor(selectedTask.status)"
-                variant="elevated"
-                size="small"
-              >
-                {{ selectedTask.status }}
-              </v-chip>
-            </div>
-            <div class="detail-row">
-              <strong>الأولوية:</strong>
-              <v-chip
-                :color="getPriorityColor(selectedTask.priority)"
-                variant="elevated"
-                size="small"
-              >
-                {{ selectedTask.priority }}
-              </v-chip>
-            </div>
-            <div class="detail-row">
-              <strong>المسؤول:</strong>
-              <span>{{ selectedTask.assignee }}</span>
-            </div>
-            <div class="detail-row">
-              <strong>تاريخ الاستحقاق:</strong>
-              <span>{{ formatDate(selectedTask.dueDate) }}</span>
-            </div>
-            <div class="detail-row">
-              <strong>نسبة الإنجاز:</strong>
-              <div class="progress-container">
-                <v-progress-linear
-                  :model-value="selectedTask.progress"
-                  :color="getProgressColor(selectedTask.progress)"
-                  height="8"
-                  rounded
-                  class="mb-1"
-                />
-                <span class="progress-text">{{ selectedTask.progress }}%</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Dialog Actions -->
-        <div class="dialog-actions">
-          <v-btn
-            color="primary"
-            variant="elevated"
-            @click="showTaskDetails = false"
-            class="save-btn"
-          >
-            <v-icon class="me-2">mdi-check</v-icon>
-            إغلاق
-          </v-btn>
-        </div>
-      </v-card>
-    </v-dialog>
-  </div>
+  </v-container>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { formatDate } from '@/utils/formatters'
-import { PageHeader } from '@/components/shared'
 
 // Reactive data
-const tasksLoading = ref(false)
-const showAddTaskDialog = ref(false)
-const showTaskDetails = ref(false)
-const isEditing = ref(false)
-const taskFormValid = ref(false)
-const selectedTask = ref(null)
-
-// Search and filters
+const loading = ref(false)
+const saving = ref(false)
 const searchQuery = ref('')
-const statusFilter = ref('')
-const priorityFilter = ref('')
-const assigneeFilter = ref('')
+const selectedStatus = ref(null)
+const selectedPriority = ref(null)
+const showAddTaskDialog = ref(false)
+const addFormValid = ref(false)
 
-// Task form
-const taskForm = ref({
+// Form data
+const newTask = ref({
   title: '',
   description: '',
   status: 'معلقة',
-  priority: 'متوسطة',
-  assignee: '',
-  dueDate: '',
-  progress: 0
+  priority: 'متوسطة'
 })
 
-// Task data
+// Sample data
 const tasks = ref([
   {
     id: 1,
-    title: 'تطوير واجهة المستخدم',
-    description: 'تصميم وتطوير واجهة المستخدم للتطبيق الجديد',
+    title: 'تصميم واجهة المستخدم',
+    description: 'تصميم واجهة المستخدم للمشروع الجديد',
     status: 'قيد التنفيذ',
     priority: 'عالية',
     assignee: 'أحمد محمد',
-    assigneeAvatar: null,
-    dueDate: '2024-01-15',
-    progress: 75
+    dueDate: '2024-12-31'
   },
   {
     id: 2,
-    title: 'اختبار النظام',
-    description: 'إجراء اختبارات شاملة للنظام',
-    status: 'معلقة',
-    priority: 'متوسطة',
-    assignee: 'فاطمة علي',
-    assigneeAvatar: null,
-    dueDate: '2024-01-20',
-    progress: 30
+    title: 'مراجعة الكود',
+    description: 'مراجعة الكود قبل النشر',
+    status: 'مكتملة',
+    priority: 'عالية',
+    assignee: 'فاطمة حسن',
+    dueDate: '2024-12-25'
   },
   {
     id: 3,
-    title: 'توثيق المشروع',
-    description: 'كتابة التوثيق التقني للمشروع',
-    status: 'مكتملة',
-    priority: 'منخفضة',
-    assignee: 'محمد حسن',
-    assigneeAvatar: null,
-    dueDate: '2024-01-10',
-    progress: 100
-  },
-  {
-    id: 4,
-    title: 'إصلاح الأخطاء',
-    description: 'إصلاح الأخطاء المكتشفة في النظام',
-    status: 'متأخرة',
-    priority: 'عالية',
-    assignee: 'سارة أحمد',
-    assigneeAvatar: null,
-    dueDate: '2024-01-05',
-    progress: 60
+    title: 'كتابة الوثائق',
+    description: 'كتابة وثائق المشروع',
+    status: 'معلقة',
+    priority: 'متوسطة',
+    assignee: 'محمد عبدالله',
+    dueDate: '2025-01-15'
   }
 ])
 
-// Table headers
-const taskHeaders = ref([
-  { title: 'رقم المهمة', key: 'id', sortable: true },
-  { title: 'عنوان المهمة', key: 'title', sortable: true },
-  { title: 'الحالة', key: 'status', sortable: true },
-  { title: 'الأولوية', key: 'priority', sortable: true },
-  { title: 'المسؤول', key: 'assignee', sortable: true },
-  { title: 'تاريخ الاستحقاق', key: 'dueDate', sortable: true },
-  { title: 'نسبة الإنجاز', key: 'progress', sortable: true },
-  { title: 'الإجراءات', key: 'actions', sortable: false }
-])
-
-// Filter options
-const statusOptions = ref([
+// Options
+const statusOptions = [
   'معلقة',
   'قيد التنفيذ',
   'مكتملة',
-  'متأخرة'
-])
+  'ملغاة'
+]
 
-const priorityOptions = ref([
+const priorityOptions = [
   'منخفضة',
   'متوسطة',
   'عالية',
-  'حرجة'
-])
+  'عاجلة'
+]
 
-const assigneeOptions = ref([
-  'أحمد محمد',
-  'فاطمة علي',
-  'محمد حسن',
-  'سارة أحمد'
-])
+// Table headers
+const headers = [
+  { 
+    title: 'العنوان', 
+    key: 'title', 
+    sortable: true
+  },
+  { 
+    title: 'الحالة', 
+    key: 'status', 
+    sortable: true
+  },
+  { 
+    title: 'الأولوية', 
+    key: 'priority', 
+    sortable: true
+  },
+  { 
+    title: 'المسؤول', 
+    key: 'assignee', 
+    sortable: true
+  },
+  { 
+    title: 'تاريخ الاستحقاق', 
+    key: 'dueDate', 
+    sortable: true
+  },
+  { 
+    title: 'الإجراءات', 
+    key: 'actions', 
+    sortable: false, 
+    width: '200px'
+  }
+]
 
 // Computed properties
 const totalTasks = computed(() => tasks.value.length)
 const completedTasks = computed(() => tasks.value.filter(task => task.status === 'مكتملة').length)
+const inProgressTasks = computed(() => tasks.value.filter(task => task.status === 'قيد التنفيذ').length)
 const pendingTasks = computed(() => tasks.value.filter(task => task.status === 'معلقة').length)
-const overdueTasks = computed(() => tasks.value.filter(task => task.status === 'متأخرة').length)
 
 const filteredTasks = computed(() => {
   let filtered = tasks.value
 
   if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase()
     filtered = filtered.filter(task =>
-      task.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      task.description.toLowerCase().includes(searchQuery.value.toLowerCase())
+      task.title.toLowerCase().includes(query) ||
+      task.description.toLowerCase().includes(query)
     )
   }
 
-  if (statusFilter.value) {
-    filtered = filtered.filter(task => task.status === statusFilter.value)
+  if (selectedStatus.value) {
+    filtered = filtered.filter(task => task.status === selectedStatus.value)
   }
 
-  if (priorityFilter.value) {
-    filtered = filtered.filter(task => task.priority === priorityFilter.value)
-  }
-
-  if (assigneeFilter.value) {
-    filtered = filtered.filter(task => task.assignee === assigneeFilter.value)
+  if (selectedPriority.value) {
+    filtered = filtered.filter(task => task.priority === selectedPriority.value)
   }
 
   return filtered
@@ -614,121 +427,485 @@ const filteredTasks = computed(() => {
 // Methods
 const getStatusColor = (status) => {
   const colors = {
-    'معلقة': 'warning',
-    'قيد التنفيذ': 'info',
     'مكتملة': 'success',
-    'متأخرة': 'error'
+    'قيد التنفيذ': 'warning',
+    'معلقة': 'info',
+    'ملغاة': 'error'
   }
   return colors[status] || 'grey'
 }
 
 const getStatusIcon = (status) => {
   const icons = {
-    'معلقة': 'mdi-clock',
-    'قيد التنفيذ': 'mdi-play',
-    'مكتملة': 'mdi-check',
-    'متأخرة': 'mdi-alert'
+    'مكتملة': 'mdi-check-circle',
+    'قيد التنفيذ': 'mdi-clock-outline',
+    'معلقة': 'mdi-alert-circle',
+    'ملغاة': 'mdi-cancel'
   }
-  return icons[status] || 'mdi-help'
+  return icons[status] || 'mdi-help-circle'
 }
 
 const getPriorityColor = (priority) => {
   const colors = {
-    'منخفضة': 'success',
-    'متوسطة': 'warning',
-    'عالية': 'error',
-    'حرجة': 'error'
+    'عاجلة': 'error',
+    'عالية': 'warning',
+    'متوسطة': 'info',
+    'منخفضة': 'success'
   }
   return colors[priority] || 'grey'
 }
 
-const getProgressColor = (progress) => {
-  if (progress < 30) return 'error'
-  if (progress < 70) return 'warning'
-  return 'success'
-}
-
 const viewTask = (task) => {
-  selectedTask.value = task
-  showTaskDetails.value = true
+  console.log('View task:', task)
 }
 
 const editTask = (task) => {
-  selectedTask.value = task
-  taskForm.value = { ...task }
-  isEditing.value = true
-  showAddTaskDialog.value = true
+  console.log('Edit task:', task)
 }
 
 const deleteTask = (task) => {
-  if (confirm('هل أنت متأكد من حذف هذه المهمة؟')) {
-    const index = tasks.value.findIndex(t => t.id === task.id)
-    if (index > -1) {
-      tasks.value.splice(index, 1)
-    }
-  }
+  console.log('Delete task:', task)
 }
 
-const saveTask = () => {
-  if (!taskFormValid.value) {
-    return
-  }
-  
-  if (isEditing.value) {
-    const index = tasks.value.findIndex(t => t.id === selectedTask.value.id)
-    if (index > -1) {
-      tasks.value[index] = { 
-        ...taskForm.value,
-        id: selectedTask.value.id,
-        assigneeAvatar: selectedTask.value.assigneeAvatar || null
-      }
-    }
-  } else {
-    // إضافة مهمة جديدة في بداية القائمة
-    const newTask = {
-      ...taskForm.value,
-      id: tasks.value.length > 0 ? Math.max(...tasks.value.map(t => t.id)) + 1 : 1,
-      assigneeAvatar: null
-    }
-    tasks.value.unshift(newTask) // إضافة في البداية بدلاً من النهاية
-  }
-  
-  // إعادة تعيين الفلاتر لإظهار المهمة الجديدة
-  searchQuery.value = ''
-  statusFilter.value = ''
-  priorityFilter.value = ''
-  assigneeFilter.value = ''
-  
-  closeTaskDialog()
-}
-
-const closeTaskDialog = () => {
+const closeAddTaskDialog = () => {
   showAddTaskDialog.value = false
-  isEditing.value = false
-  selectedTask.value = null
-  taskForm.value = {
+  newTask.value = {
     title: '',
     description: '',
     status: 'معلقة',
-    priority: 'متوسطة',
-    assignee: '',
-    dueDate: '',
-    progress: 0
+    priority: 'متوسطة'
   }
 }
 
-const exportTasks = () => {
-  // Export functionality
+const saveNewTask = async () => {
+  if (!addFormValid.value) return
+
+  saving.value = true
+  
+  // Simulate API call
+  await new Promise(resolve => setTimeout(resolve, 1000))
+  
+  const newId = Math.max(...tasks.value.map(t => t.id)) + 1
+  const task = {
+    id: newId,
+    ...newTask.value,
+    assignee: 'غير محدد',
+    dueDate: new Date().toISOString().split('T')[0]
+  }
+  
+  tasks.value.push(task)
+  closeAddTaskDialog()
+  saving.value = false
 }
 
 onMounted(() => {
-  // Initialize data
-  tasksLoading.value = false
+  // Initialize data if needed
 })
 </script>
 
-
 <style scoped>
-/* Import page styles - scoped to this component only */
-@import './styles/task-management.css';
+/* Main Page Styles */
+.task-management-page {
+  background: #ffffff !important;
+  min-height: 100vh;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Header Styles */
+.engineers-header-card {
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+  border-radius: 0;
+  width: 100vw;
+  max-width: 100vw;
+  box-shadow: 0 8px 32px rgba(25, 118, 210, 0.3);
+  position: relative;
+  overflow: hidden;
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
+  margin-bottom: 1.5rem;
+  border: none;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: slideInFromTop 1s ease-out, shimmer 3s ease-in-out infinite;
+}
+
+.header-gradient-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #ffffff 0%, #e3f2fd 50%, #bbdefb 100%);
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
+  animation: gradientFlow 3s ease-in-out infinite;
+  z-index: 2;
+}
+
+.header-content {
+  padding: 12px 16px !important;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: auto !important;
+  background: linear-gradient(135deg, rgba(25, 118, 210, 0.1) 0%, rgba(21, 101, 192, 0.05) 100%);
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 3;
+  animation: fadeInUp 1.2s ease-out 0.3s both;
+  max-width: calc(100vw - 320px);
+  margin: 0 auto;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.8rem;
+  text-align: right;
+  padding: 0.8rem 1.5rem;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+}
+
+.engineer-emoji {
+  position: relative;
+  animation: slideInFromRight 1s ease-out 0.9s both, float 3s ease-in-out infinite 2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-title {
+  color: white !important;
+  font-size: 1.2rem !important;
+  font-weight: bold !important;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.subtitle {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 0.75rem !important;
+  margin: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.stats-section {
+  margin-bottom: 30px;
+  padding: 0 20px;
+}
+
+/* Modern Statistics Cards */
+.modern-stat-card {
+  position: relative !important;
+  border-radius: 20px !important;
+  overflow: hidden !important;
+  cursor: pointer !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  height: 100% !important;
+  min-height: 140px !important;
+  background: #ffffff !important;
+}
+
+.modern-stat-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.stat-card-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.1;
+  transition: opacity 0.3s ease;
+}
+
+.stat-card-primary .stat-card-background {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.stat-card-success .stat-card-background {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.stat-card-warning .stat-card-background {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.stat-card-info .stat-card-background {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+}
+
+.stat-card-primary {
+  background: #ffffff !important;
+  border: 2px solid #3b82f6 !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15) !important;
+}
+
+.stat-card-success {
+  background: #ffffff !important;
+  border: 2px solid #10b981 !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15) !important;
+}
+
+.stat-card-warning {
+  background: #ffffff !important;
+  border: 2px solid #f59e0b !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15) !important;
+}
+
+.stat-card-info {
+  background: #ffffff !important;
+  border: 2px solid #06b6d4 !important;
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.15) !important;
+}
+
+.stat-card-content {
+  position: relative;
+  z-index: 2;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  text-align: center;
+}
+
+.stat-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  min-width: 64px;
+  min-height: 64px;
+  border-radius: 50%;
+  margin-bottom: 0.25rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+.stat-card-primary .stat-icon-wrapper {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.stat-card-success .stat-icon-wrapper {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.stat-card-warning .stat-icon-wrapper {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.stat-card-info .stat-icon-wrapper {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+}
+
+.stat-icon {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  font-size: 32px !important;
+  width: 32px !important;
+  height: 32px !important;
+  position: relative;
+  z-index: 2;
+  color: white !important;
+}
+
+.stat-card-primary .stat-icon {
+  color: #3b82f6 !important;
+}
+
+.stat-card-success .stat-icon {
+  color: #10b981 !important;
+}
+
+.stat-card-warning .stat-icon {
+  color: #f59e0b !important;
+}
+
+.stat-card-info .stat-icon {
+  color: #06b6d4 !important;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  font-family: 'Arial', 'Helvetica', sans-serif !important;
+  direction: ltr !important;
+  text-align: center;
+  color: #000000 !important;
+}
+
+.stat-label {
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: center;
+  color: #64748b;
+}
+
+/* Search and Filter */
+.search-filter-card {
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.search-filter-content {
+  padding: 1rem 0;
+}
+
+.add-btn {
+  height: 56px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: none;
+}
+
+/* Tasks Table */
+.tasks-table-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.table-title {
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+  border-bottom: 2px solid rgba(5, 150, 105, 0.2);
+  padding: 1.5rem;
+}
+
+.tasks-data-table {
+  background: transparent;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  border-radius: 8px;
+  font-weight: 600;
+  text-transform: none;
+  min-width: 36px;
+  height: 36px;
+}
+
+.view-btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+  color: white !important;
+}
+
+.edit-btn {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  color: white !important;
+}
+
+.delete-btn {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  color: white !important;
+}
+
+/* Dialog Styles */
+.add-task-dialog.image-style-dialog {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(5, 150, 105, 0.3);
+}
+
+.add-task-dialog .dialog-header {
+  background: linear-gradient(135deg, #059669, #10b981);
+  padding: 20px;
+  color: white;
+}
+
+.add-task-dialog .dialog-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+}
+
+.add-task-dialog .dialog-body {
+  padding: 30px;
+  background: white !important;
+}
+
+.add-task-dialog .dialog-actions {
+  padding: 20px 30px;
+  background: #f1f5f9;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes slideInFromTop {
+  0% {
+    transform: translateY(-100px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(50px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes gradientFlow {
+  0%, 100% {
+    background: linear-gradient(90deg, #ffffff 0%, #e3f2fd 50%, #bbdefb 100%);
+  }
+  50% {
+    background: linear-gradient(90deg, #bbdefb 0%, #ffffff 50%, #e3f2fd 100%);
+  }
+}
 </style>

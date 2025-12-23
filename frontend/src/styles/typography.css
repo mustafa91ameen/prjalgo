@@ -13,27 +13,15 @@
   --font-secondary: 'Tajawal', 'Cairo', 'Noto Sans Arabic', 'Arial', sans-serif;
   --font-display: 'Cairo', 'Tajawal', 'Noto Sans Arabic', 'Arial', sans-serif;
   
-  /* أحجام الخطوط - Font Sizes */
-  --font-size-2xs: 0.7rem;    /* 11px */
-  --font-size-xs-minus: 0.7rem;  /* 11px - alias */
+  /* أحجام الخطوط */
   --font-size-xs: 0.75rem;    /* 12px */
-  --font-size-xs-plus: 0.8rem;   /* 13px */
-  --font-size-sm-minus: 0.85rem; /* 13.6px */
   --font-size-sm: 0.875rem;   /* 14px */
-  --font-size-sm-plus: 0.9rem;   /* 14.4px */
-  --font-size-base-minus: 0.95rem; /* 15px */
   --font-size-base: 1rem;     /* 16px */
-  --font-size-base-plus: 1.1rem; /* 17.6px */
   --font-size-lg: 1.125rem;   /* 18px */
-  --font-size-lg-plus: 1.2rem;   /* 19px */
   --font-size-xl: 1.25rem;    /* 20px */
-  --font-size-xl-plus: 1.4rem;   /* 22px */
   --font-size-2xl: 1.5rem;    /* 24px */
-  --font-size-2xl-plus: 1.75rem; /* 28px */
   --font-size-3xl: 1.875rem;  /* 30px */
-  --font-size-3xl-plus: 2rem;    /* 32px */
   --font-size-4xl: 2.25rem;   /* 36px */
-  --font-size-4xl-plus: 2.5rem;  /* 40px */
   --font-size-5xl: 3rem;      /* 48px */
   --font-size-6xl: 3.75rem;   /* 60px */
   
@@ -71,7 +59,7 @@
 .v-application {
   font-family: var(--font-primary) !important;
   direction: rtl !important;
-  text-align: end !important;
+  text-align: right !important;
   font-feature-settings: 'liga', 'kern';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -271,8 +259,8 @@ h6,
 /* رؤوس الجداول */
 .v-data-table-header__content {
   font-family: var(--font-primary) !important;
-  font-weight: var(--font-weight-semibold) !important;
-  font-size: var(--font-size-sm) !important;
+  font-weight: 600 !important;
+  font-size: 0.7rem !important;
   color: var(--text-primary) !important;
   text-transform: none !important;
 }
@@ -280,7 +268,7 @@ h6,
 /* خلايا الجداول */
 .v-data-table__td {
   font-family: var(--font-primary) !important;
-  font-size: var(--font-size-sm) !important;
+  font-size: 0.85rem !important;
   font-weight: var(--font-weight-normal) !important;
   color: var(--text-primary) !important;
 }
@@ -460,20 +448,16 @@ h6,
   font-size: var(--font-size-6xl) !important;
 }
 
-.text-base-plus {
-  font-size: var(--font-size-base-plus) !important;
-}
-
 /* ========================================
    تنسيق المحاذاة
    ======================================== */
 
 .text-right {
-  text-align: end !important;
+  text-align: right !important;
 }
 
 .text-left {
-  text-align: start !important;
+  text-align: left !important;
 }
 
 .text-center {
@@ -573,66 +557,6 @@ h6,
   font-variant-numeric: tabular-nums;
 }
 
-/* ========================================
-   فئات الأرقام والإحصائيات (LTR)
-   Stat Numbers - LTR Direction
-   ======================================== */
-
-/* أرقام الإحصائيات - اتجاه من اليسار لليمين */
-.stat-number-ltr {
-  font-family: 'Arial', 'Helvetica', sans-serif !important;
-  direction: ltr !important;
-}
-
-/* أرقام الإحصائيات مع منع التفاف النص */
-.stat-number-ltr-nowrap {
-  font-family: 'Arial', 'Helvetica', sans-serif !important;
-  direction: ltr !important;
-  white-space: nowrap !important;
-}
-
-/* عنوان الفلتر مع ظل النص */
-.filter-title-text {
-  color: #ffffff !important;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 1px !important;
-}
-
-/* عنوان القائمة مع ظل النص */
-.list-title-text {
-  color: #ffffff !important;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.2px !important;
-}
-
-/* نص أبيض مع أهمية عالية */
-.text-white-important {
-  color: #ffffff !important;
-}
-
-/* ========================================
-   فئات حقول الإدخال
-   Input Field Classes
-   ======================================== */
-
-/* حقول الإدخال بألوان داكنة */
-.input-field-dark-labels {
-  --v-theme-primary: var(--text-dark, #1e293b) !important;
-  --v-field-label-color: var(--text-dark, #1e293b) !important;
-  --v-field-label-active-color: var(--text-dark, #1e293b) !important;
-  --v-field-label-floating-color: var(--text-dark, #1e293b) !important;
-  text-align: center !important;
-  direction: rtl !important;
-}
-
-/* حقول الإدخال مع لون نص محدد */
-.input-text-dark {
-  font-size: var(--font-size-base-plus) !important;
-  color: var(--text-dark, #1e293b) !important;
-}
-
 
 /* ========================================
    تنسيق الاستجابة
@@ -653,7 +577,7 @@ h6,
 }
 
 /* شاشات متوسطة */
-@media (min-width: 601px) and (max-width: 1024px) {
+@media (min-width: 601px) and (max-width: 960px) {
   :root {
     --font-size-base: 0.95rem;
     --font-size-lg: 1.05rem;
@@ -662,7 +586,7 @@ h6,
 }
 
 /* شاشات كبيرة */
-@media (min-width: 1025px) {
+@media (min-width: 961px) {
   :root {
     --font-size-base: 1rem;
     --font-size-lg: 1.125rem;

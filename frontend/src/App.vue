@@ -2,6 +2,7 @@
   <v-app dir="rtl" class="arabic-app">
     <!-- الشريط الجانبي الأيمن -->
     <v-navigation-drawer
+      v-if="!isLoginPage"
       v-model="drawer"
       location="right"
       permanent
@@ -9,43 +10,42 @@
       class="modern-sidebar rtl-sidebar"
     >
       <!-- الشعار والعنوان -->
-      <div class="sidebar-header">
-        <v-img
-          class="sidebar-logo"
-          height="56"
-          width="56"
-          src="@/assets/logo.png"
-        />
-        <h1 class="header-title">نظام إدارة المشاريع</h1>
+      <div class="sidebar-header pa-6">
+        <div class="text-center mb-6">
+          <v-img
+            class="mb-4 mx-auto logo-enhanced"
+            height="80"
+            width="80"
+            src="@/assets/logo.png"
+          />
+          <h1 class="text-h5 font-weight-bold text-white mb-2">نظام إدارة المشاريع</h1>
+          <p class="text-body-2 text-white text-opacity-80">نظام شامل لإدارة المشاريع والمهندسين والمصاريف</p>
+        </div>
       </div>
 
       <!-- قائمة التنقل الرئيسية -->
-      <v-list class="pa-3" nav>
+      <v-list class="pa-2" nav>
         <v-list-item
           v-for="item in mainMenuItems"
           :key="item.title"
           :to="item.to"
-          class="menu-item mb-2"
+          class="menu-item"
           rounded="xl"
           :class="{ 'active-menu-item': item.active }"
-          :ripple="false"
         >
           <template v-slot:prepend>
-            <div class="icon-container ms-3">
-              <v-icon :color="item.active ? 'primary' : 'grey-darken-2'" size="24">
-                {{ item.icon }}
-              </v-icon>
-            </div>
+            <v-icon :color="item.active ? 'primary' : 'white'" class="me-3">
+              {{ item.icon }}
+            </v-icon>
           </template>
-          <v-list-item-title class="text-body-1 font-weight-medium text-right" :class="item.active ? 'text-primary font-weight-bold' : 'text-grey-darken-3'">
+          <v-list-item-title class="text-body-1 font-weight-medium text-white">
             {{ item.title }}
           </v-list-item-title>
           <template v-slot:append v-if="item.badge">
             <v-chip
               :color="item.badgeColor"
               size="small"
-              variant="flat"
-              text-color="white"
+              class="text-white"
             >
               {{ item.badge }}
             </v-chip>
@@ -54,40 +54,81 @@
       </v-list>
 
       <!-- قسم المميزات -->
-      <div class="px-4 mt-4">
-        <h3 class="text-h6 font-weight-bold text-secondary mb-3">المميزات الرئيسية</h3>
-        <div class="feature-grid">
-          <div
+      <v-list class="pa-2" nav>
+        <v-list-item
             v-for="feature in features"
             :key="feature.title"
-            class="feature-item"
-          >
-            <v-icon :color="feature.color" size="20" class="mb-1">{{ feature.icon }}</v-icon>
-            <div class="text-caption text-secondary">{{ feature.title }}</div>
-          </div>
+          class="menu-item"
+          rounded="xl"
+        >
+          <template v-slot:prepend>
+            <v-icon color="white" class="me-3">
+              {{ feature.icon }}
+            </v-icon>
+          </template>
+          <v-list-item-title class="text-body-1 font-weight-medium text-white">
+            {{ feature.title }}
+          </v-list-item-title>
+        </v-list-item>
           <!-- رابط إدارة الفريق -->
-          <router-link to="/team-management" class="feature-item feature-link">
-            <v-icon color="success" size="20" class="mb-1">mdi-account-group</v-icon>
-            <div class="text-caption text-secondary">إدارة الفريق</div>
-            <v-chip size="x-small" color="success" class="mt-1 text-white">جديد</v-chip>
-          </router-link>
-        </div>
-      </div>
+        <v-list-item
+          to="/team-management"
+          class="menu-item"
+          rounded="xl"
+        >
+          <template v-slot:prepend>
+            <v-icon color="white" class="me-3">mdi-account-group</v-icon>
+          </template>
+          <v-list-item-title class="text-body-1 font-weight-medium text-white">
+            إدارة الفريق
+          </v-list-item-title>
+        </v-list-item>
+        
+        <!-- زر تسجيل الخروج -->
+        <v-list-item
+          @click="handleLogout"
+          class="menu-item logout-menu-item"
+          rounded="xl"
+        >
+          <template v-slot:prepend>
+            <v-icon color="white" class="me-3">mdi-logout</v-icon>
+          </template>
+          <v-list-item-title class="text-body-1 font-weight-medium text-white">
+            تسجيل الخروج
+          </v-list-item-title>
+        </v-list-item>
+      </v-list>
 
       <!-- Footer -->
       <template v-slot:append>
-        <div class="pa-4 text-center">
-                 <p class="text-caption text-white text-opacity-60">
-                
-                 </p>
-                 <p class="text-caption text-white text-opacity-60">
-                 </p>
+        <div class="sidebar-footer">
+          <!-- معلومات المستخدم -->
+          <div v-if="currentUsername" class="user-info-card">
+            <div class="user-avatar">
+              <v-icon color="white" size="24">mdi-account-circle</v-icon>
+            </div>
+            <div class="user-details">
+              <p class="user-greeting">مرحباً</p>
+              <p class="user-name">{{ currentUsername }}</p>
+            </div>
+          </div>
         </div>
       </template>
     </v-navigation-drawer>
 
     <!-- المحتوى الرئيسي -->
     <v-main>
+      <!-- زر إظهار/إخفاء الـ Sidebar -->
+      <v-btn
+        v-if="!drawer"
+        icon
+        @click="drawer = true"
+        class="sidebar-toggle-btn-fixed"
+        color="primary"
+        size="large"
+      >
+        <v-icon>mdi-menu</v-icon>
+      </v-btn>
       <router-view />
     </v-main>
   </v-app>
@@ -95,25 +136,47 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
+const router = useRouter()
 const drawer = ref(true)
+
+// اسم المستخدم الحالي
+const currentUsername = computed(() => {
+  return localStorage.getItem('username') || ''
+})
+
+// التحقق من صفحة تسجيل الدخول
+const isLoginPage = computed(() => {
+  return route.path === '/login'
+})
+
+// دالة تسجيل الخروج
+const handleLogout = () => {
+  // حذف بيانات تسجيل الدخول
+  localStorage.removeItem('isAuthenticated')
+  localStorage.removeItem('username')
+  localStorage.removeItem('loginTime')
+  
+  // إعادة التوجيه إلى صفحة تسجيل الدخول
+  router.push('/login')
+}
 
 // قائمة التنقل الرئيسية
 const mainMenuItems = ref([
   { title: 'الرئيسية', icon: 'mdi-view-dashboard', to: '/', active: false },
   { title: 'المشاريع', icon: 'mdi-folder-multiple', to: '/project-management', active: false },
-  { title: 'إدارة المهام', icon: 'mdi-clipboard-list', to: '/task-management', active: false, badge: 'جديد', badgeColor: 'success' },
+  { title: 'إدارة المهام', icon: 'mdi-clipboard-list', to: '/task-management', active: false },
   { title: 'المهندسين', icon: 'mdi-account-hard-hat', to: '/engineers', active: false },
   { title: 'التصنيفات', icon: 'mdi-tag-multiple', to: '/categories', active: false },
   { title: 'المصروفات الإدارية', icon: 'mdi-chart-line', to: '/expenses', active: false },
   { title: 'أنواع المصروفات', icon: 'mdi-format-list-bulleted-type', to: '/expense-types', active: false },
   { title: 'الإيرادات', icon: 'mdi-trending-up', to: '/income', active: false },
-  { title: 'المديونون', icon: 'mdi-credit-card', to: '/debtors', active: false, badge: '3', badgeColor: 'error' },
+  { title: 'المديونون', icon: 'mdi-credit-card', to: '/debtors', active: false },
   { title: 'المستخدمين', icon: 'mdi-account-multiple', to: '/users', active: false },
   { title: 'الموارد البشرية', icon: 'mdi-account-group', to: '/human-resources', active: false },
-  { title: 'بصمة الموظفين', icon: 'mdi-fingerprint', to: '/human-resources#fingerprint', active: false, badge: 'جديد', badgeColor: 'primary' }
+  { title: 'بصمة الموظفين', icon: 'mdi-fingerprint', to: '/human-resources#fingerprint', active: false }
 ])
 
 const features = ref([
@@ -154,142 +217,14 @@ watch(() => route.path, updateActiveMenuItem, { immediate: true })
 }
 
 /* ========================================
-   السايد بار العصري - Enhanced White Theme
+   السايد بار العصري
    ======================================== */
-.modern-sidebar,
-.v-navigation-drawer.modern-sidebar,
-.v-application .modern-sidebar,
-.v-application .v-navigation-drawer.modern-sidebar,
-body .modern-sidebar,
-body .v-navigation-drawer.modern-sidebar {
-  background: #ffffff !important;
-  border-left: 1px solid #e2e8f0 !important;
-  box-shadow: -6px 0 24px rgba(15, 23, 42, 0.06) !important;
-  color: var(--text-primary) !important;
-}
-
-/* Make inner list transparent */
-.modern-sidebar .v-list,
-.v-navigation-drawer.modern-sidebar .v-list {
-  background: transparent !important;
-}
-
-/* Alignment Fix */
-.modern-sidebar .v-list-item,
-.v-navigation-drawer.modern-sidebar .v-list-item {
-  display: flex !important;
-  align-items: center !important;
-  min-height: 48px; /* Ensure consistent height */
-  padding-inline-start: 16px !important;
-  padding-inline-end: 16px !important;
-}
-
-/* Ensure prepend container alignment and transparency */
-.modern-sidebar .v-list-item__prepend,
-.v-navigation-drawer.modern-sidebar .v-list-item__prepend {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  margin-inline-end: 16px !important; /* Proper RTL margin */
-  background-color: transparent !important;
-  background: transparent !important;
-}
-
-/* Fix Title Alignment */
-.modern-sidebar .v-list-item-title,
-.modern-sidebar .v-list-item__content {
-  text-align: right !important;
-  flex: 1;
-}
-
-/* Icon Container for center alignment */
-.icon-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-}
-
-/* Menu item text styling */
-.modern-sidebar .v-list-item-title,
-.modern-sidebar .v-list-item__content {
-  color: #475569 !important; /* Slate 600 */
-  -webkit-text-fill-color: #475569 !important;
-  font-family: 'Tajawal', sans-serif !important;
-  font-size: 0.95rem !important;
-  font-weight: 500 !important;
-  letter-spacing: 0.01em;
-  transition: all 0.2s ease;
-}
-
-/* Header text */
-.modern-sidebar h1,
-.modern-sidebar h2,
-.modern-sidebar h3 {
-  color: #1e293b !important; /* Slate 800 */
-  -webkit-text-fill-color: #1e293b !important;
-  font-family: 'Tajawal', sans-serif !important;
-}
-
-/* Subtitles and smaller text */
-.modern-sidebar .text-caption,
-.modern-sidebar .text-body-2,
-.modern-sidebar .v-list-item-subtitle {
-  color: #94a3b8 !important; /* Slate 400 */
-  font-weight: 500 !important;
-}
-
-/* Icons - Elegant muted style */
-.modern-sidebar .v-icon,
-.v-navigation-drawer.modern-sidebar .v-icon {
-  color: #94a3b8 !important; /* Slate 400 */
-  opacity: 1 !important;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Active Menu Item - Clean accent style */
-.modern-sidebar .active-menu-item .v-list-item-title {
-  color: #4338ca !important; /* Indigo 700 */
-  -webkit-text-fill-color: #4338ca !important;
-  font-weight: 600 !important;
-}
-
-.modern-sidebar .active-menu-item .v-icon {
-  color: #4338ca !important; /* Indigo 700 */
-}
-
-.modern-sidebar .active-menu-item {
-  background: linear-gradient(90deg, #eef2ff 0%, #f8fafc 100%) !important;
-  border: none !important;
-  border-right: 3px solid #4338ca !important;
-  box-shadow: 0 2px 8px rgba(67, 56, 202, 0.08);
-  position: relative;
-}
-
-/* Hover State - Smooth and subtle */
-.modern-sidebar .menu-item:hover .v-list-item-title {
-  color: #334155 !important; /* Slate 700 */
-  -webkit-text-fill-color: #334155 !important;
-}
-
-.modern-sidebar .menu-item:hover .v-icon {
-  color: #6366f1 !important; /* Indigo 500 */
-  transform: scale(1.08);
-}
-
-.modern-sidebar .menu-item:hover {
-  background: #f8fafc !important;
-}
-
-
-/* Features section title */
-.modern-sidebar .px-4 h3 {
-  color: #64748b !important;
-  -webkit-text-fill-color: #64748b !important;
-  font-size: 0.85rem !important;
-  font-weight: 600 !important;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+.modern-sidebar {
+  background: linear-gradient(135deg, rgba(25, 118, 210, 0.7) 0%, rgba(21, 101, 192, 0.7) 100%) !important;
+  border-left: none !important;
+  box-shadow: -4px 0 20px rgba(25, 118, 210, 0.2) !important;
+  z-index: 5 !important;
+  backdrop-filter: blur(10px);
 }
 
 .rtl-sidebar {
@@ -298,133 +233,199 @@ body .v-navigation-drawer.modern-sidebar {
 }
 
 .sidebar-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 20px;
-  border-bottom: 1px solid #f1f5f9;
-  background: #ffffff !important;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 0 0 20px 20px;
+  margin: -16px -16px 16px -16px;
 }
 
-.sidebar-logo {
-  flex-shrink: 0;
-  border-radius: 10px;
-}
-
-.header-title {
-  font-size: 1.15rem !important;
-  font-weight: 700 !important;
-  color: #1e293b !important;
-  -webkit-text-fill-color: #1e293b !important;
-  margin: 0;
-  line-height: 1.4;
-  font-family: 'Tajawal', sans-serif !important;
-}
-
-/* Badge/Chip styling in sidebar - force white text (high specificity to override sidebar text rules) */
-/* Badge/Chip styling in sidebar */
-/* 1. Force white text on chip content */
-.modern-sidebar .v-chip .v-chip__content,
-.v-navigation-drawer.modern-sidebar .v-chip .v-chip__content {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-}
-
-/* 2. Force white icons in chips */
-.modern-sidebar .v-chip .v-icon,
-.v-navigation-drawer.modern-sidebar .v-chip .v-icon {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-}
-
-/* 3. Explicitly restore background colors for sidebar chips to prevent white-on-white */
-/* Note: We target both bg- and text- classes as Vuetify can use either depending on version/variant */
-.modern-sidebar .v-chip.bg-success,
-.modern-sidebar .v-chip.text-success,
-.v-navigation-drawer.modern-sidebar .v-chip.bg-success,
-.v-navigation-drawer.modern-sidebar .v-chip.text-success {
-  background-color: var(--color-success) !important;
-  border-color: var(--color-success) !important;
-}
-
-.modern-sidebar .v-chip.bg-error,
-.modern-sidebar .v-chip.text-error,
-.v-navigation-drawer.modern-sidebar .v-chip.bg-error,
-.v-navigation-drawer.modern-sidebar .v-chip.text-error {
-  background-color: var(--color-error) !important;
-  border-color: var(--color-error) !important;
-}
-
-.modern-sidebar .v-chip.bg-primary,
-.modern-sidebar .v-chip.text-primary,
-.v-navigation-drawer.modern-sidebar .v-chip.bg-primary,
-.v-navigation-drawer.modern-sidebar .v-chip.text-primary {
-  background-color: var(--color-primary) !important;
-  border-color: var(--color-primary) !important;
+.logo-enhanced {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 8px;
 }
 
 /* عناصر القائمة */
 .menu-item {
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 12px !important;
-  margin-bottom: 2px;
-  border: none;
-  min-height: 46px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 8px !important;
+  margin-bottom: 0 !important;
+  margin-top: 0 !important;
 }
 
-/* Features Grid */
-.feature-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+.menu-item .v-list-item-title {
+  font-size: 0.65rem !important;
 }
 
-.feature-item {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 14px 10px;
-  text-align: center;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+.modern-sidebar .v-list-item-title {
+  font-size: 0.65rem !important;
 }
 
-.feature-item:hover {
-  background: #f1f5f9;
-  border-color: #c7d2fe;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(67, 56, 202, 0.08);
+.modern-sidebar p,
+.modern-sidebar span {
+  font-size: 0.6rem !important;
 }
 
-.feature-item .v-icon {
-  color: #6366f1 !important;
-}
-
-.feature-item .text-caption {
-  color: #64748b !important;
-  font-weight: 600 !important;
+.modern-sidebar .text-h5 {
   font-size: 0.75rem !important;
 }
 
-/* Feature Link */
+.modern-sidebar .text-body-2 {
+  font-size: 0.55rem !important;
+}
+
+/* تكبير نص رأس السايد بار */
+.sidebar-header .text-h5 {
+  font-size: 0.8rem !important;
+  text-align: center !important;
+}
+
+.sidebar-header .text-body-2 {
+  font-size: 0.6rem !important;
+  text-align: center !important;
+}
+
+.sidebar-header .text-center {
+  text-align: center !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.sidebar-header h1,
+.sidebar-header p {
+  text-align: center !important;
+  width: 100% !important;
+}
+
+.modern-sidebar .text-caption {
+  font-size: 0.5rem !important;
+}
+
+.modern-sidebar h1,
+.modern-sidebar h2,
+.modern-sidebar h3 {
+  font-size: 0.65rem !important;
+}
+
+/* تكبير عنوان "المميزات الرئيسية" */
+.modern-sidebar h3.text-h6 {
+  font-size: 0.7rem !important;
+  font-weight: 700 !important;
+}
+
+/* توحيد المسافات بين العناصر */
+.modern-sidebar .v-list {
+  padding: 4px !important;
+  gap: 0 !important;
+}
+
+.modern-sidebar .v-list-item {
+  padding: 2px 6px !important;
+  min-height: 28px !important;
+  margin-bottom: 0 !important;
+  margin-top: 0 !important;
+}
+
+.modern-sidebar .v-list-item.menu-item {
+  margin-bottom: 0 !important;
+  margin-top: 0 !important;
+}
+
+.modern-sidebar .v-list-item.menu-item:last-child {
+  margin-bottom: 0 !important;
+}
+
+.sidebar-header {
+  padding: 8px !important;
+  margin-bottom: 4px !important;
+}
+
+.sidebar-header .mb-6 {
+  margin-bottom: 4px !important;
+}
+
+.feature-grid {
+  gap: 6px !important;
+}
+
+.feature-item {
+  padding: 6px 4px !important;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  transform: translateX(-4px);
+}
+
+.active-menu-item {
+  background: linear-gradient(135deg, #1565c0 0%, #1976d2 100%) !important;
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.4);
+  transform: translateX(-4px);
+}
+
+.active-menu-item .v-list-item-title {
+  font-weight: 600 !important;
+}
+
+/* شبكة المميزات */
+.feature-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.feature-item {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 12px 8px;
+  text-align: center;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.feature-item:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+/* رابط إدارة الفريق */
 .feature-link {
   text-decoration: none;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: linear-gradient(135deg, #faf5ff 0%, #f8fafc 100%) !important;
-  border: 1px dashed #c4b5fd !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+  overflow: hidden;
 }
 
 .feature-link:hover {
-  background: linear-gradient(135deg, #ede9fe 0%, #eef2ff 100%) !important;
-  border-color: #a78bfa !important;
+  background: rgba(255, 255, 255, 0.4) !important;
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
 }
 
-.feature-link .v-icon {
-  color: #22c55e !important;
+.feature-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
 }
 
-/* Common Fixes */
+.feature-link:hover::before {
+  left: 100%;
+}
+
+/* إصلاح اتجاه العناصر */
 .v-list-item {
   text-align: right;
 }
@@ -437,14 +438,8 @@ body .v-navigation-drawer.modern-sidebar {
   text-align: right;
 }
 
-/* إصلاح اتجاه الأيقونات الاتجاهية فقط (السهام والشيفرونات) */
-/* Note: Don't flip all icons - only directional ones need flipping for RTL */
-.v-icon.mdi-chevron-left,
-.v-icon.mdi-chevron-right,
-.v-icon.mdi-arrow-left,
-.v-icon.mdi-arrow-right,
-.v-icon.mdi-menu-left,
-.v-icon.mdi-menu-right {
+/* إصلاح اتجاه الأيقونات */
+.v-icon {
   transform: scaleX(-1);
 }
 
@@ -487,10 +482,21 @@ h1, h2, h3, h4, h5, h6, p, span, div {
   direction: rtl;
 }
 
+/* Mini Sidebar */
+.mini-sidebar {
+  background: #ffffff !important;
+  border-left: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.05) !important;
+  z-index: 6 !important;
+}
+
+
+
 /* إصلاح اتجاه المحتوى */
 .v-main {
   direction: rtl;
 }
+
 
 /* إصلاح اتجاه الحاويات */
 .v-container {
@@ -507,54 +513,295 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 }
 
 /* ========================================
-   Main Content Area - Ensure proper colors
+   تخصيص عناوين الجداول - Table Headers
    ======================================== */
-
-/* Ensure page content has proper colors */
-.v-main .data-page,
-.v-main .project-card,
-.v-main .stat-card {
-  color: inherit;
+.v-data-table table thead tr th {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  padding: 1.2rem 0.8rem !important;
+  border: none !important;
+  box-shadow: 0 3px 12px rgba(4, 120, 87, 0.4) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
 }
 
-/* Allow page-specific text colors to work */
-.v-main .data-page .page-content-section p,
-.v-main .data-page .page-content-section span,
-.v-main .data-page .page-content-section h1,
-.v-main .data-page .page-content-section h2,
-.v-main .data-page .page-content-section h3,
-.v-main .data-page .page-content-section h4,
-.v-main .data-page .page-content-section h5,
-.v-main .data-page .page-content-section h6 {
-  -webkit-text-fill-color: unset;
+.v-data-table table thead tr th .v-data-table-header__content {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+.v-data-table table thead tr th .v-data-table-header__content .v-data-table-header__sort-icon {
+  color: #ffffff !important;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3)) !important;
+}
+
+/* CSS إضافي لضمان التطبيق */
+.v-data-table__wrapper table thead tr th {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+.v-data-table__wrapper table thead tr th .v-data-table-header__content {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* CSS لجميع عناوين الجداول */
+table thead tr th {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* CSS محدد لصفحة إدارة الفريق */
+.team-data-table table thead tr th {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+.team-data-table table thead tr th .v-data-table-header__content {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* CSS لضمان التطبيق على جميع عناصر Vuetify */
+.v-data-table.team-data-table .v-data-table__wrapper table thead tr th {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
 }
 
 /* ========================================
-   Toast Notifications RTL Support
+   تنسيق Footer السايد بار - تسجيل الخروج
    ======================================== */
-.Toastify__toast-container {
-  direction: rtl !important;
-  z-index: 9999 !important;
+.sidebar-footer {
+  padding: 8px;
+  background: transparent;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: auto;
 }
 
-.Toastify__toast {
-  direction: rtl !important;
-  font-family: 'Cairo', 'Tajawal', 'Noto Sans Arabic', 'Arial', sans-serif !important;
+/* بطاقة معلومات المستخدم */
+.user-info-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  margin-bottom: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
 }
 
-.Toastify__toast-body {
-  direction: rtl !important;
-  text-align: right !important;
+.user-info-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  animation: pulse-sweep 3s infinite;
 }
 
-/* Position toast on left for RTL */
-.Toastify__toast-container--top-right {
-  right: auto !important;
-  left: 1em !important;
+.user-info-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.2)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: pulse-border 2s ease-in-out infinite;
+  pointer-events: none;
 }
 
-.Toastify__toast-container--bottom-right {
-  right: auto !important;
-  left: 1em !important;
+@keyframes pulse-sweep {
+  0% {
+    left: -100%;
+  }
+  50% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes pulse-border {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.user-info-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.user-info-card:hover::before {
+  animation-duration: 2s;
+}
+
+.user-info-card:hover::after {
+  animation-duration: 1.5s;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.user-details {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.user-greeting {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.55rem;
+  margin: 0;
+  line-height: 1.2;
+  font-weight: 400;
+}
+
+.user-name {
+  color: #ffffff;
+  font-size: 0.65rem;
+  margin: 1px 0 0 0;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* زر تسجيل الخروج - نفس تنسيق عناصر القائمة */
+.logout-menu-item {
+  cursor: pointer;
+  margin-top: 4px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding-top: 4px !important;
+}
+
+.logout-menu-item:hover {
+  background: rgba(239, 68, 68, 0.2) !important;
+}
+
+.logout-menu-item:hover .v-icon {
+  color: #fca5a5 !important;
+}
+
+.logout-menu-item:hover .v-list-item-title {
+  color: #fca5a5 !important;
+}
+
+/* تحسينات للشاشات الصغيرة */
+@media (max-width: 960px) {
+  .user-info-card {
+    padding: 10px;
+    gap: 10px;
+  }
+  
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .user-name {
+    font-size: 0.85rem;
+  }
+  
+  .logout-btn {
+    height: 44px !important;
+  }
+  
+  .logout-text {
+    font-size: 0.9rem;
+  }
+}
+
+.v-data-table.team-data-table .v-data-table__wrapper table thead tr th .v-data-table-header__content {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* CSS لجميع عناوين الجداول في التطبيق */
+.v-application .v-data-table table thead tr th {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+.v-application .v-data-table table thead tr th .v-data-table-header__content {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
 }
 </style>

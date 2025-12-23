@@ -113,15 +113,15 @@ const saveAction = () => {
 <style scoped>
 /* تحسينات إضافية للتصميم */
 .bg-blue-600 {
-  background-color: var(--color-blue-600);
+  background-color: #1976d2;
 }
 
 .hover\:bg-blue-500:hover {
-  background-color: var(--color-blue-700);
+  background-color: #1565c0;
 }
 
 .focus\:ring-blue-500:focus {
-  --tw-ring-color: var(--color-blue-600);
+  --tw-ring-color: #1976d2;
 }
 
 /* تنسيق شريط العنوان المصغر */
@@ -130,7 +130,7 @@ const saveAction = () => {
 }
 
 .dialog-header-small h3 {
-  font-size: var(--font-size-base) !important;
+  font-size: 1rem !important;
   font-weight: 700 !important;
   line-height: 1.4 !important;
 }
@@ -138,8 +138,8 @@ const saveAction = () => {
 .close-header-btn {
   padding: 0.25rem !important;
   min-width: auto !important;
-  width: var(--space-8) !important;
-  height: var(--space-8) !important;
+  width: 32px !important;
+  height: 32px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -150,22 +150,22 @@ const saveAction = () => {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: var(--space-4);
+  gap: 16px;
   padding: 1.25rem 1.5rem !important;
-  background: var(--color-slate-50) !important;
-  border-top: var(--space-px) solid var(--border-light) !important;
+  background: #f8f9fa !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
 }
 
 .save-btn-dialog {
   font-weight: 700 !important;
   text-transform: none !important;
-  border-radius: var(--radius-xl) !important;
-  padding: var(--space-3-5) 32px !important;
-  background: var(--gradient-info) !important;
-  color: var(--text-white) !important;
-  font-size: var(--font-size-base) !important;
+  border-radius: 14px !important;
+  padding: 14px 32px !important;
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
+  color: #ffffff !important;
+  font-size: 1rem !important;
   font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  min-width: var(--space-36) !important;
+  min-width: 140px !important;
   box-shadow: 
     0 6px 20px rgba(59, 130, 246, 0.4),
     0 3px 10px rgba(37, 99, 235, 0.3),
@@ -180,14 +180,14 @@ const saveAction = () => {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  gap: var(--space-2-5);
+  gap: 10px;
 }
 
 .save-btn-dialog svg {
-  width: var(--space-5) !important;
-  height: var(--space-5) !important;
+  width: 20px !important;
+  height: 20px !important;
   stroke-width: 2.5 !important;
-  color: var(--text-white) !important;
+  color: #ffffff !important;
   flex-shrink: 0;
 }
 
@@ -208,7 +208,7 @@ const saveAction = () => {
 }
 
 .save-btn-dialog:hover {
-  background: var(--gradient-info-deep) !important;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) !important;
   box-shadow: 
     0 8px 24px rgba(59, 130, 246, 0.5),
     0 4px 12px rgba(37, 99, 235, 0.4),
@@ -220,15 +220,15 @@ const saveAction = () => {
 .cancel-btn-dialog {
   font-weight: 700 !important;
   text-transform: none !important;
-  border-radius: var(--radius-xl) !important;
-  padding: var(--space-3-5) 32px !important;
-  border: 2px solid var(--color-slate-300) !important;
-  color: var(--color-slate-700) !important;
-  background: var(--text-white) !important;
+  border-radius: 14px !important;
+  padding: 14px 32px !important;
+  border: 2px solid rgba(156, 163, 175, 0.5) !important;
+  color: #374151 !important;
+  background: rgba(255, 255, 255, 1) !important;
   backdrop-filter: blur(10px) !important;
-  font-size: var(--font-size-base) !important;
+  font-size: 1rem !important;
   font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  min-width: var(--space-36) !important;
+  min-width: 140px !important;
   box-shadow: 
     0 4px 16px rgba(0, 0, 0, 0.1),
     0 2px 8px rgba(156, 163, 175, 0.15),
@@ -260,9 +260,9 @@ const saveAction = () => {
 }
 
 .cancel-btn-dialog:hover {
-  background: var(--text-white) !important;
-  border-color: var(--color-slate-400) !important;
-  color: var(--color-slate-800) !important;
+  background: rgba(255, 255, 255, 1) !important;
+  border-color: rgba(156, 163, 175, 0.5) !important;
+  color: #374151 !important;
   transform: translateY(-2px) scale(1.02) !important;
   box-shadow: 
     0 6px 20px rgba(0, 0, 0, 0.12),

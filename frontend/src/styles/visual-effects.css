@@ -9,20 +9,20 @@
 
 /* انتقالات سلسة للعناصر */
 .smooth-transition {
-  transition: all var(--transition-normal);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .smooth-transition-fast {
-  transition: all var(--transition-fast);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .smooth-transition-slow {
-  transition: all var(--transition-slow);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* تأثيرات hover متطورة */
 .hover-lift {
-  transition: all var(--transition-normal);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .hover-lift:hover {
@@ -31,7 +31,7 @@
 }
 
 .hover-glow {
-  transition: all var(--transition-normal);
+  transition: all 0.3s ease;
 }
 
 .hover-glow:hover {
@@ -41,7 +41,7 @@
 
 /* تأثيرات التكبير */
 .scale-on-hover {
-  transition: transform var(--transition-normal);
+  transition: transform 0.3s ease;
 }
 
 .scale-on-hover:hover {
@@ -70,7 +70,7 @@
   width: 100%;
   height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left var(--transition-slow);
+  transition: left 0.5s;
 }
 
 .light-sweep:hover::before {
@@ -79,7 +79,7 @@
 
 /* تأثير الظل المتحرك */
 .shadow-follow {
-  transition: all var(--transition-normal);
+  transition: all 0.3s ease;
   box-shadow: var(--shadow-card);
 }
 
@@ -102,7 +102,7 @@
   background: radial-gradient(circle at center, rgba(30, 64, 175, 0.1) 0%, transparent 70%);
   pointer-events: none;
   opacity: 0;
-  transition: opacity var(--transition-normal);
+  transition: opacity 0.3s ease;
 }
 
 .inner-glow:hover::before {
@@ -116,7 +116,7 @@
 /* تأثير النص المتوهج */
 .text-glow {
   text-shadow: 0 0 10px rgba(30, 64, 175, 0.5);
-  transition: text-shadow var(--transition-normal);
+  transition: text-shadow 0.3s ease;
 }
 
 .text-glow:hover {
@@ -155,7 +155,7 @@
 
 /* تأثير الأيقونة المتدورة */
 .icon-spin {
-  transition: transform var(--transition-normal);
+  transition: transform 0.3s ease;
 }
 
 .icon-spin:hover {
@@ -185,7 +185,7 @@
 /* تأثير الأيقونة المتوهجة */
 .icon-glow {
   filter: drop-shadow(0 0 10px rgba(30, 64, 175, 0.5));
-  transition: filter var(--transition-normal);
+  transition: filter 0.3s ease;
 }
 
 .icon-glow:hover {
@@ -244,7 +244,7 @@
 .btn-glow {
   position: relative;
   overflow: hidden;
-  transition: all var(--transition-normal);
+  transition: all 0.3s ease;
 }
 
 .btn-glow::before {
@@ -255,7 +255,7 @@
   width: 100%;
   height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left var(--transition-slow);
+  transition: left 0.5s;
 }
 
 .btn-glow:hover::before {
@@ -269,7 +269,7 @@
 
 /* تأثير الزر المتذبذب */
 .btn-bounce {
-  transition: all var(--transition-normal);
+  transition: all 0.3s ease;
 }
 
 .btn-bounce:hover {
@@ -278,7 +278,7 @@
 
 /* تأثير الزر المتدور */
 .btn-rotate {
-  transition: all var(--transition-normal);
+  transition: all 0.3s ease;
 }
 
 .btn-rotate:hover {
@@ -291,7 +291,7 @@
 
 /* تأثير البطاقة المتوهجة */
 .card-glow {
-  transition: all var(--transition-normal);
+  transition: all 0.3s ease;
   box-shadow: var(--shadow-card);
 }
 
@@ -324,7 +324,7 @@
 
 /* تأثير الحقل المضيء */
 .input-glow {
-  transition: all var(--transition-normal);
+  transition: all 0.3s ease;
   border: 2px solid transparent;
 }
 
@@ -345,7 +345,7 @@
 
 /* تأثير الصف المتوهج */
 .table-row-glow {
-  transition: all var(--transition-normal);
+  transition: all 0.3s ease;
 }
 
 .table-row-glow:hover {
@@ -359,49 +359,6 @@
   background: linear-gradient(135deg, rgba(30, 64, 175, 0.05), rgba(124, 58, 237, 0.05));
 }
 
-/* Enhanced table header shimmer animation */
-@keyframes tableHeaderShimmer {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* Table header with animated gradient */
-.table-header-animated {
-  background: linear-gradient(135deg, var(--color-emerald-600) 0%, var(--color-emerald-700) 50%, var(--color-emerald-600) 100%) !important;
-  background-size: 200% 100%;
-  animation: tableHeaderShimmer 8s ease-in-out infinite;
-  color: var(--text-white) !important;
-  font-weight: 800 !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-/* Table with alternating row colors */
-.table-striped tbody tr:nth-child(even) {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.03) 0%, rgba(99, 102, 241, 0.01) 100%);
-}
-
-.table-striped tbody tr:nth-child(odd) {
-  background: var(--text-white);
-}
-
-/* Enhanced row hover */
-.table-hover-lift tbody tr {
-  transition: all var(--transition-normal);
-}
-
-.table-hover-lift tbody tr:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(99, 102, 241, 0.04) 100%) !important;
-}
-
-/* Table footer gradient */
-.table-footer-gradient {
-  background: linear-gradient(135deg, var(--color-slate-100) 0%, var(--color-slate-50) 100%) !important;
-  border-top: 1px solid var(--color-slate-200);
-}
-
 /* ========================================
    10. تأثيرات التنقل
    ======================================== */
@@ -409,7 +366,7 @@
 /* تأثير الرابط المتوهج */
 .link-glow {
   position: relative;
-  transition: all var(--transition-normal);
+  transition: all 0.3s ease;
 }
 
 .link-glow::after {
@@ -418,9 +375,9 @@
   bottom: -2px;
   left: 0;
   width: 0;
-  height: var(--space-0-5);
+  height: 2px;
   background: var(--gradient-primary);
-  transition: width var(--transition-normal);
+  transition: width 0.3s ease;
 }
 
 .link-glow:hover::after {
@@ -442,7 +399,7 @@
   width: 100%;
   height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  transition: left var(--transition-slow);
+  transition: left 0.5s;
 }
 
 .menu-gradient:hover::before {

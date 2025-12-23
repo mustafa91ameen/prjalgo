@@ -1,0 +1,238 @@
+/* ========================================
+   Design System - Centralized Styles
+   نظام التصميم الموحد
+   ======================================== */
+
+:root {
+  /* ========================================
+     Colors - الألوان
+     ======================================== */
+  
+  /* Primary Colors - الألوان الأساسية */
+  --ds-color-primary: rgb(150, 122, 129);
+  --ds-color-primary-light: rgb(180, 155, 163);
+  --ds-color-primary-dark: rgb(120, 95, 103);
+  --ds-color-primary-darker: rgb(100, 70, 78);
+  
+  /* Secondary Colors - الألوان الثانوية */
+  --ds-color-secondary: rgb(132, 132, 132);
+  --ds-color-secondary-light: rgb(165, 165, 165);
+  --ds-color-secondary-dark: rgb(105, 105, 105);
+  --ds-color-secondary-darker: rgb(85, 85, 85);
+  
+  /* Accent Colors - ألوان التمييز */
+  --ds-color-success: rgb(16, 185, 129);
+  --ds-color-warning: #f59e0b;
+  --ds-color-error: #ef4444;
+  --ds-color-info: rgb(128, 95, 103);
+  
+  /* Text Colors - ألوان النص */
+  --ds-text-primary: #1a1a1a;
+  --ds-text-secondary: #64748b;
+  --ds-text-tertiary: #94a3b8;
+  --ds-text-white: #ffffff;
+  --ds-text-dark: #0f172a;
+  
+  /* Background Colors - ألوان الخلفية */
+  --ds-bg-primary: #ffffff;
+  --ds-bg-secondary: #f5f5f5;
+  --ds-bg-tertiary: #f8fafc;
+  --ds-bg-page: #f5f5f5;
+  
+  /* Border Colors - ألوان الحدود */
+  --ds-border-light: #e2e8f0;
+  --ds-border-medium: #cbd5e1;
+  --ds-border-dark: #94a3b8;
+  --ds-border-white: #ffffff;
+  
+  /* ========================================
+     Typography - الخطوط
+     ======================================== */
+  
+  --ds-font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+  --ds-font-size-xs: 0.6rem;
+  --ds-font-size-sm: 0.75rem;
+  --ds-font-size-base: 0.875rem;
+  --ds-font-size-md: 0.95rem;
+  --ds-font-size-lg: 1.1rem;
+  --ds-font-size-xl: 1.25rem;
+  --ds-font-size-2xl: 1.5rem;
+  
+  --ds-font-weight-normal: 400;
+  --ds-font-weight-medium: 500;
+  --ds-font-weight-semibold: 600;
+  --ds-font-weight-bold: 700;
+  
+  --ds-line-height-tight: 1.2;
+  --ds-line-height-normal: 1.4;
+  --ds-line-height-relaxed: 1.6;
+  
+  --ds-letter-spacing-tight: 0.2px;
+  --ds-letter-spacing-normal: 0.3px;
+  --ds-letter-spacing-wide: 0.5px;
+  
+  /* ========================================
+     Spacing - المسافات
+     ======================================== */
+  
+  --ds-space-xs: 0.25rem;   /* 4px */
+  --ds-space-sm: 0.5rem;    /* 8px */
+  --ds-space-md: 0.75rem;   /* 12px */
+  --ds-space-lg: 1rem;      /* 16px */
+  --ds-space-xl: 1.5rem;    /* 24px */
+  --ds-space-2xl: 2rem;     /* 32px */
+  --ds-space-3xl: 3rem;     /* 48px */
+  
+  /* ========================================
+     Border Radius - نصف قطر الحدود
+     ======================================== */
+  
+  --ds-radius-sm: 4px;
+  --ds-radius-md: 6px;
+  --ds-radius-lg: 8px;
+  --ds-radius-xl: 12px;
+  --ds-radius-2xl: 16px;
+  --ds-radius-full: 9999px;
+  
+  /* ========================================
+     Shadows - الظلال
+     ======================================== */
+  
+  --ds-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --ds-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --ds-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --ds-shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.2);
+  
+  /* ========================================
+     Gradients - التدرجات
+     ======================================== */
+  
+  --ds-gradient-primary: linear-gradient(135deg, rgb(180, 155, 163) 0%, rgb(150, 122, 129) 50%, rgb(120, 95, 103) 100%);
+  --ds-gradient-secondary: linear-gradient(135deg, rgb(165, 165, 165) 0%, rgb(132, 132, 132) 50%, rgb(105, 105, 105) 100%);
+  --ds-gradient-header: linear-gradient(135deg, rgb(120, 95, 103) 0%, rgb(150, 122, 129) 25%, rgb(180, 155, 163) 50%, rgb(200, 180, 188) 75%, rgb(220, 205, 213) 100%);
+  
+  /* ========================================
+     Table Styles - أنماط الجداول
+     ======================================== */
+  
+  /* Table Header */
+  --ds-table-header-bg: var(--ds-gradient-primary);
+  --ds-table-header-text: var(--ds-text-white);
+  --ds-table-header-font-size: var(--ds-font-size-md);
+  --ds-table-header-font-weight: var(--ds-font-weight-semibold);
+  --ds-table-header-padding: 3px 5px;
+  --ds-table-header-min-height: 24px;
+  
+  /* Table Cell */
+  --ds-table-cell-font-size: var(--ds-font-size-sm);
+  --ds-table-cell-font-weight: var(--ds-font-weight-medium);
+  --ds-table-cell-padding: 5px 6px;
+  --ds-table-cell-text: var(--ds-text-primary);
+  
+  /* Table Border */
+  --ds-table-border-color: var(--ds-border-white);
+  --ds-table-border-width: 1px;
+  
+  /* ========================================
+     Page Header Styles - أنماط رأس الصفحة
+     ======================================== */
+  
+  --ds-page-header-bg: var(--ds-gradient-header);
+  --ds-page-header-text: var(--ds-text-white);
+  --ds-page-header-padding: 0.4rem 0.75rem;
+  --ds-page-header-title-size: var(--ds-font-size-lg);
+  --ds-page-header-subtitle-size: var(--ds-font-size-base);
+  --ds-page-header-min-height: 36px;
+  
+  /* ========================================
+     Button Styles - أنماط الأزرار
+     ======================================== */
+  
+  --ds-btn-height-sm: 28px;
+  --ds-btn-height-md: 36px;
+  --ds-btn-height-lg: 48px;
+  
+  --ds-btn-font-size-sm: var(--ds-font-size-xs);
+  --ds-btn-font-size-md: var(--ds-font-size-base);
+  --ds-btn-font-size-lg: var(--ds-font-size-md);
+  
+  --ds-btn-padding-sm: 2px 6px;
+  --ds-btn-padding-md: 8px 16px;
+  --ds-btn-padding-lg: 12px 24px;
+  
+  /* ========================================
+     Search Bar Styles - أنماط شريط البحث
+     ======================================== */
+  
+  --ds-search-container-padding: 0.75rem 1rem;
+  --ds-search-container-border-radius: var(--ds-radius-lg);
+  --ds-search-field-height: 36px;
+  --ds-search-field-font-size: var(--ds-font-size-base);
+  
+  /* ========================================
+     Section Title Styles - أنماط عنوان القسم
+     ======================================== */
+  
+  --ds-section-title-font-size: var(--ds-font-size-md);
+  --ds-section-title-font-weight: var(--ds-font-weight-semibold);
+  --ds-section-title-padding: 0.5rem 0.875rem;
+  --ds-section-title-icon-size: 18px;
+  
+  /* ========================================
+     Transitions - الانتقالات
+     ======================================== */
+  
+  --ds-transition-fast: 0.15s ease;
+  --ds-transition-normal: 0.3s ease;
+  --ds-transition-slow: 0.5s ease;
+  
+  /* ========================================
+     Z-Index Layers - طبقات Z-Index
+     ======================================== */
+  
+  --ds-z-base: 1;
+  --ds-z-dropdown: 10;
+  --ds-z-sticky: 20;
+  --ds-z-overlay: 30;
+  --ds-z-modal: 40;
+  --ds-z-tooltip: 50;
+}
+
+/* ========================================
+   Utility Classes - فئات مساعدة
+   ======================================== */
+
+/* Background Colors */
+.ds-bg-primary { background-color: var(--ds-bg-primary) !important; }
+.ds-bg-secondary { background-color: var(--ds-bg-secondary) !important; }
+.ds-bg-page { background-color: var(--ds-bg-page) !important; }
+
+/* Text Colors */
+.ds-text-primary { color: var(--ds-text-primary) !important; }
+.ds-text-secondary { color: var(--ds-text-secondary) !important; }
+.ds-text-white { color: var(--ds-text-white) !important; }
+
+/* Spacing */
+.ds-p-sm { padding: var(--ds-space-sm) !important; }
+.ds-p-md { padding: var(--ds-space-md) !important; }
+.ds-p-lg { padding: var(--ds-space-lg) !important; }
+
+.ds-m-sm { margin: var(--ds-space-sm) !important; }
+.ds-m-md { margin: var(--ds-space-md) !important; }
+.ds-m-lg { margin: var(--ds-space-lg) !important; }
+
+/* Border Radius */
+.ds-rounded-sm { border-radius: var(--ds-radius-sm) !important; }
+.ds-rounded-md { border-radius: var(--ds-radius-md) !important; }
+.ds-rounded-lg { border-radius: var(--ds-radius-lg) !important; }
+
+/* Shadows */
+.ds-shadow-sm { box-shadow: var(--ds-shadow-sm) !important; }
+.ds-shadow-md { box-shadow: var(--ds-shadow-md) !important; }
+.ds-shadow-lg { box-shadow: var(--ds-shadow-lg) !important; }
+
+/* Transitions */
+.ds-transition { transition: var(--ds-transition-normal) !important; }
+.ds-transition-fast { transition: var(--ds-transition-fast) !important; }
+.ds-transition-slow { transition: var(--ds-transition-slow) !important; }
+

@@ -1,28 +1,28 @@
 <template>
-  <div class="project-details-page" dir="rtl">
-    <!-- Header Section -->
-    <div class="d-flex align-center mb-4">
-      <v-btn
-        icon="mdi-arrow-right"
-        @click="goBack"
-        class="back-btn me-3"
-        size="large"
-        variant="text"
-        color="primary"
-      >
-        <v-icon>mdi-arrow-right</v-icon>
-      </v-btn>
-    </div>
-    <PageHeader
-        title="تفاصيل المشروع"
-        :subtitle="project?.name || 'تفاصيل المشروع'"
-        mdi-icon="mdi-folder-open"
-      />
+  <div class="project-details-page">
+    <v-container fluid class="fill-height">
+      <!-- Header Section -->
+      <div class="page-header">
+        <v-btn 
+          icon="mdi-arrow-right" 
+          @click="goBack" 
+          class="back-btn"
+          size="large"
+          variant="text"
+          color="primary"
+        >
+          <v-icon>mdi-arrow-right</v-icon>
+        </v-btn>
+        <div class="header-content">
+          <h1 class="page-title">تفاصيل المشروع</h1>
+          <p class="page-subtitle">{{ project?.name || 'تفاصيل المشروع' }}</p>
+        </div>
+      </div>
 
       <!-- Project Details Cards -->
       <v-row v-if="project" class="details-cards">
-        <!-- First Row: Basic Info + Status -->
-        <v-col cols="12" lg="6">
+        <!-- Basic Information Card -->
+        <v-col cols="12" md="6">
           <v-card class="detail-card info-card" elevation="3">
             <v-card-title class="card-header info-header">
               <v-icon class="me-2">mdi-information</v-icon>
@@ -49,10 +49,11 @@
           </v-card>
         </v-col>
 
-        <v-col cols="12" lg="6">
+        <!-- Status and Priority Card -->
+        <v-col cols="12" md="6">
           <v-card class="detail-card status-card" elevation="3">
             <v-card-title class="card-header status-header">
-              <v-icon class="me-2">mdi-flag</v-icon>
+              <v-icon class="me-2">mdi-account</v-icon>
               الحالة والأولوية
             </v-card-title>
             <v-card-text class="card-content">
@@ -76,8 +77,8 @@
           </v-card>
         </v-col>
 
-        <!-- Second Row: Work Days + Financial -->
-        <v-col cols="12" lg="6">
+        <!-- Work Days Card -->
+        <v-col cols="12" md="6">
           <v-card class="detail-card work-days-card" elevation="3">
             <v-card-title class="card-header work-days-header">
               <v-icon class="me-2">mdi-calendar</v-icon>
@@ -95,16 +96,14 @@
               </v-btn>
             </v-card-title>
             <v-card-text class="card-content">
-              <div class="work-days-grid">
-                <div v-for="day in workDays" :key="day.name" class="work-day-item">
-                  <div class="day-info">
-                    <v-icon :color="getDayIconColor(day)" class="me-2">
-                      {{ getDayIcon(day) }}
-                    </v-icon>
-                    <span class="day-name">{{ day.name }}</span>
-                  </div>
-                  <span class="day-hours">{{ day.hours }} ساعات</span>
+              <div v-for="day in workDays" :key="day.name" class="work-day-item">
+                <div class="day-info">
+                  <v-icon :color="getDayIconColor(day)" class="me-2">
+                    {{ getDayIcon(day) }}
+                  </v-icon>
+                  <span class="day-name">{{ day.name }}</span>
                 </div>
+                <span class="day-hours">{{ day.hours }} ساعات</span>
               </div>
               <v-btn
                 block
@@ -120,7 +119,8 @@
           </v-card>
         </v-col>
 
-        <v-col cols="12" lg="6">
+        <!-- Financial Information Card -->
+        <v-col cols="12" md="6">
           <v-card class="detail-card financial-card" elevation="3">
             <v-card-title class="card-header financial-header">
               <v-icon class="me-2">mdi-chart-line</v-icon>
@@ -152,113 +152,6 @@
             </v-card-title>
             <v-card-text class="card-content">
               <p class="description-text">{{ project.description }}</p>
-            </v-card-text>
-          </v-card>
-        </v-col>
-
-        <!-- Resources Management Section -->
-        <v-col cols="12">
-          <v-card class="detail-card resources-card" elevation="3">
-            <v-card-title class="card-header resources-header">
-              <v-icon class="me-2">mdi-view-grid</v-icon>
-              إدارة موارد المشروع
-            </v-card-title>
-            <v-card-text class="card-content">
-              <v-row>
-                <!-- Materials & Expenses -->
-                <v-col cols="12" md="4">
-                  <v-card
-                    class="resource-card materials-expenses-card"
-                    elevation="2"
-                    @click="goToMaterialsExpenses"
-                    hover
-                  >
-                    <v-card-text class="text-center pa-4">
-                      <div class="resource-icon">
-                        <v-icon size="48" color="orange">mdi-package-variant</v-icon>
-                      </div>
-                      <h4 class="resource-title">المواد والمصاريف</h4>
-                      <p class="resource-description">مواد البناء والنفقات اليومية</p>
-                      <v-btn
-                        color="orange"
-                        variant="tonal"
-                        class="mt-2"
-                        @click.stop="goToMaterialsExpenses"
-                      >
-                        <v-icon class="me-1">mdi-arrow-left</v-icon>
-                        عرض التفاصيل
-                      </v-btn>
-                    </v-card-text>
-                  </v-card>
-                </v-col>
-
-                <!-- Labor -->
-                <v-col cols="12" md="4">
-                  <v-card
-                    class="resource-card labor-card"
-                    elevation="2"
-                    @click="goToLabor"
-                    hover
-                  >
-                    <v-card-text class="text-center pa-4">
-                      <div class="resource-icon">
-                        <v-icon size="48" color="success">mdi-account-group</v-icon>
-                      </div>
-                      <h4 class="resource-title">الأيدي العاملة</h4>
-                      <p class="resource-description">العمال والموظفين</p>
-                      <v-btn
-                        color="success"
-                        variant="tonal"
-                        class="mt-2"
-                        @click.stop="goToLabor"
-                      >
-                        <v-icon class="me-1">mdi-arrow-left</v-icon>
-                        عرض التفاصيل
-                      </v-btn>
-                    </v-card-text>
-                  </v-card>
-                </v-col>
-
-                <!-- Equipment -->
-                <v-col cols="12" md="4">
-                  <v-card
-                    class="resource-card equipment-card"
-                    elevation="2"
-                    @click="goToEquipment"
-                    hover
-                  >
-                    <v-card-text class="text-center pa-4">
-                      <div class="resource-icon">
-                        <v-icon size="48" color="indigo">mdi-truck</v-icon>
-                      </div>
-                      <h4 class="resource-title">الآليات والمعدات</h4>
-                      <p class="resource-description">المعدات والآلات المستخدمة</p>
-                      <v-btn
-                        color="indigo"
-                        variant="tonal"
-                        class="mt-2"
-                        @click.stop="goToEquipment"
-                      >
-                        <v-icon class="me-1">mdi-arrow-left</v-icon>
-                        عرض التفاصيل
-                      </v-btn>
-                    </v-card-text>
-                  </v-card>
-                </v-col>
-              </v-row>
-
-              <!-- Work Day Details Button -->
-              <v-btn
-                block
-                color="primary"
-                size="large"
-                variant="elevated"
-                class="mt-4"
-                @click="goToWorkDayDetails"
-              >
-                <v-icon class="me-2">mdi-calendar-clock</v-icon>
-                تفاصيل يوم العمل الكاملة
-              </v-btn>
             </v-card-text>
           </v-card>
         </v-col>
@@ -295,20 +188,19 @@
           </v-btn>
         </v-col>
       </v-row>
+    </v-container>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { formatCurrency } from '@/utils/formatters'
-import { PageHeader } from '@/components/shared'
 
 const route = useRoute()
 const router = useRouter()
 
 const project = ref(null)
-const projectId = computed(() => route.query.id || route.params.id)
+const projectId = computed(() => route.params.id)
 
 // Work days data
 const workDays = ref([
@@ -352,6 +244,11 @@ const loadProject = () => {
 
 const goBack = () => {
   router.push('/project-management')
+}
+
+const formatCurrency = (amount) => {
+  if (!amount) return '0 د.ع'
+  return `${amount.toLocaleString()} د.ع`
 }
 
 const getStatusColor = (status) => {
@@ -420,24 +317,9 @@ const editWorkDays = () => {
   router.push('/work-days')
 }
 
-const goToWorkDayDetails = () => {
-  router.push('/work-day-details')
-}
-
-const goToMaterialsExpenses = () => {
-  router.push('/materials-expenses-details')
-}
-
-const goToLabor = () => {
-  router.push('/labor-details')
-}
-
-const goToEquipment = () => {
-  router.push('/equipment-details')
-}
-
 const deleteProject = () => {
   // Implement delete functionality
+  console.log('Delete project:', projectId.value)
   // After deletion, redirect to projects list
   router.push('/project-management')
 }
@@ -447,8 +329,228 @@ onMounted(() => {
 })
 </script>
 
-
 <style scoped>
-/* Import page styles - scoped to this component only */
-@import './styles/project-details.css';
+.project-details-page {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border-radius: 16px;
+  color: white;
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
+}
+
+.back-btn {
+  margin-left: 1rem;
+  color: white !important;
+}
+
+.header-content {
+  flex: 1;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.page-subtitle {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.details-cards {
+  gap: 1.5rem;
+}
+
+.detail-card {
+  border-radius: 16px !important;
+  transition: all 0.3s ease;
+  height: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.detail-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 1rem 1.5rem !important;
+  border-radius: 16px 16px 0 0 !important;
+  margin: 0 !important;
+}
+
+.info-header {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+}
+
+.status-header {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
+}
+
+.work-days-header {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.edit-days-btn {
+  opacity: 0.8;
+  transition: all 0.3s ease;
+}
+
+.edit-days-btn:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.financial-header {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  color: white;
+}
+
+.description-header {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+}
+
+.card-content {
+  padding: 1.5rem !important;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  border-left: 4px solid #3b82f6;
+  transition: all 0.3s ease;
+}
+
+.detail-item:hover {
+  background: #e2e8f0;
+  transform: translateX(4px);
+}
+
+.detail-item strong {
+  color: #374151;
+  font-weight: 600;
+}
+
+.detail-item span {
+  color: #1f2937;
+  font-weight: 500;
+}
+
+.financial-item .initial-cost {
+  color: #10b981 !important;
+  font-weight: 700 !important;
+  font-family: 'Arial', sans-serif;
+  direction: ltr;
+}
+
+.financial-item .critical-cost {
+  color: #f59e0b !important;
+  font-weight: 700 !important;
+  font-family: 'Arial', sans-serif;
+  direction: ltr;
+}
+
+.financial-item .difference {
+  color: #ef4444 !important;
+  font-weight: 700 !important;
+  font-family: 'Arial', sans-serif;
+  direction: ltr;
+}
+
+.work-day-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  padding: 1rem;
+  background: #f0fdf4;
+  border-radius: 12px;
+  border-left: 4px solid #10b981;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.work-day-item:hover {
+  background: #dcfce7;
+  transform: translateX(4px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.day-info {
+  display: flex;
+  align-items: center;
+}
+
+.work-day-item .day-name {
+  font-weight: 600;
+  color: #166534;
+  font-size: 1rem;
+}
+
+.work-day-item .day-hours {
+  font-weight: 700;
+  color: #15803d;
+  font-family: 'Arial', sans-serif;
+  direction: ltr;
+  background: rgba(34, 197, 94, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.description-text {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #374151;
+  margin: 0;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  border-left: 4px solid #f59e0b;
+}
+
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 2rem;
+  }
+  
+  .page-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .back-btn {
+    margin-left: 0;
+    margin-bottom: 1rem;
+  }
+  
+  .detail-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
 </style>

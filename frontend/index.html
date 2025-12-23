@@ -26,8 +26,11 @@
         font-family: 'Cairo', 'Tajawal', 'Noto Sans Arabic', 'Arial', sans-serif;
       }
       
-      /* Note: Icon flip for RTL is handled in App.vue */
-
+      /* إصلاح اتجاه الأيقونات */
+      .mdi {
+        transform: scaleX(-1);
+      }
+      
       /* إصلاح اتجاه النصوص */
       h1, h2, h3, h4, h5, h6, p, span, div, a, button {
         text-align: right;

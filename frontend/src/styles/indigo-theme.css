@@ -23,9 +23,9 @@
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(199, 210, 254, 0.3);
-  border-radius: var(--radius-2xl);
+  border-radius: 16px;
   box-shadow: 0 4px 6px -1px rgba(67, 56, 202, 0.1), 0 2px 4px -1px rgba(67, 56, 202, 0.06);
-  transition: all var(--transition-normal);
+  transition: all 0.3s ease;
 }
 
 .indigo-card:hover {
@@ -47,11 +47,11 @@
   background: linear-gradient(135deg, #4338ca 0%, #6366f1 100%);
   color: white;
   border: none;
-  border-radius: var(--radius-xl);
-  padding: var(--space-3) 24px;
+  border-radius: 12px;
+  padding: 12px 24px;
   font-weight: 600;
   box-shadow: 0 4px 6px -1px rgba(67, 56, 202, 0.1), 0 2px 4px -1px rgba(67, 56, 202, 0.06);
-  transition: all var(--transition-normal);
+  transition: all 0.3s ease;
 }
 
 .indigo-btn:hover {
@@ -64,10 +64,10 @@
   background: transparent;
   color: #4338ca;
   border: 2px solid #4338ca;
-  border-radius: var(--radius-xl);
-  padding: var(--space-2-5) 22px;
+  border-radius: 12px;
+  padding: 10px 22px;
   font-weight: 600;
-  transition: all var(--transition-normal);
+  transition: all 0.3s ease;
 }
 
 .indigo-btn-outlined:hover {
@@ -194,14 +194,14 @@
    فئات الاستجابة
    ======================================== */
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .indigo-btn {
-    padding: var(--space-2-5) 20px;
-    font-size: var(--font-size-sm);
+    padding: 10px 20px;
+    font-size: 14px;
   }
-
+  
   .indigo-card {
-    border-radius: var(--radius-xl);
+    border-radius: 12px;
   }
 }
 

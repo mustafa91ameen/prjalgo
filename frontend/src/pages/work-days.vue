@@ -1,197 +1,250 @@
 <template>
   <div class="work-days-page">
-    <!-- Page Header -->
-    <PageHeader
-      title="ايام العمل"
-      subtitle="إدارة وتتبع أيام العمل للمشاريع"
-      mdi-icon="mdi-calendar-clock"
-    />
-
-    <!-- Actions Bar -->
-    <div class="d-flex align-center justify-space-between mb-4">
-      <div class="d-flex align-center gap-2">
-        <v-btn icon="mdi-arrow-left" @click="goBack" variant="text" color="primary">
-          <v-icon>mdi-arrow-left</v-icon>
-        </v-btn>
-        <v-btn color="success" variant="elevated" @click="addWorkDay" prepend-icon="mdi-plus">
-          إضافة يوم عمل
-        </v-btn>
+    <!-- Page Title Header -->
+    <div class="page-title-header">
+      <div class="header-left-section">
+        <v-icon class="title-icon">mdi-calendar-clock</v-icon>
+        <h1 class="page-title-text" style="color: #ffffff !important;">ايام العمل</h1>
       </div>
-      <div class="d-flex align-center gap-2">
-        <v-text-field
-          v-model="searchQuery"
-          placeholder="البحث..."
-          prepend-inner-icon="mdi-magnify"
-          variant="outlined"
-          density="compact"
-          hide-details
-          style="max-width: 300px;"
-        />
+      <div class="header-right-section">
+        <v-btn icon="mdi-arrow-right" @click="goBack" class="nav-btn">
+          <v-icon>mdi-arrow-right</v-icon>
+        </v-btn>
       </div>
     </div>
 
-    <!-- Add Work Day Modal -->
-    <v-dialog v-model="showAddForm" max-width="600" persistent>
-      <v-card class="image-style-dialog">
+    <!-- Add Work Day Modal - Clean Form Style -->
+    <v-dialog v-model="showAddForm" max-width="900" scrollable persistent>
+      <v-card class="clean-dialog-card clean-form-card">
         <!-- Header Section -->
-        <div class="dialog-header">
-          <div class="header-content">
-            <div class="header-left">
-              <v-icon size="24" color="white" class="header-icon">mdi-calendar-plus</v-icon>
-              <span class="header-title">{{ isEditing ? 'تعديل يوم عمل' : 'اضافة يوم عمل' }}</span>
-            </div>
-            <v-btn
-              icon="mdi-close"
-              variant="text"
-              size="small"
-              color="white"
-              @click="closeAddForm"
-              class="close-btn"
-            />
-          </div>
-        </div>
+        <v-card-title class="clean-dialog-header clean-form-header">
+          <h2 class="clean-form-title">
+            {{ isEditing ? 'تعديل يوم العمل' : 'معلومات يوم العمل' }}
+          </h2>
+        </v-card-title>
 
         <!-- Form Content -->
-        <div class="dialog-body">
+        <v-card-text class="clean-form-content">
+          <p class="clean-form-instruction">
+            لإتمام {{ isEditing ? 'تعديل' : 'إضافة' }} يوم العمل، يرجى توفير المعلومات التالية. يرجى ملاحظة أن جميع الحقول المميزة بعلامة النجمة (*) مطلوبة.
+          </p>
+
           <v-form ref="form" v-model="formValid">
-            <div class="form-fields">
-              <v-row>
-                <v-col cols="12" md="6">
+            <!-- الصف الأول: مكان العمل، رقم الاستمارة، التاريخ -->
+            <v-row class="clean-form-row">
+              <v-col cols="12" md="4" class="clean-form-column">
+                <div class="clean-form-field-wrapper">
+                  <label class="clean-form-label">
+                    مكان العمل <span class="required-star">*</span>
+                  </label>
                   <v-text-field
                     v-model="workDayForm.workLocation"
-                    label="مكان العمل"
                     variant="outlined"
+                    density="comfortable"
                     :rules="[v => !!v || 'مكان العمل مطلوب']"
                     required
-                    class="form-field"
+                    hide-details="auto"
+                    class="clean-form-input"
                   />
-                </v-col>
-                <v-col cols="12" md="6">
+                </div>
+              </v-col>
+
+              <v-col cols="12" md="4" class="clean-form-column">
+                <div class="clean-form-field-wrapper">
+                  <label class="clean-form-label">
+                    رقم الاستمارة <span class="required-star">*</span>
+                  </label>
                   <v-text-field
                     v-model="workDayForm.formNumber"
-                    label="رقم الاستمارة"
                     variant="outlined"
+                    density="comfortable"
                     :rules="[v => !!v || 'رقم الاستمارة مطلوب']"
                     required
-                    class="form-field"
+                    hide-details="auto"
+                    class="clean-form-input"
                   />
-                </v-col>
-              </v-row>
+                </div>
+              </v-col>
 
-              <v-row>
-                <v-col cols="12">
+              <v-col cols="12" md="4" class="clean-form-column">
+                <div class="clean-form-field-wrapper">
+                  <label class="clean-form-label">
+                    التاريخ <span class="required-star">*</span>
+                  </label>
+                  <v-text-field
+                    v-model="workDayForm.date"
+                    type="date"
+                    variant="outlined"
+                    density="comfortable"
+                    :rules="[v => !!v || 'التاريخ مطلوب']"
+                    required
+                    hide-details="auto"
+                    class="clean-form-input"
+                  />
+                </div>
+              </v-col>
+            </v-row>
+
+            <!-- الصف الثاني: اليوم، نوع العمل، فترة العمل -->
+            <v-row class="clean-form-row">
+              <v-col cols="12" md="4" class="clean-form-column">
+                <div class="clean-form-field-wrapper">
+                  <label class="clean-form-label">
+                    اليوم <span class="required-star">*</span>
+                  </label>
+                  <v-select
+                    v-model="workDayForm.day"
+                    :items="dayOptions"
+                    variant="outlined"
+                    density="comfortable"
+                    :rules="[v => !!v || 'اليوم مطلوب']"
+                    required
+                    hide-details="auto"
+                    class="clean-form-input"
+                  />
+                </div>
+              </v-col>
+
+              <v-col cols="12" md="4" class="clean-form-column">
+                <div class="clean-form-field-wrapper">
+                  <label class="clean-form-label">
+                    نوع العمل <span class="required-star">*</span>
+                  </label>
+                  <v-select
+                    v-model="workDayForm.workType"
+                    :items="workTypeOptions"
+                    variant="outlined"
+                    density="comfortable"
+                    :rules="[v => !!v || 'نوع العمل مطلوب']"
+                    required
+                    hide-details="auto"
+                    class="clean-form-input"
+                  />
+                </div>
+              </v-col>
+
+              <v-col cols="12" md="4" class="clean-form-column">
+                <div class="clean-form-field-wrapper">
+                  <label class="clean-form-label">
+                    فترة العمل
+                  </label>
                   <div class="work-period-section">
-                    <label class="field-label">فتره العمل</label>
                     <div class="period-inputs">
                       <v-text-field
                         v-model="workDayForm.workPeriodFrom"
                         label="من"
                         variant="outlined"
                         type="time"
-                        class="form-field period-input"
+                        density="comfortable"
+                        class="clean-form-input"
+                        hide-details="auto"
                       />
                       <span class="period-separator">-</span>
                       <v-text-field
                         v-model="workDayForm.workPeriodTo"
-                        label="الى"
+                        label="إلى"
                         variant="outlined"
                         type="time"
-                        class="form-field period-input"
+                        density="comfortable"
+                        class="clean-form-input"
+                        hide-details="auto"
                       />
                     </div>
                   </div>
-                </v-col>
-              </v-row>
+                </div>
+              </v-col>
+            </v-row>
 
-              <v-row>
-                <v-col cols="12" md="6">
-                  <v-select
-                    v-model="workDayForm.day"
-                    label="اليوم"
-                    :items="dayOptions"
-                    variant="outlined"
-                    :rules="[v => !!v || 'اليوم مطلوب']"
-                    required
-                    class="form-field"
-                  />
-                </v-col>
-                <v-col cols="12" md="6">
-                  <v-select
-                    v-model="workDayForm.workType"
-                    label="نوع العمل"
-                    :items="workTypeOptions"
-                    variant="outlined"
-                    :rules="[v => !!v || 'نوع العمل مطلوب']"
-                    required
-                    class="form-field"
-                  />
-                </v-col>
-              </v-row>
-
-              <v-row>
-                <v-col cols="12" md="6">
-                  <v-text-field
+            <!-- الصف الثالث: وصف العمل -->
+            <v-row class="clean-form-row">
+              <v-col cols="12" class="clean-form-column">
+                <div class="clean-form-field-wrapper">
+                  <label class="clean-form-label">
+                    عن <span class="required-star">*</span>
+                  </label>
+                  <v-textarea
                     v-model="workDayForm.about"
-                    label="عن"
                     variant="outlined"
+                    rows="4"
+                    density="comfortable"
                     placeholder="وصف العمل"
                     :rules="[v => !!v || 'الوصف مطلوب']"
                     required
-                    class="form-field"
+                    hide-details="auto"
+                    class="clean-form-input"
                   />
-                </v-col>
-                <v-col cols="12" md="6">
-                  <v-text-field
-                    v-model="workDayForm.date"
-                    label="التاريخ"
-                    variant="outlined"
-                    type="date"
-                    :rules="[v => !!v || 'التاريخ مطلوب']"
-                    required
-                    class="form-field"
-                  />
-                </v-col>
-              </v-row>
-            </div>
+                </div>
+              </v-col>
+            </v-row>
           </v-form>
-        </div>
+        </v-card-text>
 
-        <!-- Dialog Actions -->
-        <div class="dialog-actions">
+        <v-card-actions class="clean-form-actions">
+          <v-spacer />
           <v-btn
-            color="grey"
-            variant="text"
+            class="clean-form-cancel-btn"
+            variant="outlined"
             @click="closeAddForm"
-            class="cancel-btn"
           >
             إلغاء
           </v-btn>
           <v-btn
-            color="primary"
+            class="clean-form-continue-btn"
             variant="elevated"
-            @click="saveWorkDay"
             :disabled="!formValid"
             :loading="saving"
-            class="save-btn"
+            @click="saveWorkDay"
           >
-            <v-icon class="me-2">mdi-content-save</v-icon>
-            حفظ
+            {{ isEditing ? 'تحديث يوم العمل' : 'حفظ يوم العمل' }}
           </v-btn>
-        </div>
+        </v-card-actions>
       </v-card>
     </v-dialog>
 
     <!-- Data Table -->
-    <div class="table-container">
-      <v-data-table
-        :headers="tableHeaders"
-        :items="workDaysData"
-        :search="searchQuery"
-        class="work-days-table"
-        no-data-text="لا توجد بيانات"
-        loading-text="جاري التحميل..."
-        items-per-page="10"
-      >
+    <v-card class="data-table-card card-glow smooth-transition centered-table" elevation="2">
+      <v-card-title class="d-flex align-center justify-space-between" style="padding: 10px 16px !important;">
+        <div class="d-flex align-center gap-2" style="flex: 1;">
+          <v-icon class="me-2" style="color: #ffffff;" size="20">mdi-calendar-clock</v-icon>
+          <span class="text-h6 font-weight-black" style="color: #ffffff; font-family: 'Arial', 'Helvetica', sans-serif; text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2); letter-spacing: 0.5px; font-size: 1.25rem !important;">أيام العمل</span>
+          <v-chip class="ms-3 work-days-count-chip" size="x-small" variant="elevated">{{ workDaysData.length || 0 }}</v-chip>
+          <div class="table-search-box">
+            <v-text-field
+              v-model="searchQuery"
+              placeholder="البحث..."
+              variant="outlined"
+              density="compact"
+              hide-details
+              prepend-inner-icon="mdi-magnify"
+              class="table-search-input"
+              style="max-width: 250px;"
+            />
+          </div>
+        </div>
+        <v-btn
+          class="add-button btn-glow light-sweep smooth-transition"
+          @click="addWorkDay"
+          elevation="2"
+          color="primary"
+          size="small"
+          style="background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important; height: 36px !important;"
+        >
+          <v-icon class="me-2 icon-glow" size="18">mdi-plus</v-icon>
+          إضافة يوم عمل جديد
+        </v-btn>
+      </v-card-title>
+
+      <v-card-text class="pa-0">
+        <div class="table-container">
+          <v-data-table
+            :headers="tableHeaders"
+            :items="workDaysData"
+            :search="searchQuery"
+            class="work-days-table"
+            no-data-text="لا توجد بيانات"
+            loading-text="جاري التحميل..."
+            items-per-page="10"
+          >
         <!-- Serial Number Column -->
         <template v-slot:item.serial="{ item }">
           <span class="serial-number">{{ item.serial }}</span>
@@ -269,8 +322,10 @@
             />
           </div>
         </template>
-      </v-data-table>
-    </div>
+          </v-data-table>
+        </div>
+      </v-card-text>
+    </v-card>
 
 
     <!-- Success Snackbar -->
@@ -289,7 +344,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { PageHeader } from '@/components/shared'
 
 const router = useRouter()
 
@@ -779,6 +833,7 @@ const deleteWorkDay = (item) => {
 }
 
 const toggleStatus = (item) => {
+  console.log('Toggle status:', item)
 }
 
 const saveWorkDay = async () => {
@@ -846,8 +901,1706 @@ watch(workDaysData, saveToLocalStorage, { deep: true })
 </script>
 
 
-
 <style scoped>
-/* Import page styles - scoped to this component only */
-@import './styles/work-days.css';
+.work-days-page {
+  background: #f5f5f5;
+  min-height: 100vh;
+  direction: rtl;
+}
+
+/* Top Navigation Bar */
+/* Page Title Header */
+.page-title-header {
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
+  padding: 0.4rem 0.75rem !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: white !important;
+  box-shadow: 
+    0 2px 8px rgba(59, 130, 246, 0.25),
+    0 1px 4px rgba(37, 99, 235, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3) !important;
+  position: relative;
+  overflow: hidden;
+  min-height: auto;
+}
+
+/* Ensure all text in header is white, except buttons */
+.page-title-header h1,
+.page-title-header h2,
+.page-title-header h3,
+.page-title-header span:not(.v-btn span),
+.page-title-header p,
+.page-title-header label {
+  color: white !important;
+}
+
+/* Force white color with deep selector */
+.page-title-header :deep(h1),
+.page-title-header :deep(h2),
+.page-title-header :deep(h3),
+.page-title-header :deep(span):not(.v-btn span),
+.page-title-header :deep(p),
+.page-title-header :deep(label) {
+  color: white !important;
+  -webkit-text-fill-color: white !important;
+}
+
+/* Exclude buttons from white color */
+.page-title-header .v-btn,
+.page-title-header .nav-btn {
+  color: inherit !important;
+}
+
+.page-title-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: shimmer 3s infinite;
+  pointer-events: none;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.header-left-section {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem !important;
+}
+
+.header-right-section {
+  display: flex;
+  align-items: center;
+}
+
+.nav-btn {
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: #2563eb !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  transition: all 0.3s ease !important;
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+}
+
+.nav-btn :deep(.v-icon) {
+  font-size: 16px !important;
+}
+
+.nav-btn:hover {
+  background: rgba(255, 255, 255, 1) !important;
+  transform: translateY(-2px) scale(1.05) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.nav-btn :deep(.v-icon) {
+  color: #2563eb !important;
+}
+
+.add-btn:hover :deep(.v-icon) {
+  transform: rotate(90deg) !important;
+}
+
+.title-icon {
+  font-size: 1rem !important;
+  color: #ffffff !important;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3)) !important;
+  animation: iconPulse 2s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.page-title-text {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  margin: 0 !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+  letter-spacing: 0.3px !important;
+  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
+  line-height: 1.3 !important;
+}
+
+/* Force white color with higher specificity */
+.page-title-header .page-title-text,
+.page-title-header h1.page-title-text,
+.header-left-section .page-title-text,
+.header-left-section h1.page-title-text,
+.page-title-header :deep(.page-title-text),
+.page-title-header :deep(h1.page-title-text) {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Override any inline styles or other rules */
+.page-title-header .header-left-section .page-title-text {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Force white color for all text elements in header */
+/* Force white color for text in header sections */
+.page-title-header .header-left-section {
+  color: white !important;
+}
+
+.page-title-header .header-right-section {
+  color: white !important;
+}
+
+/* Specific text elements - force white */
+.page-title-header .header-left-section h1,
+.page-title-header .header-left-section h2,
+.page-title-header .header-left-section h3,
+.page-title-header .header-left-section p,
+.page-title-header .header-left-section label,
+.page-title-header .header-left-section div:not(.search-box):not(.search-section) {
+  color: white !important;
+}
+
+.search-section {
+  display: flex;
+  align-items: center;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 1) !important;
+  border-radius: 12px !important;
+  padding: 0.5rem 1rem !important;
+  gap: 0.75rem !important;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    0 2px 6px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+  border: 2px solid rgba(255, 255, 255, 0.8) !important;
+  min-width: 300px;
+}
+
+.search-icon {
+  color: #2563eb !important;
+  font-size: 1.2rem !important;
+  margin-left: 0.5rem;
+}
+
+.search-input {
+  min-width: 200px;
+  flex: 1;
+}
+
+.search-input :deep(.v-field) {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.search-input :deep(.v-field__input) {
+  padding: 0.5rem 0 !important;
+  font-size: 0.95rem !important;
+  color: #000000 !important;
+  font-weight: 600 !important;
+}
+
+.search-input :deep(.v-field__input input) {
+  color: #000000 !important;
+  font-weight: 600 !important;
+}
+
+.search-input :deep(.v-field__input::placeholder) {
+  color: #9ca3af !important;
+  font-weight: 500 !important;
+}
+
+.search-btn {
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  padding: 0.5rem 1.25rem !important;
+  border-radius: 8px !important;
+  font-size: 0.85rem !important;
+  text-transform: none !important;
+  box-shadow: 
+    0 2px 8px rgba(30, 64, 175, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  transition: all 0.3s ease !important;
+  min-width: 80px;
+}
+
+.search-btn:hover {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%) !important;
+  box-shadow: 
+    0 4px 12px rgba(30, 64, 175, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+  transform: translateY(-1px) scale(1.02) !important;
+}
+
+.search-btn :deep(.v-btn__content) {
+  color: white !important;
+  font-weight: 600 !important;
+  font-size: 0.85rem !important;
+}
+
+
+/* Modal Styles (old design ما زال مستخدماً في أماكن أخرى) */
+.modal-card {
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+
+.close-btn {
+  color: white !important;
+  min-width: 32px !important;
+  height: 32px !important;
+}
+
+/* Dropdown Menu Styling - نفس تنسيقات نموذج المهمة */
+.modal-content :deep(.v-select__selection) {
+  text-align: right !important;
+  direction: rtl !important;
+  align-items: center !important;
+  min-height: 40px !important;
+  font-weight: 500 !important;
+}
+
+.modal-content :deep(.v-field__append-inner .v-icon) {
+  color: #1e40af !important;
+  opacity: 1 !important;
+}
+
+.modal-content :deep(.v-overlay__content) {
+  border-radius: 10px !important;
+  box-shadow:
+    0 10px 30px rgba(15, 23, 42, 0.18),
+    0 4px 10px rgba(148, 163, 184, 0.25) !important;
+  border: 1px solid #e5e7eb !important;
+  background: #ffffff !important;
+  overflow: hidden !important;
+}
+
+.modal-content :deep(.v-overlay__content .v-list) {
+  padding: 4px 0 !important;
+}
+
+.modal-content :deep(.v-overlay__content .v-list-item) {
+  min-height: 34px !important;
+  padding-inline: 12px !important;
+}
+
+.modal-content :deep(.v-overlay__content .v-list-item-title) {
+  font-size: 0.85rem !important;
+  color: #0f172a !important;
+  text-align: right !important;
+}
+
+.modal-content :deep(.v-overlay__content .v-list-item--active),
+.modal-content :deep(.v-overlay__content .v-list-item:hover) {
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+}
+
+.modal-content :deep(.v-select__menu .v-list-item-title) {
+  color: #000000 !important;
+  font-weight: 600 !important;
+}
+
+.modal-content :deep(.v-select__menu .v-list-item) {
+  color: #000000 !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  padding: 12px 16px !important;
+  background: white !important;
+  border-bottom: 1px solid #e9ecef !important;
+  transition: all 0.2s ease !important;
+}
+
+.modal-content :deep(.v-select__menu .v-list-item:hover) {
+  background: #f5f5f5 !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
+}
+
+.modal-content :deep(.v-select__menu .v-list-item--active),
+.modal-content :deep(.v-select__menu .v-list-item[aria-selected="true"]) {
+  background: #1a1a1a !important;
+  color: white !important;
+  font-weight: 700 !important;
+}
+
+.modal-content :deep(.v-select__menu .v-list-item--active:hover) {
+  background: #000000 !important;
+  color: white !important;
+}
+
+/* Select Field Arrow */
+.modal-content :deep(.v-field__append-inner) {
+  color: #333 !important;
+}
+
+.modal-content :deep(.v-field--focused .v-field__append-inner) {
+  color: #007bff !important;
+}
+
+/* Global styling for all dropdown items in modal - نفس تنسيقات إضافة موظف */
+.modal-content :deep(.v-list-item),
+.modal-content :deep(.v-list-item__content),
+.modal-content :deep(.v-list-item-title),
+.modal-content :deep(.v-list-item__title) {
+  color: #000000 !important;
+  font-weight: 600 !important;
+}
+
+.modal-content :deep(.v-select .v-field__input) {
+  color: #000000 !important;
+}
+
+.modal-content :deep(.v-select .v-field__input::placeholder) {
+  color: #000000 !important;
+  opacity: 0.7 !important;
+}
+
+/* Force color for all text in dropdowns */
+.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-title),
+.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-subtitle),
+.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-body) {
+  color: #1e3a8a !important;
+  font-weight: 600 !important;
+}
+
+/* Ultra-specific targeting for dropdown text */
+.modal-content :deep(.v-list-item) * {
+  color: #1e3a8a !important;
+}
+
+.modal-content :deep(.v-list-item__content) * {
+  color: #1e3a8a !important;
+}
+
+.modal-content :deep(.v-select__menu .v-list-item) * {
+  color: #1e3a8a !important;
+}
+
+.modal-content :deep(.v-menu__content .v-list-item) * {
+  color: #1e3a8a !important;
+}
+
+.modal-content :deep(.v-overlay__content .v-list-item) * {
+  color: #1e3a8a !important;
+}
+
+/* Target all possible text elements */
+.modal-content :deep(span),
+.modal-content :deep(div),
+.modal-content :deep(p),
+.modal-content :deep(.v-list-item__content span),
+.modal-content :deep(.v-list-item__content div) {
+  color: #1e3a8a !important;
+}
+
+/* Comprehensive dropdown styling */
+.modal-content :deep(.v-list-item__overlay),
+.modal-content :deep(.v-list-item__underlay) {
+  color: #1e3a8a !important;
+}
+
+.modal-content :deep(.v-list-item__prepend),
+.modal-content :deep(.v-list-item__append) {
+  color: #1e3a8a !important;
+}
+
+/* Override any white text specifically */
+.modal-content :deep(.v-list-item),
+.modal-content :deep(.v-list-item__content),
+.modal-content :deep(.v-list-item-title),
+.modal-content :deep(.v-list-item__title) {
+  color: #1e3a8a !important;
+  text-shadow: none !important;
+  -webkit-text-fill-color: #1e3a8a !important;
+}
+
+/* Force override for any conflicting styles */
+.modal-content :deep(.v-list-item[style*="color"]),
+.modal-content :deep(.v-list-item__content[style*="color"]),
+.modal-content :deep(.v-list-item-title[style*="color"]) {
+  color: #1e3a8a !important;
+}
+
+/* Ultimate text color override */
+.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-title),
+.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-subtitle),
+.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-body),
+.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-media),
+.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-action) {
+  color: #1e3a8a !important;
+  text-shadow: none !important;
+  -webkit-text-fill-color: #1e3a8a !important;
+  fill: #1e3a8a !important;
+}
+
+/* Target all text nodes */
+.modal-content :deep(.v-list-item .v-list-item__content > *),
+.modal-content :deep(.v-list-item .v-list-item__content > * > *),
+.modal-content :deep(.v-list-item .v-list-item__content > * > * > *) {
+  color: #1e3a8a !important;
+}
+
+/* Specific targeting for select menus */
+.modal-content :deep(.v-select__menu .v-list-item .v-list-item__content .v-list-item-title),
+.modal-content :deep(.v-select__menu .v-list-item .v-list-item__content .v-list-item-subtitle),
+.modal-content :deep(.v-select__menu .v-list-item .v-list-item__content .v-list-item-body) {
+  color: #1e3a8a !important;
+  text-shadow: none !important;
+  -webkit-text-fill-color: #1e3a8a !important;
+}
+
+/* Nuclear approach - override everything */
+.modal-content :deep(.v-list-item),
+.modal-content :deep(.v-list-item__content),
+.modal-content :deep(.v-list-item-title),
+.modal-content :deep(.v-list-item__title),
+.modal-content :deep(.v-list-item-subtitle),
+.modal-content :deep(.v-list-item-body),
+.modal-content :deep(.v-list-item-media),
+.modal-content :deep(.v-list-item-action) {
+  color: #1e3a8a !important;
+  text-shadow: none !important;
+  -webkit-text-fill-color: #1e3a8a !important;
+  fill: #1e3a8a !important;
+  stroke: #1e3a8a !important;
+}
+
+/* Force all text elements */
+.modal-content :deep(.v-list-item .v-list-item__content),
+.modal-content :deep(.v-list-item .v-list-item__content > *),
+.modal-content :deep(.v-list-item .v-list-item__content > * > *),
+.modal-content :deep(.v-list-item .v-list-item__content > * > * > *),
+.modal-content :deep(.v-list-item .v-list-item__content > * > * > * > *) {
+  color: #1e3a8a !important;
+  text-shadow: none !important;
+  -webkit-text-fill-color: #1e3a8a !important;
+}
+
+/* Override any inline styles */
+.modal-content :deep(.v-list-item[style]),
+.modal-content :deep(.v-list-item__content[style]),
+.modal-content :deep(.v-list-item-title[style]),
+.modal-content :deep(.v-list-item__title[style]) {
+  color: #1e3a8a !important;
+  text-shadow: none !important;
+  -webkit-text-fill-color: #1e3a8a !important;
+}
+
+/* Ultimate dropdown override */
+.modal-content :deep(.v-select__menu),
+.modal-content :deep(.v-menu__content),
+.modal-content :deep(.v-overlay__content),
+.modal-content :deep(.v-list) {
+  --v-list-item-color: #1e3a8a !important;
+  --v-list-item-title-color: #1e3a8a !important;
+  --v-list-item-subtitle-color: #1e3a8a !important;
+}
+
+.modal-content :deep(.v-select__menu .v-list-item),
+.modal-content :deep(.v-menu__content .v-list-item),
+.modal-content :deep(.v-overlay__content .v-list-item),
+.modal-content :deep(.v-list .v-list-item) {
+  --v-list-item-color: #1e3a8a !important;
+  --v-list-item-title-color: #1e3a8a !important;
+  --v-list-item-subtitle-color: #1e3a8a !important;
+}
+
+/* CSS Variables override */
+.modal-content :deep(.v-list-item) {
+  color: var(--v-list-item-color, #1e3a8a) !important;
+}
+
+.modal-content :deep(.v-list-item-title) {
+  color: var(--v-list-item-title-color, #1e3a8a) !important;
+}
+
+.modal-content :deep(.v-list-item-subtitle) {
+  color: var(--v-list-item-subtitle-color, #1e3a8a) !important;
+}
+
+/* Final attempt - target all possible elements */
+.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-title),
+.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-subtitle),
+.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-body),
+.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-media),
+.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-action),
+.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-prepend),
+.modal-content :deep(.v-list-item .v-list-item__content .v-list-item-append) {
+  color: #1e3a8a !important;
+  text-shadow: none !important;
+  -webkit-text-fill-color: #1e3a8a !important;
+  fill: #1e3a8a !important;
+  stroke: #1e3a8a !important;
+}
+
+/* Override all possible text elements */
+.modal-content :deep(.v-list-item .v-list-item__content > *),
+.modal-content :deep(.v-list-item .v-list-item__content > * > *),
+.modal-content :deep(.v-list-item .v-list-item__content > * > * > *),
+.modal-content :deep(.v-list-item .v-list-item__content > * > * > * > *),
+.modal-content :deep(.v-list-item .v-list-item__content > * > * > * > * > *) {
+  color: #1e3a8a !important;
+  text-shadow: none !important;
+  -webkit-text-fill-color: #1e3a8a !important;
+}
+
+/* Global dropdown text color - outside modal */
+:deep(.v-list-item) {
+  color: #1e3a8a !important;
+}
+
+:deep(.v-list-item__content) {
+  color: #1e3a8a !important;
+}
+
+:deep(.v-list-item-title) {
+  color: #1e3a8a !important;
+}
+
+:deep(.v-list-item__title) {
+  color: #1e3a8a !important;
+}
+
+:deep(.v-list-item-subtitle) {
+  color: #1e3a8a !important;
+}
+
+:deep(.v-list-item-body) {
+  color: #1e3a8a !important;
+}
+
+/* Global select menu styling */
+:deep(.v-select__menu .v-list-item) {
+  color: #1e3a8a !important;
+}
+
+:deep(.v-select__menu .v-list-item__content) {
+  color: #1e3a8a !important;
+}
+
+:deep(.v-select__menu .v-list-item-title) {
+  color: #1e3a8a !important;
+}
+
+/* Global menu content styling */
+:deep(.v-menu__content .v-list-item) {
+  color: #1e3a8a !important;
+}
+
+:deep(.v-menu__content .v-list-item__content) {
+  color: #1e3a8a !important;
+}
+
+:deep(.v-menu__content .v-list-item-title) {
+  color: #1e3a8a !important;
+}
+
+/* Ultimate global override for all dropdown text */
+:deep(.v-list-item *),
+:deep(.v-list-item__content *),
+:deep(.v-select__menu *),
+:deep(.v-menu__content *),
+:deep(.v-overlay__content *) {
+  color: #1e3a8a !important;
+  text-shadow: none !important;
+  -webkit-text-fill-color: #1e3a8a !important;
+}
+
+/* Force all text elements globally */
+:deep(span),
+:deep(div),
+:deep(p),
+:deep(.v-list-item span),
+:deep(.v-list-item div),
+:deep(.v-list-item p) {
+  color: #1e3a8a !important;
+}
+
+/* Override any CSS variables globally */
+:deep(.v-list-item) {
+  --v-list-item-color: #1e3a8a !important;
+  --v-list-item-title-color: #1e3a8a !important;
+  --v-list-item-subtitle-color: #1e3a8a !important;
+}
+
+:deep(.v-list-item-title) {
+  color: var(--v-list-item-title-color, #1e3a8a) !important;
+}
+
+:deep(.v-list-item-subtitle) {
+  color: var(--v-list-item-subtitle-color, #1e3a8a) !important;
+}
+
+/* تنسيق حقول اليوم ونوع العمل */
+.day-select :deep(.v-field),
+.work-type-select :deep(.v-field) {
+  background: rgba(255, 255, 255, 1) !important;
+  border: 2px solid rgba(156, 163, 175, 0.3) !important;
+  border-radius: 10px !important;
+  transition: all 0.3s ease !important;
+}
+
+.day-select :deep(.v-field__input),
+.work-type-select :deep(.v-field__input) {
+  color: #000000 !important;
+  font-weight: 600 !important;
+  padding: 12px 16px !important;
+}
+
+.day-select :deep(.v-field__input input),
+.work-type-select :deep(.v-field__input input) {
+  color: #000000 !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+}
+
+.day-select :deep(.v-label),
+.work-type-select :deep(.v-label) {
+  color: #6b7280 !important;
+  font-weight: 600 !important;
+  background: rgba(255, 255, 255, 1) !important;
+  padding: 0 8px !important;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+.day-select :deep(.v-field--focused .v-label),
+.work-type-select :deep(.v-field--focused .v-label) {
+  color: #2563eb !important;
+  background: rgba(255, 255, 255, 1) !important;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+.day-select :deep(.v-field:hover),
+.work-type-select :deep(.v-field:hover) {
+  background: rgba(255, 255, 255, 1) !important;
+  border-color: rgba(59, 130, 246, 0.5) !important;
+}
+
+.day-select :deep(.v-field--focused),
+.work-type-select :deep(.v-field--focused) {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+  background: rgba(255, 255, 255, 1) !important;
+}
+
+.day-select :deep(.v-icon),
+.work-type-select :deep(.v-icon) {
+  color: #2563eb !important;
+}
+
+/* تنسيق حقل التاريخ */
+.date-field :deep(.v-field) {
+  background: rgba(255, 255, 255, 1) !important;
+  border: 2px solid rgba(156, 163, 175, 0.3) !important;
+  border-radius: 10px !important;
+  transition: all 0.3s ease !important;
+}
+
+.date-field :deep(.v-field__input) {
+  color: #000000 !important;
+  font-weight: 600 !important;
+  padding: 12px 16px !important;
+  text-decoration: none !important;
+  border-bottom: none !important;
+}
+
+.date-field :deep(.v-field__input input) {
+  color: #000000 !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+.date-field :deep(.v-label) {
+  color: #6b7280 !important;
+  font-weight: 600 !important;
+  background: rgba(255, 255, 255, 1) !important;
+  padding: 0 8px !important;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+.date-field :deep(.v-field--focused .v-label) {
+  color: #2563eb !important;
+  background: rgba(255, 255, 255, 1) !important;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+.date-field :deep(.v-field:hover) {
+  background: rgba(255, 255, 255, 1) !important;
+  border-color: rgba(59, 130, 246, 0.5) !important;
+}
+
+.date-field :deep(.v-field--focused) {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+  background: rgba(255, 255, 255, 1) !important;
+}
+
+.date-field :deep(.v-icon) {
+  color: #2563eb !important;
+}
+
+/* Specific styling for day and work type selects - نفس تنسيقات إضافة موظف */
+.day-select :deep(.v-menu__content),
+.day-select :deep(.v-overlay__content),
+.work-type-select :deep(.v-menu__content),
+.work-type-select :deep(.v-overlay__content) {
+  background: white !important;
+  border: 2px solid #2563eb !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2) !important;
+}
+
+.day-select :deep(.v-list-item),
+.work-type-select :deep(.v-list-item) {
+  color: #000000 !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  padding: 12px 16px !important;
+  background: white !important;
+  text-shadow: none !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+
+.day-select :deep(.v-list-item__content),
+.work-type-select :deep(.v-list-item__content) {
+  color: #000000 !important;
+  text-shadow: none !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+
+.day-select :deep(.v-list-item-title),
+.work-type-select :deep(.v-list-item-title) {
+  color: #000000 !important;
+  font-weight: 600 !important;
+  text-shadow: none !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+
+.day-select :deep(.v-list-item:hover),
+.work-type-select :deep(.v-list-item:hover) {
+  background: #f5f5f5 !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
+}
+
+.day-select :deep(.v-list-item--active),
+.day-select :deep(.v-list-item[aria-selected="true"]),
+.work-type-select :deep(.v-list-item--active),
+.work-type-select :deep(.v-list-item[aria-selected="true"]) {
+  background: #1a1a1a !important;
+  color: white !important;
+  font-weight: 700 !important;
+}
+
+.day-select :deep(.v-list-item--active:hover),
+.work-type-select :deep(.v-list-item--active:hover) {
+  background: #000000 !important;
+  color: white !important;
+}
+
+.modal-footer {
+  padding: 1rem 1.5rem !important;
+  background: #f8f9fa !important;
+  border-top: 1px solid #dee2e6 !important;
+}
+
+.cancel-btn,
+.cancel-btn.v-btn {
+  font-weight: 600 !important;
+  text-transform: none !important;
+  border-radius: 12px !important;
+  padding: 10px 20px !important;
+  border: 2px solid rgba(156, 163, 175, 0.3) !important;
+  color: #6b7280 !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(10px) !important;
+  font-size: 0.75rem !important;
+  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
+  min-width: 100px !important;
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.08),
+    0 2px 8px rgba(156, 163, 175, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  letter-spacing: 0.3px !important;
+  line-height: 1.4 !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.cancel-btn :deep(.v-btn__content) {
+  color: #6b7280 !important;
+  font-weight: 600 !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.3px !important;
+}
+
+.cancel-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.cancel-btn:hover::before {
+  left: 100%;
+}
+
+.cancel-btn:hover,
+.cancel-btn.v-btn:hover {
+  background: rgba(255, 255, 255, 1) !important;
+  border-color: rgba(156, 163, 175, 0.5) !important;
+  color: #374151 !important;
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 
+    0 6px 20px rgba(0, 0, 0, 0.12),
+    0 3px 10px rgba(156, 163, 175, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+}
+
+.save-btn,
+.save-btn.v-btn {
+  font-weight: 600 !important;
+  text-transform: none !important;
+  border-radius: 12px !important;
+  padding: 10px 20px !important;
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
+  color: #ffffff !important;
+  font-size: 0.75rem !important;
+  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
+  min-width: 100px !important;
+  box-shadow: 
+    0 4px 16px rgba(59, 130, 246, 0.4),
+    0 2px 8px rgba(37, 99, 235, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  letter-spacing: 0.3px !important;
+  line-height: 1.4 !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.save-btn :deep(.v-btn__content) {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  font-size: 0.75rem !important;
+  text-align: center !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  letter-spacing: 0.3px !important;
+  line-height: 1.4 !important;
+}
+
+.save-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s ease;
+  z-index: 1;
+}
+
+.save-btn:hover::before {
+  left: 100%;
+}
+
+.save-btn:hover,
+.save-btn.v-btn:hover {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) !important;
+  box-shadow: 
+    0 8px 24px rgba(59, 130, 246, 0.5),
+    0 4px 12px rgba(37, 99, 235, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  transform: translateY(-2px) scale(1.02) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.save-btn:disabled {
+  background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(156, 163, 175, 0.2) !important;
+  transform: none !important;
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+}
+
+.save-btn:disabled::before {
+  display: none !important;
+}
+
+/* Work Period Section */
+.work-period-section {
+  margin-bottom: 1rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 2px solid rgba(59, 130, 246, 0.2) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+}
+
+.section-label {
+  display: block;
+  font-weight: 800;
+  color: #1e40af !important;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  text-shadow: none !important;
+  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
+}
+
+.period-inputs {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.test-btn {
+  font-size: 0.8rem !important;
+  height: 32px !important;
+}
+
+.period-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.period-input :deep(.v-field) {
+  background: rgba(255, 255, 255, 1) !important;
+  border: 2px solid rgba(156, 163, 175, 0.3) !important;
+  border-radius: 10px !important;
+  transition: all 0.3s ease !important;
+}
+
+.period-input :deep(.v-field__input) {
+  color: #000000 !important;
+  font-weight: 600 !important;
+  padding: 12px 16px !important;
+  text-decoration: none !important;
+  border-bottom: none !important;
+}
+
+.period-input :deep(.v-field__input input) {
+  text-decoration: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+.period-input :deep(.v-field__input input) {
+  color: #000000 !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+}
+
+.period-input :deep(.v-label) {
+  color: #6b7280 !important;
+  font-weight: 600 !important;
+  background: rgba(255, 255, 255, 1) !important;
+  padding: 0 8px !important;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+.period-input :deep(.v-field--focused .v-label) {
+  color: #2563eb !important;
+  background: rgba(255, 255, 255, 1) !important;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+.period-input :deep(.v-field__input) {
+  text-decoration: none !important;
+  border-bottom: none !important;
+}
+
+.period-input :deep(.v-field__input::after),
+.period-input :deep(.v-field__input::before) {
+  display: none !important;
+}
+
+.period-input :deep(.v-field:hover) {
+  background: rgba(255, 255, 255, 1) !important;
+  border-color: rgba(59, 130, 246, 0.5) !important;
+}
+
+.period-input :deep(.v-field--focused) {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+  background: rgba(255, 255, 255, 1) !important;
+}
+
+.period-input :deep(.v-icon) {
+  color: #2563eb !important;
+}
+
+.period-separator {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #2563eb !important;
+  margin: 0 0.5rem;
+  text-shadow: none !important;
+  flex-shrink: 0;
+}
+
+/* Data Table Card */
+.data-table-card {
+  border-radius: 20px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  margin: 1rem;
+  margin-top: 2rem !important;
+}
+
+.data-table-card:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15) !important;
+}
+
+.data-table-card .v-card-title {
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
+  padding: 10px 16px !important;
+  min-height: auto !important;
+  border-radius: 20px 20px 0 0 !important;
+}
+
+.data-table-card .v-card-title .v-icon {
+  font-size: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+}
+
+.data-table-card .v-card-title .text-h6 {
+  font-size: 1.25rem !important;
+  line-height: 1.4 !important;
+}
+
+.data-table-card .v-card-title .v-chip {
+  font-size: 0.75rem !important;
+  height: 24px !important;
+  padding: 0 8px !important;
+}
+
+.data-table-card .v-card-title .work-days-count-chip {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+.data-table-card .v-card-title .work-days-count-chip :deep(.v-chip__content) {
+  color: #ffffff !important;
+}
+
+.data-table-card .v-card-text {
+  padding: 0 !important;
+}
+
+/* Table Search Box */
+.table-search-box {
+  display: flex;
+  align-items: center;
+}
+
+.table-search-input :deep(.v-field) {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-radius: 8px !important;
+  min-height: 36px !important;
+  max-height: 36px !important;
+}
+
+.table-search-input :deep(.v-field__input) {
+  padding: 8px 12px !important;
+  font-size: 0.875rem !important;
+  min-height: 36px !important;
+}
+
+.table-search-input :deep(.v-field__outline) {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  border-width: 1px !important;
+}
+
+.table-search-input :deep(.v-field--focused .v-field__outline) {
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  border-width: 2px !important;
+}
+
+.table-search-input :deep(.v-field__prepend-inner) {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  align-items: center !important;
+}
+
+.table-search-input :deep(.v-field__prepend-inner .v-icon) {
+  font-size: 18px !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.table-search-input :deep(input) {
+  color: #1e293b !important;
+  font-size: 0.875rem !important;
+}
+
+.table-search-input :deep(input::placeholder) {
+  color: #94a3b8 !important;
+  font-size: 0.875rem !important;
+}
+
+.gap-2 {
+  gap: 8px !important;
+}
+
+/* Add Button Styles */
+.add-button,
+.add-button.v-btn,
+.v-btn.add-button {
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%) !important;
+  backdrop-filter: blur(10px) !important;
+  color: white !important;
+  border-radius: 12px !important;
+  padding: 12px 24px !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
+  box-shadow: 
+    0 4px 16px rgba(30, 64, 175, 0.3),
+    0 2px 8px rgba(37, 99, 235, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
+  position: relative !important;
+  overflow: hidden !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.add-button :deep(.v-btn__content) {
+  color: white !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  text-align: center !important;
+  gap: 8px !important;
+}
+
+.add-button :deep(.v-btn__prepend),
+.add-button :deep(.v-btn__append) {
+  color: white !important;
+  margin: 0 !important;
+}
+
+.add-button :deep(.v-icon) {
+  color: white !important;
+  margin: 0 !important;
+  transition: transform 0.3s ease !important;
+}
+
+.add-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s ease;
+  z-index: 1;
+}
+
+.add-button:hover::before {
+  left: 100%;
+  animation: shimmer 0.6s ease-in-out;
+}
+
+.add-button:hover,
+.add-button.v-btn:hover,
+.v-btn.add-button:hover {
+  transform: translateY(-4px) scale(1.05) !important;
+  box-shadow: 
+    0 12px 32px rgba(30, 64, 175, 0.5),
+    0 6px 16px rgba(37, 99, 235, 0.5),
+    0 0 40px rgba(59, 130, 246, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%) !important;
+  border-color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.add-button:active {
+  transform: translateY(-1px) scale(1.02) !important;
+  box-shadow: 
+    0 4px 12px rgba(30, 64, 175, 0.4),
+    0 2px 6px rgba(37, 99, 235, 0.3),
+    0 0 25px rgba(59, 130, 246, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+.add-button:hover :deep(.v-icon) {
+  transform: rotate(90deg) scale(1.1) !important;
+}
+
+.icon-glow {
+  position: relative !important;
+}
+
+.icon-glow::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: glow 2s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+@keyframes glow {
+  0% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.8); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+}
+
+.smooth-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Table Container */
+.table-container {
+  background: white;
+  margin: 0;
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: none;
+  border: none;
+}
+
+.table-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #007bff, #0056b3);
+}
+
+.work-days-table {
+  direction: rtl;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.95) 100%) !important;
+  border-radius: 20px !important;
+  overflow: hidden !important;
+  box-shadow: 0 12px 40px rgba(67, 56, 202, 0.15) !important;
+  backdrop-filter: blur(15px) !important;
+  border: 2px solid #cbd5e1 !important;
+  margin-top: 20px !important;
+}
+
+.work-days-table :deep(table) {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  border: 2px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+.work-days-table :deep(.v-data-table__wrapper) {
+  border: 1px solid #e2e8f0 !important;
+}
+
+.work-days-table :deep(.v-data-table-header th),
+.work-days-table :deep(.v-data-table__th),
+.work-days-table :deep(.v-data-table-header) {
+  background: linear-gradient(135deg, #4338ca 0%, #6366f1 50%, #8b5cf6 100%) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  font-weight: 500 !important;
+  font-size: 0.55rem !important;
+  border-bottom: 1px solid #ffffff !important;
+  text-align: center !important;
+  padding: 3px 4px !important;
+  letter-spacing: 0px !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  position: relative !important;
+  border-radius: 0 !important;
+  min-height: 24px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Force white color for all text elements in table header */
+.work-days-table :deep(.v-data-table-header th *),
+.work-days-table :deep(.v-data-table-header th span),
+.work-days-table :deep(.v-data-table-header th div),
+.work-days-table :deep(.v-data-table-header th .v-data-table-header__content),
+.work-days-table :deep(.v-data-table-header th .v-data-table-header__content *) {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.work-days-table :deep(.v-data-table-header th::after) {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #ffffff 0%, rgba(255, 255, 255, 0.3) 50%, #ffffff 100%);
+  opacity: 0.3;
+}
+
+/* إظهار أسهم الفرز دائماً في جميع الأعمدة القابلة للفرز */
+.work-days-table :deep(.v-data-table-header th) {
+  position: relative;
+}
+
+/* إظهار الأسهم دائماً - جميع الحالات */
+.work-days-table :deep(.v-data-table-header th .v-data-table-header__content) {
+  position: relative;
+}
+
+.work-days-table :deep(.v-data-table-header th .v-data-table-header__sort-badge),
+.work-days-table :deep(.v-data-table-header th .v-data-table-header__sort-icon),
+.work-days-table :deep(.v-data-table-header th .v-icon),
+.work-days-table :deep(.v-data-table-header th[aria-sort] .v-data-table-header__sort-badge),
+.work-days-table :deep(.v-data-table-header th[aria-sort] .v-data-table-header__sort-icon),
+.work-days-table :deep(.v-data-table-header th:not([aria-sort]) .v-data-table-header__sort-badge),
+.work-days-table :deep(.v-data-table-header th:not([aria-sort]) .v-data-table-header__sort-icon),
+.work-days-table :deep(.v-data-table-header th:hover .v-data-table-header__sort-badge),
+.work-days-table :deep(.v-data-table-header th:hover .v-data-table-header__sort-icon) {
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: inline-flex !important;
+}
+
+/* إظهار الأسهم حتى في الحالة الافتراضية (غير مفروز) */
+.work-days-table :deep(.v-data-table-header th.sortable .v-data-table-header__sort-badge),
+.work-days-table :deep(.v-data-table-header th[data-sortable="true"] .v-data-table-header__sort-badge),
+.work-days-table :deep(.v-data-table-header th.sortable .v-data-table-header__sort-icon),
+.work-days-table :deep(.v-data-table-header th[data-sortable="true"] .v-data-table-header__sort-icon) {
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: inline-flex !important;
+}
+
+/* إظهار أيقونة السهم في الأعمدة القابلة للفرز - دائماً */
+.work-days-table :deep(.v-data-table-header th.sortable::after),
+.work-days-table :deep(.v-data-table-header th[data-sortable="true"]::after) {
+  content: '⇅' !important;
+  display: inline-block !important;
+  margin-right: 4px !important;
+  opacity: 1 !important;
+  font-size: 0.9rem !important;
+  color: rgba(255, 255, 255, 1) !important;
+  visibility: visible !important;
+}
+
+/* إظهار الأسهم في جميع حالات الفرز */
+.work-days-table :deep(.v-data-table-header th[aria-sort="ascending"]::after) {
+  content: '↑' !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.work-days-table :deep(.v-data-table-header th[aria-sort="descending"]::after) {
+  content: '↓' !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.work-days-table :deep(.v-data-table__wrapper table thead tr th) {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  font-weight: 600 !important;
+  font-size: 0.65rem !important;
+  text-align: center !important;
+  padding: 4px 6px !important;
+  border-bottom: 1px solid #5b21b6 !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+  letter-spacing: 0.2px !important;
+  position: relative !important;
+  box-shadow: 0 1px 4px rgba(139, 92, 246, 0.3) !important;
+}
+
+/* Force white color for all nested text elements */
+.work-days-table :deep(.v-data-table__wrapper table thead tr th *),
+.work-days-table :deep(.v-data-table__wrapper table thead tr th span),
+.work-days-table :deep(.v-data-table__wrapper table thead tr th div),
+.work-days-table :deep(.v-data-table__wrapper table thead tr th .v-data-table-header__content),
+.work-days-table :deep(.v-data-table__wrapper table thead tr th .v-data-table-header__content *) {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.work-days-table :deep(.v-data-table__tbody td) {
+  text-align: center !important;
+  padding: 6px 6px !important;
+  min-height: 40px !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  border-right: 1px solid #e2e8f0 !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  font-size: 0.7rem !important;
+  color: #1e293b !important;
+  font-weight: 400 !important;
+  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
+  line-height: 1.4 !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+.work-days-table :deep(.v-data-table__tbody tr:nth-child(even)) {
+  background: linear-gradient(135deg, rgba(238, 242, 255, 0.8) 0%, rgba(224, 231, 255, 0.6) 100%) !important;
+}
+
+.work-days-table :deep(.v-data-table__tbody tr:nth-child(odd)) {
+  background: rgba(255, 255, 255, 0.95) !important;
+}
+
+.work-days-table :deep(.v-data-table__tbody tr) {
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.work-days-table :deep(.v-data-table__tbody tr:last-child) {
+  border-bottom: none !important;
+}
+
+.work-days-table :deep(.v-data-table__tbody tr:hover) {
+  background: linear-gradient(135deg, rgba(67, 56, 202, 0.08) 0%, rgba(99, 102, 241, 0.05) 100%) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px rgba(67, 56, 202, 0.2) !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.work-days-table :deep(.v-data-table__tbody tr:hover td) {
+  color: #4338ca !important;
+  font-weight: 600 !important;
+}
+
+/* Table Cell Styles */
+.serial-number,
+.date-text,
+.day-text,
+.period-text,
+.work-type-text,
+.about-text {
+  font-size: 0.7rem !important;
+  color: #212529 !important;
+  font-weight: 400 !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) !important;
+}
+
+.serial-number {
+  background: #f8f9fa !important;
+  padding: 0.25rem 0.4rem !important;
+  border-radius: 4px !important;
+  font-weight: 500 !important;
+  font-size: 0.7rem !important;
+  color: #007bff !important;
+  border: 1px solid #e9ecef !important;
+}
+
+.date-text {
+  color: #28a745 !important;
+  font-weight: 500 !important;
+  font-size: 0.7rem !important;
+}
+
+.day-text {
+  color: #dc3545 !important;
+  font-weight: 500 !important;
+  font-size: 0.7rem !important;
+}
+
+.period-text {
+  color: #ffc107 !important;
+  font-weight: 500 !important;
+  font-size: 0.7rem !important;
+  background: #fff3cd !important;
+  padding: 0.15rem 0.3rem !important;
+  border-radius: 4px !important;
+}
+
+.work-type-text {
+  color: #6f42c1 !important;
+  font-weight: 500 !important;
+  font-size: 0.7rem !important;
+}
+
+.about-text {
+  color: #17a2b8 !important;
+  font-weight: 400 !important;
+  font-size: 0.7rem !important;
+  max-width: 200px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.actions-buttons {
+  display: flex;
+  gap: 0.3rem;
+  justify-content: center;
+  align-items: center;
+  padding: 0.3rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.action-btn {
+  min-width: 28px !important;
+  height: 28px !important;
+  border-radius: 4px !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+.action-btn .v-icon {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.action-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.actions-buttons .v-btn[color="red"] {
+  background: #1e3a8a !important;
+  color: white !important;
+}
+
+.actions-buttons .v-btn[color="black"] {
+  background: #6c757d !important;
+  color: white !important;
+}
+
+/* Dialog Styles */
+.dialog-header {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  padding: 1.5rem !important;
+}
+
+.dialog-content {
+  padding: 2rem !important;
+}
+
+.dialog-actions {
+  padding: 1rem 1.5rem !important;
+  background: #f8f9fa !important;
+}
+
+/* Pagination */
+.work-days-table :deep(.v-data-table-footer) {
+  background: #f8f9fa !important;
+  border-top: 1px solid #dee2e6 !important;
+  padding: 1rem !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .main-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .search-box {
+    width: 100%;
+  }
+  
+  .search-input {
+    min-width: auto;
+    flex: 1;
+  }
+  
+  .header-title {
+    align-self: center;
+  }
+  
+  .table-container {
+    margin: 0.5rem;
+  }
+  
+  .work-days-table :deep(.v-data-table-header th),
+  .work-days-table :deep(.v-data-table__tbody td) {
+    padding: 0.5rem 0.25rem !important;
+    font-size: 0.8rem !important;
+  }
+  
+  .actions-buttons {
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+  
+  .action-btn {
+    min-width: 24px !important;
+    height: 24px !important;
+  }
+}
+
+/* زر تصدير Excel في عمود الإجراءات */
+.export-action-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  color: white !important;
+  border-radius: 6px !important;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3) !important;
+  transition: all 0.3s ease !important;
+  margin-bottom: 4px !important;
+}
+
+.export-action-btn:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+  transform: scale(1.1) !important;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4) !important;
+}
+
+.export-action-btn .v-icon {
+  color: white !important;
+  font-size: 1rem !important;
+}
 </style>

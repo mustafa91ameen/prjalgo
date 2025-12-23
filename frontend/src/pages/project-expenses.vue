@@ -1,35 +1,39 @@
 <template>
   <v-container fluid class="project-expenses-page">
     <!-- Header Section -->
-    <PageHeader
-      :title="projectName"
-      subtitle="تفاصيل مصاريف المشروع"
-      mdi-icon="mdi-cash-multiple"
-    />
-
     <v-row class="mb-6">
       <v-col cols="12">
-        <div class="d-flex justify-end gap-2">
-          <v-btn
-            color="success"
-            variant="elevated"
-            @click="addExpense"
-            class="add-btn-header"
-            size="large"
-          >
-            <v-icon left>mdi-plus</v-icon>
-            إضافة مصروف
-          </v-btn>
-          <v-btn
-            color="primary"
-            variant="outlined"
-            @click="goBack"
-            class="back-btn"
-          >
-            <v-icon left>mdi-arrow-right</v-icon>
-            العودة
-          </v-btn>
-        </div>
+        <v-card class="header-card" elevation="3">
+          <v-card-text class="pa-6">
+            <div class="d-flex align-center justify-space-between">
+              <div>
+                <h1 class="page-title">{{ projectName }}</h1>
+                <p class="page-subtitle">تفاصيل مصاريف المشروع</p>
+              </div>
+              <div class="header-actions">
+                <v-btn
+                  color="success"
+                  variant="elevated"
+                  @click="addExpense"
+                  class="add-btn-header"
+                  size="large"
+                >
+                  <v-icon left>mdi-plus</v-icon>
+                  إضافة مصروف
+                </v-btn>
+                <v-btn
+                  color="primary"
+                  variant="outlined"
+                  @click="goBack"
+                  class="back-btn"
+                >
+                  <v-icon left>mdi-arrow-right</v-icon>
+                  العودة
+                </v-btn>
+              </div>
+            </div>
+          </v-card-text>
+        </v-card>
       </v-col>
     </v-row>
 
@@ -257,101 +261,104 @@
       @click="addExpense"
     ></v-fab>
 
-    <!-- Add New Expense Dialog -->
-    <v-dialog v-model="addExpenseDialog" max-width="600" persistent>
-      <v-card class="image-style-dialog">
+    <!-- Add New Expense Dialog - Clean Form Style -->
+    <v-dialog v-model="addExpenseDialog" max-width="900" scrollable persistent>
+      <v-card class="clean-dialog-card clean-form-card">
         <!-- Header Section -->
-        <div class="dialog-header expense-dialog-header">
-          <div class="header-content">
-            <div class="header-left">
-              <v-icon size="24" color="white" class="header-icon">mdi-plus-circle</v-icon>
-              <span class="header-title">إضافة صنف جديد</span>
-            </div>
-            <v-btn
-              icon="mdi-close"
-              variant="text"
-              size="small"
-              color="white"
-              @click="closeAddExpenseDialog"
-              class="close-btn"
-            />
-          </div>
-        </div>
+        <v-card-title class="clean-dialog-header clean-form-header">
+          <h2 class="clean-form-title">معلومات المصروف</h2>
+        </v-card-title>
 
         <!-- Form Content -->
-        <div class="dialog-body">
+        <v-card-text class="clean-form-content">
+          <p class="clean-form-instruction">
+            لإتمام إضافة المصروف، يرجى توفير المعلومات التالية. يرجى ملاحظة أن جميع الحقول المميزة بعلامة النجمة (*) مطلوبة.
+          </p>
+
           <v-form ref="addExpenseForm" v-model="addExpenseFormValid">
-            <div class="form-fields">
-              <v-row>
-                <!-- نوع الصرف -->
-                <v-col cols="12">
+            <v-row class="clean-form-row">
+              <!-- نوع الصرف -->
+              <v-col cols="12" md="6" class="clean-form-column">
+                <div class="clean-form-field-wrapper">
+                  <label class="clean-form-label">
+                    نوع الصرف <span class="required-star">*</span>
+                  </label>
                   <v-select
                     v-model="newExpense.type"
                     :items="expenseTypes"
                     item-title="label"
                     item-value="value"
-                    label="نوع الصرف"
                     variant="outlined"
+                    density="comfortable"
                     :rules="[v => !!v || 'نوع الصرف مطلوب']"
                     required
-                    class="form-field"
+                    hide-details="auto"
+                    class="clean-form-input"
                   ></v-select>
-                </v-col>
+                </div>
+              </v-col>
 
-                <!-- التكلفة -->
-                <v-col cols="12">
+              <!-- التكلفة -->
+              <v-col cols="12" md="6" class="clean-form-column">
+                <div class="clean-form-field-wrapper">
+                  <label class="clean-form-label">
+                    التكلفة (د.ع) <span class="required-star">*</span>
+                  </label>
                   <v-text-field
                     v-model="newExpense.amount"
-                    label="التكلفة (د.ع)"
                     variant="outlined"
+                    density="comfortable"
                     type="number"
+                    placeholder="0"
                     :rules="[
                       v => !!v || 'التكلفة مطلوبة',
                       v => v > 0 || 'التكلفة يجب أن تكون أكبر من صفر'
                     ]"
                     required
-                    class="form-field"
+                    hide-details="auto"
+                    class="clean-form-input"
                   ></v-text-field>
-                </v-col>
+                </div>
+              </v-col>
 
-                <!-- الملاحظات -->
-                <v-col cols="12">
+              <!-- الملاحظات -->
+              <v-col cols="12" class="clean-form-column">
+                <div class="clean-form-field-wrapper">
+                  <label class="clean-form-label">الملاحظات</label>
                   <v-textarea
                     v-model="newExpense.notes"
-                    label="الملاحظات"
                     variant="outlined"
-                    rows="3"
-                    :rules="[v => !!v || 'الملاحظات مطلوبة']"
-                    required
-                    class="form-field"
+                    rows="4"
+                    density="comfortable"
+                    placeholder="أدخل ملاحظات إضافية"
+                    hide-details="auto"
+                    class="clean-form-input"
                   ></v-textarea>
-                </v-col>
-              </v-row>
-            </div>
+                </div>
+              </v-col>
+            </v-row>
           </v-form>
-        </div>
+        </v-card-text>
 
-        <!-- Dialog Actions -->
-        <div class="dialog-actions">
+        <!-- Footer Actions -->
+        <v-card-actions class="clean-form-actions">
+          <v-spacer />
           <v-btn
-            color="grey"
-            variant="text"
+            class="clean-form-cancel-btn"
+            variant="outlined"
             @click="closeAddExpenseDialog"
-            class="cancel-btn"
           >
             إلغاء
           </v-btn>
           <v-btn
-            color="success"
+            class="clean-form-continue-btn"
             variant="elevated"
-            @click="saveNewExpense"
             :disabled="!addExpenseFormValid"
-            class="save-btn"
+            @click="saveNewExpense"
           >
-            <v-icon class="me-2">mdi-content-save</v-icon>
-            حفظ
+            حفظ المصروف
           </v-btn>
-        </div>
+        </v-card-actions>
       </v-card>
     </v-dialog>
   </v-container>
@@ -360,9 +367,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { toast } from 'vue3-toastify'
-import { formatAmount } from '@/utils/formatters'
-import { PageHeader } from '@/components/shared'
 
 const route = useRoute()
 const router = useRouter()
@@ -522,7 +526,9 @@ const getStatusLabel = (status) => {
   return labels[status] || 'غير محدد'
 }
 
-// formatAmount imported from @/utils/formatters
+const formatAmount = (amount) => {
+  return `${amount.toLocaleString()} د.ع`
+}
 
 // Action functions
 const goBack = () => {
@@ -530,10 +536,12 @@ const goBack = () => {
 }
 
 const viewExpenseDetails = (expense) => {
-  toast.info(`${getExpenseTypeLabel(expense.type)}: ${expense.description} - ${formatAmount(expense.amount)}`)
+  console.log('عرض تفاصيل المصروف:', expense)
+  alert(`تفاصيل المصروف:\n\nالنوع: ${getExpenseTypeLabel(expense.type)}\nالوصف: ${expense.description}\nالمبلغ: ${formatAmount(expense.amount)}\nالتاريخ: ${expense.date}\nالحالة: ${getStatusLabel(expense.status)}\nالملاحظات: ${expense.notes}`)
 }
 
 const editExpense = (expense) => {
+  console.log('تعديل المصروف:', expense)
   // يمكن إضافة منطق التعديل هنا
 }
 
@@ -547,6 +555,7 @@ const deleteExpense = (expense) => {
 }
 
 const addExpense = () => {
+  console.log('فتح نموذج إضافة مصروف جديد')
   addExpenseDialog.value = true
 }
 
@@ -582,21 +591,28 @@ const saveNewExpense = () => {
     
     // إضافة المصروف إلى القائمة
     projectExpenses.value.unshift(newExpenseItem)
-
+    
+    console.log('تم إضافة مصروف جديد:', newExpenseItem)
+    
     // إغلاق النموذج وإعادة تعيينه
     closeAddExpenseDialog()
     
-    toast.success('تم إضافة المصروف بنجاح!')
+    // رسالة نجاح (يمكن استبدالها بـ snackbar)
+    alert('تم إضافة المصروف بنجاح!')
   }
 }
 
 // Initialize component
 onMounted(() => {
+  console.log('تم تحميل صفحة مصاريف المشروع')
+  console.log('معاملات URL:', route.query)
+  
   // Get project data from route query parameters
   if (route.query.projectName) {
     projectName.value = route.query.projectName
+    console.log('اسم المشروع:', projectName.value)
   }
-
+  
   // Set project info from query parameters
   projectInfo.value = {
     startDate: route.query.startDate || '10/03/2022',
@@ -605,11 +621,742 @@ onMounted(() => {
     workLocation: route.query.workLocation || 'لعقوبة',
     notes: route.query.notes || 'لايوجد'
   }
+  
+  console.log('معلومات المشروع:', projectInfo.value)
 })
 </script>
 
-
 <style scoped>
-/* Import page styles - scoped to this component only */
-@import './styles/project-expenses.css';
+.project-expenses-page {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Header Styles */
+.header-card {
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;
+  color: white !important;
+  border-radius: 16px !important;
+}
+
+.page-title {
+  font-size: 2.5rem !important;
+  font-weight: 800 !important;
+  margin-bottom: 8px !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+.page-subtitle {
+  font-size: 1.2rem !important;
+  opacity: 0.9 !important;
+  margin: 0 !important;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.add-btn-header {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+  color: white !important;
+  font-weight: 700 !important;
+  font-size: 1rem !important;
+  padding: 12px 20px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3) !important;
+  text-transform: none !important;
+  letter-spacing: 0.5px !important;
+}
+
+.add-btn-header:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(5, 150, 105, 0.4) !important;
+}
+
+.add-btn-header .v-icon {
+  margin-right: 8px !important;
+  font-size: 1.1rem !important;
+}
+
+.back-btn {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  padding: 12px 24px !important;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Info Card Styles */
+.info-card {
+  border-radius: 16px !important;
+  border: 2px solid #e2e8f0 !important;
+}
+
+.info-title {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%) !important;
+  color: #1e40af !important;
+  font-weight: 700 !important;
+  font-size: 1.3rem !important;
+  border-bottom: 2px solid #e2e8f0 !important;
+}
+
+.info-item {
+  margin-bottom: 12px;
+}
+
+.info-label {
+  font-weight: 600 !important;
+  color: #64748b !important;
+  display: block !important;
+  margin-bottom: 4px !important;
+  font-size: 0.9rem !important;
+}
+
+.info-value {
+  font-weight: 700 !important;
+  color: #1e293b !important;
+  font-size: 1.1rem !important;
+}
+
+.info-value.cost {
+  color: #059669 !important;
+  font-size: 1.3rem !important;
+}
+
+/* Statistics Cards */
+.stat-card {
+  border-radius: 16px !important;
+  transition: all 0.3s ease !important;
+  border: 2px solid transparent !important;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.total-expenses {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
+  border-color: #3b82f6 !important;
+}
+
+.remaining-budget {
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%) !important;
+  border-color: #22c55e !important;
+}
+
+.expense-count {
+  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%) !important;
+  border-color: #6366f1 !important;
+}
+
+.budget-usage {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
+  border-color: #f59e0b !important;
+}
+
+.stat-number {
+  font-size: 2.5rem !important;
+  font-weight: 800 !important;
+  margin: 12px 0 8px 0 !important;
+  color: #1e293b !important;
+}
+
+.stat-label {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  color: #64748b !important;
+  margin: 0 !important;
+}
+
+/* Table Styles */
+.expenses-table-card {
+  border-radius: 16px !important;
+  border: 2px solid #e9d5ff !important;
+  box-shadow: 0 8px 25px rgba(124, 58, 237, 0.1) !important;
+  background: linear-gradient(135deg, #ffffff 0%, #faf5ff 100%) !important;
+}
+
+.table-title {
+  background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%) !important;
+  color: #7c3aed !important;
+  font-weight: 800 !important;
+  font-size: 1.5rem !important;
+  border-bottom: 3px solid #c4b5fd !important;
+  text-shadow: 0 2px 4px rgba(124, 58, 237, 0.2) !important;
+  letter-spacing: 0.5px !important;
+}
+
+.search-field {
+  max-width: 300px !important;
+}
+
+.expenses-table {
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+
+.expenses-table .v-data-table__th {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-align: center !important;
+  padding: 1.2rem 0.8rem !important;
+  border-bottom: 4px solid #065f46 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+  position: relative !important;
+}
+
+.expenses-table .v-data-table__th::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, #ffffff 50%, transparent 100%);
+  opacity: 0.3;
+}
+
+.expenses-table .v-data-table__td {
+  background: #ffffff !important;
+  color: #1f2937 !important;
+  font-weight: 700 !important;
+  font-size: 1.1rem !important;
+  padding: 1rem 0.8rem !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  text-align: center !important;
+  transition: all 0.3s ease !important;
+  vertical-align: middle !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+.expenses-table .v-data-table__wrapper tbody tr:nth-child(even) .v-data-table__td {
+  background: #f8fafc !important;
+}
+
+.expenses-table .v-data-table__wrapper tbody tr:hover .v-data-table__td {
+  background: #f9fafb !important;
+  color: #111827 !important;
+  font-weight: 700 !important;
+  transform: scale(1.01) !important;
+  box-shadow: 0 4px 12px rgba(4, 120, 87, 0.15) !important;
+}
+
+/* Custom Text Styles */
+.serial-number {
+  font-weight: 700 !important;
+  color: #374151 !important;
+  background: #f3f4f6 !important;
+  padding: 6px 10px !important;
+  border-radius: 8px !important;
+  font-size: 1rem !important;
+  border: 1px solid #d1d5db !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.expense-type-chip {
+  font-weight: 700 !important;
+  font-size: 0.9rem !important;
+  border-radius: 12px !important;
+  padding: 4px 12px !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+.amount-text {
+  font-weight: 700 !important;
+  color: #059669 !important;
+  font-size: 1rem !important;
+  background: #ecfdf5 !important;
+  padding: 4px 8px !important;
+  border-radius: 6px !important;
+  border: 1px solid #a7f3d0 !important;
+  font-family: 'Arial', sans-serif !important;
+  direction: ltr !important;
+}
+
+.date-text {
+  font-weight: 600 !important;
+  color: #374151 !important;
+  font-size: 0.95rem !important;
+  background: #f3f4f6 !important;
+  padding: 4px 8px !important;
+  border-radius: 6px !important;
+  border: 1px solid #d1d5db !important;
+}
+
+.status-chip {
+  font-weight: 700 !important;
+  font-size: 0.9rem !important;
+  border-radius: 12px !important;
+  padding: 6px 12px !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-btn {
+  min-width: 32px !important;
+  height: 32px !important;
+  border-radius: 6px !important;
+  transition: all 0.3s ease !important;
+}
+
+.details-btn {
+  color: #1e40af !important;
+  background: rgba(30, 64, 175, 0.1) !important;
+}
+
+.details-btn:hover {
+  background: rgba(30, 64, 175, 0.2) !important;
+  transform: scale(1.05) !important;
+}
+
+.edit-btn {
+  color: #059669 !important;
+  background: rgba(5, 150, 105, 0.1) !important;
+}
+
+.edit-btn:hover {
+  background: rgba(5, 150, 105, 0.2) !important;
+  transform: scale(1.05) !important;
+}
+
+.delete-btn {
+  color: #dc2626 !important;
+  background: rgba(220, 38, 38, 0.1) !important;
+}
+
+.delete-btn:hover {
+  background: rgba(220, 38, 38, 0.2) !important;
+  transform: scale(1.05) !important;
+}
+
+/* Add Expense Section */
+.add-expense-section {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 20px;
+}
+
+.add-expense-btn {
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;
+  color: white !important;
+  font-weight: 700 !important;
+  font-size: 1.1rem !important;
+  padding: 12px 24px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3) !important;
+  text-transform: none !important;
+  letter-spacing: 0.5px !important;
+}
+
+.add-expense-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(30, 64, 175, 0.4) !important;
+}
+
+.add-expense-btn .v-icon {
+  margin-right: 8px !important;
+  font-size: 1.2rem !important;
+}
+
+/* FAB Button */
+.add-expense-fab {
+  position: fixed !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  z-index: 1000 !important;
+}
+
+/* Add Expense Dialog Styles */
+.add-expense-dialog {
+  border-radius: 20px !important;
+  overflow: hidden !important;
+  box-shadow: 0 20px 40px rgba(210, 40, 176, 0.2) !important;
+  border: 3px solid #0c24ad !important;
+  background: linear-gradient(135deg, #190244 0%, #7300e7 100%) !important;
+}
+
+.dialog-header {
+  background: linear-gradient(135deg, #2a38d1 0%, #423cac 100%) !important;
+  color: rgb(255, 255, 255) !important;
+  font-weight: 800 !important;
+    font-size: 1.4rem !important;
+  padding: 24px 28px !important;
+  border-bottom: 3px solid #000000 !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+.close-btn {
+  color: rgb(14, 7, 7) !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-radius: 8px !important;
+}
+
+.close-btn:hover {
+  background: rgba(7, 1, 1, 0.3) !important;
+  transform: scale(1.05) !important;
+}
+
+.dialog-content {
+  padding: 28px !important;
+  background: linear-gradient(135deg, #7505e5 0%, #5d35cb 100%) !important;
+  border-radius: 0 0 16px 16px !important;
+}
+
+.form-field {
+  margin-bottom: 16px !important;
+}
+
+.form-field .v-field {
+  border-radius: 12px !important;
+  background: linear-gradient(135deg, #eeecec 0%, #b2095b 100%) !important;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.1) !important;
+  border: 2px solid #7409e7 !important;
+}
+
+.form-field .v-field__outline {
+  border: 2px solid #f8f6f6 !important;
+  border-radius: 12px !important;
+}
+
+.form-field .v-field--focused .v-field__outline {
+  border-color: #7c3aed !important;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2) !important;
+}
+
+.form-field .v-label {
+  color: #7c3aed !important;
+  font-weight: 700 !important;
+  font-size: 1rem !important;
+}
+
+.form-field .v-field__input {
+  color: #1e293b !important;
+  font-weight: 600 !important;
+  font-size: 1.05rem !important;
+}
+
+/* Dropdown Menu Styling */
+.form-field .v-list {
+  background: linear-gradient(135deg, #000000 0%, #1a0033 100%) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8) !important;
+  border: 4px solid #ff6b35 !important;
+  backdrop-filter: blur(15px) !important;
+}
+
+.form-field .v-list-item {
+  color: #ffffff !important;
+  font-weight: 900 !important;
+  font-size: 1.3rem !important;
+  padding: 20px 28px !important;
+  transition: all 0.3s ease !important;
+  border-bottom: 3px solid rgba(255, 255, 255, 0.5) !important;
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.9) !important;
+  letter-spacing: 1px !important;
+  background: linear-gradient(135deg, #2a0033 0%, #1a0022 100%) !important;
+}
+
+.form-field .v-list-item:hover {
+  background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%) !important;
+  color: #000000 !important;
+  transform: translateX(10px) !important;
+  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.7) !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+  border-left: 6px solid #000000 !important;
+  font-weight: 900 !important;
+}
+
+.form-field .v-list-item--active {
+  background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%) !important;
+  color: #000000 !important;
+  font-weight: 900 !important;
+  box-shadow: 0 10px 30px rgba(255, 107, 53, 0.8) !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+  border-left: 6px solid #000000 !important;
+  transform: scale(1.05) !important;
+}
+
+.dialog-actions {
+  padding: 20px 28px !important;
+  background: linear-gradient(135deg, #ffffff 0%, #faf5ff 100%) !important;
+  border-top: 2px solid #e9d5ff !important;
+  border-radius: 0 0 16px 16px !important;
+}
+
+.cancel-btn {
+  color: #7c3aed !important;
+  font-weight: 700 !important;
+  padding: 14px 28px !important;
+  border-radius: 12px !important;
+  margin-left: 12px !important;
+  background: linear-gradient(135deg, #1a05d5 0%, #fdfbff 100%) !important;
+  border: 2px solid #fdfdff !important;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2) !important;
+}
+
+.cancel-btn:hover {
+  background: linear-gradient(135deg, #f0efef 0%, #ddd6fe 100%) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3) !important;
+}
+
+.save-btn {
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%) !important;
+  color: white !important;
+  font-weight: 800 !important;
+  padding: 14px 28px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.4) !important;
+  border: 2px solid #6d28d9 !important;
+}
+
+.save-btn:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.5) !important;
+}
+
+.save-btn:disabled {
+  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%) !important;
+  color: #94a3b8 !important;
+  box-shadow: none !important;
+  transform: none !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .project-expenses-page {
+    padding: 10px;
+  }
+  
+  .page-title {
+    font-size: 2rem !important;
+  }
+  
+  .stat-number {
+    font-size: 2rem !important;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: 2px;
+  }
+  
+  .action-btn {
+    min-width: 28px !important;
+    height: 28px !important;
+  }
+}
+
+/* ========================================
+   تحسين إضافي لعناوين الجدول - Additional Table Headers
+   ======================================== */
+.expenses-table table thead tr th {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+.expenses-table table thead tr th .v-data-table-header__content {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+.expenses-table table thead tr th .v-data-table-header__content .v-data-table-header__sort-icon {
+  color: #ffffff !important;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3)) !important;
+}
+
+/* CSS إضافي لضمان التطبيق */
+.expenses-table .v-data-table__wrapper table thead tr th {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+.expenses-table .v-data-table__wrapper table thead tr th .v-data-table-header__content {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+</style>
+
+<style>
+/* CSS غير محدود النطاق لضمان تطبيق التغييرات */
+.expenses-table table tbody tr td {
+  color: #1f2937 !important;
+  font-weight: 700 !important;
+  font-size: 1.1rem !important;
+  background: #ffffff !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  padding: 1rem 0.8rem !important;
+  vertical-align: middle !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+.expenses-table table tbody tr:hover td {
+  background: #f9fafb !important;
+  color: #111827 !important;
+  font-weight: 800 !important;
+}
+
+.expenses-table table tbody tr:nth-child(even) td {
+  background: #f8fafc !important;
+}
+
+.expenses-table table tbody tr:nth-child(even):hover td {
+  background: #f1f5f9 !important;
+}
+
+/* تحسين وضوح النصوص داخل الخلايا */
+.expenses-table .serial-number {
+  color: #374151 !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  background: #f3f4f6 !important;
+  padding: 8px 12px !important;
+  border-radius: 8px !important;
+  border: 2px solid #d1d5db !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+.expenses-table .amount-text {
+  color: #059669 !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  background: #ecfdf5 !important;
+  padding: 6px 10px !important;
+  border-radius: 6px !important;
+  border: 2px solid #a7f3d0 !important;
+  font-family: 'Arial', sans-serif !important;
+  direction: ltr !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+.expenses-table .date-text {
+  color: #374151 !important;
+  font-weight: 700 !important;
+  font-size: 1rem !important;
+  background: #f3f4f6 !important;
+  padding: 6px 10px !important;
+  border-radius: 6px !important;
+  border: 2px solid #d1d5db !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* CSS إضافي لضمان التطبيق */
+.v-data-table.expenses-table table tbody tr td {
+  color: #1f2937 !important;
+  font-weight: 700 !important;
+  font-size: 1.1rem !important;
+  background: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+.v-data-table.expenses-table table tbody tr:hover td {
+  background: #f9fafb !important;
+  color: #111827 !important;
+  font-weight: 800 !important;
+}
+
+/* ========================================
+   تحسين وضوح بيانات الجدول - Table Data Clarity
+   ======================================== */
+.expenses-table table tbody tr td {
+  color: #1f2937 !important;
+  font-weight: 700 !important;
+  font-size: 1.1rem !important;
+  background: #ffffff !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  padding: 1rem 0.8rem !important;
+  vertical-align: middle !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+.expenses-table table tbody tr:hover td {
+  background: #f9fafb !important;
+  color: #111827 !important;
+  font-weight: 800 !important;
+}
+
+.expenses-table table tbody tr:nth-child(even) td {
+  background: #f8fafc !important;
+}
+
+.expenses-table table tbody tr:nth-child(even):hover td {
+  background: #f1f5f9 !important;
+}
+
+/* تحسين وضوح النصوص داخل الخلايا */
+.expenses-table .serial-number {
+  color: #374151 !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  background: #f3f4f6 !important;
+  padding: 8px 12px !important;
+  border-radius: 8px !important;
+  border: 2px solid #d1d5db !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+.expenses-table .amount-text {
+  color: #059669 !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  background: #ecfdf5 !important;
+  padding: 6px 10px !important;
+  border-radius: 6px !important;
+  border: 2px solid #a7f3d0 !important;
+  font-family: 'Arial', sans-serif !important;
+  direction: ltr !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+.expenses-table .date-text {
+  color: #374151 !important;
+  font-weight: 700 !important;
+  font-size: 1rem !important;
+  background: #f3f4f6 !important;
+  padding: 6px 10px !important;
+  border-radius: 6px !important;
+  border: 2px solid #d1d5db !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
 </style>

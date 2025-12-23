@@ -1,81 +1,81 @@
 <template>
   <v-container fluid class="team-management-page">
     <!-- Header Section -->
-    <PageHeader
-      title="إدارة الفريق"
-      subtitle="إدارة شاملة لأعضاء الفريق وتوزيع المهام"
-      mdi-icon="mdi-account-group"
-    />
-
-    <!-- Add Button -->
-    <div class="d-flex justify-end mb-4">
-      <v-btn
-        color="primary"
-        variant="elevated"
-        size="large"
-        prepend-icon="mdi-plus"
-        @click="showAddMemberDialog = true"
-      >
-        إضافة عضو جديد
-      </v-btn>
+    <div class="engineers-header-card">
+      <div class="header-gradient-line"></div>
+      <div class="header-content">
+        <div class="header-right">
+          <div class="engineer-emoji">
+            <v-icon size="40" color="white">mdi-account-group</v-icon>
+          </div>
+          <div class="header-text">
+            <h1 class="main-title">إدارة الفريق</h1>
+            <p class="subtitle">إدارة شاملة لأعضاء الفريق وتوزيع المهام</p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Statistics Cards -->
     <div class="stats-section">
       <v-row>
         <v-col cols="12" sm="6" md="3">
-          <v-card class="stat-card total-members">
-            <v-card-text>
-              <div class="stat-content">
-                <v-icon size="40" color="primary">mdi-account-multiple</v-icon>
-                <div class="stat-info">
-                  <h3 class="stat-number">{{ totalMembers }}</h3>
-                  <p class="stat-label">إجمالي الأعضاء</p>
-                </div>
+          <v-card class="modern-stat-card stat-card-primary" elevation="0">
+            <div class="stat-card-background"></div>
+            <div class="stat-card-content">
+              <div class="stat-icon-wrapper">
+                <v-icon size="48" class="stat-icon">mdi-account-multiple</v-icon>
               </div>
-            </v-card-text>
+              <div class="stat-info">
+                <h3 class="stat-value">{{ totalMembers }}</h3>
+                <p class="stat-label">إجمالي الأعضاء</p>
+              </div>
+            </div>
           </v-card>
         </v-col>
         
         <v-col cols="12" sm="6" md="3">
-          <v-card class="stat-card active-members">
-            <v-card-text>
-              <div class="stat-content">
-                <v-icon size="40" color="success">mdi-account-check</v-icon>
-                <div class="stat-info">
-                  <h3 class="stat-number">{{ activeMembers }}</h3>
-                  <p class="stat-label">أعضاء نشطين</p>
-                </div>
+          <v-card class="modern-stat-card stat-card-success" elevation="0">
+            <div class="stat-card-background"></div>
+            <div class="stat-card-content">
+              <div class="stat-icon-wrapper">
+                <v-icon size="48" class="stat-icon check-icon">mdi-account-check</v-icon>
               </div>
-            </v-card-text>
+              <div class="stat-info">
+                <h3 class="stat-value">{{ activeMembers }}</h3>
+                <p class="stat-label">أعضاء نشطين</p>
+              </div>
+            </div>
           </v-card>
         </v-col>
         
         <v-col cols="12" sm="6" md="3">
-          <v-card class="stat-card departments">
-            <v-card-text>
-              <div class="stat-content">
-                <v-icon size="40" color="info">mdi-office-building</v-icon>
-                <div class="stat-info">
-                  <h3 class="stat-number">{{ totalDepartments }}</h3>
-                  <p class="stat-label">الأقسام</p>
-                </div>
+          <v-card class="modern-stat-card stat-card-info" elevation="0">
+            <div class="stat-card-background"></div>
+            <div class="stat-card-content">
+              <div class="stat-icon-wrapper">
+                <v-icon size="48" class="stat-icon">mdi-office-building</v-icon>
               </div>
-            </v-card-text>
+              <div class="stat-info">
+                <h3 class="stat-value">{{ totalDepartments }}</h3>
+                <p class="stat-label">الأقسام</p>
+              </div>
+            </div>
           </v-card>
         </v-col>
         
         <v-col cols="12" sm="6" md="3">
-          <v-card class="stat-card tasks">
-            <v-card-text>
-              <div class="stat-content">
-                <v-icon size="40" color="warning">mdi-clipboard-list</v-icon>
-                <div class="stat-info">
-                  <h3 class="stat-number">{{ totalTasks }}</h3>
-                  <p class="stat-label">المهام المكلفة</p>
-                </div>
+          <v-card class="modern-stat-card stat-card-warning" elevation="0">
+            <div class="stat-card-background"></div>
+            <div class="stat-card-content">
+              <div class="stat-icon-wrapper">
+                <v-icon size="48" class="stat-icon">mdi-clipboard-list</v-icon>
               </div>
-            </v-card-text>
+              <div class="stat-info">
+                <h3 class="stat-value">{{ totalTasks }}</h3>
+                <p class="stat-label">المهام المكلفة</p>
+              </div>
+            </div>
           </v-card>
         </v-col>
       </v-row>
@@ -441,7 +441,6 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { PageHeader } from '@/components/shared'
 
 // Reactive data
 const loading = ref(false)
@@ -693,14 +692,17 @@ const viewMember = (member) => {
 
 const editMember = (member) => {
   // TODO: Implement edit functionality
+  console.log('Edit member:', member)
 }
 
 const resetPassword = (member) => {
   // TODO: Implement reset password functionality
+  console.log('Reset password for:', member)
 }
 
 const deleteMember = (member) => {
   // TODO: Implement delete functionality
+  console.log('Delete member:', member)
 }
 
 const closeAddMemberDialog = () => {
@@ -747,8 +749,1625 @@ onMounted(() => {
 })
 </script>
 
+<style scoped>
+/* CSS قوي للتأكد من تطبيق التغييرات على عناوين الجدول */
+.v-data-table.team-data-table .v-data-table__wrapper table thead tr th {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+.v-data-table.team-data-table .v-data-table__wrapper table thead tr th .v-data-table-header__content {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+.v-data-table.team-data-table .v-data-table__wrapper table thead tr th .v-data-table-header__content .v-data-table-header__sort-icon {
+  color: #ffffff !important;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3)) !important;
+}
+
+/* Main Page Styles */
+.team-management-page {
+  background: #ffffff !important;
+  min-height: 100vh;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Header Styles - نفس تنسيق صفحة المهندسين */
+.engineers-header-card {
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+  border-radius: 0;
+  width: 100vw;
+  max-width: 100vw;
+  box-shadow: 0 8px 32px rgba(25, 118, 210, 0.3);
+  position: relative;
+  overflow: hidden;
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
+  margin-bottom: 1.5rem;
+  border: none;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: slideInFromTop 1s ease-out, shimmer 3s ease-in-out infinite;
+}
+
+.engineers-header-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: sweep 2s ease-in-out infinite;
+  z-index: 1;
+}
+
+.engineers-header-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+  animation: diagonalShimmer 4s ease-in-out infinite;
+  z-index: 1;
+}
+
+.engineers-header-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 60px rgba(25, 118, 210, 0.5);
+  animation: hoverPulse 0.6s ease-in-out;
+}
+
+.engineers-header-card:hover::before {
+  animation: sweep 1s ease-in-out infinite;
+}
+
+.engineers-header-card:hover::after {
+  animation: diagonalShimmer 2s ease-in-out infinite;
+}
+
+.header-gradient-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #ffffff 0%, #e3f2fd 50%, #bbdefb 100%);
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
+  animation: gradientFlow 3s ease-in-out infinite;
+  z-index: 2;
+}
+
+.header-content {
+  padding: 12px 16px !important;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: auto !important;
+  background: linear-gradient(135deg, rgba(25, 118, 210, 0.1) 0%, rgba(21, 101, 192, 0.05) 100%);
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 3;
+  animation: fadeInUp 1.2s ease-out 0.3s both;
+  max-width: calc(100vw - 320px);
+  margin: 0 auto;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.8rem;
+  text-align: right;
+  padding: 0.8rem 1.5rem;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+}
+
+.engineer-emoji {
+  position: relative;
+  animation: slideInFromRight 1s ease-out 0.9s both, float 3s ease-in-out infinite 2s, pulse 2s ease-in-out infinite 2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.engineer-emoji .v-icon {
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #ffffff, #e3f2fd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+  animation: iconGlow 2s ease-in-out infinite 3s, iconBounce 3s ease-in-out infinite 3s;
+}
+
+.engineer-emoji .v-icon:first-child {
+  animation: iconGlow 2s ease-in-out infinite 3s, iconBounce 3s ease-in-out infinite 3s;
+}
+
+.header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.main-title {
+  color: white !important;
+  font-size: 1.2rem !important;
+  font-weight: bold !important;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.subtitle {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 0.75rem !important;
+  margin: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.stats-section {
+  margin-bottom: 30px;
+  padding: 0 20px;
+}
+
+/* Modern Statistics Cards - نفس تصميم صفحة إدارة المهام */
+.modern-stat-card {
+  position: relative !important;
+  border-radius: 20px !important;
+  overflow: hidden !important;
+  cursor: pointer !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  height: 100% !important;
+  min-height: 140px !important;
+  background: #ffffff !important;
+}
+
+.modern-stat-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.stat-card-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.1;
+  transition: opacity 0.3s ease;
+}
+
+.modern-stat-card:hover .stat-card-background {
+  opacity: 0.2;
+}
+
+.stat-card-primary .stat-card-background {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.stat-card-success .stat-card-background {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.stat-card-warning .stat-card-background {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.stat-card-info .stat-card-background {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+}
+
+.stat-card-primary {
+  background: #ffffff !important;
+  border: 2px solid #3b82f6 !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15) !important;
+}
+
+.stat-card-success {
+  background: #ffffff !important;
+  border: 2px solid #10b981 !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15) !important;
+}
+
+.stat-card-warning {
+  background: #ffffff !important;
+  border: 2px solid #f59e0b !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15) !important;
+}
+
+.stat-card-info {
+  background: #ffffff !important;
+  border: 2px solid #06b6d4 !important;
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.15) !important;
+}
+
+.stat-card-content {
+  position: relative;
+  z-index: 2;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  text-align: center;
+}
+
+.stat-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  min-width: 64px;
+  min-height: 64px;
+  border-radius: 50%;
+  margin-bottom: 0.25rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: visible;
+}
+
+.stat-icon-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #ffffff;
+  z-index: 1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card-primary .stat-icon-wrapper {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.stat-card-primary .stat-icon-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%);
+  z-index: -1;
+  filter: blur(8px);
+}
+
+.stat-card-success .stat-icon-wrapper {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.stat-card-success .stat-icon-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.2) 100%);
+  z-index: -1;
+  filter: blur(8px);
+}
+
+.stat-card-warning .stat-icon-wrapper {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.stat-card-warning .stat-icon-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.2) 100%);
+  z-index: -1;
+  filter: blur(8px);
+}
+
+.stat-card-info .stat-icon-wrapper {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+}
+
+.stat-card-info .stat-icon-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.2) 0%, rgba(8, 145, 178, 0.2) 100%);
+  z-index: -1;
+  filter: blur(8px);
+}
+
+.stat-icon {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  font-size: 32px !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+}
+
+.stat-icon-wrapper :deep(.v-icon) {
+  font-size: 32px !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.stat-icon-wrapper :deep(svg) {
+  width: 32px !important;
+  height: 32px !important;
+  font-size: 32px !important;
+}
+
+.stat-card-primary .stat-icon {
+  color: #3b82f6 !important;
+}
+
+.stat-card-primary .stat-icon-wrapper :deep(.v-icon) {
+  color: #3b82f6 !important;
+}
+
+.stat-card-success .stat-icon {
+  color: #10b981 !important;
+}
+
+.stat-card-success .stat-icon-wrapper :deep(.v-icon) {
+  color: #10b981 !important;
+}
+
+.stat-card-warning .stat-icon {
+  color: #f59e0b !important;
+}
+
+.stat-card-warning .stat-icon-wrapper :deep(.v-icon) {
+  color: #f59e0b !important;
+}
+
+.stat-card-info .stat-icon {
+  color: #06b6d4 !important;
+}
+
+.stat-card-info .stat-icon-wrapper :deep(.v-icon) {
+  color: #06b6d4 !important;
+}
+
+.check-icon,
+.stat-icon-wrapper .check-icon,
+.stat-icon-wrapper :deep(.check-icon) {
+  transform: scaleX(-1) !important;
+}
+
+.stat-info {
+  flex: 1;
+  text-align: center;
+  width: 100%;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  font-family: 'Arial', 'Helvetica', sans-serif !important;
+  direction: ltr !important;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  unicode-bidi: embed;
+  color: #000000 !important;
+}
+
+.stat-label {
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: center;
+  color: #64748b;
+}
+
+/* دعم الكروتات القديمة */
+.stat-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.stat-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Search and Filter */
+.search-filter-card {
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.search-filter-content {
+  padding: 1rem 0;
+}
+
+.search-field .v-field__input,
+.filter-field .v-field__input {
+  color: #1a1a1a !important;
+  background: white !important;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.search-field .v-field__input:focus,
+.filter-field .v-field__input:focus {
+  border-color: #4338ca;
+  box-shadow: 0 0 0 4px rgba(67, 56, 202, 0.1);
+}
+
+.search-field .v-label,
+.filter-field .v-label {
+  color: #1a1a1a !important;
+  font-weight: 800;
+  font-size: 1rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.reset-btn {
+  height: 56px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: none;
+}
+
+/* Team Table */
+.team-table-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.table-title {
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+  border-bottom: 2px solid rgba(5, 150, 105, 0.2);
+  padding: 1.5rem;
+}
+
+.team-data-table {
+  background: transparent;
+}
+
+.team-data-table th,
+.team-data-table .v-data-table__wrapper table thead tr th {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  padding: 1.2rem 0.8rem !important;
+  border: none !important;
+  box-shadow: 0 3px 12px rgba(4, 120, 87, 0.4) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+.team-data-table .v-data-table__wrapper table thead tr th .v-data-table-header__content {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* CSS إضافي لضمان تطبيق التغييرات على Vuetify */
+.team-data-table .v-data-table__wrapper table thead tr th {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+  color: white !important;
+}
+
+.team-data-table .v-data-table__wrapper table thead tr th .v-data-table-header__content {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+.team-data-table .v-data-table__wrapper table thead tr th .v-data-table-header__content .v-data-table-header__sort-icon {
+  color: white !important;
+}
+
+/* التأكد من أن جميع عناوين الجدول تستخدم اللون الجديد */
+.team-data-table table thead tr th {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+  color: white !important;
+  font-weight: 700 !important;
+}
+
+.team-data-table td {
+  background: rgba(248, 250, 252, 0.9);
+  color: #1a1a1a !important;
+  font-weight: 500;
+  text-align: center;
+  vertical-align: middle;
+  padding: 1rem 0.5rem;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+}
+
+.team-data-table tbody tr:hover td {
+  background: rgba(5, 150, 105, 0.05);
+  transform: scale(1.01);
+  transition: all 0.3s ease;
+}
+
+/* Member Info */
+.member-info {
+  text-align: right;
+}
+
+.member-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 0.25rem 0;
+  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+.member-email {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 0;
+  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+.member-avatar {
+  border: 2px solid rgba(67, 56, 202, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Tasks Info */
+.tasks-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.task-count {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1e293b;
+  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+.task-label {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 500;
+  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  border-radius: 8px;
+  font-weight: 600;
+  text-transform: none;
+  min-width: 36px;
+  height: 36px;
+}
+
+.view-btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+  color: white !important;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.edit-btn {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  color: white !important;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+.reset-btn {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
+  color: white !important;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
+.delete-btn {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  color: white !important;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Dialog Styles - تنسيق مشابه لصفحات أخرى */
+.add-member-dialog.image-style-dialog {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(5, 150, 105, 0.3);
+}
+
+.add-member-dialog .dialog-header {
+  background: linear-gradient(135deg, #059669, #10b981);
+  padding: 20px;
+  color: white;
+}
+
+.add-member-dialog .header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.add-member-dialog .header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.add-member-dialog .dialog-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+.add-member-dialog .dialog-body {
+  padding: 30px;
+  background: white !important;
+}
+
+.add-member-dialog .form-fields {
+  margin-bottom: 20px;
+}
+
+.add-member-dialog .form-field {
+  margin-bottom: 16px;
+}
+
+/* تحسين ألوان الحقول */
+.add-member-dialog .form-field .v-field__input {
+  color: #1a1a1a !important;
+  font-weight: 600 !important;
+  background: white !important;
+  border-radius: 8px !important;
+  font-size: 1rem !important;
+  padding: 12px 16px !important;
+}
+
+.add-member-dialog .form-field .v-field__input input,
+.add-member-dialog .form-field .v-field__input textarea {
+  color: #1a1a1a !important;
+  background: white !important;
+}
+
+.add-member-dialog .form-field .v-field__outline {
+  border-color: #d1d5db !important;
+  border-width: 2px !important;
+}
+
+.add-member-dialog .form-field .v-label {
+  color: #000000 !important;
+  font-weight: 700 !important;
+  font-size: 1rem !important;
+  background: white !important;
+  padding: 0 8px !important;
+  opacity: 1 !important;
+}
+
+.add-member-dialog .form-field .v-field--focused .v-field__outline {
+  border-color: #6b7280 !important;
+  border-width: 3px !important;
+  box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.1) !important;
+}
+
+.add-member-dialog .form-field .v-field:hover .v-field__outline {
+  border-color: #9ca3af !important;
+}
+
+.add-member-dialog .form-field .v-field--focused .v-label {
+  color: #000000 !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+}
+
+/* تحسين القوائم المنسدلة */
+.add-member-dialog .form-field .v-select .v-field__input {
+  color: #1a1a1a !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  padding: 12px 16px !important;
+}
+
+.add-member-dialog .form-field .v-select .v-field__outline {
+  border-color: #d1d5db !important;
+  border-width: 2px !important;
+}
+
+.add-member-dialog .form-field .v-select .v-field--focused .v-field__outline {
+  border-color: #6b7280 !important;
+  border-width: 3px !important;
+  box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.1) !important;
+}
+
+.add-member-dialog .form-field .v-select .v-field:hover .v-field__outline {
+  border-color: #9ca3af !important;
+}
+
+.add-member-dialog .form-field .v-select .v-label {
+  color: #000000 !important;
+  font-weight: 700 !important;
+  background: white !important;
+  opacity: 1 !important;
+}
+
+/* تحسين ألوان رسائل الخطأ */
+.add-member-dialog .form-field .v-messages__message {
+  color: #dc2626 !important;
+  font-weight: 500 !important;
+  font-size: 0.8rem !important;
+}
+
+.add-member-dialog .dialog-actions {
+  padding: 20px 30px;
+  background: #f1f5f9;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* تنسيق القوائم المنسدلة المفتوحة - ألوان سوداء */
+.add-member-dialog .form-field .v-list {
+  background: white !important;
+  border: 2px solid #1a1a1a !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.add-member-dialog .form-field .v-list-item {
+  color: #1a1a1a !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  padding: 12px 16px !important;
+  background: white !important;
+}
+
+.add-member-dialog .form-field .v-list-item:hover {
+  background: #f5f5f5 !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
+}
+
+.add-member-dialog .form-field .v-list-item--active {
+  background: #1a1a1a !important;
+  color: white !important;
+  font-weight: 700 !important;
+}
+
+/* إصلاح شامل لجميع عناصر القوائم المنسدلة - ألوان سوداء */
+.add-member-dialog .v-menu__content .v-list,
+.add-member-dialog .v-menu__content .v-list-item,
+.add-member-dialog .v-menu__content .v-list-item *,
+.add-member-dialog .v-overlay__content .v-list,
+.add-member-dialog .v-overlay__content .v-list-item,
+.add-member-dialog .v-overlay__content .v-list-item * {
+  color: #1a1a1a !important;
+  background: white !important;
+}
+
+.add-member-dialog .v-menu__content .v-list-item:hover,
+.add-member-dialog .v-overlay__content .v-list-item:hover {
+  background: #f5f5f5 !important;
+  color: #000000 !important;
+}
+
+.add-member-dialog .v-menu__content .v-list-item--active,
+.add-member-dialog .v-overlay__content .v-list-item--active {
+  background: #1a1a1a !important;
+  color: white !important;
+}
+
+/* إصلاح نص القوائم المنسدلة */
+.add-member-dialog .v-list-item-title,
+.add-member-dialog .v-list-item-content,
+.add-member-dialog .v-list-item-content * {
+  color: inherit !important;
+  background: inherit !important;
+}
+
+/* View Member Dialog - يحتفظ بتصميمه الأصلي */
+.view-member-dialog {
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.view-member-dialog .dialog-header {
+  background: linear-gradient(135deg, #4338ca 0%, #6366f1 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 20px 20px 0 0;
+}
+
+.view-member-dialog .dialog-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+.view-member-dialog .dialog-actions {
+  padding: 1.5rem;
+  background: rgba(248, 250, 252, 0.5);
+  border-radius: 0 0 20px 20px;
+}
+
+/* Member Details */
+.member-details {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.member-avatar-large {
+  margin-bottom: 1.5rem;
+}
+
+.member-avatar-large .v-avatar {
+  border: 4px solid rgba(67, 56, 202, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.member-name-large {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 0.5rem 0;
+  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+.member-email-large {
+  font-size: 1.1rem;
+  color: #64748b;
+  margin: 0 0 1.5rem 0;
+  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+.member-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(248, 250, 252, 0.8);
+  border-radius: 12px;
+  border: 1px solid rgba(226, 232, 240, 0.5);
+}
+
+.stat-item span {
+  font-weight: 600;
+  color: #1e293b;
+  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+.member-notes {
+  text-align: right;
+  padding: 1rem;
+  background: rgba(248, 250, 252, 0.8);
+  border-radius: 12px;
+  border: 1px solid rgba(226, 232, 240, 0.5);
+}
+
+.member-notes h4 {
+  color: #1e293b;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+.member-notes p {
+  color: #64748b;
+  margin: 0;
+  line-height: 1.6;
+  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .team-management-page {
+    padding: 1rem 0.5rem;
+  }
+  
+  .page-header {
+    padding: 1.5rem;
+  }
+  
+  .header-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .main-title {
+    font-size: 2rem;
+  }
+  
+  .main-subtitle {
+    font-size: 1rem;
+  }
+  
+  .stats-section .v-col {
+    margin-bottom: 1rem;
+  }
+  
+  .stat-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .member-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* CSS إضافي للتأكد من تطبيق التغييرات */
+.v-data-table.team-data-table .v-data-table__wrapper table thead tr th {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+.v-data-table.team-data-table .v-data-table__wrapper table thead tr th .v-data-table-header__content {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+.v-data-table.team-data-table .v-data-table__wrapper table thead tr th .v-data-table-header__content .v-data-table-header__sort-icon {
+  color: #ffffff !important;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3)) !important;
+}
+</style>
+
+<style>
+/* CSS غير محدود النطاق للتأكد من تطبيق التغييرات */
+.v-data-table.team-data-table .v-data-table__wrapper table thead tr th {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+.v-data-table.team-data-table .v-data-table__wrapper table thead tr th .v-data-table-header__content {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+.v-data-table.team-data-table .v-data-table__wrapper table thead tr th .v-data-table-header__content .v-data-table-header__sort-icon {
+  color: #ffffff !important;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3)) !important;
+}
+
+/* CSS إضافي لجميع عناوين الجداول */
+.v-data-table table thead tr th {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+.v-data-table table thead tr th .v-data-table-header__content {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* CSS لضمان التطبيق على جميع عناصر Vuetify */
+.v-data-table__wrapper table thead tr th {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+.v-data-table__wrapper table thead tr th .v-data-table-header__content {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+</style>
+
+<style>
+/* تنسيقات شاملة للقوائم المنسدلة في حوار إضافة عضو - ألوان سوداء */
+.add-member-dialog .v-menu__content,
+.add-member-dialog .v-overlay__content {
+  background: white !important;
+  border: 2px solid #1a1a1a !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.add-member-dialog .v-menu__content .v-list,
+.add-member-dialog .v-overlay__content .v-list {
+  background: white !important;
+  padding: 4px 0 !important;
+}
+
+.add-member-dialog .v-menu__content .v-list-item,
+.add-member-dialog .v-overlay__content .v-list-item {
+  color: #1a1a1a !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  padding: 12px 16px !important;
+  min-height: 48px !important;
+  background: white !important;
+  transition: all 0.2s ease !important;
+}
+
+.add-member-dialog .v-menu__content .v-list-item:hover,
+.add-member-dialog .v-overlay__content .v-list-item:hover {
+  background: #f5f5f5 !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
+}
+
+.add-member-dialog .v-menu__content .v-list-item--active,
+.add-member-dialog .v-overlay__content .v-list-item--active,
+.add-member-dialog .v-menu__content .v-list-item[aria-selected="true"],
+.add-member-dialog .v-overlay__content .v-list-item[aria-selected="true"] {
+  background: #1a1a1a !important;
+  color: white !important;
+  font-weight: 700 !important;
+}
+
+.add-member-dialog .v-list-item-title,
+.add-member-dialog .v-list-item-content,
+.add-member-dialog .v-list-item__content {
+  color: inherit !important;
+  background: inherit !important;
+}
+
+.add-member-dialog .v-list-item-title *,
+.add-member-dialog .v-list-item-content *,
+.add-member-dialog .v-list-item__content * {
+  color: inherit !important;
+  background: inherit !important;
+}
+
+/* إصلاح أيقونات القوائم المنسدلة */
+.add-member-dialog .v-list-item .v-icon {
+  color: inherit !important;
+}
+
+.add-member-dialog .v-list-item--active .v-icon,
+.add-member-dialog .v-list-item[aria-selected="true"] .v-icon {
+  color: white !important;
+}
+
+/* تنسيقات شاملة لكل القوائم المنسدلة في الحوار - ألوان سوداء */
+.v-dialog:has(.add-member-dialog) .v-overlay__content .v-list,
+.v-dialog:has(.add-member-dialog) .v-menu__content .v-list {
+  background: white !important;
+  border: 2px solid #1a1a1a !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.v-dialog:has(.add-member-dialog) .v-overlay__content .v-list-item,
+.v-dialog:has(.add-member-dialog) .v-menu__content .v-list-item {
+  color: #000000 !important;
+  font-weight: 600 !important;
+  background: white !important;
+}
+
+.v-dialog:has(.add-member-dialog) .v-overlay__content .v-list-item:hover,
+.v-dialog:has(.add-member-dialog) .v-menu__content .v-list-item:hover {
+  background: #f5f5f5 !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
+}
+
+.v-dialog:has(.add-member-dialog) .v-overlay__content .v-list-item--active,
+.v-dialog:has(.add-member-dialog) .v-menu__content .v-list-item--active,
+.v-dialog:has(.add-member-dialog) .v-overlay__content .v-list-item[aria-selected="true"],
+.v-dialog:has(.add-member-dialog) .v-menu__content .v-list-item[aria-selected="true"] {
+  background: #1a1a1a !important;
+  color: white !important;
+  font-weight: 700 !important;
+}
+
+/* تنسيق شامل لجميع القوائم المنسدلة */
+body .v-overlay__content .v-list-item,
+body .v-menu__content .v-list-item {
+  color: #000000 !important;
+  background: white !important;
+}
+
+body .v-overlay__content .v-list-item:hover,
+body .v-menu__content .v-list-item:hover {
+  background: #f5f5f5 !important;
+  color: #000000 !important;
+}
+
+body .v-overlay__content .v-list-item--active,
+body .v-menu__content .v-list-item--active,
+body .v-overlay__content .v-list-item[aria-selected="true"],
+body .v-menu__content .v-list-item[aria-selected="true"] {
+  background: #1a1a1a !important;
+  color: white !important;
+}
+
+/* تنسيق خاص للقوائم داخل الحوار */
+.v-dialog__content .v-overlay__content .v-list,
+.v-dialog__content .v-menu__content .v-list {
+  background: white !important;
+  border: 2px solid #1a1a1a !important;
+}
+
+.v-dialog__content .v-overlay__content .v-list-item,
+.v-dialog__content .v-menu__content .v-list-item {
+  color: #000000 !important;
+  background: white !important;
+}
+
+.v-dialog__content .v-overlay__content .v-list-item:hover,
+.v-dialog__content .v-menu__content .v-list-item:hover {
+  background: #f5f5f5 !important;
+  color: #000000 !important;
+}
+
+.v-dialog__content .v-overlay__content .v-list-item--active,
+.v-dialog__content .v-menu__content .v-list-item--active {
+  background: #1a1a1a !important;
+  color: white !important;
+}
+</style>
 
 <style scoped>
-/* Import page styles - scoped to this component only */
-@import './styles/team-management.css';
+/* تنسيقات قوية جداً للقوائم المنسدلة - ألوان سوداء */
+.add-member-dialog :deep(.v-menu__content),
+.add-member-dialog :deep(.v-overlay__content) {
+  background: white !important;
+  border: 2px solid #1a1a1a !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.add-member-dialog :deep(.v-menu__content .v-list),
+.add-member-dialog :deep(.v-overlay__content .v-list) {
+  background: white !important;
+  padding: 4px 0 !important;
+}
+
+.add-member-dialog :deep(.v-menu__content .v-list-item),
+.add-member-dialog :deep(.v-overlay__content .v-list-item) {
+  color: #000000 !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  padding: 12px 16px !important;
+  min-height: 48px !important;
+  background: white !important;
+}
+
+.add-member-dialog :deep(.v-menu__content .v-list-item:hover),
+.add-member-dialog :deep(.v-overlay__content .v-list-item:hover) {
+  background: #f5f5f5 !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
+}
+
+.add-member-dialog :deep(.v-menu__content .v-list-item--active),
+.add-member-dialog :deep(.v-overlay__content .v-list-item--active),
+.add-member-dialog :deep(.v-menu__content .v-list-item[aria-selected="true"]),
+.add-member-dialog :deep(.v-overlay__content .v-list-item[aria-selected="true"]) {
+  background: #1a1a1a !important;
+  color: white !important;
+  font-weight: 700 !important;
+}
+
+.add-member-dialog :deep(.v-list-item-title),
+.add-member-dialog :deep(.v-list-item__title),
+.add-member-dialog :deep(.v-list-item-content),
+.add-member-dialog :deep(.v-list-item__content) {
+  color: inherit !important;
+  background: inherit !important;
+}
+
+.add-member-dialog :deep(.v-list-item-title *),
+.add-member-dialog :deep(.v-list-item__title *),
+.add-member-dialog :deep(.v-list-item-content *),
+.add-member-dialog :deep(.v-list-item__content *) {
+  color: inherit !important;
+  background: inherit !important;
+}
+</style>
+
+<style>
+/* تنسيقات شاملة لكل القوائم المنسدلة في الصفحة - ألوان سوداء */
+.v-dialog .v-overlay__content .v-list-item,
+.v-dialog .v-menu__content .v-list-item {
+  color: #000000 !important;
+  background: white !important;
+}
+
+.v-dialog .v-overlay__content .v-list-item:hover,
+.v-dialog .v-menu__content .v-list-item:hover {
+  background: #f5f5f5 !important;
+  color: #000000 !important;
+}
+
+.v-dialog .v-overlay__content .v-list-item--active,
+.v-dialog .v-menu__content .v-list-item--active,
+.v-dialog .v-overlay__content .v-list-item[aria-selected="true"],
+.v-dialog .v-menu__content .v-list-item[aria-selected="true"] {
+  background: #1a1a1a !important;
+  color: white !important;
+}
+
+/* تنسيق شامل لجميع عناصر القائمة */
+.v-list-item,
+.v-list-item__title,
+.v-list-item__content,
+.v-list-item-title,
+.v-list-item-content {
+  color: #000000 !important;
+}
+
+.v-list-item:hover {
+  background: #f5f5f5 !important;
+  color: #000000 !important;
+}
+
+.v-list-item--active,
+.v-list-item[aria-selected="true"] {
+  background: #1a1a1a !important;
+  color: white !important;
+}
+
+/* تنسيق خاص لحقول v-select في الحوار */
+.black-dropdown-select :deep(.v-menu__content .v-list-item),
+.black-dropdown-select :deep(.v-overlay__content .v-list-item) {
+  color: #000000 !important;
+  background: white !important;
+}
+
+.black-dropdown-select :deep(.v-menu__content .v-list-item:hover),
+.black-dropdown-select :deep(.v-overlay__content .v-list-item:hover) {
+  background: #f5f5f5 !important;
+  color: #000000 !important;
+}
+
+.black-dropdown-select :deep(.v-menu__content .v-list-item--active),
+.black-dropdown-select :deep(.v-overlay__content .v-list-item--active),
+.black-dropdown-select :deep(.v-menu__content .v-list-item[aria-selected="true"]),
+.black-dropdown-select :deep(.v-overlay__content .v-list-item[aria-selected="true"]) {
+  background: #1a1a1a !important;
+  color: white !important;
+}
+
+/* تنسيق شامل لجميع التسميات - ألوان سوداء */
+.add-member-dialog .v-label,
+.add-member-dialog .v-field__label,
+.add-member-dialog .v-field__label--active,
+.add-member-dialog .v-label--active,
+.add-member-dialog .v-label--floating,
+.add-member-dialog .v-field__label--floating {
+  color: #000000 !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+}
+
+.add-member-dialog .v-field--focused .v-label,
+.add-member-dialog .v-field--focused .v-field__label,
+.add-member-dialog .v-field--focused .v-label--active,
+.add-member-dialog .v-field--focused .v-field__label--active {
+  color: #000000 !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+}
+
+.add-member-dialog .v-text-field .v-label,
+.add-member-dialog .v-select .v-label,
+.add-member-dialog .v-textarea .v-label {
+  color: #000000 !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+}
+
+.add-member-dialog .v-text-field .v-field--focused .v-label,
+.add-member-dialog .v-select .v-field--focused .v-label,
+.add-member-dialog .v-textarea .v-field--focused .v-label {
+  color: #000000 !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+}
+</style>
+
+<style scoped>
+/* تنسيقات إضافية للتسميات */
+.add-member-dialog :deep(.v-label),
+.add-member-dialog :deep(.v-field__label) {
+  color: #000000 !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+}
+
+.add-member-dialog :deep(.v-label--active),
+.add-member-dialog :deep(.v-field__label--active),
+.add-member-dialog :deep(.v-label--floating),
+.add-member-dialog :deep(.v-field__label--floating) {
+  color: #000000 !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+}
+
+.add-member-dialog :deep(.v-field--focused .v-label),
+.add-member-dialog :deep(.v-field--focused .v-field__label) {
+  color: #000000 !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+}
+
+/* تنسيق شامل لجميع حدود الحقول - رمادي فاتح */
+.add-member-dialog :deep(.v-field__outline) {
+  border-color: #d1d5db !important;
+}
+
+.add-member-dialog :deep(.v-field__outline__start),
+.add-member-dialog :deep(.v-field__outline__notch),
+.add-member-dialog :deep(.v-field__outline__end) {
+  border-color: #d1d5db !important;
+}
+
+.add-member-dialog :deep(.v-field--focused .v-field__outline) {
+  border-color: #6b7280 !important;
+  border-width: 3px !important;
+}
+
+.add-member-dialog :deep(.v-field--focused .v-field__outline__start),
+.add-member-dialog :deep(.v-field--focused .v-field__outline__notch),
+.add-member-dialog :deep(.v-field--focused .v-field__outline__end) {
+  border-color: #6b7280 !important;
+}
+
+.add-member-dialog :deep(.v-field:hover .v-field__outline) {
+  border-color: #9ca3af !important;
+}
+
+.add-member-dialog :deep(.v-text-field .v-field__outline),
+.add-member-dialog :deep(.v-select .v-field__outline),
+.add-member-dialog :deep(.v-textarea .v-field__outline) {
+  border-color: #d1d5db !important;
+}
+
+.add-member-dialog :deep(.v-text-field .v-field--focused .v-field__outline),
+.add-member-dialog :deep(.v-select .v-field--focused .v-field__outline),
+.add-member-dialog :deep(.v-textarea .v-field--focused .v-field__outline) {
+  border-color: #6b7280 !important;
+  border-width: 3px !important;
+}
+
+/* ========================================
+   Animations - نفس صفحة المهندسين
+   ======================================== */
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(2deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes slideInFromTop {
+  0% {
+    transform: translateY(-100px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    transform: translateX(-50px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(50px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes sweep {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes diagonalShimmer {
+  0%, 100% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+    opacity: 0;
+  }
+}
+
+@keyframes gradientFlow {
+  0%, 100% {
+    background: linear-gradient(90deg, #ffffff 0%, #e3f2fd 50%, #bbdefb 100%);
+  }
+  50% {
+    background: linear-gradient(90deg, #bbdefb 0%, #ffffff 50%, #e3f2fd 100%);
+  }
+}
+
+@keyframes hoverPulse {
+  0% {
+    transform: translateY(-8px) scale(1.02);
+  }
+  50% {
+    transform: translateY(-12px) scale(1.05);
+  }
+  100% {
+    transform: translateY(-8px) scale(1.02);
+  }
+}
+
+@keyframes iconGlow {
+  0%, 100% {
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.6));
+  }
+}
+
+@keyframes iconBounce {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
 </style>

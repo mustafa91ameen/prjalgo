@@ -61,17 +61,15 @@ export default defineConfig({
     ],
   },
   server: {
-    port: 3005,
+    port: 3004,
   },
   css: {
     preprocessorOptions: {
       sass: {
         api: 'modern-compiler',
-        silenceDeprecations: ['if-function'],
       },
       scss: {
         api: 'modern-compiler',
-        silenceDeprecations: ['if-function'],
       },
     },
   },
