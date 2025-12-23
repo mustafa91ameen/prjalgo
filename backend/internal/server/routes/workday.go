@@ -22,6 +22,7 @@ func RegisterWorkDayRoutes(rg *gin.RouterGroup, c *container.Container) {
 		workDays.POST("", workDaysAuthz("write"), auditWorkDay("create"), c.WorkDayHandler.Create)
 		workDays.PUT("/:id", workDaysAuthz("write"), auditWorkDay("update"), c.WorkDayHandler.Update)
 		workDays.PATCH("/:id/complete", workDaysAuthz("write"), auditWorkDay("complete"), c.WorkDayHandler.Complete)
+		workDays.PATCH("/:id/uncomplete", workDaysAuthz("write"), auditWorkDay("uncomplete"), c.WorkDayHandler.Uncomplete)
 		workDays.DELETE("/:id", workDaysAuthz("delete"), auditWorkDay("delete"), c.WorkDayHandler.Delete)
 
 		// Nested routes for materials, labor, and equipment by work day ID

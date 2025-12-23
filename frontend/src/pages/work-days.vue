@@ -56,6 +56,7 @@
                     v-model="selectedDate"
                     @update:model-value="onDateSelected"
                     color="primary"
+                    theme="light"
                   />
                 </v-menu>
               </v-col>
@@ -219,47 +220,57 @@
         <template v-slot:item.actions="{ item }">
           <div class="actions-buttons">
             <v-btn
-              icon="mdi-file-excel"
               size="small"
-              color="success"
-              variant="text"
-              @click="exportToExcel"
-              class="action-btn export-action-btn"
-              title="تحميل Excel"
-            />
-            <v-btn
-              icon="mdi-delete"
-              size="small"
-              color="red"
-              variant="text"
+              variant="tonal"
+              color="error"
               @click="deleteWorkDay(item)"
-              class="action-btn"
-            />
+              class="action-btn-styled"
+              title="حذف"
+            >
+              <v-icon size="18">mdi-delete-outline</v-icon>
+            </v-btn>
             <v-btn
-              icon="mdi-pencil"
               size="small"
-              color="black"
-              variant="text"
+              variant="tonal"
+              color="grey-darken-1"
               @click="editWorkDay(item)"
-              class="action-btn"
-            />
+              class="action-btn-styled"
+              title="تعديل"
+            >
+              <v-icon size="18">mdi-pencil-outline</v-icon>
+            </v-btn>
             <v-btn
-              icon="mdi-eye"
               size="small"
-              color="blue"
-              variant="text"
+              variant="tonal"
+              color="primary"
               @click="viewWorkDay(item)"
-              class="action-btn"
+              class="action-btn-styled"
               title="عرض التفاصيل"
-            />
+            >
+              <v-icon size="18">mdi-eye-outline</v-icon>
+            </v-btn>
             <v-btn
-              icon="mdi-circle"
+              v-if="item.status !== 'completed'"
               size="small"
-              color="black"
-              variant="text"
-              @click="toggleStatus(item)"
-              class="action-btn"
-            />
+              variant="tonal"
+              color="success"
+              @click="markAsComplete(item)"
+              class="action-btn-styled complete-btn"
+              title="تحديد كمكتمل"
+            >
+              <v-icon size="18">mdi-check</v-icon>
+            </v-btn>
+            <v-btn
+              v-else
+              size="small"
+              variant="tonal"
+              color="warning"
+              @click="markAsUncomplete(item)"
+              class="action-btn-styled uncomplete-btn"
+              title="إلغاء الإكتمال"
+            >
+              <v-icon size="18">mdi-close</v-icon>
+            </v-btn>
           </div>
         </template>
           </v-data-table>
@@ -281,6 +292,74 @@
     </v-card>
 
 
+    <!-- Confirm Complete Dialog -->
+    <v-dialog v-model="showConfirmComplete" max-width="450" persistent>
+      <v-card class="confirm-dialog-card-light">
+        <v-card-title class="confirm-dialog-header-light">
+          <v-icon class="me-2" color="primary">mdi-check-circle-outline</v-icon>
+          تأكيد إتمام يوم العمل
+        </v-card-title>
+        <v-card-text class="confirm-dialog-content-light">
+          <p>هل أنت متأكد من تحديد يوم العمل كمكتمل؟</p>
+          <p class="text-medium-emphasis mt-2">
+            سيتم تحديث نسبة إنجاز المشروع تلقائياً.
+          </p>
+        </v-card-text>
+        <v-card-actions class="confirm-dialog-actions-light">
+          <v-spacer />
+          <v-btn
+            variant="outlined"
+            class="cancel-btn-light"
+            @click="cancelComplete"
+          >
+            إلغاء
+          </v-btn>
+          <v-btn
+            variant="elevated"
+            class="confirm-btn-light"
+            @click="confirmComplete"
+          >
+            <v-icon class="me-1">mdi-check</v-icon>
+            تأكيد
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Confirm Uncomplete Dialog -->
+    <v-dialog v-model="showConfirmUncomplete" max-width="450" persistent>
+      <v-card class="confirm-dialog-card-light">
+        <v-card-title class="confirm-dialog-header-light">
+          <v-icon class="me-2" color="primary">mdi-undo-variant</v-icon>
+          تأكيد إلغاء الإكتمال
+        </v-card-title>
+        <v-card-text class="confirm-dialog-content-light">
+          <p>هل أنت متأكد من إلغاء إكتمال يوم العمل؟</p>
+          <p class="text-medium-emphasis mt-2">
+            سيتم تقليل نسبة إنجاز المشروع تلقائياً.
+          </p>
+        </v-card-text>
+        <v-card-actions class="confirm-dialog-actions-light">
+          <v-spacer />
+          <v-btn
+            variant="outlined"
+            class="cancel-btn-light"
+            @click="cancelUncomplete"
+          >
+            إلغاء
+          </v-btn>
+          <v-btn
+            variant="elevated"
+            class="confirm-btn-light"
+            @click="confirmUncomplete"
+          >
+            <v-icon class="me-1">mdi-undo</v-icon>
+            تأكيد
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <!-- Success Snackbar -->
     <v-snackbar
       v-model="showSuccessMessage"
@@ -297,7 +376,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { listWorkDays, createWorkDay, updateWorkDay, deleteWorkDay as apiDeleteWorkDay, listWorkSubCategories } from '@/api/workdays'
+import { listWorkDays, createWorkDay, updateWorkDay, deleteWorkDay as apiDeleteWorkDay, completeWorkDay, uncompleteWorkDay, listWorkSubCategories } from '@/api/workdays'
 import { DEFAULT_LIMIT } from '@/constants/pagination'
 
 const router = useRouter()
@@ -348,11 +427,10 @@ const workDayForm = ref({
 const workSubCategories = ref([])
 const loadingSubCategories = ref(false)
 
-// Options
+// Options (removed 'completed' - use markAsComplete button instead)
 const statusOptions = [
   { title: 'مسودة', value: 'draft' },
-  { title: 'قيد التنفيذ', value: 'in_progress' },
-  { title: 'مكتمل', value: 'completed' }
+  { title: 'قيد التنفيذ', value: 'in_progress' }
 ]
 
 // Date picker state
@@ -780,6 +858,76 @@ const toggleStatus = (item) => {
   console.log('Toggle status:', item)
 }
 
+// Confirm complete dialog
+const showConfirmComplete = ref(false)
+const itemToComplete = ref(null)
+
+// Show confirmation dialog before completing
+const markAsComplete = (item) => {
+  if (!item?.id) return
+  itemToComplete.value = item
+  showConfirmComplete.value = true
+}
+
+// Cancel completion
+const cancelComplete = () => {
+  showConfirmComplete.value = false
+  itemToComplete.value = null
+}
+
+// Confirm and complete work day
+const confirmComplete = async () => {
+  if (!itemToComplete.value?.id) return
+  try {
+    await completeWorkDay(itemToComplete.value.id)
+    await loadWorkDays()
+    successMessage.value = 'تم تحديد يوم العمل كمكتمل وتحديث نسبة إنجاز المشروع'
+    showSuccessMessage.value = true
+  } catch (error) {
+    console.error('Failed to complete work day:', error)
+    successMessage.value = error?.message || 'فشل تحديد يوم العمل كمكتمل'
+    showSuccessMessage.value = true
+  } finally {
+    showConfirmComplete.value = false
+    itemToComplete.value = null
+  }
+}
+
+// Confirm uncomplete dialog
+const showConfirmUncomplete = ref(false)
+const itemToUncomplete = ref(null)
+
+// Show confirmation dialog before uncompleting
+const markAsUncomplete = (item) => {
+  if (!item?.id) return
+  itemToUncomplete.value = item
+  showConfirmUncomplete.value = true
+}
+
+// Cancel uncomplete
+const cancelUncomplete = () => {
+  showConfirmUncomplete.value = false
+  itemToUncomplete.value = null
+}
+
+// Confirm and uncomplete work day
+const confirmUncomplete = async () => {
+  if (!itemToUncomplete.value?.id) return
+  try {
+    await uncompleteWorkDay(itemToUncomplete.value.id)
+    await loadWorkDays()
+    successMessage.value = 'تم إلغاء إكتمال يوم العمل وتحديث نسبة إنجاز المشروع'
+    showSuccessMessage.value = true
+  } catch (error) {
+    console.error('Failed to uncomplete work day:', error)
+    successMessage.value = error?.message || 'فشل إلغاء إكتمال يوم العمل'
+    showSuccessMessage.value = true
+  } finally {
+    showConfirmUncomplete.value = false
+    itemToUncomplete.value = null
+  }
+}
+
 const saveWorkDay = async () => {
   if (!projectId.value) {
     successMessage.value = 'يجب اختيار مشروع أولاً'
@@ -827,8 +975,10 @@ const saveWorkDay = async () => {
 
 
 const resetForm = () => {
+  // تعيين التاريخ الحالي كافتراضي
+  const today = new Date().toISOString().split('T')[0]
   workDayForm.value = {
-    date: '',
+    date: today,
     description: '',
     notes: '',
     status: 'draft',
@@ -857,6 +1007,7 @@ const loadWorkDays = async (page = currentPage.value) => {
       workPeriod: '-', // backend does not provide; keep placeholder
       workType: w.status || '',
       about: w.description || w.notes || '',
+      status: w.status || 'draft', // Keep status for complete button visibility
     }))
   } catch (err) {
     console.error('فشل جلب أيام العمل', err)
@@ -2539,42 +2690,55 @@ watch(projectId, (val, prev) => {
 
 .actions-buttons {
   display: flex;
-  gap: 0.3rem;
+  gap: 4px;
   justify-content: center;
   align-items: center;
-  padding: 0.3rem;
-  background: #f8f9fa;
-  border-radius: 6px;
-  border: 1px solid #e9ecef;
+  padding: 4px 6px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
 }
 
-.action-btn {
-  min-width: 28px !important;
-  height: 28px !important;
-  border-radius: 4px !important;
+.action-btn-styled {
+  min-width: 32px !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 8px !important;
+  padding: 0 !important;
   transition: all 0.2s ease !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
 }
 
-.action-btn .v-icon {
-  font-size: 16px !important;
-  width: 16px !important;
-  height: 16px !important;
-}
-
-.action-btn:hover {
+.action-btn-styled:hover {
   transform: translateY(-2px) !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12) !important;
 }
 
-.actions-buttons .v-btn[color="red"] {
-  background: #1e3a8a !important;
-  color: white !important;
+.action-btn-styled .v-icon {
+  font-size: 18px !important;
 }
 
-.actions-buttons .v-btn[color="black"] {
-  background: #6c757d !important;
-  color: white !important;
+/* Complete button specific styling */
+.complete-btn {
+  background: rgba(34, 197, 94, 0.15) !important;
+}
+
+.complete-btn:hover {
+  background: rgba(34, 197, 94, 0.25) !important;
+}
+
+.complete-btn .v-icon,
+.uncomplete-btn .v-icon {
+  transform: scaleX(1) !important;
+  direction: ltr !important;
+}
+
+/* Uncomplete button specific styling */
+.uncomplete-btn {
+  background: rgba(245, 158, 11, 0.15) !important;
+}
+
+.uncomplete-btn:hover {
+  background: rgba(245, 158, 11, 0.25) !important;
 }
 
 /* Dialog Styles */
@@ -2662,5 +2826,69 @@ watch(projectId, (val, prev) => {
 .export-action-btn .v-icon {
   color: white !important;
   font-size: 1rem !important;
+}
+
+/* Confirm Dialog Styles - Light Theme */
+.confirm-dialog-card-light {
+  border-radius: 16px !important;
+  overflow: hidden;
+  background: #ffffff !important;
+  border: 2px solid #e2e8f0 !important;
+  box-shadow: 0 10px 40px rgba(59, 130, 246, 0.15) !important;
+}
+
+.confirm-dialog-header-light {
+  background: linear-gradient(135deg, #f0f7ff 0%, #e0edff 100%) !important;
+  color: #1e40af !important;
+  font-weight: 700 !important;
+  padding: 1.25rem 1.5rem !important;
+  border-bottom: 2px solid #bfdbfe !important;
+  font-size: 1.1rem !important;
+}
+
+.confirm-dialog-content-light {
+  padding: 1.5rem !important;
+  font-size: 1rem !important;
+  color: #374151 !important;
+  background: #ffffff !important;
+}
+
+.confirm-dialog-content-light p {
+  color: #1e293b !important;
+  font-weight: 500 !important;
+}
+
+.confirm-dialog-actions-light {
+  padding: 1rem 1.5rem !important;
+  background: #f8fafc !important;
+  border-top: 1px solid #e2e8f0 !important;
+}
+
+.cancel-btn-light {
+  color: #64748b !important;
+  border-color: #cbd5e1 !important;
+  font-weight: 600 !important;
+  border-radius: 10px !important;
+  padding: 8px 20px !important;
+}
+
+.cancel-btn-light:hover {
+  background: #f1f5f9 !important;
+  border-color: #94a3b8 !important;
+}
+
+.confirm-btn-light {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  border-radius: 10px !important;
+  padding: 8px 20px !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
+}
+
+.confirm-btn-light:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4) !important;
+  transform: translateY(-1px) !important;
 }
 </style>

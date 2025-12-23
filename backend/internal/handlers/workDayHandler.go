@@ -176,6 +176,35 @@ func (h *WorkDayHandler) Complete(c *gin.Context) {
 	response.Success(c, workDay)
 }
 
+// Uncomplete handles PATCH /workdays/:id/uncomplete
+func (h *WorkDayHandler) Uncomplete(c *gin.Context) {
+	id, err := h.parseID(c, "id")
+	if err != nil {
+		response.BadRequest(c, "invalid work day id")
+		return
+	}
+
+	workDay, err := h.workDayService.Uncomplete(c.Request.Context(), id)
+	if err != nil {
+		if errors.Is(err, services.ErrWorkDayNotFound) {
+			response.NotFound(c, err.Error())
+			return
+		}
+		if errors.Is(err, services.ErrWorkDayNotCompleted) {
+			response.BadRequest(c, err.Error())
+			return
+		}
+		if errors.Is(err, services.ErrWorkDayNoSubCategory) {
+			response.BadRequest(c, err.Error())
+			return
+		}
+		response.InternalError(c, "failed to uncomplete work day")
+		return
+	}
+
+	response.Success(c, workDay)
+}
+
 // parseID extracts an int64 ID from the URL path
 func (h *WorkDayHandler) parseID(c *gin.Context, param string) (int64, error) {
 	idStr := c.Param(param)

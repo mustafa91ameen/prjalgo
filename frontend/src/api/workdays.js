@@ -60,6 +60,20 @@ export async function deleteWorkDay(id) {
   return result?.data || result
 }
 
+export async function completeWorkDay(id) {
+  const result = await apiFetch(`/workdays/${id}/complete`, {
+    method: 'PATCH',
+  })
+  return result?.data || result
+}
+
+export async function uncompleteWorkDay(id) {
+  const result = await apiFetch(`/workdays/${id}/uncomplete`, {
+    method: 'PATCH',
+  })
+  return result?.data || result
+}
+
 export async function listWorkSubCategories({ page = 1, limit = 100 } = {}) {
   const query = new URLSearchParams({ page, limit }).toString()
   const result = await apiFetch(`/work-subcategories?${query}`, { method: 'GET' })

@@ -1,6 +1,7 @@
 package container
 
 import (
+	"log"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -69,6 +70,7 @@ func New(db *pgxpool.Pool, cfg *config.Config) *Container {
 	if refreshExpiry == 0 {
 		refreshExpiry = 7 * 24 * time.Hour
 	}
+	log.Printf("DEBUG: RefreshTokenExpiry from config: %s, parsed: %v", cfg.RefreshTokenExpiry, refreshExpiry)
 
 	// Repositories
 	projectRepo := repository.NewProjectRepository(db)

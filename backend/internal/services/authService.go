@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
+	"log"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -86,7 +87,7 @@ func (s *AuthService) Login(ctx context.Context, username, password string) (*Lo
 	}
 
 	tokenHash := s.hashToken(refreshToken)
-	expiresAt := time.Now().Add(s.refreshExpiry)
+	expiresAt := time.Now().UTC().Add(s.refreshExpiry)
 
 	_, err = s.refreshTokenRepo.Create(ctx, creds.ID, tokenHash, expiresAt)
 	if err != nil {
@@ -116,7 +117,10 @@ func (s *AuthService) RefreshToken(ctx context.Context, refreshToken string) (*L
 		return nil, ErrRevokedRefreshToken
 	}
 
-	if time.Now().After(storedToken.ExpiresAt) {
+	now := time.Now().UTC()
+	log.Printf("DEBUG RefreshToken: now=%v, expiresAt=%v, isExpired=%v", now, storedToken.ExpiresAt, now.After(storedToken.ExpiresAt))
+	if now.After(storedToken.ExpiresAt) {
+		log.Printf("DEBUG RefreshToken: Token EXPIRED - rejecting")
 		return nil, ErrExpiredRefreshToken
 	}
 
@@ -136,7 +140,7 @@ func (s *AuthService) RefreshToken(ctx context.Context, refreshToken string) (*L
 	}
 
 	newTokenHash := s.hashToken(newRefreshToken)
-	newExpiresAt := time.Now().Add(s.refreshExpiry)
+	newExpiresAt := time.Now().UTC().Add(s.refreshExpiry)
 
 	// Start transaction for atomic token update
 	tx, err := s.db.Begin(ctx)
