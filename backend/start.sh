@@ -13,31 +13,29 @@ fi
 # Note: Railway provides PG* variables, but we mapped them to DB_* in the Service settings.
 export DB_URL="postgres://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME?sslmode=$DB_SSLMODE"
 
-echo "Connecting to database at $DB_HOST:$DB_PORT..."
-
 # Debug: Print DB Host (partially masked)
 echo "----------------------------------------"
 echo "STARTING BACKEND SERVICE"
 echo "DB_HOST: $DB_HOST"
 echo "DB_PORT: $DB_PORT"
 echo "DB_USER: $DB_USER"
-echo "Listening on PORT: $PORT"
+echo "PORT Variable: $PORT"
 echo "----------------------------------------"
 
-# Run migrations
+# Run migrations (Soft fail - try to start app even if DB is unreachable temporarily)
 echo "Running migrations..."
-/usr/local/bin/migrate -path /migrations -database "$DB_URL" up || {
-    echo "❌ MIGRATION FAILED!"
-    echo "Check your DB credentials and connection."
-    # We exit here because if migrations fail, app will likely panic
-    exit 1
-}
-
-echo "Migrations completed. Starting application..."
-
-# Run the Go binary and capture output
-/api 2>&1
+/usr/local/bin/migrate -path /migrations -database "$DB_URL" up
 EXIT_CODE=$?
 
-echo "❌ Application exited with code $EXIT_CODE"
-exit $EXIT_CODE
+if [ $EXIT_CODE -ne 0 ]; then
+    echo "⚠️ MIGRATION FAILED (Exit Code: $EXIT_CODE)"
+    echo "Continuing to start application anyway to keep container alive for debugging..."
+else
+    echo "✅ Migrations completed successfully."
+fi
+
+echo "Starting application binary..."
+
+# Run the Go binary and capture output
+# We exec it so it handles signals correctly
+exec /api
