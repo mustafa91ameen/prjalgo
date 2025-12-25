@@ -53,6 +53,13 @@ func (s *DebtorService) GetByID(ctx context.Context, id int64) (*dtos.Debtor, er
 }
 
 func (s *DebtorService) Create(ctx context.Context, req dtos.CreateDebtor) (*dtos.Debtor, error) {
+	// Default status to "active" if not provided or invalid
+	status := req.Status
+	if status == nil || (*status != "active" && *status != "paid") {
+		defaultStatus := "active"
+		status = &defaultStatus
+	}
+
 	debtor := &models.Debtor{
 		Name:      req.Name,
 		Email:     req.Email,
@@ -60,7 +67,7 @@ func (s *DebtorService) Create(ctx context.Context, req dtos.CreateDebtor) (*dto
 		TotalDebt: req.TotalDebt,
 		Currency:  req.Currency,
 		DueDate:   req.DueDate,
-		Status:    req.Status,
+		Status:    status,
 		Notes:     req.Notes,
 		CreatedBy: req.CreatedBy,
 	}
