@@ -25,10 +25,7 @@ func NewServer(port string, c *container.Container, cfg *config.Config) *Server 
 	router := gin.New()
 	router.Use(gin.Recovery())
 
-	// Register middlewares (order matters - timeout should be early)
-	router.Use(TimeoutMiddleware(cfg.QueryTimeout))
-
-	// CORS Setup
+	// CORS Setup - Must be first to handle OPTIONS requests correctly
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:5173", "https://chic-luck-production.up.railway.app"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
@@ -41,6 +38,9 @@ func NewServer(port string, c *container.Container, cfg *config.Config) *Server 
 		},
 		MaxAge: 12 * time.Hour,
 	}))
+
+	// Register middlewares (order matters - timeout should be early)
+	router.Use(TimeoutMiddleware(cfg.QueryTimeout))
 	router.Use(LoggingMiddleware())
 
 	return &Server{
