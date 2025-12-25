@@ -10,7 +10,7 @@ import (
 func RegisterDashboardRoutes(rg *gin.RouterGroup, c *container.Container) {
 	dashboard := rg.Group("/dashboard")
 	authz := func(perm string) gin.HandlerFunc {
-		return auth.AuthorizationMiddleware(c.PermissionChecker, "/dashboard", perm)
+		return auth.AuthorizationMiddleware(c.PermissionChecker, "/", perm)
 	}
 	{
 		dashboard.GET("/stats", authz("read"), c.DashboardHandler.GetStats)
