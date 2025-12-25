@@ -53,12 +53,20 @@ func (s *IncomeService) GetByID(ctx context.Context, id int64) (*dtos.Income, er
 }
 
 func (s *IncomeService) Create(ctx context.Context, req dtos.CreateIncome) (*dtos.Income, error) {
+	// Default status to "pending" if not provided or invalid
+	// financial_status enum only allows: pending, approved, rejected
+	status := req.Status
+	if status == nil || (*status != "pending" && *status != "approved" && *status != "rejected") {
+		defaultStatus := "pending"
+		status = &defaultStatus
+	}
+
 	income := &models.Income{
 		Name:       req.Name,
 		Amount:     req.Amount,
 		Type:       req.Type,
 		IncomeDate: req.IncomeDate,
-		Status:     req.Status,
+		Status:     status,
 		Notes:      req.Notes,
 		CreatedBy:  req.CreatedBy,
 	}
