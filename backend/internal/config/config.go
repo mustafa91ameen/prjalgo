@@ -64,7 +64,7 @@ func Load() *Config {
 		DBPassword:         getEnv("DB_PASSWORD", ""),
 		DBName:             getEnv("DB_NAME", "app"),
 		DBSSLMode:          getEnv("DB_SSLMODE", "disable"),
-		ServerPort:         getEnv("SERVER_PORT", "8080"),
+		ServerPort:         getEnv("PORT", getEnv("SERVER_PORT", "8080")),
 		JWTSecret:          jwtSecret,
 		JWTExpiry:          getEnv("JWT_EXPIRY", "15m"),
 		RefreshTokenExpiry: getEnv("REFRESH_TOKEN_EXPIRY", "168h"),
