@@ -57,6 +57,9 @@ func Load() *Config {
 		panic("JWT_SECRET environment variable is required")
 	}
 
+	port := getEnv("PORT", getEnv("SERVER_PORT", "8080"))
+	fmt.Printf("DEBUG: Detected Config Port: %s\n", port)
+
 	return &Config{
 		DBHost:             getEnv("DB_HOST", "localhost"),
 		DBPort:             getEnv("DB_PORT", "5432"),
@@ -64,7 +67,7 @@ func Load() *Config {
 		DBPassword:         getEnv("DB_PASSWORD", ""),
 		DBName:             getEnv("DB_NAME", "app"),
 		DBSSLMode:          getEnv("DB_SSLMODE", "disable"),
-		ServerPort:         getEnv("PORT", getEnv("SERVER_PORT", "8080")),
+		ServerPort:         port,
 		JWTSecret:          jwtSecret,
 		JWTExpiry:          getEnv("JWT_EXPIRY", "15m"),
 		RefreshTokenExpiry: getEnv("REFRESH_TOKEN_EXPIRY", "168h"),
