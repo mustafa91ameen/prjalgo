@@ -13,6 +13,12 @@ func Connect(ctx context.Context, dsn string, maxRetries int, retryDelay time.Du
 	var pool *pgxpool.Pool
 	var err error
 
+	// Debug: Print connection info (mask password)
+	safeDSN := dsn
+	// Very basic check to hide password in logs if it exists
+	// (This is just for debugging Railway connection issues)
+	log.Printf("Attempting to connect with DSN: %s (truncated for safety)", safeDSN[:15]+"...")
+
 	for attempt := 0; attempt < maxRetries; attempt++ {
 		// Try to create connection pool
 		pool, err = pgxpool.New(ctx, dsn)
