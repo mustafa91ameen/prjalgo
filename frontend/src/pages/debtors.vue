@@ -224,16 +224,47 @@
               </div>
             </template>
 
+            <!-- عمود المسدد -->
+            <template v-slot:item.paidAmount="{ item }">
+              <div class="text-right">
+                <div class="font-weight-bold text-success">{{ formatCurrency(item.paidAmount || 0) }}</div>
+                <v-progress-linear
+                  v-if="item.totalDebt > 0"
+                  :model-value="getPaymentProgress(item)"
+                  color="success"
+                  height="6"
+                  rounded
+                  class="mt-1"
+                  style="max-width: 100px;"
+                />
+              </div>
+            </template>
+
+            <!-- عمود المتبقي -->
+            <template v-slot:item.remainingDebt="{ item }">
+              <div class="text-right">
+                <div class="font-weight-bold" :class="item.remainingDebt > 0 ? 'text-error' : 'text-success'">
+                  {{ formatCurrency(item.remainingDebt || 0) }}
+                </div>
+                <div class="text-caption text-grey-darken-1">
+                  {{ getPaymentProgress(item).toFixed(0) }}% مسدد
+                </div>
+              </div>
+            </template>
+
             <!-- عمود تاريخ الاستحقاق -->
             <template v-slot:item.dueDate="{ item }">
               <div class="text-center">
                 <div class="font-weight-medium">{{ formatDate(item.dueDate) }}</div>
                 <v-chip
-                  :color="getDueDateColor(item.dueDate)"
+                  :color="getDueDateColor(item.dueDate, item.status)"
                   size="small"
-                  variant="tonal"
+                  :variant="isDueDateWarning(item.dueDate, item.status) ? 'flat' : 'tonal'"
                 >
-                  {{ getDueDateStatus(item.dueDate) }}
+                  <v-icon v-if="isDueDateWarning(item.dueDate, item.status)" size="small" class="me-1">
+                    mdi-alert
+                  </v-icon>
+                  {{ getDueDateStatus(item.dueDate, item.status) }}
                 </v-chip>
               </div>
             </template>
@@ -247,6 +278,13 @@
               >
                 {{ getStatusText(item.status) }}
               </v-chip>
+            </template>
+
+            <!-- عمود الملاحظات -->
+            <template v-slot:item.notes="{ item }">
+              <div class="text-truncate" style="max-width: 150px;" :title="item.notes">
+                {{ item.notes || '-' }}
+              </div>
             </template>
 
             <!-- عمود الإجراءات -->
@@ -264,14 +302,6 @@
                   size="small"
                   variant="text"
                   @click="editDebtor(item)"
-                />
-                <v-btn
-                  icon="mdi-credit-card"
-                  size="small"
-                  variant="text"
-                  color="success"
-                  @click="markAsPaid(item)"
-                  v-if="item.status !== 'paid' && canUpdate"
                 />
                 <v-btn
                   v-if="canDelete"
@@ -737,7 +767,7 @@ const debtorForm = ref({
   totalDebt: 0,
   currency: 'IQD',
   dueDate: '',
-  status: 'pending',
+  status: 'active',
   notes: ''
 })
 
@@ -763,8 +793,11 @@ const debtorStats = ref({
 const headers = [
   { title: 'الاسم', key: 'name', sortable: true },
   { title: 'المبلغ المطلوب', key: 'totalDebt', sortable: true },
+  { title: 'المسدد', key: 'paidAmount', sortable: true },
+  { title: 'المتبقي', key: 'remainingDebt', sortable: true },
   { title: 'تاريخ الاستحقاق', key: 'dueDate', sortable: true },
   { title: 'الحالة', key: 'status', sortable: true },
+  { title: 'ملاحظات', key: 'notes', sortable: false },
   { title: 'الإجراءات', key: 'actions', sortable: false }
 ]
 
@@ -790,7 +823,6 @@ const paymentHeaders = [
 const statusOptions = [
   { title: 'جميع الحالات', value: '' },
   { title: 'نشط', value: 'active' },
-  { title: 'معلق', value: 'pending' },
   { title: 'مدفوع', value: 'paid' }
 ]
 
@@ -803,8 +835,7 @@ const amountOptions = [
 
 const currencyOptions = [
   { title: 'دينار عراقي', value: 'IQD' },
-  { title: 'دولار أمريكي', value: 'USD' },
-  { title: 'يورو', value: 'EUR' }
+  { title: 'دولار أمريكي', value: 'USD' }
 ]
 
 // Date picker state
@@ -861,16 +892,20 @@ const filteredDebtors = computed(() => {
 })
 
 const totalDebt = computed(() => {
-  return debtorStats.value.totalDebt || 0
+  // Only count active (unpaid) debt, not paid debtors
+  return debtorStats.value.activeDebt || 0
 })
 
 const overdueCount = computed(() => {
-  // Calculate overdue based on due date (past dates for unpaid debtors)
+  // Calculate overdue or due today based on due date (for active debtors only)
   const today = new Date()
+  today.setHours(0, 0, 0, 0)
   return debtors.value.filter(debtor => {
     if (debtor.status === 'paid') return false
     if (!debtor.dueDate) return false
-    return new Date(debtor.dueDate) < today
+    const due = new Date(debtor.dueDate)
+    due.setHours(0, 0, 0, 0)
+    return due <= today  // Include today and overdue
   }).length
 })
 
@@ -903,6 +938,14 @@ const formatCurrency = (amount) => {
   }).format(amount) + ' IQD'
 }
 
+// Calculate payment progress percentage
+const getPaymentProgress = (debtor) => {
+  if (!debtor.totalDebt || debtor.totalDebt === 0) return 0
+  const paidAmount = debtor.paidAmount || 0
+  const progress = (paidAmount / debtor.totalDebt) * 100
+  return Math.min(progress, 100) // Cap at 100%
+}
+
 const formatDate = (date) => {
   if (!date) return '-'
   return new Date(date).toLocaleDateString('en-US', {
@@ -914,8 +957,7 @@ const formatDate = (date) => {
 
 const getStatusColor = (status) => {
   const colors = {
-    'active': 'info',
-    'pending': 'warning',
+    'active': 'warning',
     'paid': 'success'
   }
   return colors[status] || 'grey'
@@ -924,33 +966,57 @@ const getStatusColor = (status) => {
 const getStatusText = (status) => {
   const texts = {
     'active': 'نشط',
-    'pending': 'معلق',
     'paid': 'مدفوع'
   }
   return texts[status] || 'غير محدد'
 }
 
-const getDueDateColor = (dueDate) => {
+const getDueDateColor = (dueDate, status) => {
+  // If paid, no warning needed
+  if (status === 'paid') return 'success'
+  if (!dueDate) return 'grey'
+
   const today = new Date()
+  today.setHours(0, 0, 0, 0)
   const due = new Date(dueDate)
+  due.setHours(0, 0, 0, 0)
   const diffTime = due - today
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  
-  if (diffDays < 0) return 'error'
-  if (diffDays <= 7) return 'warning'
+
+  if (diffDays < 0) return 'error'      // Overdue
+  if (diffDays === 0) return 'warning'  // Today
+  if (diffDays <= 7) return 'warning'   // Due within a week
   return 'success'
 }
 
-const getDueDateStatus = (dueDate) => {
+const getDueDateStatus = (dueDate, status) => {
+  // If paid, show paid status
+  if (status === 'paid') return 'مدفوع'
+  if (!dueDate) return 'غير محدد'
+
   const today = new Date()
+  today.setHours(0, 0, 0, 0)
   const due = new Date(dueDate)
+  due.setHours(0, 0, 0, 0)
   const diffTime = due - today
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  
-  if (diffDays < 0) return 'متأخر'
-  if (diffDays === 0) return 'اليوم'
+
+  if (diffDays < 0) return `متأخر ${Math.abs(diffDays)} يوم`
+  if (diffDays === 0) return '⚠️ اليوم!'
+  if (diffDays === 1) return 'غداً'
   if (diffDays <= 7) return `${diffDays} أيام`
   return 'مستقبلي'
+}
+
+const isDueDateWarning = (dueDate, status) => {
+  if (status === 'paid' || !dueDate) return false
+
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const due = new Date(dueDate)
+  due.setHours(0, 0, 0, 0)
+
+  return due <= today
 }
 
 // Load debtors from backend
@@ -997,7 +1063,7 @@ const openAddDialog = () => {
     totalDebt: 0,
     currency: 'IQD',
     dueDate: '',
-    status: 'pending',
+    status: 'active',
     notes: ''
   }
   dialog.value = true
@@ -1015,7 +1081,7 @@ const editDebtor = (debtor) => {
     totalDebt: debtor.totalDebt,
     currency: debtor.currency,
     dueDate: formattedDueDate,
-    status: debtor.status || 'pending',
+    status: debtor.status || 'active',
     notes: debtor.notes || ''
   }
   dialog.value = true
@@ -1066,15 +1132,6 @@ const closeDialog = () => {
   dialog.value = false
   valid.value = false
   editingDebtorId.value = null
-}
-
-const markAsPaid = async (debtor) => {
-  try {
-    await updateDebtor(debtor.id, { status: 'paid' })
-    await loadDebtors()
-  } catch (err) {
-    console.error('Error marking as paid:', err)
-  }
 }
 
 const deleteDebtor = async (debtor) => {

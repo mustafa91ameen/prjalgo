@@ -245,11 +245,11 @@ func (r *ProjectRepository) GetActualSpending(ctx context.Context, projectID int
 		return 0, err
 	}
 
-	// Calculate spending from expenses
+	// Calculate spending from expenses (only approved)
 	expensesQuery := `
 		SELECT COALESCE(SUM(amount), 0)
 		FROM expenses
-		WHERE projectId = $1
+		WHERE projectId = $1 AND status = 'approved'
 	`
 	var expensesSpending float64
 	err = r.db.QueryRow(ctx, expensesQuery, projectID).Scan(&expensesSpending)
@@ -297,11 +297,11 @@ func (r *ProjectRepository) GetActualSpendingForProjects(ctx context.Context, pr
 		return nil, err
 	}
 
-	// Calculate spending from expenses for all projects and add to existing totals
+	// Calculate spending from expenses for all projects and add to existing totals (only approved)
 	expensesQuery := `
 		SELECT projectId, COALESCE(SUM(amount), 0) as total
 		FROM expenses
-		WHERE projectId = ANY($1)
+		WHERE projectId = ANY($1) AND status = 'approved'
 		GROUP BY projectId
 	`
 	rows, err = r.db.Query(ctx, expensesQuery, projectIDs)

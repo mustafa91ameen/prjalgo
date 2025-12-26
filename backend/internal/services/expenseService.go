@@ -17,11 +17,13 @@ var (
 
 type ExpenseService struct {
 	expenseRepo repository.ExpenseRepositoryInterface
+	debtorRepo  repository.DebtorRepositoryInterface
 }
 
-func NewExpenseService(expenseRepo repository.ExpenseRepositoryInterface) *ExpenseService {
+func NewExpenseService(expenseRepo repository.ExpenseRepositoryInterface, debtorRepo repository.DebtorRepositoryInterface) *ExpenseService {
 	return &ExpenseService{
 		expenseRepo: expenseRepo,
+		debtorRepo:  debtorRepo,
 	}
 }
 
@@ -66,13 +68,21 @@ func (s *ExpenseService) GetByProjectID(ctx context.Context, projectID int64) ([
 }
 
 func (s *ExpenseService) Create(ctx context.Context, req dtos.CreateExpense) (*dtos.Expense, error) {
+	// Default status to "pending" if not provided
+	status := req.Status
+	if status == nil {
+		defaultStatus := "pending"
+		status = &defaultStatus
+	}
+
 	expense := &models.Expense{
 		Name:        req.Name,
 		Amount:      req.Amount,
 		Type:        req.Type,
 		ExpenseDate: req.ExpenseDate,
 		ProjectID:   req.ProjectID,
-		Status:      req.Status,
+		DebtorID:    req.DebtorID,
+		Status:      status,
 		Notes:       req.Notes,
 		CreatedBy:   req.CreatedBy,
 	}
@@ -80,6 +90,11 @@ func (s *ExpenseService) Create(ctx context.Context, req dtos.CreateExpense) (*d
 	created, err := s.expenseRepo.Create(ctx, expense)
 	if err != nil {
 		return nil, err
+	}
+
+	// Check if this is a debt payment and auto-update debtor status if fully paid
+	if created.DebtorID != nil && created.Status != nil && *created.Status == "approved" {
+		s.checkAndUpdateDebtorStatus(ctx, *created.DebtorID)
 	}
 
 	dto := toExpenseDTO(created)
@@ -111,6 +126,9 @@ func (s *ExpenseService) Update(ctx context.Context, id int64, req dtos.UpdateEx
 	if req.ProjectID != nil {
 		existing.ProjectID = req.ProjectID
 	}
+	if req.DebtorID != nil {
+		existing.DebtorID = req.DebtorID
+	}
 	if req.Status != nil {
 		existing.Status = req.Status
 	}
@@ -121,6 +139,11 @@ func (s *ExpenseService) Update(ctx context.Context, id int64, req dtos.UpdateEx
 	updated, err := s.expenseRepo.Update(ctx, id, existing)
 	if err != nil {
 		return nil, err
+	}
+
+	// Check if this is a debt payment and auto-update debtor status if fully paid
+	if updated.DebtorID != nil && updated.Status != nil && *updated.Status == "approved" {
+		s.checkAndUpdateDebtorStatus(ctx, *updated.DebtorID)
 	}
 
 	dto := toExpenseDTO(updated)
@@ -149,7 +172,6 @@ func (s *ExpenseService) GetStats(ctx context.Context, period string) (*dtos.Exp
 		TotalAmount:   stats.TotalAmount,
 		Pending:       stats.Pending,
 		Approved:      stats.Approved,
-		Rejected:      stats.Rejected,
 		AverageAmount: stats.AverageAmount,
 	}, nil
 }
@@ -163,7 +185,9 @@ func toExpenseSummaryDTO(e models.Expense) dtos.ExpenseSummary {
 		Type:        e.Type,
 		ExpenseDate: e.ExpenseDate,
 		ProjectID:   e.ProjectID,
+		DebtorID:    e.DebtorID,
 		Status:      e.Status,
+		Notes:       e.Notes,
 	}
 }
 
@@ -175,9 +199,30 @@ func toExpenseDTO(e *models.Expense) dtos.Expense {
 		Type:        e.Type,
 		ExpenseDate: e.ExpenseDate,
 		ProjectID:   e.ProjectID,
+		DebtorID:    e.DebtorID,
 		Status:      e.Status,
 		Notes:       e.Notes,
 		CreatedBy:   e.CreatedBy,
 		CreatedAt:   e.CreatedAt,
+	}
+}
+
+// checkAndUpdateDebtorStatus checks if debtor is fully paid and updates status to 'paid'
+func (s *ExpenseService) checkAndUpdateDebtorStatus(ctx context.Context, debtorID int64) {
+	// Get debtor details
+	debtor, err := s.debtorRepo.GetByID(ctx, debtorID)
+	if err != nil {
+		return
+	}
+
+	// Get total paid amount
+	paidAmount, err := s.expenseRepo.GetTotalPaidByDebtorID(ctx, debtorID)
+	if err != nil {
+		return
+	}
+
+	// If fully paid, update debtor status to 'paid'
+	if paidAmount >= debtor.TotalDebt {
+		s.debtorRepo.UpdateStatusToPaid(ctx, debtorID)
 	}
 }

@@ -441,7 +441,7 @@ const projectExpenses = ref([
     description: 'تكاليف النقل',
     amount: 5000,
     date: '30/03/2022',
-    status: 'rejected',
+    status: 'pending',
     notes: 'تكاليف نقل المواد'
   },
   {
@@ -519,8 +519,7 @@ const getExpenseTypeLabel = (type) => {
 const getStatusColor = (status) => {
   const colors = {
     approved: 'success',
-    pending: 'warning',
-    rejected: 'error'
+    pending: 'warning'
   }
   return colors[status] || 'grey'
 }
@@ -528,8 +527,7 @@ const getStatusColor = (status) => {
 const getStatusLabel = (status) => {
   const labels = {
     approved: 'موافق عليه',
-    pending: 'في الانتظار',
-    rejected: 'مرفوض'
+    pending: 'في الانتظار'
   }
   return labels[status] || 'غير محدد'
 }

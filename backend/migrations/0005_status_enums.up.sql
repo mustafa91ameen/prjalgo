@@ -5,7 +5,7 @@
 -- Create enum types
 CREATE TYPE project_status AS ENUM ('pending', 'in_progress', 'completed');
 CREATE TYPE work_day_status AS ENUM ('pending', 'in_progress', 'completed');
-CREATE TYPE financial_status AS ENUM ('pending', 'approved', 'rejected');
+CREATE TYPE financial_status AS ENUM ('pending', 'approved');
 CREATE TYPE debtor_status AS ENUM ('active', 'paid');
 CREATE TYPE general_status AS ENUM ('active', 'inactive');
 

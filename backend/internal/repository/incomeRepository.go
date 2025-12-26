@@ -24,7 +24,6 @@ type IncomeStatsResult struct {
 	TotalAmount   float64 `json:"totalAmount"`
 	Pending       int64   `json:"pending"`
 	Approved      int64   `json:"approved"`
-	Rejected      int64   `json:"rejected"`
 	AverageAmount float64 `json:"averageAmount"`
 }
 
@@ -45,7 +44,7 @@ func (r *IncomeRepository) GetAll(ctx context.Context, limit, offset int) ([]mod
 	}
 
 	query := `
-		SELECT id, name, amount, type, incomeDate, status
+		SELECT id, name, amount, type, incomeDate, status, notes
 		FROM income
 		ORDER BY createdAt DESC
 		LIMIT $1 OFFSET $2
@@ -61,7 +60,7 @@ func (r *IncomeRepository) GetAll(ctx context.Context, limit, offset int) ([]mod
 	for rows.Next() {
 		var i models.Income
 		err := rows.Scan(
-			&i.ID, &i.Name, &i.Amount, &i.Type, &i.IncomeDate, &i.Status,
+			&i.ID, &i.Name, &i.Amount, &i.Type, &i.IncomeDate, &i.Status, &i.Notes,
 		)
 		if err != nil {
 			return nil, 0, err
@@ -152,11 +151,10 @@ func (r *IncomeRepository) GetStats(ctx context.Context, period string) (*Income
 	query := `
 		SELECT
 			COUNT(*) as total,
-			COALESCE(SUM(amount), 0) as total_amount,
+			COALESCE(SUM(amount) FILTER (WHERE status = 'approved'), 0) as total_amount,
 			COUNT(*) FILTER (WHERE status = 'pending') as pending,
 			COUNT(*) FILTER (WHERE status = 'approved') as approved,
-			COUNT(*) FILTER (WHERE status = 'rejected') as rejected,
-			COALESCE(AVG(amount), 0) as average_amount
+			COALESCE(AVG(amount) FILTER (WHERE status = 'approved'), 0) as average_amount
 		FROM income
 	` + whereClause
 
@@ -166,7 +164,6 @@ func (r *IncomeRepository) GetStats(ctx context.Context, period string) (*Income
 		&stats.TotalAmount,
 		&stats.Pending,
 		&stats.Approved,
-		&stats.Rejected,
 		&stats.AverageAmount,
 	)
 	if err != nil {

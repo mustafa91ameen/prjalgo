@@ -18,6 +18,7 @@ func RegisterDebtorRoutes(rg *gin.RouterGroup, c *container.Container) {
 	{
 		debtors.GET("", authz("read"), c.DebtorHandler.GetAll)
 		debtors.GET("/stats", authz("read"), c.DebtorHandler.GetStats)
+		debtors.GET("/activeWithRemaining", authz("read"), c.DebtorHandler.GetActiveWithRemaining)
 		debtors.GET("/:id", authz("read"), c.DebtorHandler.GetByID)
 		debtors.POST("", authz("create"), audit("create"), c.DebtorHandler.Create)
 		debtors.PUT("/:id", authz("update"), audit("update"), c.DebtorHandler.Update)

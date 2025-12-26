@@ -12,7 +12,9 @@ type ExpenseSummary struct {
 	Type        *string   `json:"type"`
 	ExpenseDate time.Time `json:"expenseDate"`
 	ProjectID   *int64    `json:"projectId"`
+	DebtorID    *int64    `json:"debtorId"`
 	Status      *string   `json:"status"`
+	Notes       *string   `json:"notes"`
 }
 
 type Expense struct {
@@ -22,6 +24,7 @@ type Expense struct {
 	Type        *string   `json:"type"`
 	ExpenseDate time.Time `json:"expenseDate"`
 	ProjectID   *int64    `json:"projectId"`
+	DebtorID    *int64    `json:"debtorId"`
 	Status      *string   `json:"status"`
 	Notes       *string   `json:"notes"`
 	CreatedBy   *int64    `json:"createdBy"`
@@ -35,6 +38,7 @@ type CreateExpense struct {
 	Type        *string   `json:"type"`
 	ExpenseDate time.Time `json:"expenseDate" binding:"required"`
 	ProjectID   *int64    `json:"projectId"`
+	DebtorID    *int64    `json:"debtorId"`
 	Status      *string   `json:"status"`
 	Notes       *string   `json:"notes"`
 	CreatedBy   *int64    `json:"createdBy"`
@@ -46,6 +50,7 @@ type UpdateExpense struct {
 	Type        *string    `json:"type"`
 	ExpenseDate *time.Time `json:"expenseDate"`
 	ProjectID   *int64     `json:"projectId"`
+	DebtorID    *int64     `json:"debtorId"`
 	Status      *string    `json:"status"`
 	Notes       *string    `json:"notes"`
 }
@@ -60,6 +65,7 @@ type IncomeSummary struct {
 	Type       *string   `json:"type"`
 	IncomeDate time.Time `json:"incomeDate"`
 	Status     *string   `json:"status"`
+	Notes      *string   `json:"notes"`
 }
 
 type Income struct {
@@ -101,7 +107,6 @@ type ExpenseStatsResponse struct {
 	TotalAmount   float64 `json:"totalAmount"`
 	Pending       int64   `json:"pending"`
 	Approved      int64   `json:"approved"`
-	Rejected      int64   `json:"rejected"`
 	AverageAmount float64 `json:"averageAmount"`
 }
 
@@ -110,6 +115,5 @@ type IncomeStatsResponse struct {
 	TotalAmount   float64 `json:"totalAmount"`
 	Pending       int64   `json:"pending"`
 	Approved      int64   `json:"approved"`
-	Rejected      int64   `json:"rejected"`
 	AverageAmount float64 `json:"averageAmount"`
 }

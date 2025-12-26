@@ -13,6 +13,8 @@ type ExpenseRepositoryInterface interface {
 	GetAll(ctx context.Context, limit, offset int) ([]models.Expense, int64, error)
 	GetByID(ctx context.Context, id int64) (*models.Expense, error)
 	GetByProjectID(ctx context.Context, projectID int64) ([]models.Expense, error)
+	GetByDebtorID(ctx context.Context, debtorID int64) ([]models.Expense, error)
+	GetTotalPaidByDebtorID(ctx context.Context, debtorID int64) (float64, error)
 	Create(ctx context.Context, expense *models.Expense) (*models.Expense, error)
 	Update(ctx context.Context, id int64, expense *models.Expense) (*models.Expense, error)
 	Delete(ctx context.Context, id int64) error
@@ -25,7 +27,6 @@ type ExpenseStatsResult struct {
 	TotalAmount   float64 `json:"totalAmount"`
 	Pending       int64   `json:"pending"`
 	Approved      int64   `json:"approved"`
-	Rejected      int64   `json:"rejected"`
 	AverageAmount float64 `json:"averageAmount"`
 }
 
@@ -51,7 +52,7 @@ func (r *ExpenseRepository) GetAll(ctx context.Context, limit, offset int) ([]mo
 	}
 
 	query := `
-		SELECT e.id, e.name, e.amount, e.type, e.expenseDate, e.projectId, e.status
+		SELECT e.id, e.name, e.amount, e.type, e.expenseDate, e.projectId, e.debtorId, e.status, e.notes
 		FROM expenses e
 		LEFT JOIN projects p ON e.projectId = p.id
 		WHERE (e.projectId IS NULL OR p.isActive = TRUE)
@@ -70,7 +71,7 @@ func (r *ExpenseRepository) GetAll(ctx context.Context, limit, offset int) ([]mo
 		var e models.Expense
 		err := rows.Scan(
 			&e.ID, &e.Name, &e.Amount, &e.Type, &e.ExpenseDate,
-			&e.ProjectID, &e.Status,
+			&e.ProjectID, &e.DebtorID, &e.Status, &e.Notes,
 		)
 		if err != nil {
 			return nil, 0, err
@@ -83,7 +84,7 @@ func (r *ExpenseRepository) GetAll(ctx context.Context, limit, offset int) ([]mo
 
 func (r *ExpenseRepository) GetByID(ctx context.Context, id int64) (*models.Expense, error) {
 	query := `
-		SELECT id, name, amount, type, expenseDate, projectId, status, notes, createdBy, createdAt
+		SELECT id, name, amount, type, expenseDate, projectId, debtorId, status, notes, createdBy, createdAt
 		FROM expenses
 		WHERE id = $1
 	`
@@ -91,7 +92,7 @@ func (r *ExpenseRepository) GetByID(ctx context.Context, id int64) (*models.Expe
 	var e models.Expense
 	err := r.db.QueryRow(ctx, query, id).Scan(
 		&e.ID, &e.Name, &e.Amount, &e.Type, &e.ExpenseDate, &e.ProjectID,
-		&e.Status, &e.Notes, &e.CreatedBy, &e.CreatedAt,
+		&e.DebtorID, &e.Status, &e.Notes, &e.CreatedBy, &e.CreatedAt,
 	)
 
 	if err != nil {
@@ -133,14 +134,14 @@ func (r *ExpenseRepository) GetByProjectID(ctx context.Context, projectID int64)
 
 func (r *ExpenseRepository) Create(ctx context.Context, expense *models.Expense) (*models.Expense, error) {
 	query := `
-		INSERT INTO expenses (name, amount, type, expenseDate, projectId, status, notes, createdBy)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+		INSERT INTO expenses (name, amount, type, expenseDate, projectId, debtorId, status, notes, createdBy)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 		RETURNING id, createdAt
 	`
 
 	err := r.db.QueryRow(ctx, query,
 		expense.Name, expense.Amount, expense.Type, expense.ExpenseDate, expense.ProjectID,
-		expense.Status, expense.Notes, expense.CreatedBy,
+		expense.DebtorID, expense.Status, expense.Notes, expense.CreatedBy,
 	).Scan(&expense.ID, &expense.CreatedAt)
 
 	if err != nil {
@@ -154,17 +155,17 @@ func (r *ExpenseRepository) Update(ctx context.Context, id int64, expense *model
 	query := `
 		UPDATE expenses
 		SET name = $1, amount = $2, type = $3, expenseDate = $4, projectId = $5,
-		    status = $6, notes = $7
-		WHERE id = $8
-		RETURNING id, name, amount, type, expenseDate, projectId, status, notes, createdBy, createdAt
+		    debtorId = $6, status = $7, notes = $8
+		WHERE id = $9
+		RETURNING id, name, amount, type, expenseDate, projectId, debtorId, status, notes, createdBy, createdAt
 	`
 
 	err := r.db.QueryRow(ctx, query,
 		expense.Name, expense.Amount, expense.Type, expense.ExpenseDate, expense.ProjectID,
-		expense.Status, expense.Notes, id,
+		expense.DebtorID, expense.Status, expense.Notes, id,
 	).Scan(
 		&expense.ID, &expense.Name, &expense.Amount, &expense.Type, &expense.ExpenseDate,
-		&expense.ProjectID, &expense.Status, &expense.Notes,
+		&expense.ProjectID, &expense.DebtorID, &expense.Status, &expense.Notes,
 		&expense.CreatedBy, &expense.CreatedAt,
 	)
 
@@ -187,6 +188,54 @@ func (r *ExpenseRepository) Delete(ctx context.Context, id int64) error {
 	return nil
 }
 
+// GetByDebtorID returns all expenses linked to a specific debtor (debt payments)
+func (r *ExpenseRepository) GetByDebtorID(ctx context.Context, debtorID int64) ([]models.Expense, error) {
+	query := `
+		SELECT id, name, amount, type, expenseDate, projectId, debtorId, status, notes, createdAt
+		FROM expenses
+		WHERE debtorId = $1
+		ORDER BY expenseDate DESC
+	`
+
+	rows, err := r.db.Query(ctx, query, debtorID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var expenses []models.Expense
+	for rows.Next() {
+		var e models.Expense
+		err := rows.Scan(
+			&e.ID, &e.Name, &e.Amount, &e.Type, &e.ExpenseDate,
+			&e.ProjectID, &e.DebtorID, &e.Status, &e.Notes, &e.CreatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		expenses = append(expenses, e)
+	}
+
+	return expenses, rows.Err()
+}
+
+// GetTotalPaidByDebtorID returns the total amount paid for a specific debtor (sum of approved expenses)
+func (r *ExpenseRepository) GetTotalPaidByDebtorID(ctx context.Context, debtorID int64) (float64, error) {
+	query := `
+		SELECT COALESCE(SUM(amount), 0)
+		FROM expenses
+		WHERE debtorId = $1 AND status = 'approved'
+	`
+
+	var total float64
+	err := r.db.QueryRow(ctx, query, debtorID).Scan(&total)
+	if err != nil {
+		return 0, err
+	}
+
+	return total, nil
+}
+
 func (r *ExpenseRepository) GetStats(ctx context.Context, period string) (*ExpenseStatsResult, error) {
 	periodClause := buildExpensePeriodWhereClause(period, "e.createdAt")
 
@@ -201,11 +250,10 @@ func (r *ExpenseRepository) GetStats(ctx context.Context, period string) (*Expen
 	query := `
 		SELECT
 			COUNT(*) as total,
-			COALESCE(SUM(e.amount), 0) as total_amount,
+			COALESCE(SUM(e.amount) FILTER (WHERE e.status = 'approved'), 0) as total_amount,
 			COUNT(*) FILTER (WHERE e.status = 'pending') as pending,
 			COUNT(*) FILTER (WHERE e.status = 'approved') as approved,
-			COUNT(*) FILTER (WHERE e.status = 'rejected') as rejected,
-			COALESCE(AVG(e.amount), 0) as average_amount
+			COALESCE(AVG(e.amount) FILTER (WHERE e.status = 'approved'), 0) as average_amount
 		FROM expenses e
 		LEFT JOIN projects p ON e.projectId = p.id
 	` + whereClause
@@ -216,7 +264,6 @@ func (r *ExpenseRepository) GetStats(ctx context.Context, period string) (*Expen
 		&stats.TotalAmount,
 		&stats.Pending,
 		&stats.Approved,
-		&stats.Rejected,
 		&stats.AverageAmount,
 	)
 	if err != nil {

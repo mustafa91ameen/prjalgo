@@ -16,12 +16,14 @@ var (
 )
 
 type DebtorService struct {
-	debtorRepo repository.DebtorRepositoryInterface
+	debtorRepo  repository.DebtorRepositoryInterface
+	expenseRepo repository.ExpenseRepositoryInterface
 }
 
-func NewDebtorService(debtorRepo repository.DebtorRepositoryInterface) *DebtorService {
+func NewDebtorService(debtorRepo repository.DebtorRepositoryInterface, expenseRepo repository.ExpenseRepositoryInterface) *DebtorService {
 	return &DebtorService{
-		debtorRepo: debtorRepo,
+		debtorRepo:  debtorRepo,
+		expenseRepo: expenseRepo,
 	}
 }
 
@@ -33,7 +35,9 @@ func (s *DebtorService) GetAll(ctx context.Context, limit, offset int) (dtos.Pag
 
 	result := make([]dtos.DebtorSummary, len(debtors))
 	for i, d := range debtors {
-		result[i] = toDebtorSummaryDTO(d)
+		// Get paid amount for each debtor
+		paidAmount, _ := s.expenseRepo.GetTotalPaidByDebtorID(ctx, d.ID)
+		result[i] = toDebtorSummaryDTOWithPaid(d, paidAmount)
 	}
 
 	page := (offset / limit) + 1
@@ -48,7 +52,9 @@ func (s *DebtorService) GetByID(ctx context.Context, id int64) (*dtos.Debtor, er
 		}
 		return nil, err
 	}
-	dto := toDebtorDTO(debtor)
+	// Get paid amount for this debtor
+	paidAmount, _ := s.expenseRepo.GetTotalPaidByDebtorID(ctx, id)
+	dto := toDebtorDTOWithPaid(debtor, paidAmount)
 	return &dto, nil
 }
 
@@ -77,7 +83,8 @@ func (s *DebtorService) Create(ctx context.Context, req dtos.CreateDebtor) (*dto
 		return nil, err
 	}
 
-	dto := toDebtorDTO(created)
+	// New debtor has 0 paid amount
+	dto := toDebtorDTOWithPaid(created, 0)
 	return &dto, nil
 }
 
@@ -110,7 +117,11 @@ func (s *DebtorService) Update(ctx context.Context, id int64, req dtos.UpdateDeb
 		existing.DueDate = req.DueDate
 	}
 	if req.Status != nil {
-		existing.Status = req.Status
+		// Validate status is a valid debtor_status enum value
+		if *req.Status == "active" || *req.Status == "paid" {
+			existing.Status = req.Status
+		}
+		// Invalid status values are ignored, keeping the existing status
 	}
 	if req.Notes != nil {
 		existing.Notes = req.Notes
@@ -121,7 +132,9 @@ func (s *DebtorService) Update(ctx context.Context, id int64, req dtos.UpdateDeb
 		return nil, err
 	}
 
-	dto := toDebtorDTO(updated)
+	// Get paid amount for this debtor
+	paidAmount, _ := s.expenseRepo.GetTotalPaidByDebtorID(ctx, id)
+	dto := toDebtorDTOWithPaid(updated, paidAmount)
 	return &dto, nil
 }
 
@@ -152,32 +165,71 @@ func (s *DebtorService) GetStats(ctx context.Context, period string) (*dtos.Debt
 	}, nil
 }
 
+// GetActiveDebtorsWithRemaining returns active debtors with remaining debt (for expense form dropdown)
+func (s *DebtorService) GetActiveDebtorsWithRemaining(ctx context.Context) ([]dtos.DebtorWithRemaining, error) {
+	debtors, err := s.debtorRepo.GetActiveDebtorsWithRemaining(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]dtos.DebtorWithRemaining, len(debtors))
+	for i, d := range debtors {
+		remainingDebt := d.TotalDebt - d.PaidAmount
+		if remainingDebt < 0 {
+			remainingDebt = 0
+		}
+		result[i] = dtos.DebtorWithRemaining{
+			ID:            d.ID,
+			Name:          d.Name,
+			TotalDebt:     d.TotalDebt,
+			PaidAmount:    d.PaidAmount,
+			RemainingDebt: remainingDebt,
+			Currency:      d.Currency,
+		}
+	}
+
+	return result, nil
+}
+
 // DTO conversion helpers
-func toDebtorSummaryDTO(d models.Debtor) dtos.DebtorSummary {
+func toDebtorSummaryDTOWithPaid(d models.Debtor, paidAmount float64) dtos.DebtorSummary {
+	remainingDebt := d.TotalDebt - paidAmount
+	if remainingDebt < 0 {
+		remainingDebt = 0
+	}
 	return dtos.DebtorSummary{
-		ID:        d.ID,
-		Name:      d.Name,
-		Email:     d.Email,
-		Phone:     d.Phone,
-		TotalDebt: d.TotalDebt,
-		Currency:  d.Currency,
-		DueDate:   d.DueDate,
-		Status:    d.Status,
+		ID:            d.ID,
+		Name:          d.Name,
+		Email:         d.Email,
+		Phone:         d.Phone,
+		TotalDebt:     d.TotalDebt,
+		PaidAmount:    paidAmount,
+		RemainingDebt: remainingDebt,
+		Currency:      d.Currency,
+		DueDate:       d.DueDate,
+		Status:        d.Status,
+		Notes:         d.Notes,
 	}
 }
 
-func toDebtorDTO(d *models.Debtor) dtos.Debtor {
+func toDebtorDTOWithPaid(d *models.Debtor, paidAmount float64) dtos.Debtor {
+	remainingDebt := d.TotalDebt - paidAmount
+	if remainingDebt < 0 {
+		remainingDebt = 0
+	}
 	return dtos.Debtor{
-		ID:        d.ID,
-		Name:      d.Name,
-		Email:     d.Email,
-		Phone:     d.Phone,
-		TotalDebt: d.TotalDebt,
-		Currency:  d.Currency,
-		DueDate:   d.DueDate,
-		Status:    d.Status,
-		Notes:     d.Notes,
-		CreatedBy: d.CreatedBy,
-		CreatedAt: d.CreatedAt,
+		ID:            d.ID,
+		Name:          d.Name,
+		Email:         d.Email,
+		Phone:         d.Phone,
+		TotalDebt:     d.TotalDebt,
+		PaidAmount:    paidAmount,
+		RemainingDebt: remainingDebt,
+		Currency:      d.Currency,
+		DueDate:       d.DueDate,
+		Status:        d.Status,
+		Notes:         d.Notes,
+		CreatedBy:     d.CreatedBy,
+		CreatedAt:     d.CreatedAt,
 	}
 }

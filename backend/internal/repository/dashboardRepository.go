@@ -103,23 +103,25 @@ func (r *DashboardRepository) GetFinancialStats(ctx context.Context, period stri
 		firstDay := time.Date(month.Year(), month.Month(), 1, 0, 0, 0, 0, time.UTC)
 		lastDay := firstDay.AddDate(0, 1, -1)
 
-		// Income is not linked to projects, so no filtering needed
+		// Income: only count approved status
 		incomeQuery := `
 			SELECT COALESCE(SUM(amount), 0)
 			FROM income
 			WHERE incomeDate >= $1 AND incomeDate <= $2
+			AND status = 'approved'
 		`
 		err := r.db.QueryRow(ctx, incomeQuery, firstDay, lastDay).Scan(&stats.TotalIncome)
 		if err != nil {
 			return nil, err
 		}
 
-		// Expenses: only count those with no project OR linked to active projects
+		// Expenses: only count approved status and (no project OR linked to active projects)
 		expenseQuery := `
 			SELECT COALESCE(SUM(e.amount), 0)
 			FROM expenses e
 			LEFT JOIN projects p ON e.projectId = p.id
 			WHERE e.expenseDate >= $1 AND e.expenseDate <= $2
+			AND e.status = 'approved'
 			AND (e.projectId IS NULL OR p.isActive = TRUE)
 		`
 		err = r.db.QueryRow(ctx, expenseQuery, firstDay, lastDay).Scan(&stats.TotalExpenses)
@@ -127,19 +129,20 @@ func (r *DashboardRepository) GetFinancialStats(ctx context.Context, period stri
 			return nil, err
 		}
 	} else {
-		// All time
-		incomeQuery := `SELECT COALESCE(SUM(amount), 0) FROM income`
+		// All time - only count approved status
+		incomeQuery := `SELECT COALESCE(SUM(amount), 0) FROM income WHERE status = 'approved'`
 		err := r.db.QueryRow(ctx, incomeQuery).Scan(&stats.TotalIncome)
 		if err != nil {
 			return nil, err
 		}
 
-		// Expenses: only count those with no project OR linked to active projects
+		// Expenses: only count approved status and (no project OR linked to active projects)
 		expenseQuery := `
 			SELECT COALESCE(SUM(e.amount), 0)
 			FROM expenses e
 			LEFT JOIN projects p ON e.projectId = p.id
-			WHERE (e.projectId IS NULL OR p.isActive = TRUE)
+			WHERE e.status = 'approved'
+			AND (e.projectId IS NULL OR p.isActive = TRUE)
 		`
 		err = r.db.QueryRow(ctx, expenseQuery).Scan(&stats.TotalExpenses)
 		if err != nil {

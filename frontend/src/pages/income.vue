@@ -128,6 +128,11 @@
           <template v-slot:item.status="{ item }">
             {{ getStatusText(item.status) }}
           </template>
+          <template v-slot:item.notes="{ item }">
+            <div class="text-truncate" style="max-width: 150px;" :title="item.notes">
+              {{ item.notes || '-' }}
+            </div>
+          </template>
           <template v-slot:item.actions="{ item }">
             <v-btn
               v-if="canUpdate"
@@ -355,7 +360,7 @@ const incomeForm = ref({
   amount: 0,
   type: '',
   incomeDate: new Date().toISOString().split('T')[0],
-  status: 'received',
+  status: 'pending',
   notes: ''
 })
 
@@ -397,7 +402,6 @@ const incomeStats = ref({
   totalAmount: 0,
   pending: 0,
   approved: 0,
-  rejected: 0,
   averageAmount: 0
 })
 
@@ -414,10 +418,8 @@ const incomeCategories = [
 ]
 
 const statusOptions = [
-  { title: 'مستلم', value: 'received', color: 'success' },
   { title: 'معلق', value: 'pending', color: 'warning' },
-  { title: 'مؤكد', value: 'approved', color: 'info' },
-  { title: 'مرفوض', value: 'rejected', color: 'error' }
+  { title: 'معتمد', value: 'approved', color: 'success' }
 ]
 
 const sourceOptions = [
@@ -437,6 +439,7 @@ const headers = [
   { title: 'النوع', key: 'type', align: 'center', sortable: true },
   { title: 'الحالة', key: 'status', align: 'center', sortable: true },
   { title: 'التاريخ', key: 'incomeDate', align: 'center', sortable: true },
+  { title: 'ملاحظات', key: 'notes', align: 'center', sortable: false },
   { title: 'الإجراءات', key: 'actions', align: 'center', sortable: false }
 ]
 
@@ -495,7 +498,7 @@ const filteredIncomeSources = computed(() => {
 const incomeByCategory = computed(() => {
   const categories = {}
   incomeSources.value
-    .filter(item => item.status === 'received')
+    .filter(item => item.status === 'approved')
     .forEach(item => {
       if (!categories[item.type]) {
         categories[item.type] = 0
@@ -590,7 +593,7 @@ const openAddDialog = () => {
     amount: 0,
     type: '',
     incomeDate: new Date().toISOString().split('T')[0],
-    status: 'received',
+    status: 'pending',
     notes: ''
   }
   showAddDialog.value = true
@@ -603,7 +606,7 @@ const editIncome = (item) => {
     amount: item.amount || 0,
     type: item.type || '',
     incomeDate: item.incomeDate ? formatDateForInput(item.incomeDate) : new Date().toISOString().split('T')[0],
-    status: item.status || 'received',
+    status: item.status || 'pending',
     notes: item.notes || ''
   }
   showAddDialog.value = true
@@ -667,7 +670,7 @@ const closeDialog = () => {
     amount: 0,
     type: '',
     incomeDate: new Date().toISOString().split('T')[0],
-    status: 'received',
+    status: 'pending',
     notes: ''
   }
 }
@@ -714,7 +717,7 @@ const getIncomeTrend = (months = 6) => {
         const itemDate = new Date(item.incomeDate)
         return itemDate.getMonth() === date.getMonth() &&
                itemDate.getFullYear() === date.getFullYear() &&
-               item.status === 'received'
+               item.status === 'approved'
       })
       .reduce((sum, item) => sum + item.amount, 0)
 

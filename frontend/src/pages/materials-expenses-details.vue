@@ -725,8 +725,7 @@ const newExpense = ref({
 // Status options for expenses
 const statusOptions = [
   { title: 'معلق', value: 'pending' },
-  { title: 'معتمد', value: 'approved' },
-  { title: 'مرفوض', value: 'rejected' }
+  { title: 'معتمد', value: 'approved' }
 ]
 
 // Loading state for expenses
@@ -1047,8 +1046,7 @@ const formatCurrency = (amount) => {
 const getStatusColor = (status) => {
   const colors = {
     pending: 'warning',
-    approved: 'success',
-    rejected: 'error'
+    approved: 'success'
   }
   return colors[status] || 'grey'
 }
@@ -1056,8 +1054,7 @@ const getStatusColor = (status) => {
 const getStatusText = (status) => {
   const texts = {
     pending: 'معلق',
-    approved: 'معتمد',
-    rejected: 'مرفوض'
+    approved: 'معتمد'
   }
   return texts[status] || status || 'غير محدد'
 }

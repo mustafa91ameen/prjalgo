@@ -6,28 +6,43 @@ import "time"
 
 // Response DTOs
 type DebtorSummary struct {
-	ID        int64      `json:"id"`
-	Name      string     `json:"name"`
-	Email     *string    `json:"email"`
-	Phone     *string    `json:"phone"`
-	TotalDebt float64    `json:"totalDebt"`
-	Currency  string     `json:"currency"`
-	DueDate   *time.Time `json:"dueDate"`
-	Status    *string    `json:"status"`
+	ID            int64      `json:"id"`
+	Name          string     `json:"name"`
+	Email         *string    `json:"email"`
+	Phone         *string    `json:"phone"`
+	TotalDebt     float64    `json:"totalDebt"`
+	PaidAmount    float64    `json:"paidAmount"`
+	RemainingDebt float64    `json:"remainingDebt"`
+	Currency      string     `json:"currency"`
+	DueDate       *time.Time `json:"dueDate"`
+	Status        *string    `json:"status"`
+	Notes         *string    `json:"notes"`
 }
 
 type Debtor struct {
-	ID        int64      `json:"id"`
-	Name      string     `json:"name"`
-	Email     *string    `json:"email"`
-	Phone     *string    `json:"phone"`
-	TotalDebt float64    `json:"totalDebt"`
-	Currency  string     `json:"currency"`
-	DueDate   *time.Time `json:"dueDate"`
-	Status    *string    `json:"status"`
-	Notes     *string    `json:"notes"`
-	CreatedBy *int64     `json:"createdBy"`
-	CreatedAt time.Time  `json:"createdAt"`
+	ID            int64      `json:"id"`
+	Name          string     `json:"name"`
+	Email         *string    `json:"email"`
+	Phone         *string    `json:"phone"`
+	TotalDebt     float64    `json:"totalDebt"`
+	PaidAmount    float64    `json:"paidAmount"`
+	RemainingDebt float64    `json:"remainingDebt"`
+	Currency      string     `json:"currency"`
+	DueDate       *time.Time `json:"dueDate"`
+	Status        *string    `json:"status"`
+	Notes         *string    `json:"notes"`
+	CreatedBy     *int64     `json:"createdBy"`
+	CreatedAt     time.Time  `json:"createdAt"`
+}
+
+// DebtorWithRemaining is used for expense form dropdown (active debtors with remaining debt)
+type DebtorWithRemaining struct {
+	ID            int64   `json:"id"`
+	Name          string  `json:"name"`
+	TotalDebt     float64 `json:"totalDebt"`
+	PaidAmount    float64 `json:"paidAmount"`
+	RemainingDebt float64 `json:"remainingDebt"`
+	Currency      string  `json:"currency"`
 }
 
 // Request DTOs

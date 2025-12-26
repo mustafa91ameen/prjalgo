@@ -54,9 +54,9 @@ func (s *IncomeService) GetByID(ctx context.Context, id int64) (*dtos.Income, er
 
 func (s *IncomeService) Create(ctx context.Context, req dtos.CreateIncome) (*dtos.Income, error) {
 	// Default status to "pending" if not provided or invalid
-	// financial_status enum only allows: pending, approved, rejected
+	// financial_status enum only allows: pending, approved
 	status := req.Status
-	if status == nil || (*status != "pending" && *status != "approved" && *status != "rejected") {
+	if status == nil || (*status != "pending" && *status != "approved") {
 		defaultStatus := "pending"
 		status = &defaultStatus
 	}
@@ -140,7 +140,6 @@ func (s *IncomeService) GetStats(ctx context.Context, period string) (*dtos.Inco
 		TotalAmount:   stats.TotalAmount,
 		Pending:       stats.Pending,
 		Approved:      stats.Approved,
-		Rejected:      stats.Rejected,
 		AverageAmount: stats.AverageAmount,
 	}, nil
 }
@@ -154,6 +153,7 @@ func toIncomeSummaryDTO(i models.Income) dtos.IncomeSummary {
 		Type:       i.Type,
 		IncomeDate: i.IncomeDate,
 		Status:     i.Status,
+		Notes:      i.Notes,
 	}
 }
 

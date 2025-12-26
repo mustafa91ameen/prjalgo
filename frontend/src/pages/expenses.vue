@@ -384,6 +384,74 @@
                 </v-col>
               </v-row>
 
+              <!-- الصف الرابع: تسديد دين -->
+              <v-row class="clean-form-row">
+                <v-col cols="12" class="clean-form-column">
+                  <div class="clean-form-field-wrapper">
+                    <label class="clean-form-label" style="color: #1e293b;">هل هذا لتسديد دين؟</label>
+                    <v-switch
+                      v-model="isDebtPayment"
+                      color="primary"
+                      hide-details="auto"
+                      class="debt-payment-switch"
+                      :label="isDebtPayment ? 'نعم' : 'لا'"
+                      @update:model-value="onDebtPaymentChange"
+                    />
+                  </div>
+                </v-col>
+              </v-row>
+
+              <!-- اختيار المدين (يظهر فقط عند تحديد تسديد دين) -->
+              <v-row v-if="isDebtPayment" class="clean-form-row">
+                <v-col cols="12" md="6" class="clean-form-column">
+                  <div class="clean-form-field-wrapper">
+                    <label class="clean-form-label">
+                      اختر المدين <span class="required-star">*</span>
+                    </label>
+                    <v-select
+                      v-model="selectedDebtorId"
+                      :items="debtorItems"
+                      item-title="title"
+                      item-value="value"
+                      variant="outlined"
+                      density="comfortable"
+                      placeholder="اختر المدين"
+                      :loading="loadingDebtors"
+                      :rules="[v => !!v || 'يرجى اختيار المدين']"
+                      required
+                      hide-details="auto"
+                      class="clean-form-input"
+                      @update:model-value="onDebtorChange"
+                    />
+                  </div>
+                </v-col>
+                <v-col v-if="selectedDebtor" cols="12" md="6" class="clean-form-column">
+                  <div class="debtor-info-card">
+                    <div class="debtor-info-row">
+                      <span class="debtor-info-label">إجمالي الدين:</span>
+                      <span class="debtor-info-value">{{ formatCurrency(selectedDebtor.totalDebt) }}</span>
+                    </div>
+                    <div class="debtor-info-row">
+                      <span class="debtor-info-label">المسدد:</span>
+                      <span class="debtor-info-value paid">{{ formatCurrency(selectedDebtor.paidAmount) }}</span>
+                    </div>
+                    <div class="debtor-info-row">
+                      <span class="debtor-info-label">المتبقي:</span>
+                      <span class="debtor-info-value remaining">{{ formatCurrency(selectedDebtor.remainingDebt) }}</span>
+                    </div>
+                  </div>
+                </v-col>
+              </v-row>
+
+              <!-- تحذير تجاوز المبلغ المتبقي -->
+              <v-row v-if="amountExceedsRemaining" class="clean-form-row">
+                <v-col cols="12" class="clean-form-column">
+                  <v-alert type="error" variant="tonal" density="compact">
+                    المبلغ المدخل ({{ formatCurrency(expenseForm.amount) }}) يتجاوز المبلغ المتبقي ({{ formatCurrency(selectedDebtor?.remainingDebt || 0) }})
+                  </v-alert>
+                </v-col>
+              </v-row>
+
               <!-- الصف الخامس: الملاحظات -->
               <v-row class="clean-form-row">
                 <v-col cols="12" class="clean-form-column">
@@ -417,7 +485,7 @@
             <v-btn
               class="clean-form-continue-btn"
               variant="elevated"
-              :disabled="!expenseFormValid"
+              :disabled="!expenseFormValid || amountExceedsRemaining || (isDebtPayment && !selectedDebtorId)"
               @click="saveExpense"
             >
               {{ isEditingExpense ? 'تحديث المصروف' : 'حفظ المصروف' }}
@@ -433,6 +501,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { listExpenses, createExpense, updateExpense, deleteExpense as deleteExpenseApi, getExpenseStats } from '@/api/expenses'
+import { getActiveDebtorsWithRemaining } from '@/api/debtors'
 import { DEFAULT_LIMIT } from '@/constants/pagination'
 import { usePermissions } from '@/composables/usePermissions'
 
@@ -459,6 +528,12 @@ const selectedExpense = ref(null)
 const selectedExpenseType = ref('')
 const selectedStatus = ref('')
 
+// Debtor payment state
+const isDebtPayment = ref(false)
+const activeDebtors = ref([])
+const selectedDebtorId = ref(null)
+const loadingDebtors = ref(false)
+
 // جدول المصاريف الإدارية - aligned with backend DTO
 const expenseHeaders = [
   { title: 'التسلسل', key: 'serial', sortable: false, width: '80px' },
@@ -479,7 +554,8 @@ const expenseForm = ref({
   expenseDate: new Date().toISOString().split('T')[0],
   projectId: null,
   status: 'pending',
-  notes: ''
+  notes: '',
+  debtorId: null
 })
 
 // Stats from backend API
@@ -488,7 +564,6 @@ const expenseStats = ref({
   totalAmount: 0,
   pending: 0,
   approved: 0,
-  rejected: 0,
   averageAmount: 0
 })
 
@@ -538,9 +613,62 @@ const expenseTypeOptions = ref([
 const statusOptions = ref([
   { title: 'جميع الحالات', value: '' },
   { title: 'معتمد', value: 'approved' },
-  { title: 'معلق', value: 'pending' },
-  { title: 'مرفوض', value: 'rejected' }
+  { title: 'معلق', value: 'pending' }
 ])
+
+// Load active debtors with remaining debt for dropdown
+const loadActiveDebtors = async () => {
+  loadingDebtors.value = true
+  try {
+    activeDebtors.value = await getActiveDebtorsWithRemaining()
+  } catch (err) {
+    console.error('Error loading active debtors:', err)
+    activeDebtors.value = []
+  } finally {
+    loadingDebtors.value = false
+  }
+}
+
+// Get selected debtor info for validation
+const selectedDebtor = computed(() => {
+  if (!selectedDebtorId.value) return null
+  return activeDebtors.value.find(d => d.id === selectedDebtorId.value)
+})
+
+// Check if amount exceeds remaining debt
+const amountExceedsRemaining = computed(() => {
+  if (!isDebtPayment.value || !selectedDebtor.value) return false
+  return expenseForm.value.amount > selectedDebtor.value.remainingDebt
+})
+
+// Format debtors for dropdown display
+const debtorItems = computed(() => {
+  return activeDebtors.value.map(d => ({
+    title: `${d.name} - متبقي: ${formatCurrency(d.remainingDebt)}`,
+    value: d.id,
+    remainingDebt: d.remainingDebt
+  }))
+})
+
+// Handle debt payment checkbox change
+const onDebtPaymentChange = async (value) => {
+  if (value && activeDebtors.value.length === 0) {
+    await loadActiveDebtors()
+  }
+  if (!value) {
+    selectedDebtorId.value = null
+    expenseForm.value.debtorId = null
+  }
+}
+
+// Handle debtor selection change
+const onDebtorChange = (debtorId) => {
+  expenseForm.value.debtorId = debtorId
+  // Auto-set expense type to "سداد دين" when a debtor is selected
+  if (debtorId) {
+    expenseForm.value.type = 'سداد دين'
+  }
+}
 
 // إحصائيات المصاريف - from backend API
 const totalExpenses = computed(() => expenseStats.value.total || expenses.value.length)
@@ -558,6 +686,8 @@ const openAddExpenseDialog = () => {
   expenseDialog.value = true
   isEditingExpense.value = false
   selectedExpense.value = null
+  isDebtPayment.value = false
+  selectedDebtorId.value = null
   expenseForm.value = {
     name: '',
     amount: 0,
@@ -565,7 +695,8 @@ const openAddExpenseDialog = () => {
     expenseDate: new Date().toISOString().split('T')[0],
     projectId: null,
     status: 'pending',
-    notes: ''
+    notes: '',
+    debtorId: null
   }
 }
 
@@ -573,6 +704,8 @@ const closeExpenseDialog = () => {
   expenseDialog.value = false
   isEditingExpense.value = false
   selectedExpense.value = null
+  isDebtPayment.value = false
+  selectedDebtorId.value = null
   expenseForm.value = {
     name: '',
     amount: 0,
@@ -580,13 +713,25 @@ const closeExpenseDialog = () => {
     expenseDate: new Date().toISOString().split('T')[0],
     projectId: null,
     status: 'pending',
-    notes: ''
+    notes: '',
+    debtorId: null
   }
 }
 
-const editExpense = (expense) => {
+const editExpense = async (expense) => {
   selectedExpense.value = expense
   isEditingExpense.value = true
+
+  // Set debtor payment state if expense has debtorId
+  if (expense.debtorId) {
+    isDebtPayment.value = true
+    selectedDebtorId.value = expense.debtorId
+    await loadActiveDebtors()
+  } else {
+    isDebtPayment.value = false
+    selectedDebtorId.value = null
+  }
+
   expenseForm.value = {
     name: expense.name || '',
     amount: expense.amount || 0,
@@ -594,7 +739,8 @@ const editExpense = (expense) => {
     expenseDate: expense.expenseDate ? formatDateForInput(expense.expenseDate) : new Date().toISOString().split('T')[0],
     projectId: expense.projectId || null,
     status: expense.status || 'pending',
-    notes: expense.notes || ''
+    notes: expense.notes || '',
+    debtorId: expense.debtorId || null
   }
   expenseDialog.value = true
 }
@@ -648,7 +794,7 @@ const deleteExpense = async (expense) => {
 }
 
 const saveExpense = async () => {
-  if (expenseFormValid.value) {
+  if (expenseFormValid.value && !amountExceedsRemaining.value) {
     try {
       // Convert date to ISO format for backend
       const dateValue = expenseForm.value.expenseDate
@@ -665,6 +811,11 @@ const saveExpense = async () => {
       if (expenseForm.value.projectId) payload.projectId = expenseForm.value.projectId
       if (expenseForm.value.status) payload.status = expenseForm.value.status
       if (expenseForm.value.notes) payload.notes = expenseForm.value.notes
+
+      // Add debtorId if this is a debt payment
+      if (isDebtPayment.value && selectedDebtorId.value) {
+        payload.debtorId = selectedDebtorId.value
+      }
 
       if (isEditingExpense.value && selectedExpense.value) {
         // Update existing expense
@@ -767,10 +918,8 @@ const getStatusColor = (status) => {
   const colors = {
     'approved': 'success',
     'pending': 'warning',
-    'rejected': 'error',
     'معتمد': 'success',
     'معلق': 'warning',
-    'مرفوض': 'error',
     'مسودة': 'grey'
   }
   return colors[status] || 'grey'
@@ -780,8 +929,7 @@ const getStatusColor = (status) => {
 const getStatusText = (status) => {
   const texts = {
     'approved': 'معتمد',
-    'pending': 'معلق',
-    'rejected': 'مرفوض'
+    'pending': 'معلق'
   }
   return texts[status] || status || 'غير محدد'
 }
@@ -826,6 +974,52 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* Debtor Payment Styles */
+.debt-payment-switch {
+  margin-top: 8px;
+}
+
+.debt-payment-switch :deep(.v-label) {
+  color: #1e293b !important;
+  font-weight: 500;
+}
+
+.debtor-info-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.debtor-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.debtor-info-label {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.debtor-info-value {
+  color: #1e293b;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.debtor-info-value.paid {
+  color: #16a34a;
+}
+
+.debtor-info-value.remaining {
+  color: #dc2626;
+}
+
 /* Page Styles */
 .data-page {
   background: #ffffff !important;

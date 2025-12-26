@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"log"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -72,6 +73,7 @@ func (h *DebtorHandler) Create(c *gin.Context) {
 
 	debtor, err := h.debtorService.Create(c.Request.Context(), req)
 	if err != nil {
+		log.Printf("ERROR: failed to create debtor: %v", err)
 		response.InternalError(c, "failed to create debtor")
 		return
 	}
@@ -150,6 +152,18 @@ func (h *DebtorHandler) GetStats(c *gin.Context) {
 	}
 
 	response.Success(c, stats)
+}
+
+// GetActiveWithRemaining handles GET /debtors/active-with-remaining
+// Returns active debtors with remaining debt for expense form dropdown
+func (h *DebtorHandler) GetActiveWithRemaining(c *gin.Context) {
+	debtors, err := h.debtorService.GetActiveDebtorsWithRemaining(c.Request.Context())
+	if err != nil {
+		response.InternalError(c, "failed to fetch active debtors")
+		return
+	}
+
+	response.Success(c, debtors)
 }
 
 // parseID extracts an int64 ID from the URL path

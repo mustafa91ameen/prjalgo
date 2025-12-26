@@ -16,6 +16,17 @@ type DebtorRepositoryInterface interface {
 	Update(ctx context.Context, id int64, debtor *models.Debtor) (*models.Debtor, error)
 	Delete(ctx context.Context, id int64) error
 	GetStats(ctx context.Context, period string) (*DebtorStatsResult, error)
+	GetActiveDebtorsWithRemaining(ctx context.Context) ([]DebtorWithPaidAmount, error)
+	UpdateStatusToPaid(ctx context.Context, id int64) error
+}
+
+// DebtorWithPaidAmount holds debtor info with calculated paid amount
+type DebtorWithPaidAmount struct {
+	ID        int64   `json:"id"`
+	Name      string  `json:"name"`
+	TotalDebt float64 `json:"totalDebt"`
+	Currency  string  `json:"currency"`
+	PaidAmount float64 `json:"paidAmount"`
 }
 
 // DebtorStatsResult holds aggregated debtor statistics
@@ -45,7 +56,7 @@ func (r *DebtorRepository) GetAll(ctx context.Context, limit, offset int) ([]mod
 	}
 
 	query := `
-		SELECT id, name, email, phone, totalDebt, currency, dueDate, status
+		SELECT id, name, email, phone, totalDebt, currency, dueDate, status, notes
 		FROM debtors
 		ORDER BY createdAt DESC
 		LIMIT $1 OFFSET $2
@@ -62,7 +73,7 @@ func (r *DebtorRepository) GetAll(ctx context.Context, limit, offset int) ([]mod
 		var d models.Debtor
 		err := rows.Scan(
 			&d.ID, &d.Name, &d.Email, &d.Phone, &d.TotalDebt,
-			&d.Currency, &d.DueDate, &d.Status,
+			&d.Currency, &d.DueDate, &d.Status, &d.Notes,
 		)
 		if err != nil {
 			return nil, 0, err
@@ -191,4 +202,47 @@ func buildDebtorPeriodWhereClause(period, dateColumn string) string {
 	default:
 		return ""
 	}
+}
+
+// GetActiveDebtorsWithRemaining returns active debtors with remaining debt (for expense form dropdown)
+func (r *DebtorRepository) GetActiveDebtorsWithRemaining(ctx context.Context) ([]DebtorWithPaidAmount, error) {
+	query := `
+		SELECT
+			d.id,
+			d.name,
+			d.totalDebt,
+			d.currency,
+			COALESCE(SUM(e.amount) FILTER (WHERE e.status = 'approved'), 0) as paid_amount
+		FROM debtors d
+		LEFT JOIN expenses e ON e.debtorId = d.id
+		WHERE d.status = 'active'
+		GROUP BY d.id, d.name, d.totalDebt, d.currency
+		HAVING d.totalDebt > COALESCE(SUM(e.amount) FILTER (WHERE e.status = 'approved'), 0)
+		ORDER BY d.name
+	`
+
+	rows, err := r.db.Query(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var debtors []DebtorWithPaidAmount
+	for rows.Next() {
+		var d DebtorWithPaidAmount
+		err := rows.Scan(&d.ID, &d.Name, &d.TotalDebt, &d.Currency, &d.PaidAmount)
+		if err != nil {
+			return nil, err
+		}
+		debtors = append(debtors, d)
+	}
+
+	return debtors, rows.Err()
+}
+
+// UpdateStatusToPaid updates debtor status to 'paid'
+func (r *DebtorRepository) UpdateStatusToPaid(ctx context.Context, id int64) error {
+	query := `UPDATE debtors SET status = 'paid' WHERE id = $1`
+	_, err := r.db.Exec(ctx, query, id)
+	return err
 }
