@@ -78,3 +78,9 @@ type ProjectStatsResponse struct {
 	TotalBudget     float64 `json:"totalBudget"`
 	AverageProgress float64 `json:"averageProgress"`
 }
+
+// Dropdown DTO - lightweight for select menus
+type ProjectDropdown struct {
+	ID   int64  `json:"id"`
+	Name string `json:"name"`
+}

@@ -54,3 +54,10 @@ type UpdatePassword struct {
 type UpdateStatus struct {
 	Status string `json:"status" binding:"required"`
 }
+
+// Dropdown DTO - lightweight for select menus
+type UserDropdown struct {
+	ID       int64  `json:"id"`
+	FullName string `json:"fullName"`
+	JobTitle string `json:"jobTitle"`
+}

@@ -51,3 +51,22 @@ export async function updateProject(id, payload) {
   return result?.data || result
 }
 
+/**
+ * Get all projects for dropdown menus (lightweight - id and name only)
+ * @returns {Promise<Array<{id: number, name: string}>>}
+ */
+export async function getProjectsDropdown() {
+  const result = await apiFetch('/projects/dropdown', { method: 'GET' })
+  return result?.data || []
+}
+
+/**
+ * Get team members for a specific project
+ * @param {number|string} id - Project ID
+ * @returns {Promise<Array>} Team members array
+ */
+export async function getProjectTeamMembers(id) {
+  const result = await apiFetch(`/projects/${id}/team-members`, { method: 'GET' })
+  return result?.data || []
+}
+

@@ -43,6 +43,7 @@ declare module 'vue-router/auto-routes' {
     '/task-management': RouteRecordInfo<'/task-management', '/task-management', Record<never, never>, Record<never, never>>,
     '/team-management': RouteRecordInfo<'/team-management', '/team-management', Record<never, never>, Record<never, never>>,
     '/team-members': RouteRecordInfo<'/team-members', '/team-members', Record<never, never>, Record<never, never>>,
+    '/teamMembers': RouteRecordInfo<'/teamMembers', '/teamMembers', Record<never, never>, Record<never, never>>,
     '/test-dialog': RouteRecordInfo<'/test-dialog', '/test-dialog', Record<never, never>, Record<never, never>>,
     '/test-icons-final': RouteRecordInfo<'/test-icons-final', '/test-icons-final', Record<never, never>, Record<never, never>>,
     '/users': RouteRecordInfo<'/users', '/users', Record<never, never>, Record<never, never>>,

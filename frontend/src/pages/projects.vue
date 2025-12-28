@@ -562,6 +562,17 @@
                   <span>تعديل</span>
                 </v-btn>
                 <v-btn
+                  v-if="canReadTeamMembers"
+                  color="success"
+                  variant="elevated"
+                  size="default"
+                  @click="showProjectTeam(project)"
+                  class="team-btn flex-grow-1 d-flex justify-center align-center"
+                >
+                  <v-icon class="me-2">mdi-account-group</v-icon>
+                  <span>الفريق</span>
+                </v-btn>
+                <v-btn
                   color="primary"
                   variant="elevated"
                   size="default"
@@ -1236,6 +1247,83 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+
+      <!-- Project Team Members Dialog -->
+      <v-dialog v-model="projectTeamDialog" max-width="600">
+        <v-card class="project-team-dialog">
+          <v-card-title class="team-dialog-header pa-4">
+            <div class="d-flex align-center justify-space-between w-100">
+              <div class="d-flex align-center">
+                <v-avatar color="white" size="44" class="me-3">
+                  <v-icon color="primary" size="26">mdi-account-group</v-icon>
+                </v-avatar>
+                <div>
+                  <h3 class="text-h5 font-weight-bold text-white mb-0">
+                    فريق المشروع
+                  </h3>
+                  <span class="text-body-2" style="color: rgba(255,255,255,0.85);">
+                    {{ selectedProjectForTeam?.name }}
+                  </span>
+                </div>
+              </div>
+              <v-btn
+                icon="mdi-close"
+                variant="text"
+                size="small"
+                color="white"
+                @click="projectTeamDialog = false"
+              />
+            </div>
+          </v-card-title>
+
+          <v-card-text class="team-dialog-content pa-6">
+            <div v-if="projectTeamLoading" class="text-center py-8">
+              <v-progress-circular indeterminate color="primary" size="48" />
+              <p class="mt-4" style="color: #666;">جاري تحميل أعضاء الفريق...</p>
+            </div>
+
+            <div v-else-if="projectTeamMembers.length === 0" class="text-center py-8">
+              <v-icon size="64" color="grey-lighten-1">mdi-account-group-outline</v-icon>
+              <p class="mt-4" style="color: #666;">لا يوجد أعضاء في هذا المشروع</p>
+            </div>
+
+            <v-list v-else density="compact" class="team-list" style="background: transparent;">
+              <v-list-item
+                v-for="member in projectTeamMembers"
+                :key="member.id"
+                class="team-member-item mb-2"
+              >
+                <template v-slot:prepend>
+                  <v-avatar size="40" color="primary">
+                    <v-icon color="white">mdi-account</v-icon>
+                  </v-avatar>
+                </template>
+                <v-list-item-title class="member-name">
+                  {{ member.fullName }}
+                </v-list-item-title>
+                <v-list-item-subtitle class="member-subtitle">
+                  {{ member.jobTitle || 'لا يوجد مسمى وظيفي' }}
+                </v-list-item-subtitle>
+                <template v-slot:append>
+                  <v-chip size="small" color="primary" variant="tonal">
+                    عضو
+                  </v-chip>
+                </template>
+              </v-list-item>
+            </v-list>
+          </v-card-text>
+
+          <v-divider />
+
+          <v-card-actions class="pa-4" style="background: #f8f9fa;">
+            <v-spacer />
+            <v-btn color="primary" variant="elevated" @click="projectTeamDialog = false">
+              إغلاق
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
       <!-- Add/Edit Administrative Expense Dialog - Profile Form Style (مثل نموذج إضافة المهمة) -->
       <v-dialog v-model="expenseDialog" max-width="900" persistent v-show="false">
         <v-card class="task-dialog-card profile-form-card">
@@ -1432,12 +1520,13 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { listProjects, getProjectStats, getProjectWorkdays, getProject, createProject, updateProject } from '@/api/projects'
+import { listProjects, getProjectStats, getProjectWorkdays, getProject, createProject, updateProject, getProjectTeamMembers } from '@/api/projects'
 import { DEFAULT_LIMIT } from '@/constants/pagination'
 import { usePermissions } from '@/composables/usePermissions'
 
 // Permissions - matches database page route
 const { canCreate, canUpdate, canDelete } = usePermissions('/projects')
+const { canRead: canReadTeamMembers } = usePermissions('/teamMembers')
 
 // عنوان الصفحة
 document.title = 'إدارة المشاريع الهندسية - نظام إدارة المشاريع'
@@ -1550,6 +1639,12 @@ const teamHeaders = [
   { title: 'المهام', key: 'tasks', sortable: true },
   { title: 'الإجراءات', key: 'actions', sortable: false, width: '120px' }
 ]
+
+// Project Team Dialog (for viewing team from card)
+const projectTeamDialog = ref(false)
+const projectTeamLoading = ref(false)
+const projectTeamMembers = ref([])
+const selectedProjectForTeam = ref(null)
 
 // خيارات القوائم المنسدلة
 const departmentOptions = [
@@ -2063,6 +2158,23 @@ async function loadWorkdays(projectId) {
     workdaysError.value = 'فشل تحميل أيام العمل من الخادم'
   } finally {
     workdaysLoading.value = false
+  }
+}
+
+// Show project team members dialog
+async function showProjectTeam(project) {
+  selectedProjectForTeam.value = project
+  projectTeamDialog.value = true
+  projectTeamLoading.value = true
+  projectTeamMembers.value = []
+  try {
+    const data = await getProjectTeamMembers(project.id)
+    projectTeamMembers.value = data || []
+  } catch (err) {
+    console.error('فشل تحميل فريق المشروع', err)
+    projectTeamMembers.value = []
+  } finally {
+    projectTeamLoading.value = false
   }
 }
 
@@ -10410,6 +10522,69 @@ onMounted(() => {
 
 .rtl-date-picker :deep(.v-date-picker-month__day) {
   direction: rtl !important;
+}
+
+/* Project Team Dialog Styles - matches sidebar and project cards */
+.project-team-dialog {
+  border-radius: 20px !important;
+  overflow: hidden !important;
+  box-shadow: 0 20px 60px rgba(25, 118, 210, 0.3) !important;
+  background: #ffffff !important;
+}
+
+.project-team-dialog .v-card {
+  background: #ffffff !important;
+}
+
+.team-dialog-header {
+  background: linear-gradient(135deg, rgba(25, 118, 210, 0.9) 0%, rgba(21, 101, 192, 0.9) 100%) !important;
+  color: white !important;
+  padding: 1.5rem !important;
+  box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3) !important;
+}
+
+.team-dialog-content {
+  background: #ffffff !important;
+  padding: 1.5rem !important;
+}
+
+.project-team-dialog .team-list {
+  background: #ffffff !important;
+}
+
+.project-team-dialog .team-member-item {
+  background: #f8fafc !important;
+  border-radius: 12px !important;
+  padding: 1rem !important;
+  margin-bottom: 0.75rem !important;
+  border: 1px solid rgba(25, 118, 210, 0.15) !important;
+  transition: all 0.2s ease !important;
+}
+
+.project-team-dialog .team-member-item:hover {
+  background: rgba(25, 118, 210, 0.08) !important;
+  border-color: rgba(25, 118, 210, 0.4) !important;
+  transform: translateX(-4px) !important;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.15) !important;
+}
+
+.project-team-dialog .member-name {
+  font-weight: 600 !important;
+  color: #1a1a1a !important;
+  font-size: 1rem !important;
+}
+
+.project-team-dialog .member-subtitle {
+  color: #555555 !important;
+  font-size: 0.875rem !important;
+}
+
+.project-team-dialog .v-list-item-title {
+  color: #1a1a1a !important;
+}
+
+.project-team-dialog .v-list-item-subtitle {
+  color: #555555 !important;
 }
 
 </style>

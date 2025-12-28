@@ -9,8 +9,15 @@ import (
 	"github.com/mustafa91ameen/prjalgo/backend/internal/models"
 )
 
+// ProjectDropdownItem is a lightweight struct for dropdown menus
+type ProjectDropdownItem struct {
+	ID   int64  `json:"id"`
+	Name string `json:"name"`
+}
+
 type ProjectRepositoryInterface interface {
 	GetAll(ctx context.Context, limit, offset int) ([]models.Project, int64, error)
+	GetAllForDropdown(ctx context.Context) ([]ProjectDropdownItem, error)
 	GetByID(ctx context.Context, id int64) (*models.Project, error)
 	Create(ctx context.Context, project *models.Project) (*models.Project, error)
 	Update(ctx context.Context, id int64, project *models.Project) (*models.Project, error)
@@ -78,6 +85,34 @@ func (r *ProjectRepository) GetAll(ctx context.Context, limit, offset int) ([]mo
 	}
 
 	return projects, total, rows.Err()
+}
+
+// GetAllForDropdown returns lightweight project data for dropdown menus
+func (r *ProjectRepository) GetAllForDropdown(ctx context.Context) ([]ProjectDropdownItem, error) {
+	query := `
+		SELECT id, name
+		FROM projects
+		WHERE isActive = TRUE
+		ORDER BY name ASC
+	`
+
+	rows, err := r.db.Query(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var projects []ProjectDropdownItem
+	for rows.Next() {
+		var p ProjectDropdownItem
+		err := rows.Scan(&p.ID, &p.Name)
+		if err != nil {
+			return nil, err
+		}
+		projects = append(projects, p)
+	}
+
+	return projects, rows.Err()
 }
 
 func (r *ProjectRepository) GetByID(ctx context.Context, id int64) (*models.Project, error) {

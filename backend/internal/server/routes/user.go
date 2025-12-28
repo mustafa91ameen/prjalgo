@@ -18,6 +18,7 @@ func RegisterUserRoutes(rg *gin.RouterGroup, c *container.Container) {
 	}
 	{
 		users.GET("", usersAuthz("read"), c.UserHandler.GetAll)
+		users.GET("/dropdown", usersAuthz("read"), c.UserHandler.GetDropdown)
 		users.GET("/:id", usersAuthz("read"), c.UserHandler.GetByID)
 		users.POST("", usersAuthz("create"), audit("create"), c.UserHandler.Create)
 		users.PUT("/:id", usersAuthz("update"), audit("update"), c.UserHandler.Update)

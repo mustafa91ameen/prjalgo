@@ -130,3 +130,12 @@ export async function getUserTeamMembers(id) {
   const result = await apiFetch(`/users/${id}/teamMembers`)
   return result?.data || result
 }
+
+/**
+ * Get all users for dropdown menus (lightweight - id, fullName, jobTitle only)
+ * @returns {Promise<Array<{id: number, fullName: string, jobTitle: string}>>}
+ */
+export async function getUsersDropdown() {
+  const result = await apiFetch('/users/dropdown')
+  return result?.data || []
+}

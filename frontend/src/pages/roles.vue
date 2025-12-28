@@ -547,12 +547,24 @@ function getRolePagesCount(roleId) {
   return rolePages.value.filter(rp => rp.roleId === roleId).length
 }
 
+// Parse permissions from string to array
+function parsePermissions(permissions) {
+  if (!permissions) return []
+  if (Array.isArray(permissions)) return permissions
+  try {
+    return JSON.parse(permissions)
+  } catch {
+    return []
+  }
+}
+
 // Get role pages for view dialog
 function getViewRolePages() {
   if (!selectedRole.value) return []
   const rps = rolePages.value.filter(rp => rp.roleId === selectedRole.value.id)
   return rps.map(rp => ({
     ...rp,
+    permissions: parsePermissions(rp.permissions),
     page: pages.value.find(p => p.id === rp.pageId)
   }))
 }
@@ -941,10 +953,30 @@ onMounted(() => {
   color: #333333 !important;
 }
 
-/* تحسين قراءة النصوص في الديالوج */
+/* View Role Dialog - Light Theme Fix */
+.view-user-dialog {
+  background: #ffffff !important;
+}
+
+.view-user-dialog .v-card-text {
+  background: #ffffff !important;
+}
+
+.view-user-dialog .v-list {
+  background: #ffffff !important;
+}
+
+.view-user-dialog .v-list-item {
+  background: #ffffff !important;
+}
+
 .view-user-dialog h3,
 .view-user-dialog h4 {
   color: #1a1a1a !important;
+}
+
+.view-user-dialog p {
+  color: #333333 !important;
 }
 
 .view-user-dialog .text-caption {
@@ -958,6 +990,36 @@ onMounted(() => {
 
 .view-user-dialog .v-list-item-subtitle {
   color: #444444 !important;
+}
+
+/* Delete Confirmation Dialog - Light Theme Fix */
+.delete-confirm-dialog {
+  background: #ffffff !important;
+}
+
+.delete-confirm-dialog .v-card-text {
+  background: #ffffff !important;
+}
+
+.delete-confirm-dialog h4 {
+  color: #1a1a1a !important;
+}
+
+.delete-confirm-dialog p {
+  color: #333333 !important;
+}
+
+.delete-confirm-dialog .text-caption {
+  color: #555555 !important;
+}
+
+/* Add/Edit Role Dialog - Light Theme Fix */
+.add-user-dialog {
+  background: #ffffff !important;
+}
+
+.add-user-dialog .v-card-text {
+  background: #ffffff !important;
 }
 
 /* تحسين قراءة النصوص في جدول الصلاحيات */

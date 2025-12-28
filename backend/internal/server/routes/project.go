@@ -18,6 +18,7 @@ func RegisterProjectRoutes(rg *gin.RouterGroup, c *container.Container) {
 	{
 		projects.GET("", authz("read"), c.ProjectHandler.GetAll)
 		projects.GET("/stats", authz("read"), c.ProjectHandler.GetStats)
+		projects.GET("/dropdown", authz("read"), c.ProjectHandler.GetDropdown)
 		projects.GET("/:id", authz("read"), c.ProjectHandler.GetByID)
 		projects.POST("", authz("create"), audit("create"), c.ProjectHandler.Create)
 		projects.PUT("/:id", authz("update"), audit("update"), c.ProjectHandler.Update)

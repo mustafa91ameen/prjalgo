@@ -13,6 +13,16 @@ type TeamMember struct {
 	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
 }
 
+// TeamMemberWithUser includes user details for display
+type TeamMemberWithUser struct {
+	ID        int64      `json:"id"`
+	ProjectID int64      `json:"projectId"`
+	UserID    int64      `json:"userId"`
+	FullName  string     `json:"fullName"`
+	JobTitle  string     `json:"jobTitle"`
+	CreatedAt *time.Time `json:"createdAt,omitempty"`
+}
+
 // Request DTO
 type CreateTeamMember struct {
 	ProjectID int64 `json:"projectId" binding:"required"`

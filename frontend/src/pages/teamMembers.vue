@@ -7,11 +7,11 @@
         <div class="header-content">
           <div class="header-right">
             <div class="engineer-emoji">
-              <v-icon size="40" color="white">mdi-file-document-multiple</v-icon>
+              <v-icon size="40" color="white">mdi-account-group</v-icon>
             </div>
             <div class="header-text">
-              <h1 class="main-title">إدارة الصفحات</h1>
-              <p class="subtitle">إنشاء وتعديل صفحات النظام</p>
+              <h1 class="main-title">إدارة فرق العمل</h1>
+              <p class="subtitle">إضافة وإدارة أعضاء الفريق في المشاريع</p>
             </div>
           </div>
         </div>
@@ -24,11 +24,11 @@
             <div class="stat-card-background"></div>
             <div class="stat-card-content">
               <div class="stat-icon-wrapper">
-                <v-icon size="48" class="stat-icon">mdi-file-document-multiple</v-icon>
+                <v-icon size="48" class="stat-icon">mdi-account-multiple</v-icon>
               </div>
               <div class="stat-info">
-                <h3 class="stat-value">{{ pages.length }}</h3>
-                <p class="stat-label">إجمالي الصفحات</p>
+                <h3 class="stat-value">{{ stats.total || 0 }}</h3>
+                <p class="stat-label">إجمالي الأعضاء</p>
               </div>
             </div>
           </v-card>
@@ -38,11 +38,11 @@
             <div class="stat-card-background"></div>
             <div class="stat-card-content">
               <div class="stat-icon-wrapper">
-                <v-icon size="48" class="stat-icon check-icon">mdi-check-circle</v-icon>
+                <v-icon size="48" class="stat-icon">mdi-account-check</v-icon>
               </div>
               <div class="stat-info">
-                <h3 class="stat-value">{{ activePages }}</h3>
-                <p class="stat-label">صفحات نشطة</p>
+                <h3 class="stat-value">{{ stats.uniqueUsers || 0 }}</h3>
+                <p class="stat-label">المستخدمين الفريدين</p>
               </div>
             </div>
           </v-card>
@@ -52,73 +52,97 @@
             <div class="stat-card-background"></div>
             <div class="stat-card-content">
               <div class="stat-icon-wrapper">
-                <v-icon size="48" class="stat-icon">mdi-pause-circle</v-icon>
+                <v-icon size="48" class="stat-icon">mdi-folder-multiple</v-icon>
               </div>
               <div class="stat-info">
-                <h3 class="stat-value">{{ inactivePages }}</h3>
-                <p class="stat-label">صفحات غير نشطة</p>
+                <h3 class="stat-value">{{ stats.uniqueProjects || 0 }}</h3>
+                <p class="stat-label">المشاريع النشطة</p>
+              </div>
+            </div>
+          </v-card>
+        </v-col>
+        <v-col cols="12" sm="6" md="3">
+          <v-card class="modern-stat-card stat-card-info" elevation="0">
+            <div class="stat-card-background"></div>
+            <div class="stat-card-content">
+              <div class="stat-icon-wrapper">
+                <v-icon size="48" class="stat-icon">mdi-chart-bar</v-icon>
+              </div>
+              <div class="stat-info">
+                <h3 class="stat-value">{{ (stats.avgPerProject || 0).toFixed(1) }}</h3>
+                <p class="stat-label">متوسط الأعضاء/مشروع</p>
               </div>
             </div>
           </v-card>
         </v-col>
       </v-row>
 
-      <!-- Pages Table -->
+      <!-- Team Members Table -->
       <v-card class="users-table" elevation="2">
         <v-card-title class="table-title-header d-flex align-center justify-space-between">
           <div class="d-flex align-center">
             <v-icon class="me-2" size="18" style="color: #ffffff !important;">mdi-table</v-icon>
-            <span class="title-text">قائمة الصفحات</span>
+            <span class="title-text">قائمة أعضاء الفرق</span>
           </div>
           <div class="d-flex table-header-buttons" style="gap: 0.5rem;">
+            <!-- Filter by Project -->
+            <v-select
+              v-model="filterProjectId"
+              :items="projectsForFilter"
+              item-title="name"
+              item-value="id"
+              label="تصفية حسب المشروع"
+              variant="outlined"
+              density="compact"
+              clearable
+              hide-details
+              class="filter-select"
+              style="min-width: 200px; background: white; border-radius: 8px;"
+            />
             <v-btn
               v-if="canCreate"
               class="add-button add-user-btn btn-glow light-sweep smooth-transition"
-              @click="openAddPageDialog"
+              @click="openAddDialog"
               elevation="2"
               color="primary"
               size="small"
               style="background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important; height: 36px !important; font-size: 0.875rem !important;"
             >
               <v-icon class="me-2 icon-glow" size="18">mdi-plus</v-icon>
-              إضافة صفحة جديدة
+              إضافة عضو للمشروع
             </v-btn>
           </div>
         </v-card-title>
         <div class="table-spacer"></div>
         <v-data-table
           :headers="headers"
-          :items="pages"
+          :items="filteredTeamMembers"
           :loading="loading"
           class="elevation-0 users-data-table"
           :items-per-page="-1"
           hide-default-footer
         >
-          <template v-slot:item.name="{ item }">
+          <template v-slot:item.project="{ item }">
             <div class="d-flex align-center">
               <v-avatar size="36" color="primary" class="me-3">
-                <v-icon color="white" size="20">{{ item.icon || 'mdi-file' }}</v-icon>
+                <v-icon color="white" size="20">mdi-folder</v-icon>
               </v-avatar>
               <div>
-                <div class="font-weight-medium">{{ item.name }}</div>
-                <div class="text-caption text-grey">{{ item.route }}</div>
+                <div class="font-weight-medium">{{ getProjectName(item.projectId) }}</div>
               </div>
             </div>
           </template>
 
-          <template v-slot:item.icon="{ item }">
-            <v-icon>{{ item.icon || 'mdi-file' }}</v-icon>
-            <span class="text-caption text-grey ms-2">{{ item.icon }}</span>
-          </template>
-
-          <template v-slot:item.status="{ item }">
-            <v-chip
-              :color="item.status === 'active' ? 'success' : 'warning'"
-              size="small"
-              variant="flat"
-            >
-              {{ item.status === 'active' ? 'نشط' : 'غير نشط' }}
-            </v-chip>
+          <template v-slot:item.user="{ item }">
+            <div class="d-flex align-center">
+              <v-avatar size="36" color="success" class="me-3">
+                <v-icon color="white" size="20">mdi-account</v-icon>
+              </v-avatar>
+              <div>
+                <div class="font-weight-medium">{{ getUserName(item.userId) }}</div>
+                <div class="text-caption text-grey">{{ getUserJobTitle(item.userId) }}</div>
+              </div>
+            </div>
           </template>
 
           <template v-slot:item.createdAt="{ item }">
@@ -131,15 +155,7 @@
               size="small"
               variant="elevated"
               class="view-btn me-1"
-              @click="viewPage(item)"
-            />
-            <v-btn
-              v-if="canUpdate"
-              icon="mdi-pencil"
-              size="small"
-              variant="elevated"
-              class="edit-btn me-1"
-              @click="editPage(item)"
+              @click="viewMember(item)"
             />
             <v-btn
               v-if="canDelete"
@@ -147,7 +163,7 @@
               size="small"
               variant="elevated"
               class="delete-btn"
-              @click="confirmDeletePage(item)"
+              @click="confirmDeleteMember(item)"
             />
           </template>
         </v-data-table>
@@ -155,20 +171,20 @@
     </v-container>
   </div>
 
-  <!-- Add/Edit Page Dialog -->
-  <v-dialog v-model="showPageDialog" max-width="700px" persistent>
+  <!-- Add Member Dialog -->
+  <v-dialog v-model="showAddDialog" max-width="600px" persistent>
     <v-card class="add-user-dialog" rounded="lg">
       <v-card-title class="dialog-header pa-4">
         <div class="d-flex align-center">
           <v-avatar color="white" size="44" class="me-3">
-            <v-icon color="primary" size="26">{{ isEditing ? 'mdi-pencil' : 'mdi-plus' }}</v-icon>
+            <v-icon color="primary" size="26">mdi-account-plus</v-icon>
           </v-avatar>
           <div>
             <h3 class="text-h5 font-weight-bold text-white mb-0">
-              {{ isEditing ? 'تعديل الصفحة' : 'إضافة صفحة جديدة' }}
+              إضافة عضو للمشروع
             </h3>
             <span class="text-body-2 text-white-darken-1">
-              {{ isEditing ? 'تعديل بيانات الصفحة' : 'أدخل بيانات الصفحة الجديدة' }}
+              اختر المشروع والمستخدم لإضافته للفريق
             </span>
           </div>
         </div>
@@ -176,80 +192,62 @@
           icon="mdi-close"
           variant="text"
           size="default"
-          @click="closePageDialog"
+          @click="closeAddDialog"
           class="close-btn"
         />
       </v-card-title>
 
       <v-card-text class="dialog-content pa-8">
-        <v-form ref="pageForm" v-model="formValid" lazy-validation>
+        <v-form ref="addForm" v-model="formValid" lazy-validation>
           <v-row>
-            <v-col cols="12" md="6">
-              <v-text-field
-                v-model="pageData.name"
-                label="اسم الصفحة"
-                placeholder="مثال: المشاريع"
-                :rules="[v => !!v || 'اسم الصفحة مطلوب']"
+            <v-col cols="12">
+              <v-select
+                v-model="formData.projectId"
+                :items="projects"
+                item-title="name"
+                item-value="id"
+                label="المشروع"
+                placeholder="اختر المشروع"
+                :rules="[v => !!v || 'المشروع مطلوب']"
                 variant="outlined"
                 density="default"
-                prepend-inner-icon="mdi-file-document"
+                prepend-inner-icon="mdi-folder"
                 color="primary"
                 bg-color="grey-lighten-5"
                 class="mb-2"
               />
             </v-col>
-            <v-col cols="12" md="6">
-              <v-text-field
-                v-model="pageData.route"
-                label="مسار الصفحة"
-                placeholder="مثال: /projects"
-                :rules="routeRules"
+            <v-col cols="12">
+              <v-select
+                v-model="formData.userId"
+                :items="availableUsers"
+                item-title="fullName"
+                item-value="id"
+                label="المستخدم"
+                placeholder="اختر المستخدم"
+                :rules="[v => !!v || 'المستخدم مطلوب']"
                 variant="outlined"
                 density="default"
-                prepend-inner-icon="mdi-link"
+                prepend-inner-icon="mdi-account"
                 color="primary"
                 bg-color="grey-lighten-5"
-                class="mb-2"
-                dir="ltr"
-              />
-            </v-col>
-            <v-col cols="12" md="6">
-              <v-combobox
-                v-model="pageData.icon"
-                :items="iconOptions"
-                label="أيقونة الصفحة"
-                placeholder="اختر أو اكتب اسم الأيقونة"
-                variant="outlined"
-                density="default"
-                prepend-inner-icon="mdi-emoticon"
-                color="primary"
-                bg-color="grey-lighten-5"
-                class="mb-2"
+                :disabled="!formData.projectId"
+                :hint="!formData.projectId ? 'اختر المشروع أولاً' : ''"
+                persistent-hint
               >
-                <template v-slot:prepend-inner>
-                  <v-icon>{{ pageData.icon || 'mdi-file' }}</v-icon>
-                </template>
                 <template v-slot:item="{ item, props }">
                   <v-list-item v-bind="props">
                     <template v-slot:prepend>
-                      <v-icon>{{ item.value }}</v-icon>
+                      <v-avatar size="32" color="primary">
+                        <v-icon color="white" size="18">mdi-account</v-icon>
+                      </v-avatar>
+                    </template>
+                    <template v-slot:subtitle>
+                      {{ item.raw.jobTitle || 'لا يوجد مسمى وظيفي' }}
                     </template>
                   </v-list-item>
                 </template>
-              </v-combobox>
-            </v-col>
-            <v-col cols="12" md="6">
-              <v-select
-                v-model="pageData.status"
-                :items="statusOptions"
-                label="حالة الصفحة"
-                variant="outlined"
-                density="default"
-                prepend-inner-icon="mdi-toggle-switch"
-                color="primary"
-                bg-color="grey-lighten-5"
-                class="mb-2"
-              />
+              </v-select>
             </v-col>
           </v-row>
         </v-form>
@@ -257,79 +255,71 @@
 
       <v-card-actions class="dialog-actions pa-5">
         <v-spacer />
-        <v-btn variant="outlined" size="large" @click="closePageDialog" class="me-3 px-8">
+        <v-btn variant="outlined" size="large" @click="closeAddDialog" class="me-3 px-8">
           إلغاء
         </v-btn>
         <v-btn
           color="primary"
           variant="elevated"
           size="large"
-          @click="savePage"
+          @click="saveMember"
           :loading="saving"
           :disabled="!formValid"
           class="px-8"
           prepend-icon="mdi-check"
         >
           <v-icon start size="16">mdi-content-save</v-icon>
-          {{ isEditing ? 'حفظ التعديلات' : 'حفظ الصفحة' }}
+          إضافة العضو
         </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 
-  <!-- View Page Dialog -->
+  <!-- View Member Dialog -->
   <v-dialog v-model="showViewDialog" max-width="600px">
     <v-card class="view-user-dialog">
       <v-card-title class="dialog-header">
         <div class="dialog-title">
-          <v-icon size="32" color="primary" class="me-3">mdi-file-document</v-icon>
-          <h2>تفاصيل الصفحة</h2>
+          <v-icon size="32" color="primary" class="me-3">mdi-account-details</v-icon>
+          <h2>تفاصيل العضو</h2>
         </div>
         <v-btn icon="mdi-close" variant="text" @click="showViewDialog = false" class="close-btn" />
       </v-card-title>
 
       <v-divider />
 
-      <v-card-text v-if="selectedPage" class="pa-6">
+      <v-card-text v-if="selectedMember" class="pa-6">
         <v-row>
           <v-col cols="12" class="text-center mb-4">
             <v-avatar size="80" color="primary">
-              <v-icon color="white" size="40">{{ selectedPage.icon || 'mdi-file' }}</v-icon>
+              <v-icon color="white" size="40">mdi-account</v-icon>
             </v-avatar>
-            <h3 class="mt-3">{{ selectedPage.name }}</h3>
-            <v-chip
-              :color="selectedPage.status === 'active' ? 'success' : 'warning'"
-              size="small"
-              class="mt-2"
-            >
-              {{ selectedPage.status === 'active' ? 'نشط' : 'غير نشط' }}
-            </v-chip>
+            <h3 class="mt-3">{{ getUserName(selectedMember.userId) }}</h3>
+            <p class="text-caption">{{ getUserJobTitle(selectedMember.userId) }}</p>
           </v-col>
 
           <v-col cols="12">
             <v-list density="compact">
               <v-list-item>
                 <template v-slot:prepend>
-                  <v-icon color="primary">mdi-link</v-icon>
+                  <v-icon color="primary">mdi-folder</v-icon>
                 </template>
-                <v-list-item-title>المسار</v-list-item-title>
-                <v-list-item-subtitle dir="ltr" class="text-left">{{ selectedPage.route }}</v-list-item-subtitle>
+                <v-list-item-title>المشروع</v-list-item-title>
+                <v-list-item-subtitle>{{ getProjectName(selectedMember.projectId) }}</v-list-item-subtitle>
               </v-list-item>
-
               <v-list-item>
                 <template v-slot:prepend>
-                  <v-icon color="success">mdi-emoticon</v-icon>
+                  <v-icon color="primary">mdi-calendar</v-icon>
                 </template>
-                <v-list-item-title>الأيقونة</v-list-item-title>
-                <v-list-item-subtitle>{{ selectedPage.icon || 'غير محدد' }}</v-list-item-subtitle>
+                <v-list-item-title>تاريخ الإضافة</v-list-item-title>
+                <v-list-item-subtitle>{{ formatDate(selectedMember.createdAt) }}</v-list-item-subtitle>
               </v-list-item>
-
               <v-list-item>
                 <template v-slot:prepend>
-                  <v-icon color="info">mdi-calendar</v-icon>
+                  <v-icon color="primary">mdi-email</v-icon>
                 </template>
-                <v-list-item-title>تاريخ الإنشاء</v-list-item-title>
-                <v-list-item-subtitle>{{ formatDate(selectedPage.createdAt) }}</v-list-item-subtitle>
+                <v-list-item-title>البريد الإلكتروني</v-list-item-title>
+                <v-list-item-subtitle>{{ getUserEmail(selectedMember.userId) }}</v-list-item-subtitle>
               </v-list-item>
             </v-list>
           </v-col>
@@ -360,21 +350,21 @@
 
       <v-divider />
 
-      <v-card-text v-if="selectedPage" class="pa-6">
+      <v-card-text v-if="selectedMember" class="pa-6">
         <div class="text-center mb-4">
           <v-avatar size="60" color="error">
-            <v-icon color="white" size="30">{{ selectedPage.icon || 'mdi-file' }}</v-icon>
+            <v-icon color="white" size="30">mdi-account-remove</v-icon>
           </v-avatar>
-          <h4 class="mt-2">{{ selectedPage.name }}</h4>
-          <p class="text-caption">{{ selectedPage.route }}</p>
+          <h4 class="mt-2">{{ getUserName(selectedMember.userId) }}</h4>
+          <p class="text-caption">{{ getProjectName(selectedMember.projectId) }}</p>
         </div>
 
         <v-alert type="error" variant="tonal" class="mb-4">
-          تحذير: هذا الإجراء لا يمكن التراجع عنه! سيتم إزالة هذه الصفحة من جميع الأدوار.
+          تحذير: سيتم إزالة هذا العضو من المشروع!
         </v-alert>
 
         <p class="text-body-2 text-center">
-          هل أنت متأكد من حذف هذه الصفحة نهائياً؟
+          هل أنت متأكد من إزالة هذا العضو من فريق المشروع؟
         </p>
       </v-card-text>
 
@@ -385,8 +375,8 @@
         <v-btn color="grey" variant="outlined" @click="showDeleteDialog = false" class="me-2">
           إلغاء
         </v-btn>
-        <v-btn color="error" variant="elevated" @click="deletePage" :loading="deleting">
-          حذف نهائي
+        <v-btn color="error" variant="elevated" @click="deleteMember" :loading="deleting">
+          إزالة العضو
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -399,35 +389,38 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
-import { listPages, createPage, updatePage, deletePage as deletePageApi } from '@/api/pages'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { listTeamMembers, getTeamMemberStats, createTeamMember, deleteTeamMember } from '@/api/teamMembers'
+import { getProjectsDropdown } from '@/api/projects'
+import { getUsersDropdown } from '@/api/users'
 import { usePermissions } from '@/composables/usePermissions'
 
 // Permissions
-const { canCreate, canUpdate, canDelete } = usePermissions('/pages')
+const { canCreate, canUpdate, canDelete } = usePermissions('/teamMembers')
 
 // Data
 const loading = ref(false)
-const pages = ref([])
+const teamMembers = ref([])
+const projects = ref([])
+const users = ref([])
+const stats = ref({})
+const filterProjectId = ref(null)
 
 // Dialog states
-const showPageDialog = ref(false)
+const showAddDialog = ref(false)
 const showViewDialog = ref(false)
 const showDeleteDialog = ref(false)
-const isEditing = ref(false)
-const selectedPage = ref(null)
+const selectedMember = ref(null)
 
 // Form data
-const pageForm = ref(null)
+const addForm = ref(null)
 const formValid = ref(false)
 const saving = ref(false)
 const deleting = ref(false)
 
-const pageData = reactive({
-  name: '',
-  route: '',
-  icon: '',
-  status: 'active'
+const formData = reactive({
+  projectId: null,
+  userId: null
 })
 
 // Snackbar
@@ -437,69 +430,81 @@ const snackbar = reactive({
   color: 'success'
 })
 
-// Options
-const statusOptions = [
-  { title: 'نشط', value: 'active' },
-  { title: 'غير نشط', value: 'inactive' }
-]
-
-const iconOptions = [
-  'mdi-view-dashboard',
-  'mdi-folder-multiple',
-  'mdi-clipboard-list',
-  'mdi-account-hard-hat',
-  'mdi-tag-multiple',
-  'mdi-chart-line',
-  'mdi-format-list-bulleted-type',
-  'mdi-trending-up',
-  'mdi-credit-card',
-  'mdi-account-multiple',
-  'mdi-account-group',
-  'mdi-fingerprint',
-  'mdi-shield-account',
-  'mdi-file-document-multiple',
-  'mdi-cog',
-  'mdi-bell',
-  'mdi-calendar',
-  'mdi-chart-bar',
-  'mdi-home',
-  'mdi-email'
-]
-
-// Validation rules
-const routeRules = [
-  v => !!v || 'مسار الصفحة مطلوب',
-  v => /^\//.test(v) || 'المسار يجب أن يبدأ بـ /'
-]
-
 // Table headers
 const headers = ref([
-  { title: 'الصفحة', key: 'name', sortable: true },
-  { title: 'الأيقونة', key: 'icon', sortable: false },
-  { title: 'الحالة', key: 'status', sortable: true },
-  { title: 'تاريخ الإنشاء', key: 'createdAt', sortable: true },
+  { title: 'المشروع', key: 'project', sortable: true },
+  { title: 'العضو', key: 'user', sortable: true },
+  { title: 'تاريخ الإضافة', key: 'createdAt', sortable: true },
   { title: 'الإجراءات', key: 'actions', sortable: false }
 ])
 
-// Computed
-const activePages = computed(() => pages.value.filter(p => p.status === 'active').length)
-const inactivePages = computed(() => pages.value.filter(p => p.status !== 'active').length)
+// Computed: Projects for filter (with "all" option)
+const projectsForFilter = computed(() => {
+  return [{ id: null, name: 'جميع المشاريع' }, ...projects.value]
+})
+
+// Computed: Filtered team members
+const filteredTeamMembers = computed(() => {
+  if (!filterProjectId.value) {
+    return teamMembers.value
+  }
+  return teamMembers.value.filter(tm => tm.projectId === filterProjectId.value)
+})
+
+// Computed: Available users (not already in selected project)
+const availableUsers = computed(() => {
+  if (!formData.projectId) return users.value
+
+  const projectMemberUserIds = teamMembers.value
+    .filter(tm => tm.projectId === formData.projectId)
+    .map(tm => tm.userId)
+
+  return users.value.filter(user => !projectMemberUserIds.includes(user.id))
+})
 
 // Fetch data
 async function fetchData() {
   loading.value = true
   try {
-    const result = await listPages()
-    pages.value = Array.isArray(result) ? result : result?.data || []
+    const [teamMembersData, projectsData, usersData, statsData] = await Promise.all([
+      listTeamMembers({ limit: 100 }),
+      getProjectsDropdown(),
+      getUsersDropdown(),
+      getTeamMemberStats()
+    ])
+    teamMembers.value = teamMembersData?.data || []
+    projects.value = projectsData || []
+    users.value = usersData || []
+    stats.value = statsData || {}
   } catch (error) {
-    console.error('Failed to fetch pages:', error)
+    console.error('Failed to fetch data:', error)
     showSnackbar('فشل في تحميل البيانات', 'error')
   } finally {
     loading.value = false
   }
 }
 
-// Format date
+// Helper functions
+function getProjectName(projectId) {
+  const project = projects.value.find(p => p.id === projectId)
+  return project?.name || 'مشروع غير معروف'
+}
+
+function getUserName(userId) {
+  const user = users.value.find(u => u.id === userId)
+  return user?.fullName || 'مستخدم غير معروف'
+}
+
+function getUserJobTitle(userId) {
+  const user = users.value.find(u => u.id === userId)
+  return user?.jobTitle || 'لا يوجد مسمى وظيفي'
+}
+
+function getUserEmail(userId) {
+  const user = users.value.find(u => u.id === userId)
+  return user?.email || '-'
+}
+
 function formatDate(date) {
   if (!date) return '-'
   return new Date(date).toLocaleDateString('en-US', {
@@ -510,80 +515,62 @@ function formatDate(date) {
 }
 
 // Dialog functions
-function openAddPageDialog() {
-  isEditing.value = false
-  pageData.name = ''
-  pageData.route = ''
-  pageData.icon = ''
-  pageData.status = 'active'
-  showPageDialog.value = true
+function openAddDialog() {
+  formData.projectId = null
+  formData.userId = null
+  showAddDialog.value = true
 }
 
-function editPage(page) {
-  isEditing.value = true
-  selectedPage.value = page
-  pageData.name = page.name
-  pageData.route = page.route
-  pageData.icon = page.icon || ''
-  pageData.status = page.status || 'active'
-  showPageDialog.value = true
+function closeAddDialog() {
+  showAddDialog.value = false
+  formData.projectId = null
+  formData.userId = null
 }
 
-function closePageDialog() {
-  showPageDialog.value = false
-  pageData.name = ''
-  pageData.route = ''
-  pageData.icon = ''
-  pageData.status = 'active'
-  selectedPage.value = null
-}
-
-function viewPage(page) {
-  selectedPage.value = page
+function viewMember(member) {
+  selectedMember.value = member
   showViewDialog.value = true
 }
 
-function confirmDeletePage(page) {
-  selectedPage.value = page
+function confirmDeleteMember(member) {
+  selectedMember.value = member
   showDeleteDialog.value = true
 }
 
 // Save functions
-async function savePage() {
-  if (!pageForm.value?.validate()) return
+async function saveMember() {
+  if (!addForm.value?.validate()) return
 
   saving.value = true
   try {
-    if (isEditing.value) {
-      await updatePage(selectedPage.value.id, pageData)
-      showSnackbar('تم تحديث الصفحة بنجاح', 'success')
-    } else {
-      await createPage(pageData)
-      showSnackbar('تم إنشاء الصفحة بنجاح', 'success')
-    }
-    closePageDialog()
+    await createTeamMember({
+      projectId: formData.projectId,
+      userId: formData.userId
+    })
+    showSnackbar('تم إضافة العضو للمشروع بنجاح', 'success')
+    closeAddDialog()
     await fetchData()
   } catch (error) {
-    console.error('Failed to save page:', error)
-    showSnackbar('فشل في حفظ الصفحة', 'error')
+    console.error('Failed to add team member:', error)
+    showSnackbar('فشل في إضافة العضو للمشروع', 'error')
   } finally {
     saving.value = false
   }
 }
 
-async function deletePage() {
-  if (!selectedPage.value) return
+async function deleteMember() {
+  if (!selectedMember.value) return
 
   deleting.value = true
   try {
-    await deletePageApi(selectedPage.value.id)
-    showSnackbar('تم حذف الصفحة بنجاح', 'success')
+    await deleteTeamMember(selectedMember.value.id)
+    showSnackbar('تم إزالة العضو من المشروع بنجاح', 'success')
     showDeleteDialog.value = false
-    selectedPage.value = null
+    selectedMember.value = null
     await fetchData()
   } catch (error) {
-    console.error('Failed to delete page:', error)
-    showSnackbar('فشل في حذف الصفحة', 'error')
+    console.error('Failed to delete team member:', error)
+    showSnackbar('فشل في إزالة العضو من المشروع', 'error')
   } finally {
     deleting.value = false
   }
@@ -594,6 +581,11 @@ function showSnackbar(message, color = 'success') {
   snackbar.color = color
   snackbar.show = true
 }
+
+// Reset userId when project changes
+watch(() => formData.projectId, () => {
+  formData.userId = null
+})
 
 // Mount
 onMounted(() => {
@@ -678,6 +670,10 @@ onMounted(() => {
   background: linear-gradient(135deg, #fb8c00 0%, #f57c00 100%);
 }
 
+.stat-card-info {
+  background: linear-gradient(135deg, #00acc1 0%, #0097a7 100%);
+}
+
 .stat-card-content {
   display: flex;
   align-items: center;
@@ -729,11 +725,6 @@ onMounted(() => {
   color: #1976d2 !important;
 }
 
-.edit-btn {
-  background: #e8f5e9 !important;
-  color: #43a047 !important;
-}
-
 .delete-btn {
   background: #ffebee !important;
   color: #e53935 !important;
@@ -760,7 +751,15 @@ onMounted(() => {
   background: #f5f5f5;
 }
 
-/* تحسين قراءة النصوص في الجدول */
+.filter-select :deep(.v-field__input) {
+  color: #1a1a1a !important;
+}
+
+.filter-select :deep(.v-label) {
+  color: #666666 !important;
+}
+
+/* Table text improvements */
 .users-data-table :deep(.v-data-table__tr td) {
   color: #1a1a1a !important;
   font-weight: 500 !important;
@@ -783,7 +782,7 @@ onMounted(() => {
   color: #333333 !important;
 }
 
-/* View Page Dialog - Light Theme Fix */
+/* View dialog text improvements */
 .view-user-dialog {
   background: #ffffff !important;
 }
@@ -792,26 +791,21 @@ onMounted(() => {
   background: #ffffff !important;
 }
 
+.view-user-dialog h3,
+.view-user-dialog h4 {
+  color: #1a1a1a !important;
+}
+
+.view-user-dialog .text-caption {
+  color: #555555 !important;
+}
+
 .view-user-dialog .v-list {
   background: #ffffff !important;
 }
 
 .view-user-dialog .v-list-item {
   background: #ffffff !important;
-}
-
-.view-user-dialog h2,
-.view-user-dialog h3,
-.view-user-dialog h4 {
-  color: #1a1a1a !important;
-}
-
-.view-user-dialog p {
-  color: #333333 !important;
-}
-
-.view-user-dialog .text-caption {
-  color: #555555 !important;
 }
 
 .view-user-dialog .v-list-item-title {
@@ -823,7 +817,11 @@ onMounted(() => {
   color: #444444 !important;
 }
 
-/* تحسين قراءة النصوص في نموذج الإضافة/التعديل */
+.view-user-dialog .v-avatar {
+  background: #1976d2 !important;
+}
+
+/* Add dialog text improvements */
 .add-user-dialog .dialog-content {
   background: #ffffff !important;
 }
@@ -834,10 +832,6 @@ onMounted(() => {
 }
 
 .add-user-dialog :deep(.v-field input) {
-  color: #1a1a1a !important;
-}
-
-.add-user-dialog :deep(.v-field textarea) {
   color: #1a1a1a !important;
 }
 
@@ -854,15 +848,37 @@ onMounted(() => {
   color: #1a1a1a !important;
 }
 
-.add-user-dialog :deep(.v-field__input input::placeholder) {
-  color: #888888 !important;
-}
-
-.add-user-dialog :deep(.v-combobox .v-field__input) {
-  color: #1a1a1a !important;
-}
-
 .add-user-dialog :deep(.v-list-item-title) {
   color: #1a1a1a !important;
+}
+
+/* Delete dialog text improvements */
+.delete-confirm-dialog {
+  background: #ffffff !important;
+}
+
+.delete-confirm-dialog .v-card-text {
+  background: #ffffff !important;
+}
+
+.delete-confirm-dialog h4 {
+  color: #1a1a1a !important;
+}
+
+.delete-confirm-dialog .text-caption {
+  color: #555555 !important;
+}
+
+.delete-confirm-dialog .text-body-2 {
+  color: #333333 !important;
+}
+
+/* Add dialog light theme */
+.add-user-dialog {
+  background: #ffffff !important;
+}
+
+.add-user-dialog .v-card-text {
+  background: #ffffff !important;
 }
 </style>

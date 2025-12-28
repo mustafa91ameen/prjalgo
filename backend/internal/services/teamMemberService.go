@@ -65,6 +65,26 @@ func (s *TeamMemberService) GetByProjectID(ctx context.Context, projectID int64)
 	return result, nil
 }
 
+func (s *TeamMemberService) GetByProjectIDWithUser(ctx context.Context, projectID int64) ([]dtos.TeamMemberWithUser, error) {
+	teamMembers, err := s.teamMemberRepo.GetByProjectIDWithUser(ctx, projectID)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]dtos.TeamMemberWithUser, len(teamMembers))
+	for i, tm := range teamMembers {
+		result[i] = dtos.TeamMemberWithUser{
+			ID:        tm.ID,
+			ProjectID: tm.ProjectID,
+			UserID:    tm.UserID,
+			FullName:  tm.FullName,
+			JobTitle:  tm.JobTitle,
+			CreatedAt: &tm.CreatedAt,
+		}
+	}
+	return result, nil
+}
+
 func (s *TeamMemberService) GetByUserID(ctx context.Context, userID int64) ([]dtos.TeamMember, error) {
 	teamMembers, err := s.teamMemberRepo.GetByUserID(ctx, userID)
 	if err != nil {

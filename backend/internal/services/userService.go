@@ -214,6 +214,24 @@ func (s *UserService) UpdateStatus(ctx context.Context, id int64, status string)
 	return nil
 }
 
+// GetAllForDropdown returns lightweight user data for dropdown menus
+func (s *UserService) GetAllForDropdown(ctx context.Context) ([]dtos.UserDropdown, error) {
+	users, err := s.userRepo.GetAllForDropdown(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]dtos.UserDropdown, len(users))
+	for i, u := range users {
+		result[i] = dtos.UserDropdown{
+			ID:       u.ID,
+			FullName: u.FullName,
+			JobTitle: u.JobTitle,
+		}
+	}
+	return result, nil
+}
+
 // DTO conversion helpers
 
 func toUserSummaryDTO(u models.User) dtos.UserSummary {

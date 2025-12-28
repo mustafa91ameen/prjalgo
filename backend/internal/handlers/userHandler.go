@@ -191,6 +191,17 @@ func (h *UserHandler) UpdateStatus(c *gin.Context) {
 	response.Success(c, gin.H{"status": status})
 }
 
+// GetDropdown handles GET /users/dropdown - lightweight endpoint for select menus
+func (h *UserHandler) GetDropdown(c *gin.Context) {
+	users, err := h.userService.GetAllForDropdown(c.Request.Context())
+	if err != nil {
+		response.InternalError(c, "failed to fetch users")
+		return
+	}
+
+	response.Success(c, users)
+}
+
 // parseID extracts an int64 ID from the URL path
 func (h *UserHandler) parseID(c *gin.Context, param string) (int64, error) {
 	idStr := c.Param(param)

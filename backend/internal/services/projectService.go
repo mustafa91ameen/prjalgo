@@ -199,6 +199,23 @@ func (s *ProjectService) UpdateProgressPercentageWithTx(ctx context.Context, tx 
 	return s.projectRepo.UpdateProgressPercentageWithTx(ctx, tx, projectID, percentageToAdd)
 }
 
+// GetAllForDropdown returns lightweight project data for dropdown menus
+func (s *ProjectService) GetAllForDropdown(ctx context.Context) ([]dtos.ProjectDropdown, error) {
+	projects, err := s.projectRepo.GetAllForDropdown(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]dtos.ProjectDropdown, len(projects))
+	for i, p := range projects {
+		result[i] = dtos.ProjectDropdown{
+			ID:   p.ID,
+			Name: p.Name,
+		}
+	}
+	return result, nil
+}
+
 // DTO conversion helpers
 func toProjectSummaryDTO(p models.Project) dtos.ProjectSummary {
 	return dtos.ProjectSummary{

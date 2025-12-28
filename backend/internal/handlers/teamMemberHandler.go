@@ -67,7 +67,7 @@ func (h *TeamMemberHandler) GetByProjectID(c *gin.Context) {
 		return
 	}
 
-	teamMembers, err := h.teamMemberService.GetByProjectID(c.Request.Context(), projectID)
+	teamMembers, err := h.teamMemberService.GetByProjectIDWithUser(c.Request.Context(), projectID)
 	if err != nil {
 		response.InternalError(c, "failed to fetch team members")
 		return

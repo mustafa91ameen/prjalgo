@@ -15,8 +15,16 @@ type UserCredentials struct {
 	Status   *string
 }
 
+// UserDropdownItem is a lightweight struct for dropdown menus
+type UserDropdownItem struct {
+	ID       int64  `json:"id"`
+	FullName string `json:"fullName"`
+	JobTitle string `json:"jobTitle"`
+}
+
 type UserRepositoryInterface interface {
 	GetAll(ctx context.Context, limit, offset int) ([]models.User, int64, error)
+	GetAllForDropdown(ctx context.Context) ([]UserDropdownItem, error)
 	GetByID(ctx context.Context, id int64) (*models.User, error)
 	GetCredentialsByUsername(ctx context.Context, username string) (*UserCredentials, error)
 	Create(ctx context.Context, user *models.User) (*models.User, error)
@@ -71,6 +79,34 @@ func (r *UserRepository) GetAll(ctx context.Context, limit, offset int) ([]model
 	}
 
 	return users, total, rows.Err()
+}
+
+// GetAllForDropdown returns lightweight user data for dropdown menus
+func (r *UserRepository) GetAllForDropdown(ctx context.Context) ([]UserDropdownItem, error) {
+	query := `
+		SELECT id, fullName, jobTitle
+		FROM users
+		WHERE status = 'active'
+		ORDER BY fullName ASC
+	`
+
+	rows, err := r.db.Query(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []UserDropdownItem
+	for rows.Next() {
+		var u UserDropdownItem
+		err := rows.Scan(&u.ID, &u.FullName, &u.JobTitle)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, u)
+	}
+
+	return users, rows.Err()
 }
 
 func (r *UserRepository) Create(ctx context.Context, user *models.User) (*models.User, error) {

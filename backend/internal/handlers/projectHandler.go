@@ -160,6 +160,17 @@ func (h *ProjectHandler) GetStats(c *gin.Context) {
 	response.Success(c, stats)
 }
 
+// GetDropdown handles GET /projects/dropdown - lightweight endpoint for select menus
+func (h *ProjectHandler) GetDropdown(c *gin.Context) {
+	projects, err := h.projectService.GetAllForDropdown(c.Request.Context())
+	if err != nil {
+		response.InternalError(c, "failed to fetch projects")
+		return
+	}
+
+	response.Success(c, projects)
+}
+
 // parseID extracts an int64 ID from the URL path
 func (h *ProjectHandler) parseID(c *gin.Context, param string) (int64, error) {
 	idStr := c.Param(param)

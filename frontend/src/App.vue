@@ -166,7 +166,6 @@ const mainMenuItems = computed(() => {
         '/workdayMaterials',
         '/rolePages',
         '/userRoles',
-        '/teamMembers',
         '/workSubcategories'
       ]
       return !apiOnlyRoutes.includes(page.route)

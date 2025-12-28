@@ -13,6 +13,7 @@ type TeamMemberRepositoryInterface interface {
 	GetAll(ctx context.Context, limit, offset int) ([]models.TeamMember, int64, error)
 	GetByID(ctx context.Context, id int64) (*models.TeamMember, error)
 	GetByProjectID(ctx context.Context, projectID int64) ([]models.TeamMember, error)
+	GetByProjectIDWithUser(ctx context.Context, projectID int64) ([]TeamMemberWithUserResult, error)
 	GetByUserID(ctx context.Context, userID int64) ([]models.TeamMember, error)
 	Create(ctx context.Context, teamMember *models.TeamMember) (*models.TeamMember, error)
 	Delete(ctx context.Context, id int64) error
@@ -25,6 +26,16 @@ type TeamMemberStatsResult struct {
 	UniqueUsers    int64   `json:"uniqueUsers"`
 	UniqueProjects int64   `json:"uniqueProjects"`
 	AvgPerProject  float64 `json:"avgPerProject"`
+}
+
+// TeamMemberWithUserResult includes user details
+type TeamMemberWithUserResult struct {
+	ID        int64
+	ProjectID int64
+	UserID    int64
+	FullName  string
+	JobTitle  string
+	CreatedAt time.Time
 }
 
 type TeamMemberRepository struct {
@@ -49,7 +60,7 @@ func (r *TeamMemberRepository) GetAll(ctx context.Context, limit, offset int) ([
 	}
 
 	query := `
-		SELECT tm.id, tm.projectId, tm.userId
+		SELECT tm.id, tm.projectId, tm.userId, tm.createdAt
 		FROM teamMembers tm
 		JOIN projects p ON tm.projectId = p.id
 		WHERE p.isActive = TRUE
@@ -66,7 +77,7 @@ func (r *TeamMemberRepository) GetAll(ctx context.Context, limit, offset int) ([
 	var teamMembers []models.TeamMember
 	for rows.Next() {
 		var tm models.TeamMember
-		err := rows.Scan(&tm.ID, &tm.ProjectID, &tm.UserID)
+		err := rows.Scan(&tm.ID, &tm.ProjectID, &tm.UserID, &tm.CreatedAt)
 		if err != nil {
 			return nil, 0, err
 		}
@@ -78,14 +89,14 @@ func (r *TeamMemberRepository) GetAll(ctx context.Context, limit, offset int) ([
 
 func (r *TeamMemberRepository) GetByID(ctx context.Context, id int64) (*models.TeamMember, error) {
 	query := `
-		SELECT id, projectId, userId
+		SELECT id, projectId, userId, createdAt
 		FROM teamMembers
 		WHERE id = $1
 	`
 
 	var tm models.TeamMember
 	err := r.db.QueryRow(ctx, query, id).Scan(
-		&tm.ID, &tm.ProjectID, &tm.UserID,
+		&tm.ID, &tm.ProjectID, &tm.UserID, &tm.CreatedAt,
 	)
 
 	if err != nil {
@@ -97,7 +108,7 @@ func (r *TeamMemberRepository) GetByID(ctx context.Context, id int64) (*models.T
 
 func (r *TeamMemberRepository) GetByProjectID(ctx context.Context, projectID int64) ([]models.TeamMember, error) {
 	query := `
-		SELECT id, projectId, userId
+		SELECT id, projectId, userId, createdAt
 		FROM teamMembers
 		WHERE projectId = $1
 		ORDER BY createdAt DESC
@@ -112,7 +123,7 @@ func (r *TeamMemberRepository) GetByProjectID(ctx context.Context, projectID int
 	var teamMembers []models.TeamMember
 	for rows.Next() {
 		var tm models.TeamMember
-		err := rows.Scan(&tm.ID, &tm.ProjectID, &tm.UserID)
+		err := rows.Scan(&tm.ID, &tm.ProjectID, &tm.UserID, &tm.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -120,6 +131,34 @@ func (r *TeamMemberRepository) GetByProjectID(ctx context.Context, projectID int
 	}
 
 	return teamMembers, rows.Err()
+}
+
+func (r *TeamMemberRepository) GetByProjectIDWithUser(ctx context.Context, projectID int64) ([]TeamMemberWithUserResult, error) {
+	query := `
+		SELECT tm.id, tm.projectId, tm.userId, u.fullName, COALESCE(u.jobTitle, '') as jobTitle, tm.createdAt
+		FROM teamMembers tm
+		JOIN users u ON tm.userId = u.id
+		WHERE tm.projectId = $1
+		ORDER BY tm.createdAt DESC
+	`
+
+	rows, err := r.db.Query(ctx, query, projectID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var results []TeamMemberWithUserResult
+	for rows.Next() {
+		var tm TeamMemberWithUserResult
+		err := rows.Scan(&tm.ID, &tm.ProjectID, &tm.UserID, &tm.FullName, &tm.JobTitle, &tm.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, tm)
+	}
+
+	return results, rows.Err()
 }
 
 func (r *TeamMemberRepository) GetByUserID(ctx context.Context, userID int64) ([]models.TeamMember, error) {
