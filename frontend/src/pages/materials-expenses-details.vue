@@ -170,11 +170,10 @@
 
       <!-- Expenses Table -->
       <v-data-table
-        v-model:page="expensesPage"
         :headers="expensesHeaders"
         :items="expensesData"
         :search="expensesSearch"
-        :items-per-page="DEFAULT_LIMIT"
+        :items-per-page="-1"
         :loading="expensesLoading"
         class="data-table expenses-table"
         no-data-text="لا توجد بيانات متاحة"
@@ -757,9 +756,17 @@ const expensesHeaders = [
 const materialsData = ref([])
 const expensesData = ref([])
 
+// Pagination state for expenses (server-side)
+const expensesPagination = ref({
+  total: 0,
+  page: 1,
+  limit: DEFAULT_LIMIT,
+  totalPages: 0
+})
+
 // Computed total pages for pagination
 const materialsTotalPages = computed(() => Math.ceil(materialsData.value.length / DEFAULT_LIMIT))
-const expensesTotalPages = computed(() => Math.ceil(expensesData.value.length / DEFAULT_LIMIT))
+const expensesTotalPages = computed(() => expensesPagination.value.totalPages)
 
 // Methods
 const goBack = () => {
@@ -790,9 +797,18 @@ const loadExpenses = async () => {
   if (!projectId.value) return
   expensesLoading.value = true
   try {
-    const result = await listExpensesByProject(projectId.value)
-    // Handle both array and pagination response formats
-    expensesData.value = Array.isArray(result) ? result : (result.data || [])
+    const result = await listExpensesByProject(projectId.value, {
+      page: expensesPage.value,
+      limit: DEFAULT_LIMIT
+    })
+    // Handle paginated response
+    expensesData.value = result.data || []
+    expensesPagination.value = {
+      total: result.total || 0,
+      page: result.page || 1,
+      limit: result.limit || DEFAULT_LIMIT,
+      totalPages: result.totalPages || 0
+    }
   } catch (err) {
     console.error('Error loading expenses:', err)
   } finally {
@@ -1074,6 +1090,13 @@ watch(projectId, (newId) => {
     loadExpenses()
   }
 }, { immediate: true })
+
+// Watch expensesPage to reload when page changes
+watch(expensesPage, () => {
+  if (projectId.value) {
+    loadExpenses()
+  }
+})
 </script>
 
 <style scoped>
@@ -1184,6 +1207,28 @@ watch(projectId, (newId) => {
 .section-card {
   border-radius: 16px;
   overflow: hidden;
+  background: #ffffff !important;
+}
+
+.section-card :deep(.v-card-text) {
+  background: #ffffff !important;
+}
+
+.section-card :deep(.v-data-table) {
+  background: #ffffff !important;
+}
+
+/* Pagination area white background */
+.section-card .d-flex.justify-center {
+  background: #ffffff !important;
+}
+
+.section-card :deep(.v-pagination) {
+  background: #ffffff !important;
+}
+
+.section-card :deep(.v-pagination .v-btn) {
+  color: #1a1a1a !important;
 }
 
 .section-title {
@@ -1425,26 +1470,88 @@ watch(projectId, (newId) => {
   min-height: 24px !important;
 }
 
-.data-table :deep(.v-data-table__tr:hover) {
-  background-color: #f8f9fa !important;
+/* Force white background and dark text for ALL tables */
+.data-table,
+.materials-table,
+.expenses-table {
+  background: #ffffff !important;
 }
 
-.data-table :deep(.v-data-table__tr:hover .v-data-table__td) {
-  color: #000 !important;
+.data-table :deep(table),
+.materials-table :deep(table),
+.expenses-table :deep(table) {
+  background: #ffffff !important;
+}
+
+.data-table :deep(tbody),
+.materials-table :deep(tbody),
+.expenses-table :deep(tbody) {
+  background: #ffffff !important;
+}
+
+.data-table :deep(tbody tr),
+.materials-table :deep(tbody tr),
+.expenses-table :deep(tbody tr) {
+  background: #ffffff !important;
+}
+
+.data-table :deep(tbody tr:nth-child(even)),
+.materials-table :deep(tbody tr:nth-child(even)),
+.expenses-table :deep(tbody tr:nth-child(even)) {
+  background: #f8fafc !important;
+}
+
+.data-table :deep(tbody tr td),
+.materials-table :deep(tbody tr td),
+.expenses-table :deep(tbody tr td) {
+  background: inherit !important;
+  color: #1a1a1a !important;
+}
+
+.data-table :deep(tbody tr td *),
+.materials-table :deep(tbody tr td *),
+.expenses-table :deep(tbody tr td *) {
+  color: #1a1a1a !important;
+}
+
+.data-table :deep(.v-data-table__tr),
+.materials-table :deep(.v-data-table__tr),
+.expenses-table :deep(.v-data-table__tr) {
+  background-color: #ffffff !important;
+}
+
+.data-table :deep(.v-data-table__tr .v-data-table__td),
+.materials-table :deep(.v-data-table__tr .v-data-table__td),
+.expenses-table :deep(.v-data-table__tr .v-data-table__td) {
+  color: #1a1a1a !important;
+  background: #ffffff !important;
+}
+
+.data-table :deep(.v-data-table__tr .v-data-table__td *),
+.materials-table :deep(.v-data-table__tr .v-data-table__td *),
+.expenses-table :deep(.v-data-table__tr .v-data-table__td *) {
+  color: #1a1a1a !important;
 }
 
 /* تحسين ألوان النصوص في الجداول الفرعية */
-.data-table :deep(.v-data-table__wrapper) {
-  background-color: white;
+.data-table :deep(.v-data-table__wrapper),
+.materials-table :deep(.v-data-table__wrapper),
+.expenses-table :deep(.v-data-table__wrapper) {
+  background-color: #ffffff !important;
 }
 
-.data-table :deep(.v-data-table__wrapper table) {
-  background-color: white;
+.data-table :deep(.v-data-table__wrapper table),
+.materials-table :deep(.v-data-table__wrapper table),
+.expenses-table :deep(.v-data-table__wrapper table) {
+  background-color: #ffffff !important;
 }
 
-.data-table :deep(.v-data-table__wrapper table td) {
-  color: #333 !important;
+.data-table :deep(.v-data-table__wrapper table td),
+.materials-table :deep(.v-data-table__wrapper table td),
+.expenses-table :deep(.v-data-table__wrapper table td) {
+  color: #1a1a1a !important;
   border-color: #e0e0e0 !important;
+  background: #ffffff !important;
 }
 
 .data-table :deep(.v-data-table__wrapper table th) {
@@ -1454,34 +1561,16 @@ watch(projectId, (newId) => {
 }
 
 /* أنماط مخصصة لجداول المواد والمصاريف */
-.materials-table :deep(.v-data-table__td) {
-  color: #1a1a1a !important;
-  font-weight: 500 !important;
-  font-size: 0.65rem !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  padding: 5px 6px !important;
-}
-
-.materials-table :deep(.v-data-table__th) {
-  color: #ffffff !important;
-  font-weight: 500 !important;
-  font-size: 0.6rem !important;
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-  padding: 3px 5px !important;
-  min-height: 24px !important;
-  border-bottom: 1px solid #0d47a1 !important;
-  position: relative;
-}
-
+.materials-table :deep(.v-data-table__td),
 .expenses-table :deep(.v-data-table__td) {
   color: #1a1a1a !important;
   font-weight: 500 !important;
   font-size: 0.65rem !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   padding: 5px 6px !important;
+  background: #ffffff !important;
 }
 
+.materials-table :deep(.v-data-table__th),
 .expenses-table :deep(.v-data-table__th) {
   color: #ffffff !important;
   font-weight: 500 !important;

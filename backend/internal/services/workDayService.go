@@ -79,6 +79,21 @@ func (s *WorkDayService) GetByProjectID(ctx context.Context, projectID int64) ([
 	return result, nil
 }
 
+func (s *WorkDayService) GetByProjectIDPaginated(ctx context.Context, projectID int64, limit, offset int) (dtos.PaginatedResponse[dtos.WorkDaySummary], error) {
+	workDays, total, err := s.workDayRepo.GetByProjectIDPaginated(ctx, projectID, limit, offset)
+	if err != nil {
+		return dtos.PaginatedResponse[dtos.WorkDaySummary]{}, err
+	}
+
+	result := make([]dtos.WorkDaySummary, len(workDays))
+	for i, w := range workDays {
+		result[i] = toWorkDaySummaryDTO(w)
+	}
+
+	page := (offset / limit) + 1
+	return dtos.NewPaginatedResponse(result, total, page, limit), nil
+}
+
 func (s *WorkDayService) Create(ctx context.Context, req dtos.CreateWorkDay) (*dtos.WorkDay, error) {
 	workDay := &models.WorkDay{
 		ProjectID:         req.ProjectID,

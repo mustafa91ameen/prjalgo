@@ -68,7 +68,14 @@ func (h *WorkDayHandler) GetByProjectID(c *gin.Context) {
 		return
 	}
 
-	workDays, err := h.workDayService.GetByProjectID(c.Request.Context(), projectID)
+	var pagination dtos.PaginationQuery
+	if err := c.ShouldBindQuery(&pagination); err != nil {
+		response.ValidationError(c, err)
+		return
+	}
+	pagination.Normalize()
+
+	workDays, err := h.workDayService.GetByProjectIDPaginated(c.Request.Context(), projectID, pagination.Limit, pagination.Offset())
 	if err != nil {
 		response.InternalError(c, "failed to fetch work days")
 		return

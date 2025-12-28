@@ -13,6 +13,7 @@ type ExpenseRepositoryInterface interface {
 	GetAll(ctx context.Context, limit, offset int) ([]models.Expense, int64, error)
 	GetByID(ctx context.Context, id int64) (*models.Expense, error)
 	GetByProjectID(ctx context.Context, projectID int64) ([]models.Expense, error)
+	GetByProjectIDPaginated(ctx context.Context, projectID int64, limit, offset int) ([]models.Expense, int64, error)
 	GetByDebtorID(ctx context.Context, debtorID int64) ([]models.Expense, error)
 	GetTotalPaidByDebtorID(ctx context.Context, debtorID int64) (float64, error)
 	Create(ctx context.Context, expense *models.Expense) (*models.Expense, error)
@@ -130,6 +131,44 @@ func (r *ExpenseRepository) GetByProjectID(ctx context.Context, projectID int64)
 	}
 
 	return expenses, rows.Err()
+}
+
+func (r *ExpenseRepository) GetByProjectIDPaginated(ctx context.Context, projectID int64, limit, offset int) ([]models.Expense, int64, error) {
+	// Get total count
+	var total int64
+	countQuery := `SELECT COUNT(*) FROM expenses WHERE projectId = $1`
+	if err := r.db.QueryRow(ctx, countQuery, projectID).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+
+	query := `
+		SELECT id, name, amount, type, expenseDate, projectId, debtorId, status, notes
+		FROM expenses
+		WHERE projectId = $1
+		ORDER BY expenseDate DESC
+		LIMIT $2 OFFSET $3
+	`
+
+	rows, err := r.db.Query(ctx, query, projectID, limit, offset)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	var expenses []models.Expense
+	for rows.Next() {
+		var e models.Expense
+		err := rows.Scan(
+			&e.ID, &e.Name, &e.Amount, &e.Type, &e.ExpenseDate,
+			&e.ProjectID, &e.DebtorID, &e.Status, &e.Notes,
+		)
+		if err != nil {
+			return nil, 0, err
+		}
+		expenses = append(expenses, e)
+	}
+
+	return expenses, total, rows.Err()
 }
 
 func (r *ExpenseRepository) Create(ctx context.Context, expense *models.Expense) (*models.Expense, error) {

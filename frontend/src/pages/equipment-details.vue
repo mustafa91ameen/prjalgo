@@ -82,10 +82,10 @@
         :items="equipmentData"
         :search="equipmentSearch"
         :items-per-page="DEFAULT_LIMIT"
-        class="project-table"
+        class="data-table equipment-table"
         no-data-text="لا توجد بيانات متاحة"
         loading-text="جاري التحميل..."
-        hover
+        density="comfortable"
         hide-default-footer
       >
         <!-- Serial Number Column -->
@@ -766,6 +766,28 @@ watch(workDayId, (newId) => {
 .section-card {
   border-radius: 16px;
   overflow: hidden;
+  background: #ffffff !important;
+}
+
+.section-card :deep(.v-card-text) {
+  background: #ffffff !important;
+}
+
+.section-card :deep(.v-data-table) {
+  background: #ffffff !important;
+}
+
+/* Pagination area white background */
+.section-card .d-flex.justify-center {
+  background: #ffffff !important;
+}
+
+.section-card :deep(.v-pagination) {
+  background: #ffffff !important;
+}
+
+.section-card :deep(.v-pagination .v-btn) {
+  color: #1a1a1a !important;
 }
 
 .section-title {
@@ -931,73 +953,157 @@ watch(workDayId, (newId) => {
 .data-table :deep(.v-data-table__td) {
   color: #1a1a1a !important;
   font-weight: 500 !important;
-  font-size: 0.6rem !important;
+  font-size: 0.65rem !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  padding: 3px 4px !important;
-  min-height: 32px !important;
+  padding: 5px 6px !important;
 }
 
 .data-table :deep(.v-data-table__th) {
   color: #ffffff !important;
   font-weight: 500 !important;
-  font-size: 0.55rem !important;
+  font-size: 0.6rem !important;
   background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-  padding: 2px 4px !important;
-  min-height: 20px !important;
+  padding: 3px 5px !important;
+  min-height: 24px !important;
 }
 
-.data-table :deep(.v-data-table__tr:hover) {
-  background-color: #f8f9fa !important;
+/* Force white background and dark text for ALL tables */
+.data-table,
+.equipment-table {
+  background: #ffffff !important;
 }
 
-.data-table :deep(.v-data-table__tr:hover .v-data-table__td) {
-  color: #000 !important;
+.data-table :deep(table),
+.equipment-table :deep(table) {
+  background: #ffffff !important;
+}
+
+.data-table :deep(tbody),
+.equipment-table :deep(tbody) {
+  background: #ffffff !important;
+}
+
+.data-table :deep(tbody tr),
+.equipment-table :deep(tbody tr) {
+  background: #ffffff !important;
+}
+
+.data-table :deep(tbody tr:nth-child(even)),
+.equipment-table :deep(tbody tr:nth-child(even)) {
+  background: #f8fafc !important;
+}
+
+.data-table :deep(tbody tr td),
+.equipment-table :deep(tbody tr td) {
+  background: inherit !important;
+  color: #1a1a1a !important;
+}
+
+.data-table :deep(tbody tr td *),
+.equipment-table :deep(tbody tr td *) {
+  color: #1a1a1a !important;
+}
+
+.data-table :deep(.v-data-table__tr),
+.equipment-table :deep(.v-data-table__tr) {
+  background-color: #ffffff !important;
+}
+
+.data-table :deep(.v-data-table__tr .v-data-table__td),
+.equipment-table :deep(.v-data-table__tr .v-data-table__td) {
+  color: #1a1a1a !important;
+  background: #ffffff !important;
+}
+
+.data-table :deep(.v-data-table__tr .v-data-table__td *),
+.equipment-table :deep(.v-data-table__tr .v-data-table__td *) {
+  color: #1a1a1a !important;
 }
 
 /* تحسين ألوان النصوص في الجداول الفرعية */
-.data-table :deep(.v-data-table__wrapper) {
-  border: 2px solid #e8eaf6;
+.data-table :deep(.v-data-table__wrapper),
+.equipment-table :deep(.v-data-table__wrapper) {
+  background-color: #ffffff !important;
+  border: 2px solid #e3f2fd;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(63, 81, 181, 0.1);
-  background: white;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.1);
 }
 
-.data-table :deep(.v-data-table__wrapper table) {
+.data-table :deep(.v-data-table__wrapper table),
+.equipment-table :deep(.v-data-table__wrapper table) {
+  background-color: #ffffff !important;
   border-collapse: separate;
   border-spacing: 0;
 }
 
-.data-table :deep(.v-data-table__wrapper table td) {
-  color: #333 !important;
+.data-table :deep(.v-data-table__wrapper table td),
+.equipment-table :deep(.v-data-table__wrapper table td) {
+  color: #1a1a1a !important;
   border-color: #e0e0e0 !important;
+  background: #ffffff !important;
+  border-right: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.data-table :deep(.v-data-table__wrapper table th) {
+.data-table :deep(.v-data-table__wrapper table th),
+.equipment-table :deep(.v-data-table__wrapper table th) {
   color: #ffffff !important;
-  background: linear-gradient(135deg, #3f51b5 0%, #303f9f 100%) !important;
-  border-color: #283593 !important;
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
+  border-color: #0d47a1 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 2px solid #0d47a1;
+}
+
+.data-table :deep(.v-data-table__wrapper table th:last-child),
+.equipment-table :deep(.v-data-table__wrapper table th:last-child) {
+  border-right: none;
+}
+
+.data-table :deep(.v-data-table__wrapper table td:last-child),
+.equipment-table :deep(.v-data-table__wrapper table td:last-child) {
+  border-right: none;
+}
+
+.data-table :deep(.v-data-table__wrapper table tr:nth-child(even)),
+.equipment-table :deep(.v-data-table__wrapper table tr:nth-child(even)) {
+  background-color: #fafafa !important;
+}
+
+.data-table :deep(.v-data-table__wrapper table tr:nth-child(odd)),
+.equipment-table :deep(.v-data-table__wrapper table tr:nth-child(odd)) {
+  background-color: #ffffff !important;
+}
+
+.data-table :deep(.v-data-table__wrapper table tr:hover),
+.equipment-table :deep(.v-data-table__wrapper table tr:hover) {
+  background-color: #e3f2fd !important;
+}
+
+.data-table :deep(.v-data-table__wrapper table tr:hover td),
+.equipment-table :deep(.v-data-table__wrapper table tr:hover td) {
+  color: #000 !important;
+  font-weight: 700;
 }
 
 /* أنماط مخصصة لجداول الآليات */
 .equipment-table :deep(.v-data-table__td) {
   color: #1a1a1a !important;
   font-weight: 500 !important;
-  font-size: 0.6rem !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  padding: 3px 4px !important;
-  min-height: 32px !important;
+  font-size: 0.65rem !important;
+  padding: 5px 6px !important;
+  background: #ffffff !important;
 }
 
 .equipment-table :deep(.v-data-table__th) {
   color: #ffffff !important;
   font-weight: 500 !important;
-  font-size: 0.55rem !important;
+  font-size: 0.6rem !important;
   background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-  padding: 2px 4px !important;
-  min-height: 20px !important;
+  padding: 3px 5px !important;
+  min-height: 24px !important;
   border-bottom: 1px solid #0d47a1 !important;
   position: relative;
 }
@@ -1006,19 +1112,46 @@ watch(workDayId, (newId) => {
 .data-table :deep(.v-btn) {
   color: #dc3545 !important;
   transition: all 0.3s ease;
-  min-width: 28px !important;
-  height: 28px !important;
-}
-
-.data-table :deep(.v-btn .v-icon) {
-  font-size: 16px !important;
 }
 
 .data-table :deep(.v-btn:hover) {
   background-color: #f8d7da !important;
   color: #721c24 !important;
-  transform: scale(1.05);
-  box-shadow: 0 2px 6px rgba(220, 53, 69, 0.25);
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+/* تحسينات إضافية لرؤوس الجداول */
+.equipment-table :deep(.v-data-table__th:hover) {
+  background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* تحسين ألوان الأيقونات في الرؤوس */
+.equipment-table :deep(.v-data-table__th .v-icon) {
+  color: #ffffff !important;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+/* تحسين ألوان النصوص المحددة للفرز */
+.equipment-table :deep(.v-data-table__th.v-data-table__th--sorted) {
+  background: linear-gradient(135deg, #0d47a1 0%, #1976d2 100%) !important;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* تحسين ألوان النصوص في حالة عدم وجود بيانات */
+.data-table :deep(.v-data-table__empty) {
+  color: #666 !important;
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+/* تحسين ألوان النصوص في حالة التحميل */
+.data-table :deep(.v-data-table__loading) {
+  color: #1976d2 !important;
+  font-weight: 500;
+  font-size: 1.1rem;
 }
 
 .dialog-card {
@@ -1119,15 +1252,28 @@ watch(workDayId, (newId) => {
 }
 
 /* ========================================
-   Table Card Styles - Same as Materials/Labor
+   Table Card Styles - Same as Materials
    ======================================== */
 .data-table-card {
-  background: rgba(255, 249, 249, 0.95);
+  background: #ffffff !important;
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   margin-top: 24px;
+}
+
+/* Pagination area white background */
+.data-table-card .d-flex.justify-center {
+  background: #ffffff !important;
+}
+
+.data-table-card :deep(.v-pagination) {
+  background: #ffffff !important;
+}
+
+.data-table-card :deep(.v-pagination .v-btn) {
+  color: #1a1a1a !important;
 }
 
 .table-title {
@@ -1159,70 +1305,23 @@ watch(workDayId, (newId) => {
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25) !important;
 }
 
-.project-table {
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  width: 100% !important;
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-
-.project-table :deep(.v-data-table__th) {
-  color: #ffffff !important;
-  font-weight: 500 !important;
-  font-size: 0.55rem !important;
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-  padding: 2px 4px !important;
-  min-height: 20px !important;
-  border-bottom: 1px solid #0d47a1 !important;
-  position: relative;
-}
-
-.project-table :deep(.v-data-table__td) {
+.serial-number {
   color: #1a1a1a !important;
-  font-weight: 500 !important;
-  font-size: 0.6rem !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  padding: 3px 4px !important;
-  min-height: 32px !important;
-}
-
-.project-table .v-data-table__wrapper tbody tr:nth-child(even) {
-  background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%) !important;
-}
-
-.project-table .v-data-table__wrapper tbody tr:nth-child(odd) {
-  background: linear-gradient(135deg, #ffffff 0%, #faf5ff 100%) !important;
-}
-
-.project-table .v-data-table__wrapper tbody tr:hover {
-  background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%) !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15) !important;
-  transition: all 0.3s ease !important;
-}
-
-.project-table .serial-number {
-  color: #000000 !important;
-  font-weight: 600 !important;
-  font-size: 0.6rem !important;
-  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%) !important;
+  font-weight: 700 !important;
+  font-size: 0.7rem !important;
+  background: rgba(25, 118, 210, 0.1) !important;
   padding: 3px 6px !important;
   border-radius: 6px !important;
   display: inline-block !important;
   min-width: 30px !important;
   text-align: center !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid rgba(25, 118, 210, 0.2) !important;
 }
 
-.project-table .project-name {
+.project-name {
   color: #000000 !important;
   font-weight: 500 !important;
-  font-size: 0.6rem !important;
+  font-size: 0.65rem !important;
   text-align: right !important;
   padding: 2px 4px !important;
   border-radius: 4px !important;
@@ -1233,17 +1332,17 @@ watch(workDayId, (newId) => {
   white-space: nowrap !important;
 }
 
-.project-table .date-text {
+.date-text {
   color: #000000 !important;
   font-weight: 500 !important;
-  font-size: 0.6rem !important;
+  font-size: 0.65rem !important;
   font-family: 'Arial', 'Helvetica', sans-serif !important;
 }
 
-.project-table .cost-text {
+.cost-text {
   color: #000000 !important;
   font-weight: 600 !important;
-  font-size: 0.6rem !important;
+  font-size: 0.65rem !important;
   font-family: 'Arial', 'Helvetica', sans-serif !important;
   direction: ltr !important;
   background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%) !important;

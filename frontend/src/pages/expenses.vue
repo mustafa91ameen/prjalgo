@@ -2321,44 +2321,82 @@ onMounted(() => {
   padding: 12px 8px !important;
   border-bottom: 1px solid #e0e0e0 !important;
   text-align: center !important;
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%) !important;
-  color: #000000 !important;
+  background: #ffffff !important;
+  color: #1a1a1a !important;
   font-weight: 500 !important;
 }
 
+.project-table :deep(.v-data-table__td) {
+  background: #ffffff !important;
+  color: #1a1a1a !important;
+}
+
+.project-table :deep(.v-data-table__td *) {
+  color: #1a1a1a !important;
+}
+
+.project-table :deep(tbody tr) {
+  background: #ffffff !important;
+}
+
+.project-table :deep(tbody tr td) {
+  background: #ffffff !important;
+  color: #1a1a1a !important;
+}
+
+.project-table :deep(tbody tr td *) {
+  color: #1a1a1a !important;
+}
+
 .project-table .v-data-table__wrapper tbody tr:nth-child(even) {
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%) !important;
+  background: #f8fafc !important;
 }
 
 .project-table .v-data-table__wrapper tbody tr:nth-child(odd) {
-  background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%) !important;
+  background: #ffffff !important;
 }
 
-.project-table .v-data-table__wrapper tbody tr:hover {
-  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
+.project-table :deep(tbody tr:nth-child(even)) {
+  background: #f8fafc !important;
+}
+
+.project-table :deep(tbody tr:nth-child(even) td) {
+  background: #f8fafc !important;
+}
+
+.project-table :deep(tbody tr:nth-child(odd)) {
+  background: #ffffff !important;
+}
+
+.project-table :deep(tbody tr:nth-child(odd) td) {
+  background: #ffffff !important;
 }
 
 .project-table .serial-number {
-  color: #000000 !important;
-  font-weight: 600 !important;
+  color: #1a1a1a !important;
+  font-weight: 700 !important;
   font-size: 0.9rem !important;
+  background: rgba(25, 118, 210, 0.1) !important;
+  padding: 4px 8px !important;
+  border-radius: 6px !important;
+  border: 1px solid rgba(25, 118, 210, 0.2) !important;
 }
 
 .project-table .project-name {
-  color: #000000 !important;
+  color: #1a1a1a !important;
   font-weight: 600 !important;
   font-size: 0.9rem !important;
   text-align: right !important;
 }
 
 .project-table .date-text {
-  color: #000000 !important;
+  color: #1a1a1a !important;
   font-weight: 500 !important;
   font-size: 0.9rem !important;
 }
 
 .project-table .cost-text {
-  color: #000000 !important;
+  color: #1a1a1a !important;
   font-weight: 600 !important;
   font-size: 0.9rem !important;
 }
@@ -2719,7 +2757,7 @@ onMounted(() => {
 
 /* الصفوف المتناوبة */
 .expense-table .v-data-table__wrapper tbody tr:nth-child(even) {
-  background: #f7f8f9 !important;
+  background: #f8fafc !important;
   display: table-row !important;
   visibility: visible !important;
   opacity: 1 !important;
@@ -2727,19 +2765,14 @@ onMounted(() => {
 }
 
 .expense-table .v-data-table__wrapper tbody tr:nth-child(odd) {
-  background: #f4f1f1 !important;
+  background: #ffffff !important;
   display: table-row !important;
   visibility: visible !important;
   opacity: 1 !important;
   transition: all 0.3s ease !important;
 }
 
-/* تأثير التمرير على الصفوف */
-.expense-table .v-data-table__wrapper tbody tr:hover {
-  background: #f1f5f9 !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.1) !important;
-}
+/* No hover background change - keep text always visible */
 
 /* إصلاح عرض الجدول */
 .expense-table .v-data-table__wrapper tbody tr {
@@ -2752,6 +2785,11 @@ onMounted(() => {
   display: table-cell !important;
   visibility: visible !important;
   opacity: 1 !important;
+  color: #1a1a1a !important;
+}
+
+.expense-table .v-data-table__wrapper tbody tr td * {
+  color: #1a1a1a !important;
 }
 
 .expense-table .v-data-table__wrapper thead tr {
@@ -2768,17 +2806,18 @@ onMounted(() => {
 
 /* ألوان النصوص */
 .expense-table .serial-number {
-  color: #6b7280 !important;
-  font-weight: 600 !important;
+  color: #1a1a1a !important;
+  font-weight: 700 !important;
   font-size: 0.9rem !important;
   display: inline-block !important;
   visibility: visible !important;
   opacity: 1 !important;
-  background: #f2f2f2 !important;
+  background: rgba(25, 118, 210, 0.1) !important;
   padding: 4px 8px !important;
   border-radius: 6px !important;
   min-width: 24px !important;
   text-align: center !important;
+  border: 1px solid rgba(25, 118, 210, 0.2) !important;
 }
 
 .expense-table .project-name {

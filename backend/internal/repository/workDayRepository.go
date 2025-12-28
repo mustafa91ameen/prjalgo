@@ -13,6 +13,7 @@ type WorkDayRepositoryInterface interface {
 	GetByID(ctx context.Context, id int64) (*models.WorkDay, error)
 	GetByIDWithTx(ctx context.Context, tx pgx.Tx, id int64) (*models.WorkDay, error)
 	GetByProjectID(ctx context.Context, projectID int64) ([]models.WorkDay, error)
+	GetByProjectIDPaginated(ctx context.Context, projectID int64, limit, offset int) ([]models.WorkDay, int64, error)
 	Create(ctx context.Context, workDay *models.WorkDay) (*models.WorkDay, error)
 	Update(ctx context.Context, id int64, workDay *models.WorkDay) (*models.WorkDay, error)
 	UpdateWithTx(ctx context.Context, tx pgx.Tx, id int64, workDay *models.WorkDay) (*models.WorkDay, error)
@@ -143,6 +144,44 @@ func (r *WorkDayRepository) GetByProjectID(ctx context.Context, projectID int64)
 	}
 
 	return workDays, rows.Err()
+}
+
+func (r *WorkDayRepository) GetByProjectIDPaginated(ctx context.Context, projectID int64, limit, offset int) ([]models.WorkDay, int64, error) {
+	// Get total count
+	var total int64
+	countQuery := `SELECT COUNT(*) FROM workDays WHERE projectId = $1`
+	if err := r.db.QueryRow(ctx, countQuery, projectID).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+
+	query := `
+		SELECT id, projectId, workSubCategoryId, workDate, description, notes, status, totalCost
+		FROM workDays
+		WHERE projectId = $1
+		ORDER BY workDate DESC
+		LIMIT $2 OFFSET $3
+	`
+
+	rows, err := r.db.Query(ctx, query, projectID, limit, offset)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	var workDays []models.WorkDay
+	for rows.Next() {
+		var w models.WorkDay
+		err := rows.Scan(
+			&w.ID, &w.ProjectID, &w.WorkSubCategoryID, &w.WorkDate,
+			&w.Description, &w.Notes, &w.Status, &w.TotalCost,
+		)
+		if err != nil {
+			return nil, 0, err
+		}
+		workDays = append(workDays, w)
+	}
+
+	return workDays, total, rows.Err()
 }
 
 func (r *WorkDayRepository) Create(ctx context.Context, workDay *models.WorkDay) (*models.WorkDay, error) {

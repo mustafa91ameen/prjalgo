@@ -67,6 +67,21 @@ func (s *ExpenseService) GetByProjectID(ctx context.Context, projectID int64) ([
 	return result, nil
 }
 
+func (s *ExpenseService) GetByProjectIDPaginated(ctx context.Context, projectID int64, limit, offset int) (dtos.PaginatedResponse[dtos.ExpenseSummary], error) {
+	expenses, total, err := s.expenseRepo.GetByProjectIDPaginated(ctx, projectID, limit, offset)
+	if err != nil {
+		return dtos.PaginatedResponse[dtos.ExpenseSummary]{}, err
+	}
+
+	result := make([]dtos.ExpenseSummary, len(expenses))
+	for i, e := range expenses {
+		result[i] = toExpenseSummaryDTO(e)
+	}
+
+	page := (offset / limit) + 1
+	return dtos.NewPaginatedResponse(result, total, page, limit), nil
+}
+
 func (s *ExpenseService) Create(ctx context.Context, req dtos.CreateExpense) (*dtos.Expense, error) {
 	// Default status to "pending" if not provided
 	status := req.Status

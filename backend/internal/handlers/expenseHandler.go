@@ -68,7 +68,14 @@ func (h *ExpenseHandler) GetByProjectID(c *gin.Context) {
 		return
 	}
 
-	expenses, err := h.expenseService.GetByProjectID(c.Request.Context(), projectID)
+	var pagination dtos.PaginationQuery
+	if err := c.ShouldBindQuery(&pagination); err != nil {
+		response.ValidationError(c, err)
+		return
+	}
+	pagination.Normalize()
+
+	expenses, err := h.expenseService.GetByProjectIDPaginated(c.Request.Context(), projectID, pagination.Limit, pagination.Offset())
 	if err != nil {
 		response.InternalError(c, "failed to fetch expenses")
 		return
