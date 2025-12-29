@@ -29,22 +29,24 @@ type User struct {
 
 // Request DTOs
 type CreateUser struct {
-	Username string `json:"username" binding:"required"`
-	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required,min=8"`
-	FullName string `json:"fullName" binding:"required"`
-	Phone    string `json:"phone" binding:"required"`
-	JobTitle string `json:"jobTitle" binding:"required"`
+	Username string  `json:"username" binding:"required"`
+	Email    string  `json:"email" binding:"required,email"`
+	Password string  `json:"password" binding:"required,min=8"`
+	FullName string  `json:"fullName" binding:"required"`
+	Phone    string  `json:"phone" binding:"required"`
+	JobTitle string  `json:"jobTitle" binding:"required"`
+	RoleIDs  []int64 `json:"roleIds"`
 }
 
 type UpdateUser struct {
-	Username *string `json:"username"`
-	Email    *string `json:"email" binding:"omitempty,email"`
-	FullName *string `json:"fullName"`
-	Phone    *string `json:"phone"`
-	Avatar   *string `json:"avatar"`
-	JobTitle *string `json:"jobTitle"`
-	Status   *string `json:"status"`
+	Username *string  `json:"username"`
+	Email    *string  `json:"email" binding:"omitempty,email"`
+	FullName *string  `json:"fullName"`
+	Phone    *string  `json:"phone"`
+	Avatar   *string  `json:"avatar"`
+	JobTitle *string  `json:"jobTitle"`
+	Status   *string  `json:"status"`
+	RoleIDs  *[]int64 `json:"roleIds"`
 }
 
 type UpdatePassword struct {

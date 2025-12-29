@@ -25,7 +25,9 @@ type UserRoleRepositoryInterface interface {
 	GetUserPages(ctx context.Context, userID int64) ([]UserPage, error)
 	HasPermission(ctx context.Context, userID int64, route string, permission string) (bool, error)
 	Create(ctx context.Context, userRole *models.UserRole) (*models.UserRole, error)
+	CreateWithTx(ctx context.Context, tx pgx.Tx, userRole *models.UserRole) (*models.UserRole, error)
 	Delete(ctx context.Context, id int64) error
+	DeleteByUserIDWithTx(ctx context.Context, tx pgx.Tx, userID int64) error
 }
 
 type UserRoleRepository struct {
@@ -134,6 +136,24 @@ func (r *UserRoleRepository) Create(ctx context.Context, userRole *models.UserRo
 	return userRole, nil
 }
 
+func (r *UserRoleRepository) CreateWithTx(ctx context.Context, tx pgx.Tx, userRole *models.UserRole) (*models.UserRole, error) {
+	query := `
+		INSERT INTO userRoles (userId, roleId)
+		VALUES ($1, $2)
+		RETURNING id, createdAt
+	`
+
+	err := tx.QueryRow(ctx, query,
+		userRole.UserID, userRole.RoleID,
+	).Scan(&userRole.ID, &userRole.CreatedAt)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return userRole, nil
+}
+
 func (r *UserRoleRepository) Delete(ctx context.Context, id int64) error {
 	query := `DELETE FROM userRoles WHERE id = $1`
 	result, err := r.db.Exec(ctx, query, id)
@@ -144,6 +164,12 @@ func (r *UserRoleRepository) Delete(ctx context.Context, id int64) error {
 		return pgx.ErrNoRows
 	}
 	return nil
+}
+
+func (r *UserRoleRepository) DeleteByUserIDWithTx(ctx context.Context, tx pgx.Tx, userID int64) error {
+	query := `DELETE FROM userRoles WHERE userId = $1`
+	_, err := tx.Exec(ctx, query, userID)
+	return err
 }
 
 // GetUserPages returns all pages a user has access to with their permissions

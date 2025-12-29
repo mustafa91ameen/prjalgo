@@ -676,6 +676,22 @@
                 variant="outlined"
               />
             </v-col>
+
+            <!-- الدور -->
+            <v-col cols="12" md="6">
+              <v-select
+                v-model="selectedUser.roleId"
+                :items="roleSelectOptions"
+                item-title="title"
+                item-value="value"
+                label="الدور"
+                placeholder="اختر الدور"
+                variant="outlined"
+                prepend-inner-icon="mdi-shield-account-outline"
+                color="primary"
+                clearable
+              />
+            </v-col>
           </v-row>
         </v-form>
       </v-card-text>
@@ -783,7 +799,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { listUsers, createUser, updateUser, updateUserPassword, updateUserStatus } from '@/api/users'
+import { listUsers, createUser, updateUser, updateUserPassword, updateUserStatus, getUserRoles } from '@/api/users'
 import { listRoles, assignRoleToUser } from '@/api/roles'
 import { DEFAULT_LIMIT } from '@/constants/pagination'
 import { usePermissions } from '@/composables/usePermissions'
@@ -1067,9 +1083,20 @@ const viewUser = (user) => {
   showViewUserDialog.value = true
 }
 
-const editUser = (user) => {
-  selectedUser.value = { ...user }
+const editUser = async (user) => {
+  selectedUser.value = { ...user, roleId: null }
   showEditUserDialog.value = true
+
+  // جلب أدوار المستخدم الحالية
+  try {
+    const userRoles = await getUserRoles(user.id)
+    // تعيين الدور الأول إذا كان موجوداً
+    if (Array.isArray(userRoles) && userRoles.length > 0) {
+      selectedUser.value.roleId = userRoles[0].roleId
+    }
+  } catch (error) {
+    console.error('خطأ في جلب أدوار المستخدم:', error)
+  }
 }
 
 const resetPassword = (user) => {
@@ -1122,27 +1149,19 @@ const saveNewUser = async () => {
 
   try {
     // إنشاء payload للـ API (متوافق مع Backend CreateUser DTO)
+    // يتضمن roleIds لإنشاء المستخدم والأدوار في معاملة واحدة
     const userData = {
       username: newUser.value.username,
       email: newUser.value.email,
       password: newUser.value.password,
       fullName: newUser.value.fullName,
       phone: newUser.value.phone,
-      jobTitle: newUser.value.jobTitle
+      jobTitle: newUser.value.jobTitle,
+      roleIds: newUser.value.roleId ? [newUser.value.roleId] : []
     }
 
-    // إرسال البيانات إلى الـ API
-    const createdUser = await createUser(userData)
-
-    // تعيين الدور للمستخدم إذا تم اختياره
-    if (newUser.value.roleId && createdUser?.id) {
-      try {
-        await assignRoleToUser(createdUser.id, newUser.value.roleId)
-        console.log('تم تعيين الدور للمستخدم بنجاح')
-      } catch (roleError) {
-        console.error('خطأ في تعيين الدور:', roleError)
-      }
-    }
+    // إرسال البيانات إلى الـ API - الآن يتم إنشاء المستخدم والأدوار معاً
+    await createUser(userData)
 
     // إعادة تحميل البيانات من الـ API
     await loadUsers()
@@ -1186,16 +1205,18 @@ const saveEditUser = async () => {
   try {
     // إنشاء payload للتحديث (متوافق مع Backend UpdateUser DTO)
     // جميع الحقول اختيارية في التحديث
+    // يتضمن roleIds لتحديث الأدوار في معاملة واحدة
     const userData = {
       username: selectedUser.value.username || undefined,
       email: selectedUser.value.email || undefined,
       fullName: selectedUser.value.fullName || undefined,
       phone: selectedUser.value.phone || undefined,
       jobTitle: selectedUser.value.jobTitle || undefined,
-      status: selectedUser.value.status || undefined
+      status: selectedUser.value.status || undefined,
+      roleIds: selectedUser.value.roleId ? [selectedUser.value.roleId] : []
     }
 
-    // إرسال التحديث إلى الـ API
+    // إرسال التحديث إلى الـ API - الآن يتم تحديث المستخدم والأدوار معاً
     await updateUser(selectedUser.value.id, userData)
 
     // إعادة تحميل البيانات

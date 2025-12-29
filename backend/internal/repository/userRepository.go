@@ -28,7 +28,9 @@ type UserRepositoryInterface interface {
 	GetByID(ctx context.Context, id int64) (*models.User, error)
 	GetCredentialsByUsername(ctx context.Context, username string) (*UserCredentials, error)
 	Create(ctx context.Context, user *models.User) (*models.User, error)
+	CreateWithTx(ctx context.Context, tx pgx.Tx, user *models.User) (*models.User, error)
 	Update(ctx context.Context, id int64, user *models.User) (*models.User, error)
+	UpdateWithTx(ctx context.Context, tx pgx.Tx, id int64, user *models.User) (*models.User, error)
 	UpdatePassword(ctx context.Context, id int64, hashedPassword string) error
 	UpdateStatus(ctx context.Context, id int64, status string) error
 	UpdateStatusWithTx(ctx context.Context, tx pgx.Tx, id int64, status string) error
@@ -128,6 +130,25 @@ func (r *UserRepository) Create(ctx context.Context, user *models.User) (*models
 	return user, nil
 }
 
+func (r *UserRepository) CreateWithTx(ctx context.Context, tx pgx.Tx, user *models.User) (*models.User, error) {
+	query := `
+		INSERT INTO users (username, email, password, fullName, phone, avatar, jobTitle, status)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+		RETURNING id, createdAt, updatedAt
+	`
+
+	err := tx.QueryRow(ctx, query,
+		user.Username, user.Email, user.Password, user.FullName,
+		user.Phone, user.Avatar, user.JobTitle, user.Status,
+	).Scan(&user.ID, &user.CreatedAt, &user.UpdatedAt)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
 func (r *UserRepository) Update(ctx context.Context, id int64, user *models.User) (*models.User, error) {
 	query := `
 		UPDATE users
@@ -139,6 +160,32 @@ func (r *UserRepository) Update(ctx context.Context, id int64, user *models.User
 	`
 
 	err := r.db.QueryRow(ctx, query,
+		user.Username, user.Email, user.FullName, user.Phone,
+		user.Avatar, user.JobTitle, user.Status, id,
+	).Scan(
+		&user.ID, &user.Username, &user.Email, &user.FullName,
+		&user.Phone, &user.Avatar, &user.JobTitle, &user.Status,
+		&user.LastLogin, &user.CreatedAt,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (r *UserRepository) UpdateWithTx(ctx context.Context, tx pgx.Tx, id int64, user *models.User) (*models.User, error) {
+	query := `
+		UPDATE users
+		SET username = $1, email = $2, fullName = $3, phone = $4,
+		    avatar = $5, jobTitle = $6, status = $7
+		WHERE id = $8
+		RETURNING id, username, email, fullName, phone, avatar,
+		          jobTitle, status, lastLogin, createdAt
+	`
+
+	err := tx.QueryRow(ctx, query,
 		user.Username, user.Email, user.FullName, user.Phone,
 		user.Avatar, user.JobTitle, user.Status, id,
 	).Scan(

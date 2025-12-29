@@ -67,9 +67,9 @@ function getPermissionRoute(path, authStore) {
 }
 
 // Navigation Guard - حماية الصفحات
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   // الصفحات المسموح الوصول إليها بدون تسجيل دخول
-  const publicPages = ['/login']
+  const publicPages = ['/login', '/unauthorized']
   const isPublicPage = publicPages.includes(to.path)
 
   // إذا كان المستخدم غير مسجل دخول ومحاولة الوصول لصفحة محمية
@@ -80,7 +80,7 @@ router.beforeEach((to, from, next) => {
   }
 
   // إذا كان المستخدم مسجل دخول ومحاولة الوصول لصفحة تسجيل الدخول
-  if (isAuthenticated() && isPublicPage) {
+  if (isAuthenticated() && to.path === '/login') {
     // إعادة التوجيه إلى الصفحة الرئيسية
     next('/')
     return
@@ -93,6 +93,18 @@ router.beforeEach((to, from, next) => {
     // Load permissions from storage if not loaded
     if (authStore.pages.length === 0) {
       authStore.loadFromStorage()
+    }
+
+    // If still no pages after loading from storage, fetch from API
+    if (authStore.pages.length === 0) {
+      try {
+        await authStore.fetchPages()
+      } catch (error) {
+        console.error('Failed to fetch pages:', error)
+        // If fetch fails, redirect to unauthorized
+        next('/unauthorized')
+        return
+      }
     }
 
     // Handle dashboard - redirect to first available page if no access
@@ -113,9 +125,9 @@ router.beforeEach((to, from, next) => {
     const permissionRoute = getPermissionRoute(to.path, authStore)
 
     // Check if user has access to this page
-    if (authStore.pages.length > 0 && !authStore.canAccessPage(permissionRoute)) {
-      // Redirect to dashboard if not allowed
-      next('/')
+    if (!authStore.canAccessPage(permissionRoute)) {
+      // Redirect to unauthorized page
+      next('/unauthorized')
       return
     }
   }

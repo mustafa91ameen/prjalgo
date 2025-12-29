@@ -46,6 +46,7 @@ declare module 'vue-router/auto-routes' {
     '/teamMembers': RouteRecordInfo<'/teamMembers', '/teamMembers', Record<never, never>, Record<never, never>>,
     '/test-dialog': RouteRecordInfo<'/test-dialog', '/test-dialog', Record<never, never>, Record<never, never>>,
     '/test-icons-final': RouteRecordInfo<'/test-icons-final', '/test-icons-final', Record<never, never>, Record<never, never>>,
+    '/unauthorized': RouteRecordInfo<'/unauthorized', '/unauthorized', Record<never, never>, Record<never, never>>,
     '/users': RouteRecordInfo<'/users', '/users', Record<never, never>, Record<never, never>>,
     '/work-day-details': RouteRecordInfo<'/work-day-details', '/work-day-details', Record<never, never>, Record<never, never>>,
     '/work-day-details-fixed': RouteRecordInfo<'/work-day-details-fixed', '/work-day-details-fixed', Record<never, never>, Record<never, never>>,

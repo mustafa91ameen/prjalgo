@@ -82,6 +82,42 @@ func (s *UserService) Create(ctx context.Context, req dtos.CreateUser) (*dtos.Us
 		Status:   &defaultStatus,
 	}
 
+	// If roles are provided, use transaction to ensure atomicity
+	if len(req.RoleIDs) > 0 {
+		tx, err := s.db.Begin(ctx)
+		if err != nil {
+			return nil, err
+		}
+		defer tx.Rollback(ctx)
+
+		// Create user within transaction
+		created, err := s.userRepo.CreateWithTx(ctx, tx, user)
+		if err != nil {
+			return nil, err
+		}
+
+		// Assign all roles within the same transaction
+		for _, roleID := range req.RoleIDs {
+			userRole := &models.UserRole{
+				UserID: created.ID,
+				RoleID: roleID,
+			}
+			_, err := s.userRoleRepo.CreateWithTx(ctx, tx, userRole)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		// Commit transaction - both user and roles succeed or fail together
+		if err := tx.Commit(ctx); err != nil {
+			return nil, err
+		}
+
+		dto := toUserDTO(created)
+		return &dto, nil
+	}
+
+	// No roles provided, create user without transaction
 	created, err := s.userRepo.Create(ctx, user)
 	if err != nil {
 		return nil, err
@@ -123,6 +159,48 @@ func (s *UserService) Update(ctx context.Context, id int64, req dtos.UpdateUser)
 		existing.Status = req.Status
 	}
 
+	// If roles are provided, use transaction to ensure atomicity
+	if req.RoleIDs != nil {
+		tx, err := s.db.Begin(ctx)
+		if err != nil {
+			return nil, err
+		}
+		defer tx.Rollback(ctx)
+
+		// Update user within transaction
+		updated, err := s.userRepo.UpdateWithTx(ctx, tx, id, existing)
+		if err != nil {
+			return nil, err
+		}
+
+		// Delete existing roles and assign new ones
+		err = s.userRoleRepo.DeleteByUserIDWithTx(ctx, tx, id)
+		if err != nil {
+			return nil, err
+		}
+
+		// Assign new roles
+		for _, roleID := range *req.RoleIDs {
+			userRole := &models.UserRole{
+				UserID: id,
+				RoleID: roleID,
+			}
+			_, err := s.userRoleRepo.CreateWithTx(ctx, tx, userRole)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		// Commit transaction
+		if err := tx.Commit(ctx); err != nil {
+			return nil, err
+		}
+
+		dto := toUserDTO(updated)
+		return &dto, nil
+	}
+
+	// No roles update, just update user
 	updated, err := s.userRepo.Update(ctx, id, existing)
 	if err != nil {
 		return nil, err
