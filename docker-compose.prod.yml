@@ -1,0 +1,21 @@
+# ===========================================
+# Production Overrides for Docker Compose
+# ===========================================
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# ===========================================
+
+services:
+  db:
+    restart: always
+    ports: []
+
+  backend:
+    restart: always
+    environment:
+      ENVIRONMENT: production
+      DB_SSLMODE: disable
+    ports: []
+
+  frontend:
+    restart: always
+    ports: []

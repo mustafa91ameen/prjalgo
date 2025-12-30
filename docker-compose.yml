@@ -1,0 +1,109 @@
+# ===========================================
+# Docker Compose - Project Management System
+# ===========================================
+# Usage:
+#   Development: docker-compose up
+#   Production:  docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# ===========================================
+
+services:
+  # ===========================================
+  # PostgreSQL Database
+  # ===========================================
+  db:
+    image: postgres:16-alpine
+    container_name: projmang-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      POSTGRES_DB: ${DB_NAME:-projmang}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${DB_EXTERNAL_PORT:-5433}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-projmang}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  # ===========================================
+  # Go Backend API
+  # ===========================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: projmang-backend
+    restart: unless-stopped
+    environment:
+      SERVER_PORT: ${BACKEND_PORT:-8080}
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      DB_NAME: ${DB_NAME:-projmang}
+      DB_SSLMODE: ${DB_SSLMODE:-disable}
+      DB_MAX_RETRIES: ${DB_MAX_RETRIES:-5}
+      DB_RETRY_DELAY: ${DB_RETRY_DELAY:-2s}
+      QUERY_TIMEOUT: ${QUERY_TIMEOUT:-10s}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      JWT_EXPIRY: ${JWT_EXPIRY:-24h}
+      REFRESH_TOKEN_EXPIRY: ${REFRESH_TOKEN_EXPIRY:-168h}
+    ports:
+      - "${BACKEND_EXTERNAL_PORT:-8081}:${BACKEND_PORT:-8080}"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:${BACKEND_PORT:-8080}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - app-network
+
+  # ===========================================
+  # Frontend (Nginx)
+  # ===========================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: projmang-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-81}:80"
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - app-network
+      - proxy-network
+
+# ===========================================
+# Volumes
+# ===========================================
+volumes:
+  postgres_data:
+    name: projmang_postgres_data
+
+# ===========================================
+# Networks
+# ===========================================
+networks:
+  app-network:
+    name: projmang_network
+    driver: bridge
+  proxy-network:
+    external: true
+    name: proxy-network

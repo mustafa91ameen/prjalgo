@@ -1,4 +1,5 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || ''
+// API base URL - defaults to '/api' for Docker (nginx proxy) or uses VITE_API_URL for local dev
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api'
 
 const defaultHeaders = {
   'Content-Type': 'application/json',
@@ -71,10 +72,6 @@ async function handleTokenRefresh() {
 }
 
 export async function apiFetch(path, { method = 'GET', body, headers = {}, auth = true, _isRetry = false } = {}) {
-  if (!API_BASE_URL) {
-    throw new Error('VITE_API_URL is not set')
-  }
-
   const finalHeaders = { ...defaultHeaders, ...headers }
 
   if (auth) {
