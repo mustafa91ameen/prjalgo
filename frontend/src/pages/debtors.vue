@@ -1,735 +1,528 @@
 <template>
-  <div class="fill-height data-page">
-      <v-container fluid class="pa-6" style="padding: 0 20px !important;">
-        <!-- رأس الصفحة المحسن -->
-        <div class="engineers-header-card">
-          <div class="header-gradient-line"></div>
-          <div class="header-content">
-            <div class="header-right">
-              <div class="engineer-emoji">
-                <v-icon size="40" color="white">mdi-account-cash</v-icon>
-              </div>
-              <div class="header-text">
-                <h1 class="main-title">إدارة المديونون</h1>
-                <p class="subtitle">إدارة حسابات المديونون والمستحقات المالية</p>
-              </div>
-            </div>
+  <div class="debtors-container">
+    <!-- Page Header Component -->
+    <PageHeader
+      title="إدارة المديونين"
+      subtitle="إدارة وتتبع جميع المديونيات والمتأخرات"
+      badge="المديونون"
+      badgeType="warning"
+      class="debtors-header"
+    >
+      <template #actions>
+        <button class="page-action-btn secondary">
+          <i class="mdi mdi-export"></i>
+          تصدير
+        </button>
+        <button class="page-icon-btn">
+          <i class="mdi mdi-dots-vertical"></i>
+        </button>
+      </template>
+    </PageHeader>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <!-- Total Debtors Card -->
+      <v-card class="stat-card" elevation="0">
+        <div class="stat-card-content">
+          <div class="stat-icon warning">
+            <i class="mdi mdi-account-multiple"></i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">إجمالي المديونين</div>
+            <div class="stat-value">{{ totalDebtors }}</div>
           </div>
         </div>
+      </v-card>
 
+      <!-- Total Debt Card -->
+      <v-card class="stat-card" elevation="0">
+        <div class="stat-card-content">
+          <div class="stat-icon expense">
+            <i class="mdi mdi-cash-remove"></i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">إجمالي المديونية</div>
+            <div class="stat-value">{{ formatCurrency(totalDebt) }}</div>
+          </div>
+        </div>
+      </v-card>
 
-        <!-- إحصائيات سريعة محسنة -->
-        <v-row class="mb-8">
-          <v-col cols="12" md="3">
-            <v-card class="modern-stat-card stat-card-info pa-6 text-center" elevation="2">
-              <div class="stat-card-background"></div>
-              <div class="stat-card-content">
-                <div class="stat-icon-wrapper">
-                  <v-icon size="48" class="stat-icon">mdi-account-group</v-icon>
-                </div>
-                <div class="stat-info">
-                  <h3 class="stat-value">{{ debtors.length }}</h3>
-                  <p class="stat-label">إجمالي المديونون</p>
-                </div>
-              </div>
-            </v-card>
-          </v-col>
-          <v-col cols="12" md="3">
-            <v-card class="modern-stat-card stat-card-primary pa-6 text-center" elevation="2">
-              <div class="stat-card-background"></div>
-              <div class="stat-card-content">
-                <div class="stat-icon-wrapper">
-                  <v-icon size="48" class="stat-icon">mdi-currency-usd</v-icon>
-                </div>
-                <div class="stat-info">
-                  <h3 class="stat-value">{{ formatCurrency(totalDebt) }}</h3>
-                  <p class="stat-label">إجمالي المديونية</p>
-                </div>
-              </div>
-            </v-card>
-          </v-col>
-          <v-col cols="12" md="3">
-            <v-card class="modern-stat-card stat-card-warning pa-6 text-center" elevation="2">
-              <div class="stat-card-background"></div>
-              <div class="stat-card-content">
-                <div class="stat-icon-wrapper">
-                  <v-icon size="48" class="stat-icon">mdi-clock-alert</v-icon>
-                </div>
-                <div class="stat-info">
-                  <h3 class="stat-value">{{ overdueCount }}</h3>
-                  <p class="stat-label">متأخرين</p>
-                </div>
-              </div>
-            </v-card>
-          </v-col>
-          <v-col cols="12" md="3">
-            <v-card class="modern-stat-card stat-card-success pa-6 text-center" elevation="2">
-              <div class="stat-card-background"></div>
-              <div class="stat-card-content">
-                <div class="stat-icon-wrapper">
-                  <v-icon size="48" class="stat-icon check-icon">mdi-check-circle</v-icon>
-                </div>
-                <div class="stat-info">
-                  <h3 class="stat-value">{{ paidCount }}</h3>
-                  <p class="stat-label">مدفوع</p>
-                </div>
-              </div>
-            </v-card>
-          </v-col>
-        </v-row>
+      <!-- Overdue Card -->
+      <v-card class="stat-card" elevation="0">
+        <div class="stat-card-content">
+          <div class="stat-icon danger">
+            <i class="mdi mdi-alert-circle"></i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">متأخرين</div>
+            <div class="stat-value">{{ overdueDebtors }}</div>
+          </div>
+        </div>
+      </v-card>
 
-        <!-- شريط البحث والفلترة المحسن -->
-        <v-card class="search-filter-card mb-8" elevation="2">
-          <v-card-title class="filters-header-new">
-            <div class="d-flex align-center">
-              <v-icon size="18" color="white" class="me-2" style="color: #ffffff !important;">mdi-filter</v-icon>
-              <span class="filters-header-title">البحث والفلترة</span>
+      <!-- Paid Card -->
+      <v-card class="stat-card" elevation="0">
+        <div class="stat-card-content">
+          <div class="stat-icon success">
+            <i class="mdi mdi-check-circle"></i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">مدفوع</div>
+            <div class="stat-value">{{ formatCurrency(paidAmount) }}</div>
+          </div>
+        </div>
+      </v-card>
+    </div>
+
+    <!-- Debtors List Header -->
+    <div class="debtors-list-header">
+      <div class="list-header-content">
+        <div class="list-header-info">
+          <h2 class="list-header-title">
+            <i class="mdi mdi-format-list-bulleted"></i>
+            قائمة المديونين
+          </h2>
+          <p class="list-header-subtitle">عرض جميع المديونين والمتأخرات</p>
+        </div>
+        <div class="list-header-actions">
+          <button v-if="canCreate" class="list-action-btn primary" @click="openAddDialog">
+            <i class="mdi mdi-plus"></i>
+            إضافة مديون جديد
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Debtors Table -->
+    <v-card class="mb-6">
+      <v-data-table
+        :headers="headers"
+        :items="debtors"
+        :loading="loading"
+        class="elevation-1 debtors-data-table"
+      >
+        <!-- عمود الاسم -->
+        <template v-slot:item.name="{ item }">
+          <div class="d-flex align-center">
+            <v-avatar
+              :color="getStatusColor(item.status)"
+              size="32"
+              class="me-3"
+            >
+              <span class="text-white font-weight-bold">
+                {{ item.name ? item.name.charAt(0) : '?' }}
+              </span>
+            </v-avatar>
+            <div>
+              <div class="font-weight-medium">{{ item.name }}</div>
+              <div class="text-caption text-grey">{{ item.phone }}</div>
             </div>
-          </v-card-title>
-          <v-card-text class="filters-content">
-            <v-row no-gutters>
-              <v-col cols="12" md="5" class="px-2">
-                <v-text-field
-                  v-model="searchQuery"
-                  label="البحث عن مديون"
-                  prepend-inner-icon="mdi-magnify"
-                  variant="outlined"
-                  clearable
-                  hide-details
-                  density="compact"
-                  class="search-field-new"
-                />
-              </v-col>
-              <v-col cols="12" md="2" class="px-2">
-                <v-select
-                  v-model="statusFilter"
-                  label="حالة الدفع"
-                  :items="statusOptions"
-                  variant="outlined"
-                  hide-details
-                  clearable
-                  density="compact"
-                  class="filter-field-new"
-                />
-              </v-col>
-              <v-col cols="12" md="2" class="px-2">
-                <v-select
-                  v-model="amountFilter"
-                  label="نطاق المبلغ"
-                  :items="amountOptions"
-                  variant="outlined"
-                  hide-details
-                  clearable
-                  density="compact"
-                  class="filter-field-new"
-                />
-              </v-col>
-              <v-col cols="12" md="3" class="d-flex justify-end px-2">
-                <v-btn
-                  color="primary"
-                  variant="outlined"
-                  size="small"
-                  class="reset-button-new"
-                  @click="resetFilters"
-                  style="height: 36px !important; font-size: 0.875rem !important;"
-                >
-                  <v-icon class="me-1" size="18">mdi-refresh</v-icon>
-                  إعادة تعيين
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
+          </div>
+        </template>
 
-        <!-- جدول المديونون المحسن -->
-        <v-card class="data-table-card" elevation="2">
-          <v-card-title class="table-title-header d-flex align-center justify-space-between">
-            <div class="d-flex align-center">
-              <v-icon class="me-2" color="white" size="18" style="color: #ffffff !important;">mdi-table</v-icon>
-              <span class="title-text">قائمة المديونون</span>
-              <v-chip class="ms-3 count-chip" size="x-small" variant="elevated" style="background: rgba(255, 255, 255, 0.2) !important; color: #ffffff !important; font-size: 0.75rem !important; height: 20px !important;">
-                {{ filteredDebtors.length }} عنصر
-              </v-chip>
-            </div>
-            <div class="d-flex align-center gap-2">
-              <v-btn
-                v-if="canCreate"
-                class="add-button btn-glow light-sweep smooth-transition"
-                @click="openAddDialog"
-                elevation="2"
-                color="primary"
-                size="small"
-                style="background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important; height: 36px !important; font-size: 0.875rem !important;"
-              >
-                <v-icon class="me-2 icon-glow" size="18">mdi-plus</v-icon>
-                إضافة مديون جديد
-              </v-btn>
-              <v-btn
-                icon="mdi-refresh"
-                variant="text"
-                color="white"
-                size="small"
-                @click="refreshData"
-                class="action-button"
-                style="color: #ffffff !important; min-width: 32px !important; width: 32px !important; height: 32px !important;"
-              />
-              <v-btn
-                icon="mdi-download"
-                variant="text"
-                color="white"
-                size="small"
-                @click="exportData"
-                class="action-button"
-                style="color: #ffffff !important; min-width: 32px !important; width: 32px !important; height: 32px !important;"
-              />
-            </div>
-          </v-card-title>
-          <v-data-table
-            :headers="headers"
-            :items="filteredDebtors"
-            :loading="loading"
-            :items-per-page="-1"
-            hide-default-footer
-            class="elevation-0 debtors-data-table"
-            no-data-text="لا توجد بيانات"
-            loading-text="جاري التحميل..."
-          >
-            <!-- عمود الاسم -->
-            <template v-slot:item.name="{ item }">
-              <div class="d-flex align-center" style="cursor: pointer;" @click="viewDebtsAndPayments(item)">
-                <v-avatar
-                  :color="getStatusColor(item.status)"
-                  size="32"
-                  class="me-3"
-                >
-                  <span class="text-white font-weight-bold">
-                    {{ item.name.charAt(0) }}
-                  </span>
-                </v-avatar>
-                <div>
-                  <div class="font-weight-medium text-primary">{{ item.name }}</div>
-                  <div class="text-caption text-grey-darken-1">{{ item.email }}</div>
-                  <div class="text-caption text-primary">انقر لعرض الديون والتسديدات</div>
-                </div>
-              </div>
-            </template>
+        <!-- عمود المبلغ المطلوب -->
+        <template v-slot:item.totalDebt="{ item }">
+          <div class="text-center">
+            <div class="font-weight-bold">{{ formatCurrency(item.totalDebt) }}</div>
+          </div>
+        </template>
 
-            <!-- عمود المبلغ -->
-            <template v-slot:item.totalDebt="{ item }">
-              <div class="text-right">
-                <div class="font-weight-bold text-h6">{{ formatCurrency(item.totalDebt) }}</div>
-                <div class="text-caption text-grey-darken-1">
-                  {{ item.currency }}
-                </div>
-              </div>
-            </template>
-
-            <!-- عمود المسدد -->
-            <template v-slot:item.paidAmount="{ item }">
-              <div class="text-right">
-                <div class="font-weight-bold text-success">{{ formatCurrency(item.paidAmount || 0) }}</div>
-                <v-progress-linear
-                  v-if="item.totalDebt > 0"
-                  :model-value="getPaymentProgress(item)"
-                  color="success"
-                  height="6"
-                  rounded
-                  class="mt-1"
-                  style="max-width: 100px;"
-                />
-              </div>
-            </template>
-
-            <!-- عمود المتبقي -->
-            <template v-slot:item.remainingDebt="{ item }">
-              <div class="text-right">
-                <div class="font-weight-bold" :class="item.remainingDebt > 0 ? 'text-error' : 'text-success'">
-                  {{ formatCurrency(item.remainingDebt || 0) }}
-                </div>
-                <div class="text-caption text-grey-darken-1">
-                  {{ getPaymentProgress(item).toFixed(0) }}% مسدد
-                </div>
-              </div>
-            </template>
-
-            <!-- عمود تاريخ الاستحقاق -->
-            <template v-slot:item.dueDate="{ item }">
-              <div class="text-center">
-                <div class="font-weight-medium">{{ formatDate(item.dueDate) }}</div>
-                <v-chip
-                  :color="getDueDateColor(item.dueDate, item.status)"
-                  size="small"
-                  :variant="isDueDateWarning(item.dueDate, item.status) ? 'flat' : 'tonal'"
-                >
-                  <v-icon v-if="isDueDateWarning(item.dueDate, item.status)" size="small" class="me-1">
-                    mdi-alert
-                  </v-icon>
-                  {{ getDueDateStatus(item.dueDate, item.status) }}
-                </v-chip>
-              </div>
-            </template>
-
-            <!-- عمود الحالة -->
-            <template v-slot:item.status="{ item }">
-              <v-chip
-                :color="getStatusColor(item.status)"
-                :variant="item.status === 'paid' ? 'flat' : 'tonal'"
-                size="small"
-              >
-                {{ getStatusText(item.status) }}
-              </v-chip>
-            </template>
-
-            <!-- عمود الملاحظات -->
-            <template v-slot:item.notes="{ item }">
-              <div class="text-truncate" style="max-width: 150px;" :title="item.notes">
-                {{ item.notes || '-' }}
-              </div>
-            </template>
-
-            <!-- عمود الإجراءات -->
-            <template v-slot:item.actions="{ item }">
-              <div class="d-flex align-center gap-1">
-                <v-btn
-                  icon="mdi-eye"
-                  size="small"
-                  variant="text"
-                  @click="viewDebtor(item)"
-                />
-                <v-btn
-                  v-if="canUpdate"
-                  icon="mdi-pencil"
-                  size="small"
-                  variant="text"
-                  @click="editDebtor(item)"
-                />
-                <v-btn
-                  v-if="canDelete"
-                  icon="mdi-delete"
-                  size="small"
-                  variant="text"
-                  color="error"
-                  @click="deleteDebtor(item)"
-                />
-              </div>
-            </template>
-          </v-data-table>
-
-          <!-- Pagination -->
-          <div class="d-flex justify-center pa-4" v-if="totalPages > 0">
-            <v-pagination
-              v-model="currentPage"
-              :length="totalPages"
-              :total-visible="7"
-              @update:model-value="onPageChange"
-              rounded="circle"
-              density="comfortable"
-              active-color="primary"
+        <!-- عمود المسدد -->
+        <template v-slot:item.paidAmount="{ item }">
+          <div class="text-center">
+            <div class="font-weight-bold text-success">{{ formatCurrency(item.paidAmount || 0) }}</div>
+            <v-progress-linear
+              v-if="item.totalDebt > 0"
+              :model-value="getPaymentProgress(item)"
+              color="success"
+              height="6"
+              rounded
+              class="mt-1 mx-auto"
+              style="max-width: 80px;"
             />
           </div>
-        </v-card>
-      </v-container>
+        </template>
 
-    <!-- نافذة إضافة/تعديل مديون -->
-    <v-dialog v-model="dialog" max-width="600px">
-      <v-card>
-        <v-card-title class="text-h5 font-weight-bold">
-          {{ isEdit ? 'تعديل بيانات المديون' : 'إضافة مديون جديد' }}
+        <!-- عمود المتبقي -->
+        <template v-slot:item.remainingAmount="{ item }">
+          <div class="text-center">
+            <div class="font-weight-bold" :class="item.remainingAmount > 0 ? 'text-error' : 'text-success'">
+              {{ formatCurrency(item.remainingAmount || 0) }}
+            </div>
+            <div class="text-caption text-grey">
+              {{ getPaymentProgress(item).toFixed(0) }}% مسدد
+            </div>
+          </div>
+        </template>
+
+        <!-- عمود تاريخ الاستحقاق -->
+        <template v-slot:item.dueDate="{ item }">
+          <div class="text-center">
+            <div class="font-weight-medium">{{ formatDate(item.dueDate) }}</div>
+            <v-chip
+              :color="getDueDateColor(item.dueDate, item.status)"
+              size="small"
+              :variant="isDueDateWarning(item.dueDate, item.status) ? 'flat' : 'tonal'"
+            >
+              <v-icon v-if="isDueDateWarning(item.dueDate, item.status)" size="small" class="me-1">
+                mdi-alert
+              </v-icon>
+              {{ getDueDateStatus(item.dueDate, item.status) }}
+            </v-chip>
+          </div>
+        </template>
+
+        <!-- عمود الحالة -->
+        <template v-slot:item.status="{ item }">
+          <v-chip
+            :color="getStatusColor(item.status)"
+            :variant="item.status === 'paid' ? 'flat' : 'tonal'"
+            size="small"
+          >
+            {{ getStatusText(item.status) }}
+          </v-chip>
+        </template>
+
+        <!-- عمود الملاحظات -->
+        <template v-slot:item.notes="{ item }">
+          <v-tooltip v-if="item.notes" location="top" max-width="300">
+            <template v-slot:activator="{ props }">
+              <span v-bind="props" class="notes-cell text-truncate">{{ item.notes }}</span>
+            </template>
+            <span>{{ item.notes }}</span>
+          </v-tooltip>
+          <span v-else class="notes-empty">-</span>
+        </template>
+
+        <!-- عمود الإجراءات -->
+        <template v-slot:item.actions="{ item }">
+          <div class="d-flex align-center gap-1">
+            <v-btn
+              icon="mdi-eye"
+              size="small"
+              variant="text"
+              @click="viewDebtor(item)"
+            />
+            <v-btn
+              v-if="canUpdate"
+              icon="mdi-pencil"
+              size="small"
+              variant="text"
+              @click="editDebtor(item)"
+            />
+            <v-btn
+              v-if="canDelete"
+              icon="mdi-delete"
+              size="small"
+              variant="text"
+              color="error"
+              @click="confirmDeleteDebtor(item)"
+            />
+          </div>
+        </template>
+      </v-data-table>
+    </v-card>
+
+    <!-- Add Debtor Dialog -->
+    <v-dialog v-model="showAddDialog" max-width="800" persistent>
+      <v-card class="debtor-dialog">
+        <v-card-title class="dialog-header">
+          <i class="mdi mdi-account-plus"></i>
+          إضافة مديون جديد
         </v-card-title>
-        <v-card-text>
-          <v-form ref="form" v-model="valid">
+        
+        <v-card-text class="dialog-content">
+          <v-form ref="debtorForm" v-model="formValid">
             <v-row>
+              <!-- الاسم الكامل -->
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="debtorForm.name"
-                  label="الاسم الكامل *"
+                  v-model="newDebtor.fullName"
+                  label="الاسم الكامل"
                   variant="outlined"
-                  :rules="[v => !!v || 'الاسم مطلوب']"
+                  density="comfortable"
+                  :rules="[v => !!v || 'الاسم الكامل مطلوب']"
                   required
-                />
+                ></v-text-field>
               </v-col>
+
+              <!-- البريد الإلكتروني -->
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="debtorForm.email"
+                  v-model="newDebtor.email"
                   label="البريد الإلكتروني"
-                  type="email"
                   variant="outlined"
-                  :rules="[v => !v || /.+@.+\..+/.test(v) || 'البريد الإلكتروني غير صالح']"
-                />
+                  density="comfortable"
+                  type="email"
+                  :rules="[
+                    v => !!v || 'البريد الإلكتروني مطلوب',
+                    v => /.+@.+\..+/.test(v) || 'البريد الإلكتروني غير صحيح'
+                  ]"
+                  required
+                ></v-text-field>
               </v-col>
+
+              <!-- رقم الهاتف -->
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="debtorForm.phone"
+                  v-model="newDebtor.phone"
                   label="رقم الهاتف"
                   variant="outlined"
-                />
+                  density="comfortable"
+                  :rules="[v => !!v || 'رقم الهاتف مطلوب']"
+                  required
+                ></v-text-field>
               </v-col>
+
+              <!-- مبلغ المطلوب -->
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model.number="debtorForm.totalDebt"
-                  label="المبلغ المطلوب *"
-                  type="number"
+                  v-model.number="newDebtor.amount"
+                  label="مبلغ المطلوب"
                   variant="outlined"
-                  :rules="[v => v > 0 || 'المبلغ مطلوب ويجب أن يكون أكبر من صفر']"
+                  density="comfortable"
+                  type="number"
+                  :rules="[v => v > 0 || 'المبلغ يجب أن يكون أكبر من صفر']"
                   required
-                />
+                ></v-text-field>
               </v-col>
+
+              <!-- العملة -->
               <v-col cols="12" md="6">
                 <v-select
-                  v-model="debtorForm.currency"
-                  label="العملة *"
-                  :items="currencyOptions"
+                  v-model="newDebtor.currency"
+                  :items="currencies"
+                  label="العملة"
                   variant="outlined"
+                  density="comfortable"
                   :rules="[v => !!v || 'العملة مطلوبة']"
                   required
-                />
+                ></v-select>
               </v-col>
+
+              <!-- تاريخ الاستحقاق -->
               <v-col cols="12" md="6">
-                <v-menu
-                  v-model="dueDateMenu"
-                  :close-on-content-click="false"
-                  location="bottom"
-                >
-                  <template v-slot:activator="{ props }">
-                    <v-text-field
-                      v-model="formattedDueDate"
-                      label="تاريخ الاستحقاق"
-                      readonly
-                      v-bind="props"
-                      variant="outlined"
-                      prepend-inner-icon="mdi-calendar"
-                    />
-                  </template>
-                  <v-date-picker
-                    v-model="selectedDueDate"
-                    @update:model-value="onDueDateSelected"
-                    color="primary"
-                  />
-                </v-menu>
+                <v-text-field
+                  v-model="newDebtor.dueDate"
+                  label="تاريخ الاستحقاق"
+                  variant="outlined"
+                  density="comfortable"
+                  type="date"
+                  :rules="[v => !!v || 'تاريخ الاستحقاق مطلوب']"
+                  required
+                ></v-text-field>
               </v-col>
+
+              <!-- الملاحظات -->
               <v-col cols="12">
                 <v-textarea
-                  v-model="debtorForm.notes"
-                  label="ملاحظات"
+                  v-model="newDebtor.notes"
+                  label="الملاحظات"
                   variant="outlined"
+                  density="comfortable"
                   rows="3"
-                />
+                ></v-textarea>
               </v-col>
             </v-row>
           </v-form>
         </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            color="grey"
-            variant="text"
-            @click="closeDialog"
-          >
+
+        <v-card-actions class="dialog-actions">
+          <v-spacer></v-spacer>
+          <button class="dialog-btn cancel" @click="closeDialog">
+            <i class="mdi mdi-close"></i>
             إلغاء
-          </v-btn>
-          <v-btn
-            color="primary"
-            @click="saveDebtor"
-            :disabled="!valid"
-          >
-            {{ isEdit ? 'تحديث' : 'إضافة' }}
-          </v-btn>
+          </button>
+          <button class="dialog-btn save" @click="saveDebtor" :disabled="!formValid">
+            <i class="mdi mdi-content-save"></i>
+            حفظ
+          </button>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <!-- نافذة عرض تفاصيل المديون -->
-    <v-dialog v-model="viewDialog" max-width="500px">
-      <v-card>
-        <v-card-title class="text-h5 font-weight-bold">
+    <!-- View Debtor Details Dialog -->
+    <v-dialog v-model="showViewDialog" max-width="600" persistent>
+      <v-card class="debtor-dialog">
+        <v-card-title class="dialog-header">
+          <i class="mdi mdi-account-details"></i>
           تفاصيل المديون
         </v-card-title>
-        <v-card-text v-if="selectedDebtor">
-          <v-row>
-            <v-col cols="12">
-              <div class="text-center mb-4">
-                <v-avatar
-                  :color="getStatusColor(selectedDebtor.status)"
-                  size="64"
-                >
-                  <span class="text-white text-h4 font-weight-bold">
-                    {{ selectedDebtor.name.charAt(0) }}
-                  </span>
-                </v-avatar>
-                <h3 class="text-h5 font-weight-bold mt-2">{{ selectedDebtor.name }}</h3>
+
+        <v-card-text class="dialog-content" v-if="selectedDebtor">
+          <!-- Avatar and Name -->
+          <div class="debtor-profile">
+            <v-avatar
+              :color="getStatusColor(selectedDebtor.status)"
+              size="80"
+              class="mb-3"
+            >
+              <span class="text-white text-h4 font-weight-bold">
+                {{ selectedDebtor.name ? selectedDebtor.name.charAt(0) : '?' }}
+              </span>
+            </v-avatar>
+            <h3 class="debtor-name">{{ selectedDebtor.name }}</h3>
+            <v-chip
+              :color="getStatusColor(selectedDebtor.status)"
+              :variant="selectedDebtor.status === 'paid' ? 'flat' : 'tonal'"
+              size="small"
+              class="mt-2"
+            >
+              {{ getStatusText(selectedDebtor.status) }}
+            </v-chip>
+          </div>
+
+          <!-- Stats Cards -->
+          <div class="debtor-stats-row">
+            <div class="debtor-stat-card error-card">
+              <div class="stat-icon-small">
+                <i class="mdi mdi-cash-multiple"></i>
               </div>
-            </v-col>
-            <v-col cols="6">
-              <strong>البريد الإلكتروني:</strong>
-              <p>{{ selectedDebtor.email }}</p>
-            </v-col>
-            <v-col cols="6">
-              <strong>رقم الهاتف:</strong>
-              <p>{{ selectedDebtor.phone || 'غير محدد' }}</p>
-            </v-col>
-            <v-col cols="6">
-              <strong>المبلغ المطلوب:</strong>
-              <p class="text-h6 font-weight-bold text-error">
-                {{ formatCurrency(selectedDebtor.totalDebt) }}
-              </p>
-            </v-col>
-            <v-col cols="6">
-              <strong>تاريخ الاستحقاق:</strong>
-              <p>{{ formatDate(selectedDebtor.dueDate) }}</p>
-            </v-col>
-            <v-col cols="12">
-              <strong>الحالة:</strong>
+              <div class="stat-content">
+                <span class="stat-label">إجمالي الدين</span>
+                <span class="stat-value">{{ formatCurrency(selectedDebtor.totalDebt) }}</span>
+              </div>
+            </div>
+            <div class="debtor-stat-card success-card">
+              <div class="stat-icon-small">
+                <i class="mdi mdi-check-circle"></i>
+              </div>
+              <div class="stat-content">
+                <span class="stat-label">المسدد</span>
+                <span class="stat-value">{{ formatCurrency(selectedDebtor.paidAmount || 0) }}</span>
+              </div>
+            </div>
+            <div class="debtor-stat-card warning-card">
+              <div class="stat-icon-small">
+                <i class="mdi mdi-clock-alert"></i>
+              </div>
+              <div class="stat-content">
+                <span class="stat-label">المتبقي</span>
+                <span class="stat-value">{{ formatCurrency(selectedDebtor.remainingAmount || 0) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="payment-progress-section">
+            <div class="progress-header">
+              <span>نسبة السداد</span>
+              <span class="progress-percentage">{{ getPaymentProgress(selectedDebtor).toFixed(0) }}%</span>
+            </div>
+            <v-progress-linear
+              :model-value="getPaymentProgress(selectedDebtor)"
+              color="success"
+              height="10"
+              rounded
+            />
+          </div>
+
+          <!-- Contact Info -->
+          <div class="info-section">
+            <h4 class="section-title">
+              <i class="mdi mdi-card-account-details"></i>
+              معلومات الاتصال
+            </h4>
+            <div class="info-grid">
+              <div class="info-item">
+                <i class="mdi mdi-email"></i>
+                <div>
+                  <span class="info-label">البريد الإلكتروني</span>
+                  <span class="info-value">{{ selectedDebtor.email || 'غير محدد' }}</span>
+                </div>
+              </div>
+              <div class="info-item">
+                <i class="mdi mdi-phone"></i>
+                <div>
+                  <span class="info-label">رقم الهاتف</span>
+                  <span class="info-value">{{ selectedDebtor.phone || 'غير محدد' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Due Date Info -->
+          <div class="info-section">
+            <h4 class="section-title">
+              <i class="mdi mdi-calendar"></i>
+              تاريخ الاستحقاق
+            </h4>
+            <div class="due-date-display">
+              <span class="due-date-value">{{ formatDate(selectedDebtor.dueDate) }}</span>
               <v-chip
-                :color="getStatusColor(selectedDebtor.status)"
-                :variant="selectedDebtor.status === 'paid' ? 'flat' : 'tonal'"
-                class="mt-1"
+                :color="getDueDateColor(selectedDebtor.dueDate, selectedDebtor.status)"
+                size="small"
+                :variant="isDueDateWarning(selectedDebtor.dueDate, selectedDebtor.status) ? 'flat' : 'tonal'"
               >
-                {{ getStatusText(selectedDebtor.status) }}
+                <v-icon v-if="isDueDateWarning(selectedDebtor.dueDate, selectedDebtor.status)" size="small" class="me-1">
+                  mdi-alert
+                </v-icon>
+                {{ getDueDateStatus(selectedDebtor.dueDate, selectedDebtor.status) }}
               </v-chip>
-            </v-col>
-            <v-col cols="12" v-if="selectedDebtor.notes">
-              <strong>ملاحظات:</strong>
-              <p>{{ selectedDebtor.notes }}</p>
-            </v-col>
-          </v-row>
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div class="info-section" v-if="selectedDebtor.notes">
+            <h4 class="section-title">
+              <i class="mdi mdi-note-text"></i>
+              ملاحظات
+            </h4>
+            <p class="notes-text">{{ selectedDebtor.notes }}</p>
+          </div>
         </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            color="primary"
-            @click="viewDialog = false"
-          >
+
+        <v-card-actions class="dialog-actions">
+          <v-spacer></v-spacer>
+          <button class="dialog-btn cancel" @click="closeViewDialog">
+            <i class="mdi mdi-close"></i>
             إغلاق
-          </v-btn>
+          </button>
+          <button v-if="canUpdate" class="dialog-btn save" @click="editFromView">
+            <i class="mdi mdi-pencil"></i>
+            تعديل
+          </button>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <!-- نافذة عرض الديون والتسديدات -->
-    <v-dialog v-model="debtsPaymentsDialog" max-width="800px">
-      <v-card>
-        <v-card-title class="text-h5 font-weight-bold d-flex align-center">
-          <v-icon class="me-2" color="primary">mdi-credit-card</v-icon>
-          الديون والتسديدات - {{ selectedDebtor?.name }}
+    <!-- Delete Confirmation Dialog -->
+    <v-dialog v-model="showDeleteDialog" max-width="500">
+      <v-card class="debtor-dialog delete-dialog">
+        <v-card-title class="dialog-header delete-header">
+          <i class="mdi mdi-delete-alert"></i>
+          تأكيد حذف المديون
         </v-card-title>
-        <v-card-text v-if="selectedDebtor">
-          <!-- إحصائيات سريعة -->
-          <v-row class="mb-4">
-            <v-col cols="12" md="4">
-              <v-card color="error" variant="tonal" class="pa-3">
-                <div class="text-center">
-                  <v-icon size="32" color="error" class="mb-2">mdi-currency-usd</v-icon>
-                  <h3 class="text-h5 font-weight-bold">{{ formatCurrency(selectedDebtor.totalDebt) }}</h3>
-                  <p class="text-subtitle-2 mb-0">إجمالي المديونية</p>
-                </div>
-              </v-card>
-            </v-col>
-            <v-col cols="12" md="4">
-              <v-card color="success" variant="tonal" class="pa-3">
-                <div class="text-center">
-                  <v-icon size="32" color="success" class="mb-2">mdi-check-circle</v-icon>
-                  <h3 class="text-h5 font-weight-bold">{{ formatCurrency(totalPaid) }}</h3>
-                  <p class="text-subtitle-2 mb-0">إجمالي المدفوع</p>
-                </div>
-              </v-card>
-            </v-col>
-            <v-col cols="12" md="4">
-              <v-card color="warning" variant="tonal" class="pa-3">
-                <div class="text-center">
-                  <v-icon size="32" color="warning" class="mb-2">mdi-clock-alert</v-icon>
-                  <h3 class="text-h5 font-weight-bold">{{ formatCurrency(remainingAmount) }}</h3>
-                  <p class="text-subtitle-2 mb-0">المبلغ المتبقي</p>
-                </div>
-              </v-card>
-            </v-col>
-          </v-row>
 
-          <!-- تبويبات الديون والتسديدات -->
-          <v-tabs v-model="activeTab" class="mb-4">
-            <v-tab value="debts">الديون</v-tab>
-            <v-tab value="payments">التسديدات</v-tab>
-            <v-tab value="summary">الملخص</v-tab>
-          </v-tabs>
+        <v-card-text v-if="deletingDebtor" class="dialog-content text-center">
+          <v-avatar size="60" color="error" class="mb-3">
+            <span class="text-white text-h5 font-weight-bold">
+              {{ deletingDebtor.name ? deletingDebtor.name.charAt(0) : '?' }}
+            </span>
+          </v-avatar>
+          <h4 style="color: rgba(255,255,255,0.95);">{{ deletingDebtor.name }}</h4>
+          <p style="color: rgba(255,255,255,0.7); margin-top: 8px;">
+            المبلغ: {{ formatCurrency(deletingDebtor.totalDebt) }}
+          </p>
 
-          <v-window v-model="activeTab">
-            <!-- تبويب الديون -->
-            <v-window-item value="debts">
-              <v-card variant="outlined">
-                <v-card-title class="d-flex align-center justify-space-between">
-                  <span>قائمة الديون</span>
-                  <v-btn
-                    color="primary"
-                    size="small"
-                    prepend-icon="mdi-plus"
-                    @click="addDebt"
-                  >
-                    إضافة دين
-                  </v-btn>
-                </v-card-title>
-                <v-data-table
-                  :headers="debtHeaders"
-                  :items="selectedDebtor.debts || []"
-                  class="elevation-0"
-                  no-data-text="لا توجد ديون"
-                >
-                  <template v-slot:item.amount="{ item }">
-                    <span class="font-weight-bold text-error">{{ formatCurrency(item.amount) }}</span>
-                  </template>
-                  <template v-slot:item.date="{ item }">
-                    {{ formatDate(item.date) }}
-                  </template>
-                  <template v-slot:item.status="{ item }">
-                    <v-chip
-                      :color="item.status === 'paid' ? 'success' : 'warning'"
-                      size="small"
-                      variant="tonal"
-                    >
-                      {{ item.status === 'paid' ? 'مدفوع' : 'غير مدفوع' }}
-                    </v-chip>
-                  </template>
-                  <template v-slot:item.actions="{ item }">
-                    <v-btn
-                      v-if="canUpdate"
-                      icon="mdi-pencil"
-                      size="small"
-                      variant="text"
-                      @click="editDebt(item)"
-                    />
-                    <v-btn
-                      v-if="canDelete"
-                      icon="mdi-delete"
-                      size="small"
-                      variant="text"
-                      color="error"
-                      @click="deleteDebt(item)"
-                    />
-                  </template>
-                </v-data-table>
-              </v-card>
-            </v-window-item>
+          <v-alert type="error" variant="tonal" class="my-4" style="text-align: right; direction: rtl;">
+            تحذير: هذا الإجراء لا يمكن التراجع عنه!
+          </v-alert>
 
-            <!-- تبويب التسديدات -->
-            <v-window-item value="payments">
-              <v-card variant="outlined">
-                <v-card-title class="d-flex align-center justify-space-between">
-                  <span>قائمة التسديدات</span>
-                  <v-btn
-                    v-if="canCreate"
-                    color="success"
-                    size="small"
-                    prepend-icon="mdi-plus"
-                    @click="addPayment"
-                  >
-                    إضافة تسديد
-                  </v-btn>
-                </v-card-title>
-                <v-data-table
-                  :headers="paymentHeaders"
-                  :items="selectedDebtor.payments || []"
-                  class="elevation-0"
-                  no-data-text="لا توجد تسديدات"
-                >
-                  <template v-slot:item.amount="{ item }">
-                    <span class="font-weight-bold text-success">{{ formatCurrency(item.amount) }}</span>
-                  </template>
-                  <template v-slot:item.date="{ item }">
-                    {{ formatDate(item.date) }}
-                  </template>
-                  <template v-slot:item.method="{ item }">
-                    <v-chip
-                      :color="getPaymentMethodColor(item.method)"
-                      size="small"
-                      variant="tonal"
-                    >
-                      {{ getPaymentMethodText(item.method) }}
-                    </v-chip>
-                  </template>
-                  <template v-slot:item.actions="{ item }">
-                    <v-btn
-                      v-if="canUpdate"
-                      icon="mdi-pencil"
-                      size="small"
-                      variant="text"
-                      @click="editPayment(item)"
-                    />
-                    <v-btn
-                      v-if="canDelete"
-                      icon="mdi-delete"
-                      size="small"
-                      variant="text"
-                      color="error"
-                      @click="deletePayment(item)"
-                    />
-                  </template>
-                </v-data-table>
-              </v-card>
-            </v-window-item>
-
-            <!-- تبويب الملخص -->
-            <v-window-item value="summary">
-              <v-card variant="outlined">
-                <v-card-title>ملخص الديون والتسديدات</v-card-title>
-                <v-card-text>
-                  <v-row>
-                    <v-col cols="12" md="6">
-                      <h4 class="text-h6 font-weight-bold mb-3">تفاصيل المديونية</h4>
-                      <v-list>
-                        <v-list-item>
-                          <v-list-item-title>إجمالي المديونية</v-list-item-title>
-                          <template v-slot:append>
-                            <span class="font-weight-bold text-error">{{ formatCurrency(selectedDebtor.totalDebt) }}</span>
-                          </template>
-                        </v-list-item>
-                        <v-list-item>
-                          <v-list-item-title>إجمالي المدفوع</v-list-item-title>
-                          <template v-slot:append>
-                            <span class="font-weight-bold text-success">{{ formatCurrency(totalPaid) }}</span>
-                          </template>
-                        </v-list-item>
-                        <v-list-item>
-                          <v-list-item-title>المبلغ المتبقي</v-list-item-title>
-                          <template v-slot:append>
-                            <span class="font-weight-bold text-warning">{{ formatCurrency(remainingAmount) }}</span>
-                          </template>
-                        </v-list-item>
-                        <v-list-item>
-                          <v-list-item-title>نسبة السداد</v-list-item-title>
-                          <template v-slot:append>
-                            <span class="font-weight-bold">{{ paymentPercentage }}%</span>
-                          </template>
-                        </v-list-item>
-                      </v-list>
-                    </v-col>
-                    <v-col cols="12" md="6">
-                      <h4 class="text-h6 font-weight-bold mb-3">آخر التسديدات</h4>
-                      <v-list v-if="selectedDebtor.payments && selectedDebtor.payments.length > 0">
-                        <v-list-item
-                          v-for="payment in selectedDebtor.payments.slice(0, 3)"
-                          :key="payment.id"
-                        >
-                          <template v-slot:prepend>
-                            <v-icon color="success">mdi-check-circle</v-icon>
-                          </template>
-                          <v-list-item-title>{{ formatCurrency(payment.amount) }}</v-list-item-title>
-                          <v-list-item-subtitle>{{ formatDate(payment.date) }}</v-list-item-subtitle>
-                        </v-list-item>
-                      </v-list>
-                      <p v-else class="text-grey-darken-1">لا توجد تسديدات</p>
-                    </v-col>
-                  </v-row>
-                </v-card-text>
-              </v-card>
-            </v-window-item>
-          </v-window>
+          <p style="color: rgba(255,255,255,0.7);">
+            هل أنت متأكد من حذف هذا المديون نهائياً؟
+          </p>
         </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            color="primary"
-            @click="debtsPaymentsDialog = false"
-          >
-            إغلاق
-          </v-btn>
+
+        <v-card-actions class="dialog-actions">
+          <v-spacer></v-spacer>
+          <button class="dialog-btn cancel" @click="showDeleteDialog = false">
+            إلغاء
+          </button>
+          <button class="dialog-btn delete" @click="confirmDelete" :disabled="deleteLoading">
+            <i class="mdi mdi-delete"></i>
+            {{ deleteLoading ? 'جاري الحذف...' : 'حذف نهائي' }}
+          </button>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -738,204 +531,213 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { listDebtors, createDebtor, updateDebtor, deleteDebtor as deleteDebtorApi, getDebtorStats } from '@/api/debtors'
-import { DEFAULT_LIMIT } from '@/constants/pagination'
+import PageHeader from '../components/PageHeader.vue'
+import { listDebtors, createDebtor, updateDebtor, deleteDebtor as apiDeleteDebtor, getDebtorStats } from '@/api/debtors'
 import { usePermissions } from '@/composables/usePermissions'
+import { useToast } from '@/composables/useToast'
+import { DEFAULT_PAGE, DEFAULT_LIMIT } from '@/constants/pagination'
 
-// Permissions
 const { canCreate, canUpdate, canDelete } = usePermissions('/debtors')
+const { success, error: showError } = useToast()
 
-// البيانات التفاعلية
 const loading = ref(false)
-const dialog = ref(false)
-const viewDialog = ref(false)
-const debtsPaymentsDialog = ref(false)
-const valid = ref(false)
-const isEdit = ref(false)
-const searchQuery = ref('')
-const statusFilter = ref('')
-const amountFilter = ref('')
+const showAddDialog = ref(false)
+const showViewDialog = ref(false)
+const formValid = ref(false)
+const debtorForm = ref(null)
+const editingDebtor = ref(null)
 const selectedDebtor = ref(null)
-const activeTab = ref('debts')
-const editingDebtorId = ref(null)
 
-// نموذج المدين - aligned with backend DTO
-const debtorForm = ref({
-  name: '',
+// Delete dialog state
+const showDeleteDialog = ref(false)
+const deletingDebtor = ref(null)
+const deleteLoading = ref(false)
+
+// Pagination
+const page = ref(DEFAULT_PAGE)
+const limit = ref(DEFAULT_LIMIT)
+const total = ref(0)
+
+// Stats
+const debtorStats = ref({
+  totalDebtors: 0,
+  totalDebt: 0,
+  overdueCount: 0,
+  paidAmount: 0
+})
+
+// New debtor data
+const newDebtor = ref({
+  fullName: '',
   email: '',
   phone: '',
-  totalDebt: 0,
+  amount: 0,
   currency: 'IQD',
   dueDate: '',
-  status: 'active',
   notes: ''
 })
 
-// قائمة المدينين - from backend
+const currencies = [
+  'IQD',
+  'USD',
+  'EUR'
+]
+
 const debtors = ref([])
 
-// Pagination state
-const currentPage = ref(1)
-const itemsPerPage = ref(DEFAULT_LIMIT)
-const totalItems = ref(0)
-const totalPages = ref(0)
-
-const debtorStats = ref({
-  total: 0,
-  active: 0,
-  paid: 0,
-  totalDebt: 0,
-  activeDebt: 0,
-  averageDebt: 0
-})
-
-// عناوين الجدول - aligned with backend DTO
-const headers = [
-  { title: 'الاسم', key: 'name', sortable: true },
-  { title: 'المبلغ المطلوب', key: 'totalDebt', sortable: true },
-  { title: 'المسدد', key: 'paidAmount', sortable: true },
-  { title: 'المتبقي', key: 'remainingDebt', sortable: true },
-  { title: 'تاريخ الاستحقاق', key: 'dueDate', sortable: true },
-  { title: 'الحالة', key: 'status', sortable: true },
-  { title: 'ملاحظات', key: 'notes', sortable: false },
-  { title: 'الإجراءات', key: 'actions', sortable: false }
-]
-
-// عناوين جدول الديون
-const debtHeaders = [
-  { title: 'المبلغ', key: 'amount', sortable: true },
-  { title: 'التاريخ', key: 'date', sortable: true },
-  { title: 'الوصف', key: 'description', sortable: true },
-  { title: 'الحالة', key: 'status', sortable: true },
-  { title: 'الإجراءات', key: 'actions', sortable: false }
-]
-
-// عناوين جدول التسديدات
-const paymentHeaders = [
-  { title: 'المبلغ', key: 'amount', sortable: true },
-  { title: 'التاريخ', key: 'date', sortable: true },
-  { title: 'طريقة الدفع', key: 'method', sortable: true },
-  { title: 'الوصف', key: 'description', sortable: true },
-  { title: 'الإجراءات', key: 'actions', sortable: false }
-]
-
-// خيارات الفلترة - متطابقة مع قيم الـ backend
-const statusOptions = [
-  { title: 'جميع الحالات', value: '' },
-  { title: 'نشط', value: 'active' },
-  { title: 'مدفوع', value: 'paid' }
-]
-
-const amountOptions = [
-  { title: 'جميع المبالغ', value: '' },
-  { title: 'أقل من 10,000', value: 'low' },
-  { title: '10,000 - 20,000', value: 'medium' },
-  { title: 'أكثر من 20,000', value: 'high' }
-]
-
-const currencyOptions = [
-  { title: 'دينار عراقي', value: 'IQD' },
-  { title: 'دولار أمريكي', value: 'USD' }
-]
-
-// Date picker state
-const dueDateMenu = ref(false)
-const selectedDueDate = ref(null)
-
-// Computed property for formatted due date display
-const formattedDueDate = computed(() => {
-  if (!debtorForm.value.dueDate) return ''
-  const date = new Date(debtorForm.value.dueDate)
-  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-})
-
-// Handle due date selection from picker
-const onDueDateSelected = (date) => {
-  if (date) {
-    const d = new Date(date)
-    debtorForm.value.dueDate = d.toISOString().split('T')[0]
+// Fetch debtors from API
+const fetchDebtors = async () => {
+  loading.value = true
+  try {
+    const response = await listDebtors({ page: page.value, limit: limit.value })
+    // listDebtors returns { data, total, page, limit, totalPages }
+    console.log('Debtors API response:', response)
+    const items = response.data || []
+    debtors.value = items.map(d => ({
+      id: d.id,
+      name: d.name || d.fullName || '',
+      email: d.email || '',
+      phone: d.phone || '',
+      totalDebt: d.totalDebt || d.amount || 0,
+      paidAmount: d.paidAmount || 0,
+      remainingAmount: d.remainingAmount || (d.totalDebt - (d.paidAmount || 0)) || 0,
+      dueDate: d.dueDate,
+      status: d.status || 'pending',
+      notes: d.notes || ''
+    }))
+    total.value = response.total || 0
+  } catch (error) {
+    console.error('Error fetching debtors:', error)
+    showError('حدث خطأ في جلب المديونين')
+  } finally {
+    loading.value = false
   }
-  dueDateMenu.value = false
 }
 
-// الحسابات
-const filteredDebtors = computed(() => {
-  let filtered = debtors.value
-
-  // فلترة بالبحث
-  if (searchQuery.value) {
-    filtered = filtered.filter(debtor =>
-      debtor.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      (debtor.email && debtor.email.toLowerCase().includes(searchQuery.value.toLowerCase()))
-    )
+// Fetch stats
+const fetchStats = async () => {
+  try {
+    const response = await getDebtorStats()
+    // getDebtorStats returns the stats object directly (or wrapped in data)
+    console.log('Debtor stats response:', response)
+    const stats = response?.data || response || {}
+    debtorStats.value = {
+      totalDebtors: stats.totalDebtors || stats.total_debtors || 0,
+      totalDebt: stats.totalDebt || stats.total_debt || 0,
+      overdueCount: stats.overdueCount || stats.overdue_count || 0,
+      paidAmount: stats.paidAmount || stats.paid_amount || 0
+    }
+  } catch (error) {
+    console.error('Error fetching stats:', error)
   }
+}
 
-  // فلترة بالحالة
-  if (statusFilter.value) {
-    filtered = filtered.filter(debtor => debtor.status === statusFilter.value)
+
+const headers = [
+  { title: 'الاسم', key: 'name', align: 'start' },
+  { title: 'المبلغ المطلوب', key: 'totalDebt', align: 'center' },
+  { title: 'المسدد', key: 'paidAmount', align: 'center' },
+  { title: 'المتبقي', key: 'remainingAmount', align: 'center' },
+  { title: 'تاريخ الاستحقاق', key: 'dueDate', align: 'center' },
+  { title: 'الحالة', key: 'status', align: 'center' },
+  { title: 'ملاحظات', key: 'notes', align: 'center' },
+  { title: 'الإجراءات', key: 'actions', align: 'center', sortable: false }
+]
+
+// Computed properties
+const totalDebtors = computed(() => debtorStats.value.totalDebtors || total.value)
+
+const totalDebt = computed(() => debtorStats.value.totalDebt || debtors.value.reduce((sum, debtor) => sum + debtor.amount, 0))
+
+const overdueDebtors = computed(() => debtorStats.value.overdueCount || debtors.value.filter(debtor => debtor.status === 'overdue').length)
+
+const paidAmount = computed(() => debtorStats.value.paidAmount || 0)
+
+// Methods
+const openAddDialog = () => {
+  showAddDialog.value = true
+}
+
+const closeDialog = () => {
+  showAddDialog.value = false
+  resetForm()
+}
+
+const resetForm = () => {
+  newDebtor.value = {
+    fullName: '',
+    email: '',
+    phone: '',
+    amount: 0,
+    currency: 'IQD',
+    dueDate: '',
+    notes: ''
   }
-
-  // فلترة بالمبلغ
-  if (amountFilter.value) {
-    filtered = filtered.filter(debtor => {
-      const amount = debtor.totalDebt
-      switch (amountFilter.value) {
-        case 'low': return amount < 10000
-        case 'medium': return amount >= 10000 && amount <= 20000
-        case 'high': return amount > 20000
-        default: return true
-      }
-    })
+  if (debtorForm.value) {
+    debtorForm.value.reset()
   }
+}
 
-  return filtered
+const saveDebtor = async () => {
+  if (!formValid.value) return
+
+  loading.value = true
+  try {
+    const debtorData = {
+      name: newDebtor.value.fullName,
+      email: newDebtor.value.email,
+      phone: newDebtor.value.phone,
+      totalDebt: newDebtor.value.amount,
+      currency: newDebtor.value.currency,
+      dueDate: newDebtor.value.dueDate,
+      notes: newDebtor.value.notes
+    }
+
+    if (editingDebtor.value) {
+      await updateDebtor(editingDebtor.value.id, debtorData)
+    } else {
+      await createDebtor(debtorData)
+    }
+
+    // If we reach here, the API call succeeded (apiFetch throws on error)
+    success(editingDebtor.value ? 'تم تحديث المديون بنجاح' : 'تم إضافة المديون بنجاح')
+    closeDialog()
+    fetchDebtors()
+    fetchStats()
+  } catch (error) {
+    console.error('Error saving debtor:', error)
+    showError(error.message || 'حدث خطأ في حفظ المديون')
+  } finally {
+    loading.value = false
+  }
+}
+
+// Initialize
+onMounted(() => {
+  fetchDebtors()
+  fetchStats()
 })
 
-const totalDebt = computed(() => {
-  // Only count active (unpaid) debt, not paid debtors
-  return debtorStats.value.activeDebt || 0
-})
-
-const overdueCount = computed(() => {
-  // Calculate overdue or due today based on due date (for active debtors only)
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  return debtors.value.filter(debtor => {
-    if (debtor.status === 'paid') return false
-    if (!debtor.dueDate) return false
-    const due = new Date(debtor.dueDate)
-    due.setHours(0, 0, 0, 0)
-    return due <= today  // Include today and overdue
-  }).length
-})
-
-const paidCount = computed(() => {
-  return debtorStats.value.paid || 0
-})
-
-// حسابات الديون والتسديدات
-const totalPaid = computed(() => {
-  if (!selectedDebtor.value || !selectedDebtor.value.payments) return 0
-  return selectedDebtor.value.payments.reduce((sum, payment) => sum + payment.amount, 0)
-})
-
-const remainingAmount = computed(() => {
-  if (!selectedDebtor.value) return 0
-  return (selectedDebtor.value.totalDebt || 0) - totalPaid.value
-})
-
-const paymentPercentage = computed(() => {
-  if (!selectedDebtor.value || !selectedDebtor.value.totalDebt) return 0
-  return Math.round((totalPaid.value / selectedDebtor.value.totalDebt) * 100)
-})
-
-// الدوال
 const formatCurrency = (amount) => {
-  if (amount == null) return '0 IQD'
-  return new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(amount) + ' IQD'
+  return new Intl.NumberFormat('en-US').format(amount) + ' د.ع'
+}
+
+const getStatusColor = (status) => {
+  const colors = {
+    overdue: 'error',
+    pending: 'warning',
+    paid: 'success'
+  }
+  return colors[status] || 'grey'
+}
+
+const getStatusText = (status) => {
+  const texts = {
+    overdue: 'متأخر',
+    pending: 'معلق',
+    paid: 'مدفوع'
+  }
+  return texts[status] || status
 }
 
 // Calculate payment progress percentage
@@ -946,6 +748,7 @@ const getPaymentProgress = (debtor) => {
   return Math.min(progress, 100) // Cap at 100%
 }
 
+// Format date for display
 const formatDate = (date) => {
   if (!date) return '-'
   return new Date(date).toLocaleDateString('en-US', {
@@ -955,24 +758,8 @@ const formatDate = (date) => {
   })
 }
 
-const getStatusColor = (status) => {
-  const colors = {
-    'active': 'warning',
-    'paid': 'success'
-  }
-  return colors[status] || 'grey'
-}
-
-const getStatusText = (status) => {
-  const texts = {
-    'active': 'نشط',
-    'paid': 'مدفوع'
-  }
-  return texts[status] || 'غير محدد'
-}
-
+// Get due date color based on status and remaining time
 const getDueDateColor = (dueDate, status) => {
-  // If paid, no warning needed
   if (status === 'paid') return 'success'
   if (!dueDate) return 'grey'
 
@@ -983,14 +770,13 @@ const getDueDateColor = (dueDate, status) => {
   const diffTime = due - today
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 
-  if (diffDays < 0) return 'error'      // Overdue
-  if (diffDays === 0) return 'warning'  // Today
-  if (diffDays <= 7) return 'warning'   // Due within a week
-  return 'success'
+  if (diffDays < 0) return 'error' // Overdue
+  if (diffDays <= 7) return 'warning' // Due soon
+  return 'success' // OK
 }
 
+// Get due date status text
 const getDueDateStatus = (dueDate, status) => {
-  // If paid, show paid status
   if (status === 'paid') return 'مدفوع'
   if (!dueDate) return 'غير محدد'
 
@@ -1001,13 +787,14 @@ const getDueDateStatus = (dueDate, status) => {
   const diffTime = due - today
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 
-  if (diffDays < 0) return `متأخر ${Math.abs(diffDays)} يوم`
-  if (diffDays === 0) return '⚠️ اليوم!'
+  if (diffDays < 0) return 'متأخر ' + Math.abs(diffDays) + ' يوم'
+  if (diffDays === 0) return 'اليوم'
   if (diffDays === 1) return 'غداً'
-  if (diffDays <= 7) return `${diffDays} أيام`
-  return 'مستقبلي'
+  if (diffDays <= 7) return 'خلال ' + diffDays + ' أيام'
+  return 'في الموعد'
 }
 
+// Check if due date should show warning
 const isDueDateWarning = (dueDate, status) => {
   if (status === 'paid' || !dueDate) return false
 
@@ -1019,741 +806,95 @@ const isDueDateWarning = (dueDate, status) => {
   return due <= today
 }
 
-// Load debtors from backend
-const loadDebtors = async (page = currentPage.value) => {
-  loading.value = true
-  try {
-    // Load debtors list and stats in parallel
-    const [response, stats] = await Promise.all([
-      listDebtors({ page, limit: itemsPerPage.value }),
-      getDebtorStats()
-    ])
-    console.log('Debtors data received:', response)
-    console.log('Debtors stats received:', stats)
-
-    // Update pagination state
-    debtors.value = response.data
-    totalItems.value = response.total
-    totalPages.value = response.totalPages
-    currentPage.value = response.page
-
-    if (stats) {
-      debtorStats.value = stats
-    }
-  } catch (err) {
-    console.error('Error loading debtors:', err)
-  } finally {
-    loading.value = false
-  }
+// View debtor details
+const viewDebtor = (item) => {
+  selectedDebtor.value = item
+  showViewDialog.value = true
 }
 
-// Handle page change
-const onPageChange = (page) => {
-  currentPage.value = page
-  loadDebtors(page)
+const closeViewDialog = () => {
+  showViewDialog.value = false
+  selectedDebtor.value = null
 }
 
-const openAddDialog = () => {
-  isEdit.value = false
-  editingDebtorId.value = null
-  debtorForm.value = {
-    name: '',
-    email: '',
-    phone: '',
-    totalDebt: 0,
+const editFromView = () => {
+  const item = selectedDebtor.value
+  closeViewDialog()
+  editDebtor(item)
+}
+
+const editDebtor = (item) => {
+  editingDebtor.value = item
+  newDebtor.value = {
+    fullName: item.name,
+    email: item.email || '',
+    phone: item.phone || '',
+    amount: item.totalDebt,
     currency: 'IQD',
-    dueDate: '',
-    status: 'active',
-    notes: ''
+    dueDate: item.dueDate ? item.dueDate.split('T')[0] : '',
+    notes: item.notes || ''
   }
-  dialog.value = true
+  showAddDialog.value = true
 }
 
-const editDebtor = (debtor) => {
-  isEdit.value = true
-  editingDebtorId.value = debtor.id
-  // Format dueDate to YYYY-MM-DD for input field
-  const formattedDueDate = debtor.dueDate ? new Date(debtor.dueDate).toISOString().split('T')[0] : ''
-  debtorForm.value = {
-    name: debtor.name,
-    email: debtor.email || '',
-    phone: debtor.phone || '',
-    totalDebt: debtor.totalDebt,
-    currency: debtor.currency,
-    dueDate: formattedDueDate,
-    status: debtor.status || 'active',
-    notes: debtor.notes || ''
-  }
-  dialog.value = true
+// Open delete confirmation dialog
+const confirmDeleteDebtor = (item) => {
+  deletingDebtor.value = item
+  showDeleteDialog.value = true
 }
 
-const viewDebtor = (debtor) => {
-  selectedDebtor.value = debtor
-  viewDialog.value = true
-}
+// Confirm delete
+const confirmDelete = async () => {
+  if (!deletingDebtor.value) return
 
-const saveDebtor = async () => {
+  deleteLoading.value = true
   try {
-    const payload = {
-      name: debtorForm.value.name,
-      totalDebt: Number(debtorForm.value.totalDebt),
-      currency: debtorForm.value.currency
-    }
-    // Optional fields
-    if (debtorForm.value.email && debtorForm.value.email.trim()) {
-      payload.email = debtorForm.value.email.trim()
-    }
-    if (debtorForm.value.phone && debtorForm.value.phone.trim()) {
-      payload.phone = debtorForm.value.phone.trim()
-    }
-    if (debtorForm.value.dueDate) {
-      payload.dueDate = new Date(debtorForm.value.dueDate).toISOString()
-    }
-    if (debtorForm.value.status) {
-      payload.status = debtorForm.value.status
-    }
-    if (debtorForm.value.notes && debtorForm.value.notes.trim()) {
-      payload.notes = debtorForm.value.notes.trim()
-    }
-
-    if (isEdit.value && editingDebtorId.value) {
-      await updateDebtor(editingDebtorId.value, payload)
-    } else {
-      await createDebtor(payload)
-    }
-    await loadDebtors()
-    closeDialog()
-  } catch (err) {
-    console.error('Error saving debtor:', err)
+    await apiDeleteDebtor(deletingDebtor.value.id)
+    success('تم حذف المديون بنجاح')
+    showDeleteDialog.value = false
+    deletingDebtor.value = null
+    fetchDebtors()
+    fetchStats()
+  } catch (error) {
+    console.error('Error deleting debtor:', error)
+    showError(error.message || 'حدث خطأ في حذف المديون')
+  } finally {
+    deleteLoading.value = false
   }
 }
-
-const closeDialog = () => {
-  dialog.value = false
-  valid.value = false
-  editingDebtorId.value = null
-}
-
-const deleteDebtor = async (debtor) => {
-  if (!confirm('هل أنت متأكد من حذف هذا المدين؟')) return
-  try {
-    await deleteDebtorApi(debtor.id)
-    await loadDebtors()
-  } catch (err) {
-    console.error('Error deleting debtor:', err)
-  }
-}
-
-const refreshData = async () => {
-  await loadDebtors()
-}
-
-const exportData = () => {
-  // منطق التصدير
-  console.log('تصدير البيانات')
-}
-
-const resetFilters = () => {
-  searchQuery.value = ''
-  statusFilter.value = ''
-  amountFilter.value = ''
-}
-
-// دوال الديون والتسديدات
-const viewDebtsAndPayments = (debtor) => {
-  selectedDebtor.value = debtor
-  activeTab.value = 'debts'
-  debtsPaymentsDialog.value = true
-}
-
-const getPaymentMethodColor = (method) => {
-  const colors = {
-    'bank_transfer': 'primary',
-    'credit_card': 'success',
-    'cash': 'warning',
-    'check': 'info'
-  }
-  return colors[method] || 'grey'
-}
-
-const getPaymentMethodText = (method) => {
-  const texts = {
-    'bank_transfer': 'تحويل بنكي',
-    'credit_card': 'بطاقة ائتمان',
-    'cash': 'نقدي',
-    'check': 'شيك'
-  }
-  return texts[method] || 'غير محدد'
-}
-
-const addDebt = () => {
-  // منطق إضافة دين جديد
-  console.log('إضافة دين جديد')
-}
-
-const editDebt = (debt) => {
-  // منطق تعديل الدين
-  console.log('تعديل الدين:', debt)
-}
-
-const deleteDebt = (debt) => {
-  // منطق حذف الدين
-  console.log('حذف الدين:', debt)
-}
-
-const addPayment = () => {
-  // منطق إضافة تسديد جديد
-  console.log('إضافة تسديد جديد')
-}
-
-const editPayment = (payment) => {
-  // منطق تعديل التسديد
-  console.log('تعديل التسديد:', payment)
-}
-
-const deletePayment = (payment) => {
-  // منطق حذف التسديد
-  console.log('حذف التسديد:', payment)
-}
-
-// Load data on mount
-onMounted(() => {
-  loadDebtors()
-})
 </script>
 
 <style scoped>
-/* ========================================
-   تحسين ألوان صفحة المديونون
-   ======================================== */
-
-/* خلفية الصفحة */
-.data-page {
-  background: #ffffff !important;
-  color: var(--text-dark);
-  min-height: 100vh;
-  padding: 0 !important;
-  max-width: 100% !important;
-  margin: 0 !important;
-  width: 100% !important;
-  overflow-x: hidden;
-}
-
-/* ========================================
-   رأس الصفحة - نفس تنسيق صفحة المهندسين
-   ======================================== */
-
-.engineers-header-card {
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
-  border-radius: 0;
-  width: 100vw;
-  max-width: 100vw;
-  box-shadow: 0 8px 32px rgba(25, 118, 210, 0.3);
-  position: relative;
-  overflow: hidden;
-  margin-left: calc(-50vw + 50%);
-  margin-right: calc(-50vw + 50%);
-  margin-bottom: 1.5rem;
-  border: none;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  animation: slideInFromTop 1s ease-out, shimmer 3s ease-in-out infinite;
-}
-
-.engineers-header-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  animation: sweep 2s ease-in-out infinite;
-  z-index: 1;
-}
-
-.engineers-header-card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
-  animation: diagonalShimmer 4s ease-in-out infinite;
-  z-index: 1;
-}
-
-.engineers-header-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 60px rgba(25, 118, 210, 0.5);
-  animation: hoverPulse 0.6s ease-in-out;
-}
-
-.engineers-header-card:hover::before {
-  animation: sweep 1s ease-in-out infinite;
-}
-
-.engineers-header-card:hover::after {
-  animation: diagonalShimmer 2s ease-in-out infinite;
-}
-
-.header-gradient-line {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 5px;
-  background: linear-gradient(90deg, #ffffff 0%, #e3f2fd 50%, #bbdefb 100%);
-  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
-  animation: gradientFlow 3s ease-in-out infinite;
-  z-index: 2;
-}
-
-.header-content {
-  padding: 12px 16px !important;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  min-height: auto !important;
-  background: linear-gradient(135deg, rgba(25, 118, 210, 0.1) 0%, rgba(21, 101, 192, 0.05) 100%);
-  backdrop-filter: blur(10px);
-  position: relative;
-  z-index: 3;
-  animation: fadeInUp 1.2s ease-out 0.3s both;
-  max-width: calc(100vw - 320px);
+.debtors-container {
+  padding: 32px;
+  max-width: 1600px;
   margin: 0 auto;
 }
 
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 1.8rem;
-  text-align: right;
-  padding: 0.8rem 1.5rem;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+/* Debtors Header Custom Color */
+.debtors-header {
+  background: linear-gradient(135deg, #018790 0%, #005461 100%) !important;
 }
 
-.engineer-emoji {
-  position: relative;
-  animation: slideInFromRight 1s ease-out 0.9s both, float 3s ease-in-out infinite 2s, pulse 2s ease-in-out infinite 2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 0.5rem;
+.debtors-header::before {
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 50%, #06b6d4 100%) !important;
 }
 
-.engineer-emoji .v-icon {
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
-  transition: all 0.3s ease;
-  background: linear-gradient(135deg, #ffffff, #e3f2fd);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  position: relative;
-  animation: iconGlow 2s ease-in-out infinite 3s, iconBounce 3s ease-in-out infinite 3s;
-}
-
-.engineer-emoji .v-icon:first-child {
-  animation: iconGlow 2s ease-in-out infinite 3s, iconBounce 3s ease-in-out infinite 3s;
-}
-
-.header-text {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.main-title {
-  color: white !important;
-  font-size: 1.2rem !important;
-  font-weight: bold !important;
-  margin: 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.subtitle {
-  color: rgba(255, 255, 255, 0.9) !important;
-  font-size: 0.75rem !important;
-  margin: 0;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.action-buttons-container {
-  padding: 0 2rem;
-  display: flex;
-  justify-content: flex-start;
-}
-
-
-.add-button {
-  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%) !important;
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-  font-weight: 700 !important;
-  font-size: 0.95rem !important;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  letter-spacing: 0.5px !important;
-  line-height: 1.5 !important;
-  padding: 10px 20px !important;
-  border-radius: 10px !important;
-  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4), 0 2px 6px rgba(5, 150, 105, 0.3) !important;
-  transition: all 0.3s ease !important;
-  border: 2px solid rgba(255, 255, 255, 0.3) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
-  position: relative;
-  overflow: hidden;
-  text-transform: none !important;
-  height: auto !important;
-}
-
-.add-button :deep(.v-btn__content) {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.5px !important;
-  line-height: 1.5 !important;
-}
-
-.add-button :deep(.v-icon) {
-  color: #ffffff !important;
-  fill: #ffffff !important;
-  font-size: 1.1rem !important;
-  margin-inline-end: 8px !important;
-}
-
-.add-button :deep(.v-btn__content) {
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.5px !important;
-  line-height: 1.5 !important;
-}
-
-.add-button :deep(.v-icon) {
-  font-size: 1.2rem !important;
-  margin-inline-end: 8px !important;
-}
-
-.add-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.5s ease;
-}
-
-.add-button:hover::before {
-  left: 100%;
-}
-
-.add-button:hover {
-  transform: translateY(-3px) scale(1.02) !important;
-  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.5), 0 4px 12px rgba(5, 150, 105, 0.4) !important;
-  background: linear-gradient(135deg, #059669 0%, #047857 50%, #065f46 100%) !important;
-}
-
-.add-button:active {
-  transform: translateY(-1px) scale(0.98) !important;
-}
-
-/* ========================================
-   بطاقات الإحصائيات
-   ======================================== */
-
-/* Modern Statistics Cards */
-.modern-stat-card {
-  position: relative !important;
-  border-radius: 20px !important;
-  overflow: hidden !important;
-  cursor: pointer !important;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  height: 100% !important;
-  min-height: 140px !important;
-  background: #ffffff !important;
-}
-
-.modern-stat-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-}
-
-.stat-card-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  opacity: 0.1;
-  transition: opacity 0.3s ease;
-}
-
-.modern-stat-card:hover .stat-card-background {
-  opacity: 0.2;
-}
-
-.stat-card-primary .stat-card-background {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-}
-
-.stat-card-success .stat-card-background {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-}
-
-.stat-card-warning .stat-card-background {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-}
-
-.stat-card-info .stat-card-background {
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
-}
-
-.stat-card-primary {
-  background: #ffffff !important;
-  border: 2px solid #3b82f6 !important;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15) !important;
-}
-
-.stat-card-success {
-  background: #ffffff !important;
-  border: 2px solid #10b981 !important;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15) !important;
-}
-
-.stat-card-warning {
-  background: #ffffff !important;
-  border: 2px solid #f59e0b !important;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15) !important;
-}
-
-.stat-card-info {
-  background: #ffffff !important;
-  border: 2px solid #06b6d4 !important;
-  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.15) !important;
-}
-
-.stat-card-content {
-  position: relative;
-  z-index: 2;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  align-items: center;
-  text-align: center;
-}
-
-.stat-icon-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  height: 64px;
-  min-width: 64px;
-  min-height: 64px;
-  border-radius: 50%;
-  margin-bottom: 0.25rem;
-  flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  position: relative;
-  overflow: visible;
-}
-
-.stat-icon-wrapper::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: #ffffff;
-  z-index: 1;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.stat-card-primary .stat-icon-wrapper {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.stat-card-primary .stat-icon-wrapper::before {
-  content: '';
-  position: absolute;
-  inset: -3px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%);
-  z-index: -1;
-  filter: blur(8px);
-}
-
-.stat-card-success .stat-icon-wrapper {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-}
-
-.stat-card-success .stat-icon-wrapper::before {
-  content: '';
-  position: absolute;
-  inset: -3px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.2) 100%);
-  z-index: -1;
-  filter: blur(8px);
-}
-
-.stat-card-warning .stat-icon-wrapper {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-}
-
-.stat-card-warning .stat-icon-wrapper::before {
-  content: '';
-  position: absolute;
-  inset: -3px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.2) 100%);
-  z-index: -1;
-  filter: blur(8px);
-}
-
-.stat-card-info .stat-icon-wrapper {
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
-  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
-}
-
-.stat-card-info .stat-icon-wrapper::before {
-  content: '';
-  position: absolute;
-  inset: -3px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(6, 182, 212, 0.2) 0%, rgba(8, 145, 178, 0.2) 100%);
-  z-index: -1;
-  filter: blur(8px);
-}
-
-.stat-icon {
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-  font-size: 32px !important;
-  width: 32px !important;
-  height: 32px !important;
-  min-width: 32px !important;
-  min-height: 32px !important;
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-  padding: 0;
-}
-
-.stat-icon-wrapper :deep(.v-icon) {
-  font-size: 32px !important;
-  width: 32px !important;
-  height: 32px !important;
-  min-width: 32px !important;
-  min-height: 32px !important;
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-.stat-icon-wrapper :deep(svg) {
-  width: 32px !important;
-  height: 32px !important;
-  font-size: 32px !important;
-}
-
-.stat-card-primary .stat-icon {
-  color: #3b82f6 !important;
-}
-
-.stat-card-primary .stat-icon-wrapper :deep(.v-icon) {
-  color: #3b82f6 !important;
-}
-
-.stat-card-success .stat-icon {
-  color: #10b981 !important;
-}
-
-.stat-card-success .stat-icon-wrapper :deep(.v-icon) {
-  color: #10b981 !important;
-}
-
-.stat-card-warning .stat-icon {
-  color: #f59e0b !important;
-}
-
-.stat-card-warning .stat-icon-wrapper :deep(.v-icon) {
-  color: #f59e0b !important;
-}
-
-.stat-card-info .stat-icon {
-  color: #06b6d4 !important;
-}
-
-.stat-card-info .stat-icon-wrapper :deep(.v-icon) {
-  color: #06b6d4 !important;
-}
-
-.check-icon,
-.stat-icon-wrapper .check-icon,
-.stat-icon-wrapper :deep(.check-icon) {
-  transform: scaleX(-1) !important;
-}
-
-.stat-info {
-  flex: 1;
-  text-align: center;
-  width: 100%;
-}
-
-.stat-value {
-  font-size: 2.5rem;
-  font-weight: 800;
-  margin-bottom: 0.5rem;
-  font-family: 'Arial', 'Helvetica', sans-serif !important;
-  direction: ltr !important;
-  text-align: center;
-  font-variant-numeric: tabular-nums;
-  unicode-bidi: embed;
-  color: #000000 !important;
-}
-
-.stat-label {
-  font-size: 1rem;
-  font-weight: 500;
-  text-align: center;
-  color: #64748b;
+/* Statistics Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .stat-card {
-  background: var(--bg-white) !important;
   border-radius: 16px !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
   overflow: hidden;
-  min-height: 200px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%) !important;
+  border: 2px solid transparent !important;
+  position: relative;
 }
 
 .stat-card::before {
@@ -1762,1130 +903,904 @@ onMounted(() => {
   top: 0;
   left: 0;
   right: 0;
-  height: 4px;
-  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+  bottom: 0;
+  border-radius: 16px;
+  padding: 2px;
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 50%, #14b8a6 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
 .stat-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 12px 24px rgba(6, 182, 212, 0.3),
+              0 0 40px rgba(16, 185, 129, 0.2) !important;
+}
+
+.stat-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 2px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 4px;
+}
+
+.stat-change {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.stat-change.positive {
+  color: #34d399;
+}
+
+.stat-change.negative {
+  color: #f87171;
 }
 
 .stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%) !important;
+  box-shadow: 0 6px 16px rgba(6, 182, 212, 0.4);
+}
+
+.stat-icon.warning {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+}
+
+.stat-icon.expense {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+}
+
+.stat-icon.danger {
+  background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%) !important;
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+}
+
+.stat-icon.success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+/* Debtors List Header */
+.debtors-list-header {
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%);
+  border-radius: 16px;
+  margin-bottom: 24px;
+  padding: 16px 24px;
+  border: 2px solid transparent;
   position: relative;
-  z-index: 2;
+  overflow: hidden;
 }
 
-.stat-card .v-icon {
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
-  transition: all 0.3s ease;
-}
-
-.stat-card:hover .v-icon {
-  transform: scale(1.1);
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
-}
-
-.stat-card h3 {
-  font-size: 2.5rem !important;
-  font-weight: 700 !important;
-  margin-bottom: 8px !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  text-align: center !important;
-  width: 100%;
-}
-
-.stat-card p {
-  font-size: 1rem !important;
-  font-weight: 500 !important;
-  opacity: 0.8;
-  text-align: center !important;
-  width: 100%;
-}
-
-/* تأثيرات خاصة لكل لون */
-.stat-card:nth-child(1)::before {
-  background: var(--gradient-primary);
-}
-
-.stat-card:nth-child(2)::before {
-  background: var(--gradient-error);
-}
-
-.stat-card:nth-child(3)::before {
-  background: var(--gradient-warning);
-}
-
-.stat-card:nth-child(4)::before {
-  background: var(--gradient-success);
-}
-
-/* ========================================
-   شريط البحث والفلترة
-   ======================================== */
-
-.search-filter-card {
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 12px !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-  overflow: hidden !important;
-}
-
-/* شريط عنوان الفلترة */
-.filters-header-new {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
-  color: #ffffff !important;
-  border-radius: 12px 12px 0 0 !important;
-  padding: 0.5rem 0.75rem !important;
-  border-bottom: 1px solid #1e40af !important;
-  position: relative !important;
-  overflow: hidden !important;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3) !important;
-}
-
-.filters-header-new,
-.filters-header-new *,
-.filters-header-new div,
-.filters-header-new span {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-}
-
-.filters-header-new::before {
+.debtors-list-header::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, #93c5fd, #60a5fa, #3b82f6);
-  border-radius: 12px 12px 0 0;
-}
-
-.filters-header-title {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-  font-weight: 600 !important;
-  font-size: 0.875rem !important;
-  letter-spacing: 0.2px !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-}
-
-.filters-header-new :deep(.v-icon) {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-  fill: #ffffff !important;
-}
-
-/* محتوى الفلترة */
-.filters-content {
-  padding: 0.5rem 0.75rem !important;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%) !important;
-  border-radius: 0 0 12px 12px !important;
-}
-
-/* إزالة الأنماط القديمة - تم استبدالها بالأنماط الجديدة أعلاه */
-
-/* حقول البحث والفلترة الجديدة */
-.search-field-new :deep(.v-field),
-.filter-field-new :deep(.v-field) {
-  background: #ffffff !important;
-  border-radius: 8px !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
-  border: 2px solid #3b82f6 !important;
-  transition: all 0.3s ease !important;
-}
-
-.search-field-new :deep(.v-field:hover),
-.filter-field-new :deep(.v-field:hover) {
-  border-color: #2563eb !important;
-  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.2) !important;
-}
-
-.search-field-new :deep(.v-field--focused),
-.filter-field-new :deep(.v-field--focused) {
-  border-color: #2563eb !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
-}
-
-.search-field-new :deep(.v-field__input),
-.filter-field-new :deep(.v-field__input) {
-  color: #1e293b !important;
-  font-size: 0.875rem !important;
-  padding: 8px 12px !important;
-}
-
-.search-field-new :deep(.v-label),
-.filter-field-new :deep(.v-label) {
-  color: #3b82f6 !important;
-  font-weight: 500 !important;
-  font-size: 0.875rem !important;
-}
-
-.search-field-new :deep(.v-field--focused .v-label),
-.filter-field-new :deep(.v-field--focused .v-label) {
-  color: #2563eb !important;
-}
-
-.search-field-new :deep(.v-field__prepend-inner .v-icon),
-.filter-field-new :deep(.v-field__prepend-inner .v-icon) {
-  color: #3b82f6 !important;
-}
-
-/* زر إعادة التعيين الجديد */
-.reset-button-new {
-  border-radius: 8px !important;
-  font-weight: 600 !important;
-  text-transform: none !important;
-  color: #3b82f6 !important;
-  border-color: #3b82f6 !important;
-  background: #ffffff !important;
-  transition: all 0.3s ease !important;
-}
-
-.reset-button-new:hover {
-  background: #3b82f6 !important;
-  color: #ffffff !important;
-  border-color: #2563eb !important;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3) !important;
-}
-
-.reset-button-new :deep(.v-icon) {
-  color: inherit !important;
-}
-
-/* القوائم المنسدلة */
-.search-filter-card :deep(.v-overlay__content) {
-  border-radius: 8px !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-  border: 2px solid #3b82f6 !important;
-  overflow: hidden !important;
-  background: #ffffff !important;
-}
-
-/* ========================================
-   جدول البيانات
-   ======================================== */
-
-/* تم نقل أنماط .data-table-card إلى common-components.css */
-
-/* شريط عنوان الجدول */
-.table-title-header {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
-  color: #ffffff !important;
-  padding: 8px 12px !important;
-  border-radius: 8px 8px 0 0 !important;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  min-height: 36px !important;
-  margin-bottom: 1rem !important;
-}
-
-.table-title-header,
-.table-title-header *,
-.table-title-header div,
-.table-title-header span {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-}
-
-.table-title-header .title-text {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-  font-weight: 600 !important;
-  font-size: 0.95rem !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.3px !important;
-}
-
-.table-title-header :deep(.v-icon) {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-  fill: #ffffff !important;
-}
-
-.table-title-header .count-chip {
-  background: rgba(255, 255, 255, 0.2) !important;
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-}
-
-.table-title-header .action-button {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-}
-
-.table-title-header .action-button :deep(.v-icon) {
-  color: #ffffff !important;
-  fill: #ffffff !important;
-}
-
-.table-title-header .action-button:hover {
-  background: rgba(255, 255, 255, 0.1) !important;
-  transform: scale(1.05) !important;
-}
-
-.action-button {
-  border-radius: 8px !important;
-  transition: all 0.3s ease !important;
-}
-
-.action-button:hover {
-  background: rgba(255, 255, 255, 0.1) !important;
-  transform: scale(1.05) !important;
-}
-
-/* مسافة بين شريط العنوان والجدول */
-.debtors-data-table {
-  margin-top: 1rem !important;
-}
-
-/* الجداول */
-.v-data-table {
-  background: #ffffff !important;
-  color: #1e293b !important;
-  border-radius: 0 0 16px 16px !important;
-}
-
-.v-data-table th {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-  font-weight: 600 !important;
-  font-size: 0.75rem !important;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.2) !important;
-  padding: 16px !important;
-  text-align: center !important;
-  vertical-align: middle !important;
-  font-style: normal !important;
-  text-transform: none !important;
-}
-
-/* ========================================
-   إصلاح لون عناوين الجدول في صفحة المديونين
-   - تغيير لون النص من الفايت إلى الأسود الداكن
-   - تحسين وضوح جميع عناوين الجدول
-   - محاذاة العناوين في المنتصف
-   ======================================== */
-
-/* إصلاح شامل لعناوين الجدول */
-.v-data-table .v-data-table-header th,
-.v-data-table .v-data-table-header th *,
-.v-data-table thead th,
-.v-data-table thead th * {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-  text-align: center !important;
-  vertical-align: middle !important;
-  font-style: normal !important;
-  text-transform: none !important;
-  font-weight: 600 !important;
-  font-size: 0.75rem !important;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.2) !important;
-}
-
-/* قواعد إضافية لضمان اللون الأبيض على جميع عناصر عناوين الجدول */
-.v-data-table :deep(.v-data-table-header th),
-.v-data-table :deep(.v-data-table-header th *),
-.v-data-table :deep(.v-data-table-header th span),
-.v-data-table :deep(.v-data-table-header th div),
-.v-data-table :deep(.v-data-table-header th .v-data-table-header__content),
-.v-data-table :deep(.v-data-table-header th .v-data-table-header__content *),
-.v-data-table :deep(.v-data-table__wrapper table thead tr th),
-.v-data-table :deep(.v-data-table__wrapper table thead tr th *),
-.v-data-table :deep(.v-data-table__wrapper table thead tr th span),
-.v-data-table :deep(.v-data-table__wrapper table thead tr th div),
-.v-data-table :deep(.v-data-table__th),
-.v-data-table :deep(.v-data-table__th *),
-.v-data-table :deep(.v-data-table__th span),
-.v-data-table :deep(.v-data-table__th div) {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-  fill: #ffffff !important;
-  font-size: 0.75rem !important;
-}
-
-/* تطبيق اللون الأبيض على أيقونات في عناوين الجدول */
-.v-data-table :deep(.v-data-table-header th .v-icon),
-.v-data-table :deep(.v-data-table-header th i),
-.v-data-table :deep(.v-data-table-header th svg),
-.v-data-table :deep(.v-data-table-header th .v-data-table-header__sort-badge),
-.v-data-table :deep(.v-data-table-header th .v-data-table-header__sort-icon) {
-  color: #ffffff !important;
-  fill: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-}
-
-/* إصلاح خلايا الجدول */
-.v-data-table td {
-  color: #1a1a1a !important;
-  border-bottom: 1px solid #f1f5f9 !important;
-  padding: 16px !important;
-  font-size: 0.9rem !important;
-  text-align: center !important;
-  vertical-align: middle !important;
-}
-
-/* إصلاح النصوص في خلايا الجدول */
-.v-data-table tbody td,
-.v-data-table tbody td *,
-.v-data-table tbody tr td,
-.v-data-table tbody tr td * {
-  color: #1a1a1a !important;
-}
-
-/* إصلاح نهائي شامل لجميع عناصر الجدول */
-.v-data-table,
-.v-data-table *,
-.v-data-table tbody,
-.v-data-table tbody *,
-.v-data-table tbody tr,
-.v-data-table tbody tr *,
-.v-data-table tbody tr td,
-.v-data-table tbody tr td * {
-  color: #1a1a1a !important;
-  text-align: center !important;
-  vertical-align: middle !important;
-  font-style: normal !important;
-}
-
-/* إصلاح النصوص في جميع العناصر */
-.v-data-table .font-weight-bold,
-.v-data-table .text-error,
-.v-data-table .text-success,
-.v-data-table .text-warning,
-.v-data-table span,
-.v-data-table div,
-.v-data-table p {
-  color: #1a1a1a !important;
-}
-
-/* استثناء للنصوص الملونة */
-.v-data-table .text-error {
-  color: #dc2626 !important;
-}
-
-.v-data-table .text-success {
-  color: #059669 !important;
-}
-
-.v-data-table .text-warning {
-  color: #d97706 !important;
-}
-
-/* ========================================
-   إصلاح لون النصوص في عمود الإجراءات
-   - تحسين وضوح أزرار الإجراءات في الجدول
-   - ضمان وضوح الأيقونات والنصوص
-   - تحسين التباين والوضوح
-   ======================================== */
-
-/* إصلاح أزرار الإجراءات في الجدول */
-.v-data-table .v-btn,
-.v-data-table .v-btn *,
-.v-data-table .v-btn .v-icon,
-.v-data-table .v-btn .v-btn__content {
-  color: #1a1a1a !important;
-}
-
-/* إصلاح أزرار الإجراءات المحددة */
-.v-data-table .v-btn[color="success"],
-.v-data-table .v-btn[color="success"] *,
-.v-data-table .v-btn[color="success"] .v-icon,
-.v-data-table .v-btn[color="success"] .v-btn__content {
-  color: #059669 !important;
-}
-
-.v-data-table .v-btn[color="error"],
-.v-data-table .v-btn[color="error"] *,
-.v-data-table .v-btn[color="error"] .v-icon,
-.v-data-table .v-btn[color="error"] .v-btn__content {
-  color: #dc2626 !important;
-}
-
-.v-data-table .v-btn[color="primary"],
-.v-data-table .v-btn[color="primary"] *,
-.v-data-table .v-btn[color="primary"] .v-icon,
-.v-data-table .v-btn[color="primary"] .v-btn__content {
-  color: #1976d2 !important;
-}
-
-/* إصلاح أزرار الإجراءات عند التمرير */
-.v-data-table .v-btn:hover,
-.v-data-table .v-btn:hover *,
-.v-data-table .v-btn:hover .v-icon,
-.v-data-table .v-btn:hover .v-btn__content {
-  color: #1a1a1a !important;
-}
-
-/* إصلاح أزرار الإجراءات الملونة عند التمرير */
-.v-data-table .v-btn[color="success"]:hover,
-.v-data-table .v-btn[color="success"]:hover *,
-.v-data-table .v-btn[color="success"]:hover .v-icon {
-  color: #047857 !important;
-}
-
-.v-data-table .v-btn[color="error"]:hover,
-.v-data-table .v-btn[color="error"]:hover *,
-.v-data-table .v-btn[color="error"]:hover .v-icon {
-  color: #b91c1c !important;
-}
-
-.v-data-table .v-btn[color="primary"]:hover,
-.v-data-table .v-btn[color="primary"]:hover *,
-.v-data-table .v-btn[color="primary"]:hover .v-icon {
-  color: #1565c0 !important;
-}
-
-/* إصلاح شامل لجميع أزرار الإجراءات */
-.v-data-table .d-flex,
-.v-data-table .d-flex *,
-.v-data-table .gap-1,
-.v-data-table .gap-1 *,
-.v-data-table .align-center,
-.v-data-table .align-center * {
-  color: #1a1a1a !important;
-}
-
-/* إصلاح أزرار الإجراءات في جميع الحالات */
-.v-data-table .v-btn.v-btn--size-small,
-.v-data-table .v-btn.v-btn--size-small *,
-.v-data-table .v-btn.v-btn--variant-text,
-.v-data-table .v-btn.v-btn--variant-text * {
-  color: #1a1a1a !important;
-}
-
-/* إصلاح خاص للأزرار الملونة */
-.v-data-table .v-btn[color="success"].v-btn--variant-text,
-.v-data-table .v-btn[color="success"].v-btn--variant-text * {
-  color: #059669 !important;
-}
-
-.v-data-table .v-btn[color="error"].v-btn--variant-text,
-.v-data-table .v-btn[color="error"].v-btn--variant-text * {
-  color: #dc2626 !important;
-}
-
-/* إصلاح أزرار الإجراءات في جميع الجداول الفرعية */
-.v-data-table .v-data-table .v-btn,
-.v-data-table .v-data-table .v-btn * {
-  color: #1a1a1a !important;
-}
-
-/* إصلاح أزرار الإجراءات الملونة في الجداول الفرعية */
-.v-data-table .v-data-table .v-btn[color="success"],
-.v-data-table .v-data-table .v-btn[color="success"] * {
-  color: #059669 !important;
-}
-
-.v-data-table .v-data-table .v-btn[color="error"],
-.v-data-table .v-data-table .v-btn[color="error"] * {
-  color: #dc2626 !important;
-}
-
-/* إصلاح نهائي شامل لجميع أزرار الإجراءات */
-.v-data-table .v-btn .mdi,
-.v-data-table .v-btn .mdi *,
-.v-data-table .v-btn .mdi-eye,
-.v-data-table .v-btn .mdi-pencil,
-.v-data-table .v-btn .mdi-credit-card,
-.v-data-table .v-btn .mdi-delete {
-  color: inherit !important;
-}
-
-/* إصلاح أزرار الإجراءات في جميع الجداول */
-.v-data-table .v-btn[icon="mdi-eye"],
-.v-data-table .v-btn[icon="mdi-pencil"],
-.v-data-table .v-btn[icon="mdi-credit-card"],
-.v-data-table .v-btn[icon="mdi-delete"] {
-  color: #1a1a1a !important;
-}
-
-/* إصلاح أزرار الإجراءات الملونة */
-.v-data-table .v-btn[icon="mdi-credit-card"][color="success"] {
-  color: #059669 !important;
-}
-
-.v-data-table .v-btn[icon="mdi-delete"][color="error"] {
-  color: #dc2626 !important;
-}
-
-/* إصلاح أزرار الإجراءات عند التمرير */
-.v-data-table .v-btn:hover .mdi,
-.v-data-table .v-btn:hover .mdi * {
-  color: inherit !important;
-}
-
-/* إصلاح شامل لجميع النصوص في الصفحة */
-.debtors-page *,
-.debtors-page * * {
-  color: #1a1a1a !important;
-}
-
-/* إصلاح النصوص في جميع الكروت */
-.v-card,
-.v-card *,
-.v-card .v-card-title,
-.v-card .v-card-title *,
-.v-card .v-card-text,
-.v-card .v-card-text * {
-  color: #1a1a1a !important;
-}
-
-/* إصلاح النصوص في جميع الأزرار */
-.v-btn,
-.v-btn *,
-.v-btn .v-btn__content,
-.v-btn .v-btn__content * {
-  color: white !important;
-}
-
-/* استثناء للأزرار المحددة */
-.v-btn.v-btn--variant-outlined,
-.v-btn.v-btn--variant-outlined * {
-  color: #1976d2 !important;
-}
-
-.v-data-table tbody tr:hover {
-  background: #f8fafc !important;
-}
-
-/* ========================================
-   الأزرار والتفاعل
-   ======================================== */
-
-.v-btn {
-  font-weight: 500 !important;
-  text-transform: none !important;
-  border-radius: 8px !important;
-  transition: all 0.3s ease !important;
-}
-
-.v-btn--variant-elevated {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
-}
-
-.v-btn--variant-elevated:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4) !important;
-}
-
-.v-btn--variant-outlined {
-  border: 2px solid #2563eb !important;
-  color: #2563eb !important;
-  background: transparent !important;
-}
-
-.v-btn--variant-outlined:hover {
-  background: #2563eb !important;
-  color: #ffffff !important;
-  transform: translateY(-1px) !important;
-}
-
-/* ========================================
-   الشارات والرموز
-   ======================================== */
-
-.v-chip {
-  color: #1e293b !important;
-  background: #f1f5f9 !important;
-  border: 1px solid #e2e8f0 !important;
-  font-weight: 500 !important;
-  border-radius: 8px !important;
-}
-
-/* ========================================
-   النماذج
-   ======================================== */
-
-.v-text-field input,
-.v-select input,
-.v-textarea textarea {
-  color: #1e293b !important;
-  background: #ffffff !important;
-  font-size: 0.9rem !important;
-}
-
-.v-text-field label,
-.v-select label,
-.v-textarea label {
-  color: #64748b !important;
-  font-weight: 500 !important;
-}
-
-/* ========================================
-   البطاقات العامة
-   ======================================== */
-
-.v-card {
-  background: #ffffff !important;
-  color: #1e293b !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 16px !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
-}
-
-.v-card-title {
-  color: #1e293b !important;
-  font-weight: 600 !important;
-  font-size: 1.1rem !important;
-}
-
-.v-card-text {
-  color: #64748b !important;
-  font-size: 0.9rem !important;
-}
-.sidebar {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  direction: rtl;
-  text-align: right;
-}
-
-.rtl-sidebar {
-  direction: rtl;
-  text-align: right;
-}
-
-.rtl-sidebar .v-list-item {
-  text-align: right;
-  direction: rtl;
-}
-
-.rtl-sidebar .v-list-item-title {
-  text-align: right;
-  direction: rtl;
-}
-
-.menu-item {
-  transition: all 0.3s ease;
-}
-
-.menu-item:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.logo-section {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.v-card {
-  border-radius: 12px;
-}
-
-.v-data-table {
-  border-radius: 12px;
-}
-
-.gap-1 {
-  gap: 4px;
-}
-
-.gap-2 {
+  bottom: 0;
+  border-radius: 16px;
+  padding: 2px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #f59e0b 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.list-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.list-header-info {
+  flex: 1;
+}
+
+.list-header-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0 0 2px 0;
+  display: flex;
+  align-items: center;
   gap: 8px;
 }
 
-/* دعم RTL شامل */
-.v-main {
+.list-header-title i {
+  color: #f59e0b;
+  font-size: 20px;
+}
+
+.list-header-subtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+.list-header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.list-action-btn {
+  padding: 8px 18px;
+  border-radius: 12px;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.list-action-btn.primary {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.list-action-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+}
+
+.list-action-btn i {
+  font-size: 16px;
+}
+
+/* Debtor Dialog */
+.debtor-dialog {
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%) !important;
+  border: 2px solid transparent !important;
+  position: relative;
+  overflow: hidden;
   direction: rtl;
   text-align: right;
 }
 
-.v-container {
+.debtor-dialog::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 16px;
+  padding: 2px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #f59e0b 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.dialog-header {
+  background: rgba(245, 158, 11, 0.1) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  padding: 20px 24px !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
   direction: rtl;
   text-align: right;
+}
+
+.dialog-header i {
+  color: #f59e0b;
+  font-size: 24px;
+}
+
+.dialog-content {
+  padding: 24px !important;
+  position: relative;
+  z-index: 1;
+  direction: rtl;
+  text-align: right;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.dialog-content::-webkit-scrollbar {
+  display: none;
+}
+
+.dialog-content {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.dialog-content :deep(.v-field) {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px;
+  direction: rtl;
+  text-align: right;
+}
+
+.dialog-content :deep(.v-field__outline) {
+  color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.dialog-content :deep(.v-field--focused .v-field__outline) {
+  color: #f59e0b !important;
+}
+
+.dialog-content :deep(.v-label) {
+  color: rgba(255, 255, 255, 0.7) !important;
+  right: 12px !important;
+  left: auto !important;
+}
+
+.dialog-content :deep(.v-field__input) {
+  color: rgba(255, 255, 255, 0.95) !important;
+  text-align: right;
+  direction: rtl;
+}
+
+.dialog-content :deep(textarea) {
+  color: rgba(255, 255, 255, 0.95) !important;
+  text-align: right;
+  direction: rtl;
+}
+
+.dialog-content :deep(.v-input__details) {
+  direction: rtl;
+  text-align: right;
+}
+
+.dialog-actions {
+  padding: 16px 24px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 1;
+  direction: rtl;
+  text-align: right;
+}
+
+.dialog-btn {
+  padding: 10px 24px;
+  border-radius: 12px;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.dialog-btn.cancel {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dialog-btn.cancel:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.dialog-btn.save {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.dialog-btn.save:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+}
+
+.dialog-btn.save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dialog-btn.delete {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.dialog-btn.delete:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+}
+
+.dialog-btn.delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dialog-btn i {
+  font-size: 18px;
+}
+
+/* Delete Dialog */
+.delete-dialog::before {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 50%, #dc2626 100%) !important;
+}
+
+.delete-header {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
 }
 
 .v-card {
-  direction: rtl;
-  text-align: right;
+  border-radius: 12px;
 }
 
-.v-card-title {
-  text-align: right;
-  direction: rtl;
+/* Notes cell styling */
+.notes-cell {
+  display: inline-block;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
 }
 
-.v-card-text {
-  text-align: right;
-  direction: rtl;
+.notes-cell:hover {
+  color: #f59e0b;
 }
 
-.v-data-table {
-  direction: rtl;
-  text-align: right;
+.notes-empty {
+  color: rgba(255, 255, 255, 0.4);
 }
 
-.v-data-table th,
-.v-data-table td {
-  text-align: right;
-  direction: rtl;
+/* View Debtor Dialog Styles */
+.debtor-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 20px;
 }
 
-.v-text-field input {
-  text-align: right;
-  direction: rtl;
+.debtor-name {
+  font-size: 24px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0;
 }
 
-.v-select .v-field__input {
-  text-align: right;
-  direction: rtl;
+.debtor-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
-.v-btn {
-  direction: rtl;
+.debtor-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.v-icon {
-  transform: scaleX(-1);
+.debtor-stat-card.error-card {
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.1);
 }
 
-h1, h2, h3, h4, h5, h6, p, span, div {
-  text-align: right;
-  direction: rtl;
+.debtor-stat-card.success-card {
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: rgba(16, 185, 129, 0.1);
 }
 
-.v-list {
-  direction: rtl;
-  text-align: right;
+.debtor-stat-card.warning-card {
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  background: rgba(245, 158, 11, 0.1);
 }
 
-.v-dialog .v-card {
-  direction: rtl;
-  text-align: right;
-  border-radius: 16px !important;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2) !important;
-  background: white !important;
+.stat-icon-small {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
 }
 
-/* ========================================
-   إصلاح لون النصوص في نافذة إضافة مديون جديد
-   - تغيير لون النص من الأبيض إلى الأسود الداكن
-   - تحسين وضوح جميع النصوص في النافذة المنبثقة
-   - إصلاح التسميات والحقول والقوائم المنسدلة
-   ======================================== */
-
-/* إصلاح عنوان النافذة المنبثقة */
-.v-dialog .v-card-title {
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  border-radius: 16px 16px 0 0;
-  border-bottom: 1px solid #e2e8f0;
-  font-weight: 600 !important;
-  color: #1a1a1a !important;
-  text-align: center !important;
+.error-card .stat-icon-small {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
 }
 
-/* إصلاح النصوص في النافذة المنبثقة */
-.v-dialog .v-card-text,
-.v-dialog .v-card-text *,
-.v-dialog .v-form,
-.v-dialog .v-form * {
-  color: #1a1a1a !important;
+.success-card .stat-icon-small {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
 }
 
-/* إصلاح التسميات في النافذة المنبثقة */
-.v-dialog .v-label,
-.v-dialog .v-label *,
-.v-dialog .v-field__label,
-.v-dialog .v-field__label * {
-  color: #1a1a1a !important;
+.warning-card .stat-icon-small {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
 }
 
-/* إصلاح النصوص في الحقول */
-.v-dialog .v-text-field .v-field__input,
-.v-dialog .v-textarea .v-field__input,
-.v-dialog .v-select .v-field__input,
-.v-dialog .v-field__input,
-.v-dialog .v-field__input * {
-  color: #1a1a1a !important;
+.stat-content {
+  display: flex;
+  flex-direction: column;
 }
 
-/* إصلاح خلفية الحقول */
-.v-dialog .v-text-field .v-field,
-.v-dialog .v-textarea .v-field,
-.v-dialog .v-select .v-field {
-  background: white !important;
-  border: 1px solid #e2e8f0 !important;
+.stat-content .stat-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
 }
 
-/* إصلاح القوائم المنسدلة في النافذة المنبثقة */
-.v-dialog .v-menu__content,
-.v-dialog .v-menu__content *,
-.v-dialog .v-overlay__content,
-.v-dialog .v-overlay__content * {
-  color: #1a1a1a !important;
-  background: white !important;
+.stat-content .stat-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
 }
 
-.v-dialog .v-list,
-.v-dialog .v-list *,
-.v-dialog .v-list-item,
-.v-dialog .v-list-item *,
-.v-dialog .v-list-item-title,
-.v-dialog .v-list-item-subtitle {
-  color: #1a1a1a !important;
-  background: white !important;
+.payment-progress-section {
+  margin-bottom: 20px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
 }
 
-/* إصلاح النصوص في جميع عناصر النافذة */
-.v-dialog .v-card-text span,
-.v-dialog .v-card-text div,
-.v-dialog .v-card-text p,
-.v-dialog .v-card-text label {
-  color: #1a1a1a !important;
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
 }
 
-/* إصلاح رسائل التحقق */
-.v-dialog .v-messages,
-.v-dialog .v-messages *,
-.v-dialog .v-message {
-  color: #1a1a1a !important;
+.progress-percentage {
+  font-weight: 700;
+  color: #10b981;
 }
 
-/* إصلاح شامل لجميع النصوص في النافذة المنبثقة */
-.v-dialog *,
-.v-dialog * *,
-.v-dialog .v-card *,
-.v-dialog .v-card * * {
-  color: #1a1a1a !important;
+.info-section {
+  margin-bottom: 16px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
 }
 
-/* إصلاح خاص للقوائم المنسدلة */
-.v-dialog .v-select__menu,
-.v-dialog .v-select__menu *,
-.v-dialog .v-select__menu .v-list-item,
-.v-dialog .v-select__menu .v-list-item * {
-  color: #1a1a1a !important;
-  background: white !important;
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 12px 0;
 }
 
-/* إصلاح النصوص في جميع الحقول */
-.v-dialog .v-input,
-.v-dialog .v-input *,
-.v-dialog .v-text-field,
-.v-dialog .v-text-field *,
-.v-dialog .v-textarea,
-.v-dialog .v-textarea *,
-.v-dialog .v-select,
-.v-dialog .v-select * {
-  color: #1a1a1a !important;
+.section-title i {
+  color: #f59e0b;
+  font-size: 18px;
 }
 
-/* إصلاح خلفية النافذة المنبثقة */
-.v-dialog .v-card-text {
-  background: white !important;
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
 }
 
-/* إصلاح نهائي شامل لجميع النصوص في النافذة المنبثقة */
-.v-dialog .v-application,
-.v-dialog .v-application *,
-.v-dialog .v-application .v-card,
-.v-dialog .v-application .v-card * {
-  color: #1a1a1a !important;
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
 }
 
-/* إصلاح النصوص في جميع العناصر */
-.v-dialog .v-card-title span,
-.v-dialog .v-card-title *,
-.v-dialog .v-card-actions,
-.v-dialog .v-card-actions * {
-  color: #1a1a1a !important;
+.info-item > i {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 18px;
+  margin-top: 2px;
 }
 
-/* إصلاح النصوص في الأزرار (استثناء) */
-.v-dialog .v-btn {
-  color: white !important;
+.info-item > div {
+  display: flex;
+  flex-direction: column;
 }
 
-.v-dialog .v-btn .v-btn__content {
-  color: white !important;
+.info-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
 }
 
-/* إصلاح أزرار النافذة */
-.v-dialog .v-card-actions .v-btn {
-  border-radius: 8px !important;
-  text-transform: none !important;
-  font-weight: 500 !important;
+.info-value {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.95);
 }
 
-.v-dialog .v-card-actions .v-btn--variant-elevated {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+.due-date-display {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-/* إصلاح شامل لجميع النصوص في النافذة المنبثقة */
-.v-dialog .v-card-text .v-row,
-.v-dialog .v-card-text .v-row *,
-.v-dialog .v-card-text .v-col,
-.v-dialog .v-card-text .v-col * {
-  color: #1a1a1a !important;
+.due-date-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
 }
 
-/* إصلاح النصوص في جميع الحقول المحددة */
-.v-dialog .v-text-field[data-field="name"] *,
-.v-dialog .v-text-field[data-field="email"] *,
-.v-dialog .v-text-field[data-field="phone"] *,
-.v-dialog .v-text-field[data-field="amount"] *,
-.v-dialog .v-select[data-field="currency"] *,
-.v-dialog .v-text-field[data-field="dueDate"] *,
-.v-dialog .v-textarea[data-field="notes"] * {
-  color: #1a1a1a !important;
+.notes-text {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
 }
 
-/* إصلاح النصوص في جميع العناصر */
-.v-dialog .v-card-text .v-input,
-.v-dialog .v-card-text .v-input *,
-.v-dialog .v-card-text .v-field,
-.v-dialog .v-card-text .v-field * {
-  color: #1a1a1a !important;
-}
-
-.v-tabs {
-  direction: rtl;
-}
-
-.v-tab {
-  direction: rtl;
-  text-align: right;
-}
-/* ========================================
-   Animations - نفس صفحة المهندسين
-   ======================================== */
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .debtors-container {
+    padding: 24px;
   }
-  50% {
-    transform: translateY(-12px) rotate(2deg);
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .list-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .list-action-btn.primary {
+    width: 100%;
+    justify-content: center;
   }
 }
 
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
+@media (max-width: 768px) {
+  .debtors-container {
+    padding: 16px;
   }
-  50% {
-    transform: scale(1.05);
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .stat-card-content {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 16px;
+    padding: 16px;
+    text-align: right;
+  }
+
+  .stat-icon {
+    margin-bottom: 0;
+  }
+
+  .stat-info {
+    align-items: flex-start;
+  }
+
+  .stat-value {
+    font-size: 24px;
+  }
+
+  .debtors-list-header {
+    padding: 14px 18px;
+  }
+
+  .list-header-title {
+    font-size: 16px;
+  }
+
+  .list-action-btn {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
+  /* Dialog responsive */
+  :deep(.v-dialog) {
+    margin: 16px !important;
+  }
+
+  .dialog-header {
+    font-size: 18px !important;
+    padding: 16px 20px !important;
+  }
+
+  .dialog-content {
+    padding: 20px !important;
+  }
+
+  .dialog-actions {
+    padding: 14px 20px !important;
+  }
+
+  .dialog-btn {
+    padding: 8px 18px;
+    font-size: 13px;
+  }
+
+  /* Table responsive */
+  .v-data-table :deep(.v-table__wrapper) {
+    overflow-x: auto;
+  }
+
+  .v-data-table :deep(th),
+  .v-data-table :deep(td) {
+    white-space: nowrap;
+    font-size: 13px;
+    padding: 10px 12px !important;
+  }
+
+  /* View dialog stats */
+  .debtor-stats-row {
+    grid-template-columns: 1fr;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
   }
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
+@media (max-width: 480px) {
+  .debtors-container {
+    padding: 12px;
   }
-  100% {
-    background-position: 200% 0;
+
+  .stat-card {
+    border-radius: 12px !important;
+  }
+
+  .stat-icon {
+    width: 42px;
+    height: 42px;
+    font-size: 20px;
+  }
+
+  .stat-value {
+    font-size: 20px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+  }
+
+  .debtors-list-header {
+    padding: 12px 14px;
+    border-radius: 12px;
+  }
+
+  .list-header-title {
+    font-size: 14px;
+  }
+
+  .list-header-subtitle {
+    font-size: 11px;
+  }
+
+  .list-action-btn {
+    padding: 8px 12px;
+    font-size: 11px;
+    border-radius: 10px;
+  }
+
+  .list-action-btn i {
+    font-size: 14px;
+  }
+
+  /* Dialog full width */
+  :deep(.v-dialog) {
+    margin: 8px !important;
+  }
+
+  :deep(.v-dialog > .v-overlay__content) {
+    max-width: calc(100% - 16px) !important;
+  }
+
+  .dialog-header {
+    font-size: 16px !important;
+    padding: 14px 16px !important;
+  }
+
+  .dialog-header i {
+    font-size: 20px;
+  }
+
+  .dialog-content {
+    padding: 16px !important;
+    max-height: 55vh;
+  }
+
+  .dialog-actions {
+    padding: 12px 16px !important;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .dialog-btn {
+    padding: 8px 14px;
+    font-size: 12px;
+    flex: 1;
+    min-width: 100px;
+    justify-content: center;
+  }
+
+  /* Table horizontal scroll */
+  .v-data-table :deep(.v-table__wrapper) {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .v-data-table :deep(th),
+  .v-data-table :deep(td) {
+    font-size: 12px;
+    padding: 8px 10px !important;
+  }
+
+  /* View dialog */
+  .debtor-profile {
+    padding: 16px 0;
+  }
+
+  .debtor-name {
+    font-size: 20px;
+  }
+
+  .debtor-stat-card {
+    padding: 12px;
+  }
+
+  .stat-icon-small {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  .stat-content .stat-value {
+    font-size: 13px;
+  }
+
+  .payment-progress-section {
+    padding: 12px;
+  }
+
+  .info-section {
+    padding: 12px;
+  }
+
+  .section-title {
+    font-size: 13px;
+  }
+
+  .due-date-display {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .due-date-value {
+    font-size: 14px;
+  }
+
+  .notes-text {
+    font-size: 13px;
+  }
+
+  /* Notes cell */
+  .notes-cell {
+    max-width: 120px;
+    font-size: 12px;
   }
 }
 
-@keyframes slideInFromTop {
-  0% {
-    transform: translateY(-100px);
-    opacity: 0;
+@media (max-width: 360px) {
+  .debtors-container {
+    padding: 8px;
   }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
+
+  .stat-card-content {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .stat-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 18px;
+  }
+
+  .stat-value {
+    font-size: 18px;
+  }
+
+  .debtors-list-header {
+    padding: 10px 12px;
+  }
+
+  .list-header-title {
+    font-size: 13px;
+  }
+
+  .dialog-header {
+    font-size: 15px !important;
+    padding: 12px 14px !important;
+  }
+
+  .dialog-content {
+    padding: 12px !important;
+  }
+
+  .dialog-actions {
+    padding: 10px 12px !important;
+  }
+
+  .dialog-btn {
+    padding: 6px 12px;
+    font-size: 11px;
   }
 }
-
-@keyframes slideInFromLeft {
-  0% {
-    transform: translateX(-50px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideInFromRight {
-  0% {
-    transform: translateX(50px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes fadeInUp {
-  0% {
-    transform: translateY(30px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes sweep {
-  0% {
-    left: -100%;
-  }
-  100% {
-    left: 100%;
-  }
-}
-
-@keyframes diagonalShimmer {
-  0%, 100% {
-    transform: translateX(-100%) translateY(-100%) rotate(45deg);
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(100%) translateY(100%) rotate(45deg);
-    opacity: 0;
-  }
-}
-
-@keyframes gradientFlow {
-  0%, 100% {
-    background: linear-gradient(90deg, #ffffff 0%, #e3f2fd 50%, #bbdefb 100%);
-  }
-  50% {
-    background: linear-gradient(90deg, #bbdefb 0%, #ffffff 50%, #e3f2fd 100%);
-  }
-}
-
-@keyframes hoverPulse {
-  0% {
-    transform: translateY(-8px) scale(1.02);
-  }
-  50% {
-    transform: translateY(-12px) scale(1.05);
-  }
-  100% {
-    transform: translateY(-8px) scale(1.02);
-  }
-}
-
-@keyframes iconGlow {
-  0%, 100% {
-    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
-  }
-  50% {
-    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.6));
-  }
-}
-
-@keyframes iconBounce {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
-}
-
 </style>

@@ -1,481 +1,435 @@
 <template>
-  <div class="fill-height data-page">
-    <v-container fluid class="pa-6" style="padding: 0 20px !important;">
-      <!-- Header -->
-      <div class="engineers-header-card">
-        <div class="header-gradient-line"></div>
-        <div class="header-content">
-          <div class="header-right">
-            <div class="engineer-emoji">
-              <v-icon size="40" color="white">mdi-shield-account</v-icon>
-            </div>
-            <div class="header-text">
-              <h1 class="main-title">إدارة الأدوار والصلاحيات</h1>
-              <p class="subtitle">إنشاء وتعديل الأدوار وتعيين الصفحات والصلاحيات</p>
-            </div>
+  <div class="roles-container">
+    <!-- Page Header Component -->
+    <PageHeader
+      title="إدارة الأدوار والصلاحيات"
+      subtitle="إدارة وتنظيم جميع الأدوار وصلاحيات النظام"
+      badge="الأدوار"
+      badgeType="primary"
+      class="roles-header"
+    >
+      <template #actions>
+        <button class="page-action-btn secondary">
+          <i class="mdi mdi-export"></i>
+          تصدير
+        </button>
+        <button class="page-icon-btn">
+          <i class="mdi mdi-dots-vertical"></i>
+        </button>
+      </template>
+    </PageHeader>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <!-- Total Roles Card -->
+      <v-card class="stat-card" elevation="0">
+        <div class="stat-card-content">
+          <div class="stat-icon role">
+            <i class="mdi mdi-shield-account"></i>
           </div>
+          <div class="stat-info">
+            <div class="stat-label">إجمالي الأدوار</div>
+            <div class="stat-value">{{ totalRoles }}</div>
+          </div>
+        </div>
+      </v-card>
+
+      <!-- Total Pages Card -->
+      <v-card class="stat-card" elevation="0">
+        <div class="stat-card-content">
+          <div class="stat-icon page">
+            <i class="mdi mdi-file-document-multiple"></i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">إجمالي الصفحات</div>
+            <div class="stat-value">{{ totalPagesCount }}</div>
+          </div>
+        </div>
+      </v-card>
+    </div>
+
+    <!-- Roles List Header -->
+    <div class="roles-list-header">
+      <div class="list-header-content">
+        <div class="list-header-info">
+          <h2 class="list-header-title">
+            <i class="mdi mdi-format-list-bulleted"></i>
+            قائمة الأدوار
+          </h2>
+          <p class="list-header-subtitle">عرض جميع الأدوار والصلاحيات</p>
+        </div>
+        <div class="list-header-actions">
+          <button v-if="canCreate" class="list-action-btn primary" @click="openAddDialog">
+            <i class="mdi mdi-plus"></i>
+            إضافة دور جديد
+          </button>
         </div>
       </div>
+    </div>
 
-      <!-- Statistics -->
-      <v-row class="mb-8">
-        <v-col cols="12" sm="6" md="3">
-          <v-card class="modern-stat-card stat-card-primary" elevation="0">
-            <div class="stat-card-background"></div>
-            <div class="stat-card-content">
-              <div class="stat-icon-wrapper">
-                <v-icon size="48" class="stat-icon">mdi-shield-account</v-icon>
-              </div>
-              <div class="stat-info">
-                <h3 class="stat-value">{{ roles.length }}</h3>
-                <p class="stat-label">إجمالي الأدوار</p>
-              </div>
-            </div>
-          </v-card>
-        </v-col>
-        <v-col cols="12" sm="6" md="3">
-          <v-card class="modern-stat-card stat-card-success" elevation="0">
-            <div class="stat-card-background"></div>
-            <div class="stat-card-content">
-              <div class="stat-icon-wrapper">
-                <v-icon size="48" class="stat-icon">mdi-file-document-multiple</v-icon>
-              </div>
-              <div class="stat-info">
-                <h3 class="stat-value">{{ pages.length }}</h3>
-                <p class="stat-label">إجمالي الصفحات</p>
-              </div>
-            </div>
-          </v-card>
-        </v-col>
-      </v-row>
-
-      <!-- Roles Table -->
-      <v-card class="users-table" elevation="2">
-        <v-card-title class="table-title-header d-flex align-center justify-space-between">
+    <!-- Roles Table -->
+    <v-card class="mb-6">
+      <v-data-table
+        :headers="headers"
+        :items="roles"
+        :loading="loading"
+        class="elevation-1"
+      >
+        <template v-slot:item.name="{ item }">
           <div class="d-flex align-center">
-            <v-icon class="me-2" size="18" style="color: #ffffff !important;">mdi-table</v-icon>
-            <span class="title-text">قائمة الأدوار</span>
-          </div>
-          <div class="d-flex table-header-buttons" style="gap: 0.5rem;">
-            <v-btn
-              v-if="canCreate"
-              class="add-button add-user-btn btn-glow light-sweep smooth-transition"
-              @click="openAddRoleDialog"
-              elevation="2"
-              color="primary"
-              size="small"
-              style="background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important; height: 36px !important; font-size: 0.875rem !important;"
-            >
-              <v-icon class="me-2 icon-glow" size="18">mdi-plus</v-icon>
-              إضافة دور جديد
-            </v-btn>
-          </div>
-        </v-card-title>
-        <div class="table-spacer"></div>
-        <v-data-table
-          :headers="headers"
-          :items="roles"
-          :loading="loading"
-          class="elevation-0 users-data-table"
-          :items-per-page="-1"
-          hide-default-footer
-        >
-          <template v-slot:item.name="{ item }">
-            <div class="d-flex align-center">
-              <v-avatar size="36" color="primary" class="me-3">
-                <v-icon color="white" size="20">mdi-shield</v-icon>
-              </v-avatar>
-              <div>
-                <div class="font-weight-medium">{{ item.name }}</div>
-                <div class="text-caption text-grey">{{ item.description || 'لا يوجد وصف' }}</div>
-              </div>
-            </div>
-          </template>
-
-          <template v-slot:item.pagesCount="{ item }">
-            <v-chip color="info" size="small" variant="flat">
-              {{ getRolePagesCount(item.id) }} صفحة
-            </v-chip>
-          </template>
-
-          <template v-slot:item.createdAt="{ item }">
-            <span class="text-body-2">{{ formatDate(item.createdAt) }}</span>
-          </template>
-
-          <template v-slot:item.actions="{ item }">
-            <v-btn
-              icon="mdi-eye"
-              size="small"
-              variant="elevated"
-              class="view-btn me-1"
-              @click="viewRole(item)"
-            />
-            <v-btn
-              v-if="canUpdate"
-              icon="mdi-pencil"
-              size="small"
-              variant="elevated"
-              class="edit-btn me-1"
-              @click="editRole(item)"
-            />
-            <v-btn
-              v-if="canUpdate"
-              icon="mdi-key"
-              size="small"
-              variant="elevated"
-              class="reset-btn me-1"
-              @click="openPermissionsDialog(item)"
-              title="إدارة الصلاحيات"
-            />
-            <v-btn
-              v-if="canDelete"
-              icon="mdi-delete"
-              size="small"
-              variant="elevated"
-              class="delete-btn"
-              @click="confirmDeleteRole(item)"
-            />
-          </template>
-        </v-data-table>
-      </v-card>
-    </v-container>
-  </div>
-
-  <!-- Add/Edit Role Dialog -->
-  <v-dialog v-model="showRoleDialog" max-width="600px" persistent>
-    <v-card class="add-user-dialog" rounded="lg">
-      <v-card-title class="dialog-header pa-4">
-        <div class="d-flex align-center">
-          <v-avatar color="white" size="44" class="me-3">
-            <v-icon color="primary" size="26">{{ isEditing ? 'mdi-pencil' : 'mdi-plus' }}</v-icon>
-          </v-avatar>
-          <div>
-            <h3 class="text-h5 font-weight-bold text-white mb-0">
-              {{ isEditing ? 'تعديل الدور' : 'إضافة دور جديد' }}
-            </h3>
-            <span class="text-body-2 text-white-darken-1">
-              {{ isEditing ? 'تعديل بيانات الدور' : 'أدخل بيانات الدور الجديد' }}
-            </span>
-          </div>
-        </div>
-        <v-btn
-          icon="mdi-close"
-          variant="text"
-          size="default"
-          @click="closeRoleDialog"
-          class="close-btn"
-        />
-      </v-card-title>
-
-      <v-card-text class="dialog-content pa-8">
-        <v-form ref="roleForm" v-model="formValid" lazy-validation>
-          <v-row>
-            <v-col cols="12">
-              <v-text-field
-                v-model="roleData.name"
-                label="اسم الدور"
-                placeholder="مثال: مدير المشاريع"
-                :rules="[v => !!v || 'اسم الدور مطلوب']"
-                variant="outlined"
-                density="default"
-                prepend-inner-icon="mdi-shield"
-                color="primary"
-                bg-color="grey-lighten-5"
-                class="mb-2"
-              />
-            </v-col>
-            <v-col cols="12">
-              <v-textarea
-                v-model="roleData.description"
-                label="وصف الدور"
-                placeholder="وصف مختصر للدور وصلاحياته"
-                variant="outlined"
-                density="default"
-                prepend-inner-icon="mdi-text"
-                color="primary"
-                bg-color="grey-lighten-5"
-                rows="3"
-              />
-            </v-col>
-          </v-row>
-        </v-form>
-      </v-card-text>
-
-      <v-card-actions class="dialog-actions pa-5">
-        <v-spacer />
-        <v-btn variant="outlined" size="large" @click="closeRoleDialog" class="me-3 px-8">
-          إلغاء
-        </v-btn>
-        <v-btn
-          color="primary"
-          variant="elevated"
-          size="large"
-          @click="saveRole"
-          :loading="saving"
-          :disabled="!formValid"
-          class="px-8"
-          prepend-icon="mdi-check"
-        >
-          <v-icon start size="16">mdi-content-save</v-icon>
-          {{ isEditing ? 'حفظ التعديلات' : 'حفظ الدور' }}
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
-
-  <!-- View Role Dialog -->
-  <v-dialog v-model="showViewDialog" max-width="700px">
-    <v-card class="view-user-dialog">
-      <v-card-title class="dialog-header">
-        <div class="dialog-title">
-          <v-icon size="32" color="primary" class="me-3">mdi-shield-account</v-icon>
-          <h2>تفاصيل الدور</h2>
-        </div>
-        <v-btn icon="mdi-close" variant="text" @click="showViewDialog = false" class="close-btn" />
-      </v-card-title>
-
-      <v-divider />
-
-      <v-card-text v-if="selectedRole" class="pa-6">
-        <v-row>
-          <v-col cols="12" class="text-center mb-4">
-            <v-avatar size="80" color="primary">
-              <v-icon color="white" size="40">mdi-shield</v-icon>
+            <v-avatar size="36" color="primary" class="me-3">
+              <i class="mdi mdi-shield" style="color: white; font-size: 18px;"></i>
             </v-avatar>
-            <h3 class="mt-3">{{ selectedRole.name }}</h3>
-            <p class="text-caption">{{ selectedRole.description || 'لا يوجد وصف' }}</p>
-          </v-col>
-
-          <v-col cols="12">
-            <h4 class="mb-3">الصفحات والصلاحيات:</h4>
-            <v-list density="compact">
-              <v-list-item
-                v-for="rp in getViewRolePages()"
-                :key="rp.id"
-                class="mb-2"
-              >
-                <template v-slot:prepend>
-                  <v-icon color="primary">{{ rp.page?.icon || 'mdi-file' }}</v-icon>
-                </template>
-                <v-list-item-title>{{ rp.page?.name || 'صفحة غير معروفة' }}</v-list-item-title>
-                <v-list-item-subtitle>
-                  <v-chip
-                    v-for="perm in rp.permissions"
-                    :key="perm"
-                    size="x-small"
-                    :color="getPermissionColor(perm)"
-                    class="me-1"
-                  >
-                    {{ getPermissionText(perm) }}
-                  </v-chip>
-                </v-list-item-subtitle>
-              </v-list-item>
-              <v-list-item v-if="getViewRolePages().length === 0">
-                <v-list-item-title class="text-grey">لا توجد صفحات مخصصة لهذا الدور</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-col>
-        </v-row>
-      </v-card-text>
-
-      <v-divider />
-
-      <v-card-actions class="dialog-actions">
-        <v-spacer />
-        <v-btn color="primary" variant="elevated" @click="showViewDialog = false">
-          إغلاق
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
-
-  <!-- Permissions Dialog -->
-  <v-dialog v-model="showPermissionsDialog" max-width="900px" persistent>
-    <v-card class="add-user-dialog" rounded="lg">
-      <v-card-title class="dialog-header pa-4">
-        <div class="d-flex align-center">
-          <v-avatar color="white" size="44" class="me-3">
-            <v-icon color="primary" size="26">mdi-key</v-icon>
-          </v-avatar>
-          <div>
-            <h3 class="text-h5 font-weight-bold text-white mb-0">
-              إدارة صلاحيات الدور
-            </h3>
-            <span class="text-body-2 text-white-darken-1">
-              {{ selectedRole?.name }} - تعيين الصفحات والصلاحيات
-            </span>
+            <div>
+              <div class="font-weight-medium">{{ item.name }}</div>
+              <div class="text-caption text-grey">{{ item.description || 'لا يوجد وصف' }}</div>
+            </div>
           </div>
-        </div>
-        <v-btn
-          icon="mdi-close"
-          variant="text"
-          size="default"
-          @click="closePermissionsDialog"
-          class="close-btn"
-        />
-      </v-card-title>
-
-      <v-card-text class="dialog-content pa-6" style="max-height: 70vh; overflow-y: auto;">
-        <v-alert type="info" variant="tonal" class="mb-4">
-          حدد الصفحات التي يمكن لهذا الدور الوصول إليها، واختر الصلاحيات المناسبة لكل صفحة
-        </v-alert>
-
-        <v-expansion-panels variant="accordion" class="permissions-panels">
-          <v-expansion-panel
-            v-for="page in pages"
-            :key="page.id"
-            class="mb-2"
+        </template>
+        <template v-slot:item.pagesCount="{ item }">
+          <v-chip color="info" size="small" variant="flat">
+            {{ item.pagesCount }} صفحة
+          </v-chip>
+        </template>
+        <template v-slot:item.permissions="{ item }">
+          <v-chip
+            v-for="(permission, index) in item.permissions.slice(0, 3)"
+            :key="index"
+            size="small"
+            class="me-1"
+            color="primary"
           >
-            <v-expansion-panel-title class="page-panel-title">
-              <div class="d-flex align-center justify-space-between w-100">
-                <div class="d-flex align-center">
-                  <v-checkbox
-                    v-model="pageEnabled[page.id]"
-                    hide-details
-                    density="compact"
+            {{ permission }}
+          </v-chip>
+          <v-chip
+            v-if="item.permissions.length > 3"
+            size="small"
+            color="grey"
+          >
+            +{{ item.permissions.length - 3 }}
+          </v-chip>
+        </template>
+        <template v-slot:item.actions="{ item }">
+          <v-btn
+            size="small"
+            color="info"
+            variant="tonal"
+            icon
+            class="me-1"
+            @click="viewRole(item)"
+            title="عرض التفاصيل"
+          >
+            <i class="mdi mdi-eye"></i>
+          </v-btn>
+          <v-btn
+            v-if="canUpdate"
+            size="small"
+            color="primary"
+            variant="tonal"
+            icon
+            class="me-1"
+            @click="editRole(item)"
+            title="تعديل"
+          >
+            <i class="mdi mdi-pencil"></i>
+          </v-btn>
+          <v-btn
+            v-if="canUpdate"
+            size="small"
+            color="warning"
+            variant="tonal"
+            icon
+            class="me-1"
+            @click="openPermissionsDialog(item)"
+            title="إدارة الصلاحيات"
+          >
+            <i class="mdi mdi-key"></i>
+          </v-btn>
+          <v-btn
+            v-if="canDelete"
+            size="small"
+            color="error"
+            variant="tonal"
+            icon
+            @click="confirmDeleteRole(item)"
+            title="حذف"
+          >
+            <i class="mdi mdi-delete"></i>
+          </v-btn>
+        </template>
+      </v-data-table>
+    </v-card>
+
+    <!-- Add/Edit Role Dialog -->
+    <v-dialog v-model="showAddDialog" max-width="700" persistent>
+      <v-card class="role-dialog">
+        <v-card-title class="dialog-header">
+          <i :class="editingRole ? 'mdi mdi-pencil' : 'mdi mdi-shield-plus'"></i>
+          {{ editingRole ? 'تعديل الدور' : 'إضافة دور جديد' }}
+        </v-card-title>
+
+        <v-card-text class="dialog-content">
+          <v-form ref="roleForm" v-model="formValid">
+            <v-row>
+              <!-- اسم الدور -->
+              <v-col cols="12">
+                <v-text-field
+                  v-model="newRole.name"
+                  label="اسم الدور"
+                  variant="outlined"
+                  density="comfortable"
+                  :rules="[v => !!v || 'اسم الدور مطلوب']"
+                  required
+                  autofocus
+                ></v-text-field>
+              </v-col>
+
+              <!-- وصف الدور -->
+              <v-col cols="12">
+                <v-textarea
+                  v-model="newRole.description"
+                  label="وصف الدور"
+                  variant="outlined"
+                  density="comfortable"
+                  rows="3"
+                ></v-textarea>
+              </v-col>
+            </v-row>
+          </v-form>
+        </v-card-text>
+
+        <v-card-actions class="dialog-actions">
+          <v-spacer></v-spacer>
+          <button class="dialog-btn cancel" @click="closeDialog">
+            <i class="mdi mdi-close"></i>
+            إلغاء
+          </button>
+          <button class="dialog-btn save" @click="saveRole" :disabled="!formValid || saving">
+            <i class="mdi mdi-content-save"></i>
+            {{ saving ? 'جاري الحفظ...' : 'حفظ' }}
+          </button>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- View Role Dialog -->
+    <v-dialog v-model="showViewDialog" max-width="700">
+      <v-card class="role-dialog">
+        <v-card-title class="dialog-header">
+          <i class="mdi mdi-shield-account"></i>
+          تفاصيل الدور
+        </v-card-title>
+
+        <v-card-text v-if="selectedRole" class="dialog-content">
+          <div class="text-center mb-4">
+            <v-avatar size="80" color="primary">
+              <i class="mdi mdi-shield" style="color: white; font-size: 40px;"></i>
+            </v-avatar>
+            <h3 class="mt-3" style="color: rgba(255,255,255,0.95);">{{ selectedRole.name }}</h3>
+            <p class="text-caption" style="color: rgba(255,255,255,0.7);">{{ selectedRole.description || 'لا يوجد وصف' }}</p>
+          </div>
+
+          <h4 class="mb-3" style="color: rgba(255,255,255,0.9);">الصفحات والصلاحيات:</h4>
+          <v-list density="compact" bg-color="transparent">
+            <v-list-item
+              v-for="rp in viewRolePages"
+              :key="rp.id"
+              class="mb-2 role-page-item"
+            >
+              <template v-slot:prepend>
+                <i :class="rp.page?.icon || 'mdi mdi-file'" style="color: #8b5cf6; font-size: 24px; margin-left: 12px;"></i>
+              </template>
+              <v-list-item-title style="color: rgba(255,255,255,0.95);">{{ rp.page?.name || 'صفحة غير معروفة' }}</v-list-item-title>
+              <v-list-item-subtitle>
+                <v-chip
+                  v-for="perm in rp.permissions"
+                  :key="perm"
+                  size="x-small"
+                  :color="getPermissionColor(perm)"
+                  class="me-1"
+                >
+                  {{ getPermissionText(perm) }}
+                </v-chip>
+              </v-list-item-subtitle>
+            </v-list-item>
+            <v-list-item v-if="viewRolePages.length === 0">
+              <v-list-item-title style="color: rgba(255,255,255,0.5);">لا توجد صفحات مخصصة لهذا الدور</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-card-text>
+
+        <v-card-actions class="dialog-actions">
+          <v-spacer></v-spacer>
+          <button class="dialog-btn save" @click="showViewDialog = false">
+            <i class="mdi mdi-close"></i>
+            إغلاق
+          </button>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Permissions Dialog -->
+    <v-dialog v-model="showPermissionsDialog" max-width="900" persistent>
+      <v-card class="role-dialog">
+        <v-card-title class="dialog-header">
+          <i class="mdi mdi-key"></i>
+          إدارة صلاحيات الدور - {{ selectedRole?.name }}
+        </v-card-title>
+
+        <v-card-text class="dialog-content" style="max-height: 70vh; overflow-y: auto;">
+          <v-alert type="info" variant="tonal" class="mb-4">
+            حدد الصفحات التي يمكن لهذا الدور الوصول إليها، واختر الصلاحيات المناسبة لكل صفحة
+          </v-alert>
+
+          <v-expansion-panels variant="accordion" class="permissions-panels">
+            <v-expansion-panel
+              v-for="page in allPages"
+              :key="page.id"
+              class="mb-2"
+            >
+              <v-expansion-panel-title class="page-panel-title">
+                <div class="d-flex align-center justify-space-between w-100">
+                  <div class="d-flex align-center">
+                    <v-checkbox
+                      v-model="pageEnabled[page.id]"
+                      hide-details
+                      density="compact"
+                      color="primary"
+                      @click.stop
+                      @change="togglePagePermissions(page.id)"
+                    />
+                    <i :class="page.icon || 'mdi mdi-file'" style="color: #8b5cf6; font-size: 24px; margin: 0 8px;"></i>
+                    <div>
+                      <span class="font-weight-bold" style="color: rgba(255,255,255,0.95);">{{ page.name }}</span>
+                      <span class="text-caption ms-2" style="color: rgba(255,255,255,0.5);">({{ page.route }})</span>
+                    </div>
+                  </div>
+                  <v-chip
+                    v-if="getSelectedPermissionsCount(page.id) > 0"
                     color="primary"
-                    @click.stop
-                    @change="togglePagePermissions(page.id)"
-                  />
-                  <v-icon class="me-2" size="24" color="primary">{{ page.icon || 'mdi-file' }}</v-icon>
-                  <div>
-                    <span class="font-weight-bold">{{ page.name }}</span>
-                    <span class="text-caption text-grey ms-2">({{ page.route }})</span>
+                    size="small"
+                    class="me-4"
+                  >
+                    {{ getSelectedPermissionsCount(page.id) }} صلاحية
+                  </v-chip>
+                </div>
+              </v-expansion-panel-title>
+              <v-expansion-panel-text class="page-panel-content">
+                <div class="permissions-grid">
+                  <div
+                    v-for="perm in getPermissionsForPage(page)"
+                    :key="perm.value"
+                    class="permission-checkbox"
+                  >
+                    <v-checkbox-btn
+                      v-model="pagePermissions[page.id]"
+                      :value="perm.value"
+                      :color="perm.color"
+                    />
+                    <span class="permission-label">{{ perm.label }}</span>
                   </div>
                 </div>
-                <v-chip
-                  v-if="getSelectedPermissionsCount(page.id) > 0"
-                  color="primary"
-                  size="small"
-                  class="me-4"
-                >
-                  {{ getSelectedPermissionsCount(page.id) }} صلاحية
-                </v-chip>
-              </div>
-            </v-expansion-panel-title>
-            <v-expansion-panel-text class="page-panel-content">
-              <div class="permissions-grid">
-                <div
-                  v-for="perm in getPermissionsForPage(page)"
-                  :key="perm.value"
-                  class="permission-checkbox"
-                >
-                  <v-checkbox-btn
-                    v-model="pagePermissions[page.id]"
-                    :value="perm.value"
-                    :color="perm.color"
-                  />
-                  <span class="permission-label">{{ perm.label }}</span>
-                </div>
-              </div>
-            </v-expansion-panel-text>
-          </v-expansion-panel>
-        </v-expansion-panels>
-      </v-card-text>
+              </v-expansion-panel-text>
+            </v-expansion-panel>
+          </v-expansion-panels>
+        </v-card-text>
 
-      <v-card-actions class="dialog-actions pa-5">
-        <v-spacer />
-        <v-btn variant="outlined" size="large" @click="closePermissionsDialog" class="me-3 px-8">
-          إلغاء
-        </v-btn>
-        <v-btn
-          color="primary"
-          variant="elevated"
-          size="large"
-          @click="savePermissions"
-          :loading="savingPermissions"
-          class="px-8"
-          prepend-icon="mdi-check"
-        >
-          <v-icon start size="16">mdi-content-save</v-icon>
-          حفظ الصلاحيات
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+        <v-card-actions class="dialog-actions">
+          <v-spacer></v-spacer>
+          <button class="dialog-btn cancel" @click="closePermissionsDialog">
+            <i class="mdi mdi-close"></i>
+            إلغاء
+          </button>
+          <button class="dialog-btn save" @click="savePermissions" :disabled="savingPermissions">
+            <i class="mdi mdi-content-save"></i>
+            {{ savingPermissions ? 'جاري الحفظ...' : 'حفظ الصلاحيات' }}
+          </button>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
-  <!-- Delete Confirmation Dialog -->
-  <v-dialog v-model="showDeleteDialog" max-width="500px">
-    <v-card class="delete-confirm-dialog">
-      <v-card-title class="dialog-header">
-        <div class="dialog-title">
-          <v-icon size="32" color="error" class="me-3">mdi-delete-alert</v-icon>
-          <h2>تأكيد الحذف</h2>
-        </div>
-        <v-btn icon="mdi-close" variant="text" @click="showDeleteDialog = false" class="close-btn" />
-      </v-card-title>
+    <!-- Delete Confirmation Dialog -->
+    <v-dialog v-model="showDeleteDialog" max-width="500">
+      <v-card class="role-dialog">
+        <v-card-title class="dialog-header" style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;">
+          <i class="mdi mdi-delete-alert"></i>
+          تأكيد الحذف
+        </v-card-title>
 
-      <v-divider />
-
-      <v-card-text v-if="selectedRole" class="pa-6">
-        <div class="text-center mb-4">
-          <v-avatar size="60" color="error">
-            <v-icon color="white" size="30">mdi-shield</v-icon>
+        <v-card-text v-if="selectedRole" class="dialog-content text-center">
+          <v-avatar size="60" color="error" class="mb-3">
+            <i class="mdi mdi-shield" style="color: white; font-size: 30px;"></i>
           </v-avatar>
-          <h4 class="mt-2">{{ selectedRole.name }}</h4>
-        </div>
+          <h4 style="color: rgba(255,255,255,0.95);">{{ selectedRole.name }}</h4>
 
-        <v-alert type="error" variant="tonal" class="mb-4">
-          تحذير: هذا الإجراء لا يمكن التراجع عنه!
-        </v-alert>
+          <v-alert type="error" variant="tonal" class="my-4">
+            تحذير: هذا الإجراء لا يمكن التراجع عنه!
+          </v-alert>
 
-        <p class="text-body-2 text-center">
-          هل أنت متأكد من حذف هذا الدور نهائياً؟
-        </p>
-      </v-card-text>
+          <p style="color: rgba(255,255,255,0.7);">
+            هل أنت متأكد من حذف هذا الدور نهائياً؟
+          </p>
+        </v-card-text>
 
-      <v-divider />
+        <v-card-actions class="dialog-actions">
+          <v-spacer></v-spacer>
+          <button class="dialog-btn cancel" @click="showDeleteDialog = false">
+            إلغاء
+          </button>
+          <button class="dialog-btn delete" @click="deleteRoleItem" :disabled="deleting">
+            <i class="mdi mdi-delete"></i>
+            {{ deleting ? 'جاري الحذف...' : 'حذف نهائي' }}
+          </button>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
-      <v-card-actions class="dialog-actions">
-        <v-spacer />
-        <v-btn color="grey" variant="outlined" @click="showDeleteDialog = false" class="me-2">
-          إلغاء
-        </v-btn>
-        <v-btn color="error" variant="elevated" @click="deleteRole" :loading="deleting">
-          حذف نهائي
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
-
-  <!-- Snackbar -->
-  <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="3000">
-    {{ snackbar.message }}
-  </v-snackbar>
+  </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
-import { listRoles, createRole, updateRole, deleteRole as deleteRoleApi } from '@/api/roles'
+import { ref, reactive, computed, onMounted } from 'vue'
+import PageHeader from '../components/PageHeader.vue'
+import { listRoles, createRole, updateRole, deleteRole as apiDeleteRole } from '@/api/roles'
 import { listPages } from '@/api/pages'
-import { listRolePages, getRolePagesByRoleId, bulkUpdateRolePages } from '@/api/rolePages'
+import { getRolePagesByRoleId, bulkUpdateRolePages, listRolePages } from '@/api/rolePages'
 import { usePermissions } from '@/composables/usePermissions'
+import { useToast } from '@/composables/useToast'
+import { DEFAULT_PAGE, DEFAULT_LIMIT } from '@/constants/pagination'
 
-// Permissions
+const { success, error: showError } = useToast()
+
 const { canCreate, canUpdate, canDelete } = usePermissions('/roles')
 
-// Data
 const loading = ref(false)
-const roles = ref([])
-const pages = ref([])
-const rolePages = ref([])
-
-// Dialog states
-const showRoleDialog = ref(false)
-const showViewDialog = ref(false)
-const showPermissionsDialog = ref(false)
-const showDeleteDialog = ref(false)
-const isEditing = ref(false)
-const selectedRole = ref(null)
-
-// Form data
-const roleForm = ref(null)
-const formValid = ref(false)
 const saving = ref(false)
 const deleting = ref(false)
 const savingPermissions = ref(false)
 
-const roleData = reactive({
+// Dialog states
+const showAddDialog = ref(false)
+const showViewDialog = ref(false)
+const showPermissionsDialog = ref(false)
+const showDeleteDialog = ref(false)
+
+const formValid = ref(false)
+const roleForm = ref(null)
+const editingRole = ref(null)
+const selectedRole = ref(null)
+
+// Pagination
+const page = ref(DEFAULT_PAGE)
+const limit = ref(DEFAULT_LIMIT)
+const total = ref(0)
+
+// Data
+const roles = ref([])
+const allPages = ref([])
+const allRolePages = ref([])
+const viewRolePages = ref([])
+
+// New role data
+const newRole = ref({
   name: '',
   description: ''
 })
@@ -507,106 +461,48 @@ const getPermissionsForPage = (page) => {
   return [...basePermissions, ...extra]
 }
 
-// Snackbar
-const snackbar = reactive({
-  show: false,
-  message: '',
-  color: 'success'
-})
-
 // Table headers
-const headers = ref([
-  { title: 'الدور', key: 'name', sortable: true },
-  { title: 'عدد الصفحات', key: 'pagesCount', sortable: false },
-  { title: 'تاريخ الإنشاء', key: 'createdAt', sortable: true },
-  { title: 'الإجراءات', key: 'actions', sortable: false }
-])
+const headers = [
+  { title: 'الدور', key: 'name', align: 'start' },
+  { title: 'عدد الصفحات', key: 'pagesCount', align: 'center' },
+  { title: 'الصلاحيات', key: 'permissions', align: 'center' },
+  { title: 'الإجراءات', key: 'actions', align: 'center', sortable: false }
+]
 
-// Fetch data
-async function fetchData() {
-  loading.value = true
-  try {
-    const [rolesData, pagesData, rolePagesData] = await Promise.all([
-      listRoles(),
-      listPages(),
-      listRolePages()
-    ])
-    roles.value = Array.isArray(rolesData) ? rolesData : rolesData?.data || []
-    pages.value = Array.isArray(pagesData) ? pagesData : pagesData?.data || []
-    rolePages.value = Array.isArray(rolePagesData) ? rolePagesData : rolePagesData?.data || []
-  } catch (error) {
-    console.error('Failed to fetch data:', error)
-    showSnackbar('فشل في تحميل البيانات', 'error')
-  } finally {
-    loading.value = false
-  }
-}
-
-// Get count of pages for a role
-function getRolePagesCount(roleId) {
-  return rolePages.value.filter(rp => rp.roleId === roleId).length
-}
-
-// Parse permissions from string to array
-function parsePermissions(permissions) {
-  if (!permissions) return []
-  if (Array.isArray(permissions)) return permissions
-  try {
-    return JSON.parse(permissions)
-  } catch {
-    return []
-  }
-}
-
-// Get role pages for view dialog
-function getViewRolePages() {
-  if (!selectedRole.value) return []
-  const rps = rolePages.value.filter(rp => rp.roleId === selectedRole.value.id)
-  return rps.map(rp => ({
-    ...rp,
-    permissions: parsePermissions(rp.permissions),
-    page: pages.value.find(p => p.id === rp.pageId)
-  }))
-}
-
-// Format date
-function formatDate(date) {
-  if (!date) return '-'
-  return new Date(date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  })
-}
+// Computed properties
+const totalRoles = computed(() => total.value || roles.value.length)
+const totalPagesCount = computed(() => allPages.value.length)
 
 // Permission helpers
-function getPermissionColor(perm) {
+const getPermissionColor = (perm) => {
   const colors = {
     read: 'success',
     create: 'primary',
     update: 'warning',
-    delete: 'error'
+    delete: 'error',
+    updatePassword: 'purple'
   }
   return colors[perm] || 'grey'
 }
 
-function getPermissionText(perm) {
+const getPermissionText = (perm) => {
   const texts = {
     read: 'قراءة',
     create: 'إنشاء',
     update: 'تعديل',
-    delete: 'حذف'
+    delete: 'حذف',
+    updatePassword: 'تغيير كلمة المرور'
   }
   return texts[perm] || perm
 }
 
 // Toggle all permissions for a page
-function togglePagePermissions(pageId) {
+const togglePagePermissions = (pageId) => {
+  const page = allPages.value.find(p => p.id === pageId)
   if (pageEnabled[pageId]) {
-    // Enable with read permission by default
-    if (!pagePermissions[pageId] || pagePermissions[pageId].length === 0) {
-      pagePermissions[pageId] = ['read']
-    }
+    // Enable - select ALL permissions for this page
+    const allPerms = getPermissionsForPage(page || { route: '' })
+    pagePermissions[pageId] = allPerms.map(p => p.value)
   } else {
     // Disable - clear all permissions
     pagePermissions[pageId] = []
@@ -614,44 +510,114 @@ function togglePagePermissions(pageId) {
 }
 
 // Get count of selected permissions for a page
-function getSelectedPermissionsCount(pageId) {
+const getSelectedPermissionsCount = (pageId) => {
   return pagePermissions[pageId]?.length || 0
 }
 
+// Get pages count for a role
+const getRolePagesCount = (roleId) => {
+  return allRolePages.value.filter(rp => rp.roleId === roleId).length
+}
+
+// Fetch all data
+const fetchData = async () => {
+  loading.value = true
+  try {
+    const [rolesResponse, pagesResponse, rolePagesResponse] = await Promise.all([
+      listRoles({ page: page.value, limit: limit.value }),
+      listPages({ limit: 100 }),
+      listRolePages({ limit: 500 })
+    ])
+
+    if (rolesResponse.success) {
+      const rolesData = rolesResponse.data.data || []
+      roles.value = rolesData.map(r => ({
+        id: r.id,
+        name: r.name,
+        description: r.description || '',
+        pagesCount: 0,
+        permissions: []
+      }))
+      total.value = rolesResponse.data.total || 0
+    }
+
+    if (pagesResponse.success) {
+      // listPages returns items, not data
+      allPages.value = pagesResponse.data.items || pagesResponse.data.data || []
+    }
+
+    if (rolePagesResponse.success) {
+      // Handle paginated response - data.data contains the array
+      const rpData = rolePagesResponse.data
+      allRolePages.value = Array.isArray(rpData) ? rpData : (rpData?.data || [])
+
+      // Update roles with pages count and permissions
+      roles.value.forEach(role => {
+        const rolePagesList = allRolePages.value.filter(rp => rp.roleId === role.id)
+        role.pagesCount = rolePagesList.length
+
+        // Get page names as permissions display
+        role.permissions = rolePagesList.map(rp => {
+          const page = allPages.value.find(p => p.id === rp.pageId)
+          return page ? page.name : ''
+        }).filter(name => name)
+      })
+    }
+  } catch (error) {
+    console.error('Error fetching data:', error)
+    showError('حدث خطأ في جلب البيانات')
+  } finally {
+    loading.value = false
+  }
+}
+
 // Dialog functions
-function openAddRoleDialog() {
-  isEditing.value = false
-  roleData.name = ''
-  roleData.description = ''
-  showRoleDialog.value = true
+const openAddDialog = () => {
+  editingRole.value = null
+  newRole.value = { name: '', description: '' }
+  showAddDialog.value = true
 }
 
-function editRole(role) {
-  isEditing.value = true
+const editRole = (role) => {
+  editingRole.value = role
+  newRole.value = {
+    name: role.name,
+    description: role.description
+  }
+  showAddDialog.value = true
+}
+
+const closeDialog = () => {
+  showAddDialog.value = false
+  editingRole.value = null
+  newRole.value = { name: '', description: '' }
+}
+
+const viewRole = async (role) => {
   selectedRole.value = role
-  roleData.name = role.name
-  roleData.description = role.description || ''
-  showRoleDialog.value = true
-}
 
-function closeRoleDialog() {
-  showRoleDialog.value = false
-  roleData.name = ''
-  roleData.description = ''
-  selectedRole.value = null
-}
+  // Fetch role pages for this role
+  try {
+    viewRolePages.value = await getRolePagesByRoleId(role.id)
+    // Add page info to each role page
+    viewRolePages.value = viewRolePages.value.map(rp => ({
+      ...rp,
+      page: allPages.value.find(p => p.id === rp.pageId)
+    }))
+  } catch (error) {
+    console.error('Error fetching role pages:', error)
+    viewRolePages.value = []
+  }
 
-function viewRole(role) {
-  selectedRole.value = role
   showViewDialog.value = true
 }
 
-function confirmDeleteRole(role) {
+const confirmDeleteRole = (role) => {
   selectedRole.value = role
   showDeleteDialog.value = true
 }
 
-async function openPermissionsDialog(role) {
+const openPermissionsDialog = async (role) => {
   selectedRole.value = role
 
   // Reset permissions and pageEnabled
@@ -663,7 +629,7 @@ async function openPermissionsDialog(role) {
   })
 
   // Initialize all pages with empty arrays
-  pages.value.forEach(page => {
+  allPages.value.forEach(page => {
     pagePermissions[page.id] = []
     pageEnabled[page.id] = false
   })
@@ -684,53 +650,67 @@ async function openPermissionsDialog(role) {
   showPermissionsDialog.value = true
 }
 
-function closePermissionsDialog() {
+const closePermissionsDialog = () => {
   showPermissionsDialog.value = false
   selectedRole.value = null
 }
 
 // Save functions
-async function saveRole() {
-  if (!roleForm.value?.validate()) return
+const saveRole = async () => {
+  if (!formValid.value) return
 
   saving.value = true
   try {
-    if (isEditing.value) {
-      await updateRole(selectedRole.value.id, roleData)
-      showSnackbar('تم تحديث الدور بنجاح', 'success')
-    } else {
-      await createRole(roleData)
-      showSnackbar('تم إنشاء الدور بنجاح', 'success')
+    const roleData = {
+      name: newRole.value.name,
+      description: newRole.value.description
     }
-    closeRoleDialog()
-    await fetchData()
+
+    let response
+    if (editingRole.value) {
+      response = await updateRole(editingRole.value.id, roleData)
+    } else {
+      response = await createRole(roleData)
+    }
+
+    if (response.success) {
+      success(editingRole.value ? 'تم تحديث الدور بنجاح' : 'تم إضافة الدور بنجاح')
+      closeDialog()
+      await fetchData()
+    } else {
+      showError(response.message || 'حدث خطأ')
+    }
   } catch (error) {
-    console.error('Failed to save role:', error)
-    showSnackbar('فشل في حفظ الدور', 'error')
+    console.error('Error saving role:', error)
+    showError('حدث خطأ في حفظ الدور')
   } finally {
     saving.value = false
   }
 }
 
-async function deleteRole() {
+const deleteRoleItem = async () => {
   if (!selectedRole.value) return
 
   deleting.value = true
   try {
-    await deleteRoleApi(selectedRole.value.id)
-    showSnackbar('تم حذف الدور بنجاح', 'success')
-    showDeleteDialog.value = false
-    selectedRole.value = null
-    await fetchData()
+    const response = await apiDeleteRole(selectedRole.value.id)
+    if (response.success) {
+      success('تم حذف الدور بنجاح')
+      showDeleteDialog.value = false
+      selectedRole.value = null
+      await fetchData()
+    } else {
+      showError(response.message || 'حدث خطأ في الحذف')
+    }
   } catch (error) {
-    console.error('Failed to delete role:', error)
-    showSnackbar('فشل في حذف الدور', 'error')
+    console.error('Error deleting role:', error)
+    showError('حدث خطأ في حذف الدور')
   } finally {
     deleting.value = false
   }
 }
 
-async function savePermissions() {
+const savePermissions = async () => {
   if (!selectedRole.value) return
 
   savingPermissions.value = true
@@ -746,388 +726,406 @@ async function savePermissions() {
       }
     })
 
-    await bulkUpdateRolePages(selectedRole.value.id, permissionsToSave)
-    showSnackbar('تم حفظ الصلاحيات بنجاح', 'success')
-    closePermissionsDialog()
-    await fetchData()
+    const response = await bulkUpdateRolePages(selectedRole.value.id, permissionsToSave)
+    if (response.success) {
+      success('تم حفظ الصلاحيات بنجاح')
+      closePermissionsDialog()
+      await fetchData()
+    } else {
+      showError(response.message || 'حدث خطأ في حفظ الصلاحيات')
+    }
   } catch (error) {
     console.error('Failed to save permissions:', error)
-    showSnackbar('فشل في حفظ الصلاحيات', 'error')
+    showError('حدث خطأ في حفظ الصلاحيات')
   } finally {
     savingPermissions.value = false
   }
 }
 
-function showSnackbar(message, color = 'success') {
-  snackbar.message = message
-  snackbar.color = color
-  snackbar.show = true
-}
-
-// Mount
+// Initialize
 onMounted(() => {
   fetchData()
 })
 </script>
 
 <style scoped>
-.data-page {
-  background: #f5f5f5;
-  min-height: 100vh;
+.roles-container {
+  padding: 32px;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
-.engineers-header-card {
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
-  border-radius: 16px;
-  padding: 24px;
+/* Roles Header Custom Color */
+.roles-header {
+  background: linear-gradient(135deg, #018790 0%, #005461 100%) !important;
+}
+
+.roles-header::before {
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 50%, #06b6d4 100%) !important;
+}
+
+/* Statistics Grid - Only 2 cards */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
   margin-bottom: 24px;
-  position: relative;
-  overflow: hidden;
 }
 
-.header-gradient-line {
+.stat-card {
+  border-radius: 16px !important;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%) !important;
+  border: 2px solid transparent !important;
+  position: relative;
+}
+
+.stat-card::before {
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #64b5f6, #1976d2, #64b5f6);
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.engineer-emoji {
-  width: 64px;
-  height: 64px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.main-title {
-  color: white;
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0;
-}
-
-.subtitle {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.875rem;
-  margin: 0;
-}
-
-.modern-stat-card {
+  bottom: 0;
   border-radius: 16px;
-  position: relative;
-  overflow: hidden;
+  padding: 2px;
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 50%, #14b8a6 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
-.stat-card-primary {
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
-}
-
-.stat-card-success {
-  background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);
+.stat-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 12px 24px rgba(6, 182, 212, 0.3),
+              0 0 40px rgba(16, 185, 129, 0.2) !important;
 }
 
 .stat-card-content {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  padding: 20px;
+  justify-content: center;
+  padding: 20px 16px;
+  text-align: center;
   position: relative;
   z-index: 1;
 }
 
-.stat-icon-wrapper {
-  margin-left: 16px;
-}
-
-.stat-icon {
-  color: rgba(255, 255, 255, 0.9);
-}
-
 .stat-info {
-  color: white;
-}
-
-.stat-value {
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 }
 
 .stat-label {
-  font-size: 0.875rem;
-  opacity: 0.9;
-  margin: 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 2px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
 }
 
-.table-title-header {
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+.stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 4px;
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: white;
-  padding: 16px 20px;
+  font-size: 24px;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%) !important;
+  box-shadow: 0 6px 16px rgba(6, 182, 212, 0.4);
 }
 
-.title-text {
-  font-weight: 600;
+.stat-icon.role {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
 }
 
-.table-spacer {
-  height: 8px;
+.stat-icon.page {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%) !important;
+  box-shadow: 0 6px 16px rgba(6, 182, 212, 0.4);
 }
 
-.view-btn {
-  background: #e3f2fd !important;
-  color: #1976d2 !important;
+/* Roles List Header */
+.roles-list-header {
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%);
+  border-radius: 16px;
+  margin-bottom: 24px;
+  padding: 16px 24px;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
 }
 
-.edit-btn {
-  background: #e8f5e9 !important;
-  color: #43a047 !important;
+.roles-list-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 16px;
+  padding: 2px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #8b5cf6 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
-.reset-btn {
-  background: #fff3e0 !important;
-  color: #f57c00 !important;
-}
-
-.delete-btn {
-  background: #ffebee !important;
-  color: #e53935 !important;
-}
-
-.dialog-header {
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
-  color: white;
+.list-header-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
-.dialog-title {
+.list-header-info {
+  flex: 1;
+}
+
+.list-header-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0 0 2px 0;
   display: flex;
   align-items: center;
+  gap: 8px;
 }
 
-.close-btn {
-  color: white !important;
+.list-header-title i {
+  color: #8b5cf6;
+  font-size: 20px;
+}
+
+.list-header-subtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+.list-header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.list-action-btn {
+  padding: 8px 18px;
+  border-radius: 12px;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.list-action-btn.primary {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.list-action-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+}
+
+.list-action-btn i {
+  font-size: 16px;
+}
+
+/* Role Dialog */
+.role-dialog {
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%) !important;
+  border: 2px solid transparent !important;
+  position: relative;
+  overflow: hidden;
+  direction: rtl;
+  text-align: right;
+}
+
+.role-dialog::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 16px;
+  padding: 2px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #8b5cf6 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.dialog-header {
+  background: rgba(139, 92, 246, 0.1) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  padding: 20px 24px !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+  direction: rtl;
+  text-align: right;
+}
+
+.dialog-header i {
+  color: #8b5cf6;
+  font-size: 24px;
+}
+
+.dialog-content {
+  padding: 24px !important;
+  position: relative;
+  z-index: 1;
+  direction: rtl;
+  text-align: right;
+}
+
+.dialog-content :deep(.v-field) {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px;
+  direction: rtl;
+  text-align: right;
+}
+
+.dialog-content :deep(.v-field__outline) {
+  color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.dialog-content :deep(.v-field--focused .v-field__outline) {
+  color: #8b5cf6 !important;
+}
+
+.dialog-content :deep(.v-label) {
+  color: rgba(255, 255, 255, 0.7) !important;
+  right: 12px !important;
+  left: auto !important;
+}
+
+.dialog-content :deep(.v-field__input) {
+  color: rgba(255, 255, 255, 0.95) !important;
+  text-align: right;
+  direction: rtl;
+}
+
+.dialog-content :deep(textarea) {
+  color: rgba(255, 255, 255, 0.95) !important;
+  text-align: right;
+  direction: rtl;
+}
+
+.dialog-content :deep(.v-input__details) {
+  direction: rtl;
+  text-align: right;
 }
 
 .dialog-actions {
-  background: #f5f5f5;
+  padding: 16px 24px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 1;
+  direction: rtl;
+  text-align: right;
 }
 
-/* تحسين قراءة النصوص في الجدول */
-.users-data-table :deep(.v-data-table__tr td) {
-  color: #1a1a1a !important;
-  font-weight: 500 !important;
+.dialog-btn {
+  padding: 10px 24px;
+  border-radius: 12px;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
 }
 
-.users-data-table :deep(.font-weight-medium) {
-  color: #1a1a1a !important;
-  font-weight: 600 !important;
+.dialog-btn.cancel {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.users-data-table :deep(.text-caption) {
-  color: #555555 !important;
+.dialog-btn.cancel:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
 }
 
-.users-data-table :deep(.text-grey) {
-  color: #666666 !important;
+.dialog-btn.save {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
-.users-data-table :deep(.text-body-2) {
-  color: #333333 !important;
+.dialog-btn.save:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
 }
 
-/* View Role Dialog - Light Theme Fix */
-.view-user-dialog {
-  background: #ffffff !important;
+.dialog-btn.save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-.view-user-dialog .v-card-text {
-  background: #ffffff !important;
+.dialog-btn.delete {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
 }
 
-.view-user-dialog .v-list {
-  background: #ffffff !important;
+.dialog-btn.delete:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
 }
 
-.view-user-dialog .v-list-item {
-  background: #ffffff !important;
+.dialog-btn.delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-.view-user-dialog h3,
-.view-user-dialog h4 {
-  color: #1a1a1a !important;
+.dialog-btn i {
+  font-size: 18px;
 }
 
-.view-user-dialog p {
-  color: #333333 !important;
-}
-
-.view-user-dialog .text-caption {
-  color: #555555 !important;
-}
-
-.view-user-dialog .v-list-item-title {
-  color: #1a1a1a !important;
-  font-weight: 600 !important;
-}
-
-.view-user-dialog .v-list-item-subtitle {
-  color: #444444 !important;
-}
-
-/* Delete Confirmation Dialog - Light Theme Fix */
-.delete-confirm-dialog {
-  background: #ffffff !important;
-}
-
-.delete-confirm-dialog .v-card-text {
-  background: #ffffff !important;
-}
-
-.delete-confirm-dialog h4 {
-  color: #1a1a1a !important;
-}
-
-.delete-confirm-dialog p {
-  color: #333333 !important;
-}
-
-.delete-confirm-dialog .text-caption {
-  color: #555555 !important;
-}
-
-/* Add/Edit Role Dialog - Light Theme Fix */
-.add-user-dialog {
-  background: #ffffff !important;
-}
-
-.add-user-dialog .v-card-text {
-  background: #ffffff !important;
-}
-
-/* تحسين قراءة النصوص في جدول الصلاحيات */
-.v-table tbody td {
-  color: #1a1a1a !important;
-  background: #ffffff !important;
-}
-
-.v-table tbody tr:nth-child(even) td {
-  background: #fafafa !important;
-}
-
-.v-table tbody tr:hover td {
-  background: #f0f7ff !important;
-}
-
-.v-table thead th {
-  color: #1a1a1a !important;
-  font-weight: 700 !important;
-  background: #e3f2fd !important;
-  border-bottom: 2px solid #1976d2 !important;
-}
-
-/* تحسين مظهر الـ checkboxes في جدول الصلاحيات */
-.v-table :deep(.v-checkbox) {
-  display: flex;
-  justify-content: center;
-}
-
-.v-table :deep(.v-selection-control) {
-  min-height: 40px !important;
-}
-
-.v-table :deep(.v-selection-control__wrapper) {
-  width: 24px !important;
-  height: 24px !important;
-}
-
-.v-table :deep(.v-selection-control__input) {
-  width: 24px !important;
-  height: 24px !important;
-}
-
-.v-table :deep(.v-selection-control__input > .v-icon) {
-  font-size: 24px !important;
-}
-
-/* ألوان الـ checkboxes */
-.v-table :deep(.v-checkbox .v-selection-control--dirty .v-icon) {
-  opacity: 1 !important;
-}
-
-.v-table :deep(.v-checkbox:not(.v-selection-control--dirty) .v-icon) {
-  color: #9e9e9e !important;
-}
-
-/* تحسين ظهور اسم الصفحة والأيقونة */
-.v-table tbody td .v-icon {
-  color: #1976d2 !important;
-}
-
-.v-table tbody td span {
-  color: #1a1a1a !important;
-  font-weight: 500 !important;
-}
-
-.v-table tbody td .text-caption {
-  color: #666666 !important;
-  font-weight: 400 !important;
-}
-
-/* تحسين قراءة النصوص في نموذج الإضافة/التعديل */
-.add-user-dialog .dialog-content {
-  background: #ffffff !important;
-}
-
-.add-user-dialog :deep(.v-field__input) {
-  color: #1a1a1a !important;
-  font-weight: 500 !important;
-}
-
-.add-user-dialog :deep(.v-field input) {
-  color: #1a1a1a !important;
-}
-
-.add-user-dialog :deep(.v-field textarea) {
-  color: #1a1a1a !important;
-}
-
-.add-user-dialog :deep(.v-label) {
-  color: #333333 !important;
-  font-weight: 600 !important;
-}
-
-.add-user-dialog :deep(.v-field--focused .v-label) {
-  color: #1976d2 !important;
-}
-
-.add-user-dialog :deep(.v-select__selection-text) {
-  color: #1a1a1a !important;
-}
-
-.add-user-dialog :deep(.v-field__input input::placeholder) {
-  color: #888888 !important;
-}
-
-.add-user-dialog :deep(.v-list-item-title) {
-  color: #1a1a1a !important;
+/* Role Page Item */
+.role-page-item {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-radius: 8px;
+  margin-bottom: 8px;
 }
 
 /* Permissions Panels Styles */
@@ -1135,32 +1133,24 @@ onMounted(() => {
   border-radius: 12px;
 }
 
-.permissions-panels .v-expansion-panel {
-  background: #ffffff !important;
-  border: 1px solid #e0e0e0;
+.permissions-panels :deep(.v-expansion-panel) {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px !important;
   margin-bottom: 8px;
 }
 
-.permissions-panels .v-expansion-panel--active {
-  border-color: #1976d2;
+.permissions-panels :deep(.v-expansion-panel--active) {
+  border-color: #8b5cf6;
 }
 
 .permissions-panels :deep(.v-expansion-panel-title) {
-  background: #fafafa !important;
-  color: #1a1a1a !important;
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.95) !important;
 }
 
 .permissions-panels :deep(.v-expansion-panel-title__overlay) {
   background: transparent !important;
-}
-
-.permissions-panels :deep(.v-expansion-panel-title .font-weight-bold) {
-  color: #1a1a1a !important;
-}
-
-.permissions-panels :deep(.v-expansion-panel-title .text-caption) {
-  color: #666666 !important;
 }
 
 .page-panel-title {
@@ -1168,12 +1158,12 @@ onMounted(() => {
 }
 
 .page-panel-content {
-  background: #ffffff !important;
+  background: rgba(255, 255, 255, 0.02) !important;
   padding: 16px !important;
 }
 
 .permissions-panels :deep(.v-expansion-panel-text__wrapper) {
-  background: #ffffff !important;
+  background: transparent !important;
   padding: 16px !important;
 }
 
@@ -1184,10 +1174,10 @@ onMounted(() => {
 }
 
 .permission-checkbox {
-  background: #f5f5f5 !important;
+  background: rgba(255, 255, 255, 0.05) !important;
   border-radius: 8px;
   padding: 8px 16px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.2s;
   margin: 0 !important;
   display: flex;
@@ -1199,12 +1189,12 @@ onMounted(() => {
 }
 
 .permission-checkbox:hover {
-  border-color: #1976d2;
-  background: #e3f2fd !important;
+  border-color: #8b5cf6;
+  background: rgba(139, 92, 246, 0.1) !important;
 }
 
 .permission-checkbox .permission-label {
-  color: #1a1a1a !important;
+  color: rgba(255, 255, 255, 0.9) !important;
   font-weight: 500;
   font-size: 14px;
   flex: 1;
@@ -1213,5 +1203,230 @@ onMounted(() => {
 .permission-checkbox :deep(.v-selection-control) {
   min-height: unset !important;
   flex: none;
+}
+
+.v-card {
+  border-radius: 12px;
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .roles-container {
+    padding: 24px;
+  }
+
+  .list-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .list-header-actions {
+    width: 100%;
+  }
+
+  .list-action-btn.primary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .permissions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .roles-container {
+    padding: 16px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .stat-card-content {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 16px;
+    padding: 16px;
+    text-align: right;
+  }
+
+  .stat-icon {
+    margin-bottom: 0;
+  }
+
+  .stat-info {
+    align-items: flex-start;
+  }
+
+  .roles-list-header {
+    padding: 12px 16px;
+  }
+
+  .list-header-title {
+    font-size: 16px;
+  }
+
+  .list-action-btn {
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+
+  /* Dialog responsive */
+  .role-dialog .dialog-header {
+    padding: 16px !important;
+    font-size: 18px !important;
+  }
+
+  .role-dialog .dialog-content {
+    padding: 16px !important;
+  }
+
+  .role-dialog .dialog-actions {
+    padding: 12px 16px !important;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .dialog-btn {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  /* Table responsive */
+  .v-data-table {
+    font-size: 13px;
+  }
+
+  .v-data-table :deep(th),
+  .v-data-table :deep(td) {
+    padding: 8px 12px !important;
+  }
+
+  .permissions-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .permission-checkbox {
+    padding: 6px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .roles-container {
+    padding: 12px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+  }
+
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+
+  .roles-list-header {
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .list-header-title {
+    font-size: 14px;
+  }
+
+  .list-header-subtitle {
+    font-size: 11px;
+  }
+
+  .list-action-btn {
+    padding: 8px 12px;
+    font-size: 11px;
+    border-radius: 10px;
+  }
+
+  /* Dialog responsive - full width on mobile */
+  :deep(.v-dialog) {
+    margin: 8px !important;
+  }
+
+  .role-dialog {
+    border-radius: 12px !important;
+  }
+
+  .role-dialog .dialog-header {
+    padding: 12px 16px !important;
+    font-size: 16px !important;
+    gap: 8px;
+  }
+
+  .role-dialog .dialog-header i {
+    font-size: 20px;
+  }
+
+  .role-dialog .dialog-content {
+    padding: 12px !important;
+    max-height: 50vh;
+  }
+
+  .dialog-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+    flex: 1;
+  }
+
+  /* Table overflow handling */
+  .v-card.mb-6 {
+    overflow-x: auto;
+  }
+
+  .v-data-table :deep(.v-table__wrapper) {
+    overflow-x: auto;
+  }
+
+  .v-data-table :deep(th),
+  .v-data-table :deep(td) {
+    padding: 6px 8px !important;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .permissions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .permission-checkbox {
+    padding: 8px 12px;
+  }
+
+  .permission-label {
+    font-size: 13px;
+  }
+
+  /* Expansion panels mobile */
+  .permissions-panels :deep(.v-expansion-panel-title) {
+    padding: 12px !important;
+    min-height: 48px !important;
+  }
+
+  .page-panel-title {
+    min-height: 48px;
+  }
+
+  .page-panel-title .d-flex.align-center > div span.font-weight-bold {
+    font-size: 14px;
+  }
+
+  .page-panel-title .d-flex.align-center > div span.text-caption {
+    display: none;
+  }
 }
 </style>

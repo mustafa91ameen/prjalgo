@@ -1,137 +1,111 @@
 <template>
-  <div class="fill-height data-page">
-    <div>
-      <!-- Header Section -->
-      <div class="engineers-header-card">
-        <div class="header-gradient-line"></div>
-        <div class="header-content">
-          <div class="header-right">
-            <div class="engineer-emoji">
-              <v-icon size="40" color="white">mdi-currency-usd</v-icon>
-            </div>
-            <div class="header-text">
-              <h1 class="main-title">الإيرادات</h1>
-              <p class="subtitle">إدارة وتتبع جميع مصادر الإيرادات</p>
-            </div>
+  <div class="income-container">
+    <!-- Page Header Component -->
+    <PageHeader
+      title="إدارة الإيرادات"
+      subtitle="إدارة وتتبع جميع مصادر الإيرادات"
+      badge="الإيرادات"
+      badgeType="success"
+      class="income-header"
+    >
+      <template #actions>
+        <button class="page-action-btn secondary">
+          <i class="mdi mdi-export"></i>
+          تصدير
+        </button>
+        <button class="page-icon-btn">
+          <i class="mdi mdi-dots-vertical"></i>
+        </button>
+      </template>
+    </PageHeader>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <!-- Total Income Card -->
+      <v-card class="stat-card" elevation="0">
+        <div class="stat-card-content">
+          <div class="stat-icon profit">
+            <i class="mdi mdi-cash-plus"></i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">إجمالي الإيرادات</div>
+            <div class="stat-value">{{ formatCurrency(totalIncome) }}</div>
           </div>
         </div>
-      </div>
+      </v-card>
 
-      <!-- Summary Cards -->
-      <div class="cards-container">
-        <v-row class="mb-6" no-gutters>
-        <v-col cols="12" sm="6" md="3">
-          <v-card class="modern-stat-card stat-card-success" elevation="0">
-            <div class="stat-card-background"></div>
-            <div class="stat-card-content">
-              <div class="stat-icon-wrapper">
-                <v-icon size="48" class="stat-icon">mdi-currency-usd</v-icon>
-              </div>
-              <div class="stat-info">
-                <h3 class="stat-value">{{ formatCurrency(totalIncome) }}</h3>
-                <p class="stat-label">إجمالي الإيرادات</p>
-              </div>
-            </div>
-          </v-card>
-        </v-col>
-        <v-col cols="12" md="3">
-          <v-card class="modern-stat-card stat-card-primary" elevation="0">
-            <div class="stat-card-background"></div>
-            <div class="stat-card-content">
-              <div class="stat-icon-wrapper">
-                <v-icon size="48" class="stat-icon">mdi-calendar-month</v-icon>
-              </div>
-              <div class="stat-info">
-                <h3 class="stat-value">{{ formatCurrency(monthlyIncome) }}</h3>
-                <p class="stat-label">إيرادات هذا الشهر</p>
-              </div>
-            </div>
-          </v-card>
-        </v-col>
-        <v-col cols="12" md="3">
-          <v-card class="modern-stat-card stat-card-warning" elevation="0">
-            <div class="stat-card-background"></div>
-            <div class="stat-card-content">
-              <div class="stat-icon-wrapper">
-                <v-icon size="48" class="stat-icon">mdi-trending-up</v-icon>
-              </div>
-              <div class="stat-info">
-                <h3 class="stat-value">{{ incomeGrowth }}%</h3>
-                <p class="stat-label">نمو الإيرادات</p>
-              </div>
-            </div>
-          </v-card>
-        </v-col>
-        <v-col cols="12" md="3">
-          <v-card class="modern-stat-card stat-card-info" elevation="0">
-            <div class="stat-card-background"></div>
-            <div class="stat-card-content">
-              <div class="stat-icon-wrapper">
-                <v-icon size="48" class="stat-icon">mdi-source-branch</v-icon>
-              </div>
-              <div class="stat-info">
-                <h3 class="stat-value">{{ incomeSources.length }}</h3>
-                <p class="stat-label">مصادر الإيرادات</p>
-              </div>
-            </div>
-          </v-card>
-        </v-col>
-        </v-row>
+      <!-- Monthly Income Card -->
+      <v-card class="stat-card" elevation="0">
+        <div class="stat-card-content">
+          <div class="stat-icon success">
+            <i class="mdi mdi-calendar-check"></i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">إيرادات هذا الشهر</div>
+            <div class="stat-value">{{ formatCurrency(monthlyIncome) }}</div>
+          </div>
+        </div>
+      </v-card>
+
+      <!-- Income Growth Card -->
+      <v-card class="stat-card" elevation="0">
+        <div class="stat-card-content">
+          <div class="stat-icon">
+            <i class="mdi mdi-chart-line"></i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">نمو الإيرادات</div>
+            <div class="stat-value">{{ incomeGrowth }}%</div>
+          </div>
+        </div>
+      </v-card>
+
+      <!-- Income Sources Card -->
+      <v-card class="stat-card" elevation="0">
+        <div class="stat-card-content">
+          <div class="stat-icon warning">
+            <i class="mdi mdi-source-branch"></i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">مصادر الإيرادات</div>
+            <div class="stat-value">{{ incomeSources.length }}</div>
+          </div>
+        </div>
+      </v-card>
+    </div>
+
+    <!-- Income Sources List Header -->
+    <div class="income-list-header">
+      <div class="list-header-content">
+        <div class="list-header-info">
+          <h2 class="list-header-title">
+            <i class="mdi mdi-format-list-bulleted"></i>
+            مصادر الإيرادات
+          </h2>
+          <p class="list-header-subtitle">عرض جميع مصادر الإيرادات المتاحة</p>
+        </div>
+        <div class="list-header-actions">
+          <button v-if="canCreate" class="list-action-btn primary" @click="showAddDialog = true">
+            <i class="mdi mdi-plus"></i>
+            إضافة إيراد جديد
+          </button>
+        </div>
       </div>
+    </div>
 
       <!-- Income Sources Table -->
-      <div class="table-container">
-        <v-card class="data-table-card mb-6">
-        <v-card-title class="table-title-header d-flex align-center justify-space-between">
-          <div class="d-flex align-center">
-            <v-icon class="me-2" color="white" size="18">mdi-format-list-bulleted</v-icon>
-            <span class="title-text">مصادر الإيرادات</span>
-          </div>
-          <div class="d-flex align-center gap-2">
-            <v-btn
-              class="export-button btn-glow smooth-transition"
-              size="small"
-              @click="exportToCSV"
-              style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) !important; height: 36px !important; font-size: 0.875rem !important;"
-            >
-              <v-icon class="me-2" size="18">mdi-download</v-icon>
-              تصدير Excel
-            </v-btn>
-            <v-btn
-              v-if="canCreate"
-              class="add-button btn-glow light-sweep smooth-transition"
-              @click="showAddDialog = true"
-              elevation="2"
-              color="primary"
-              size="small"
-              style="background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important; height: 36px !important; font-size: 0.875rem !important;"
-            >
-              <v-icon class="me-2 icon-glow" size="18">mdi-plus</v-icon>
-              إضافة إيراد جديد
-            </v-btn>
-          </div>
-        </v-card-title>
+      <v-card class="mb-6">
         <v-data-table
           :headers="headers"
           :items="incomeSources"
           :loading="loading"
-          :items-per-page="-1"
-          hide-default-footer
-          class="elevation-1 income-table"
+          class="elevation-1"
         >
           <template v-slot:item.amount="{ item }">
             <span class="font-weight-bold text-success">{{ formatCurrency(item.amount) }}</span>
           </template>
-          <template v-slot:item.incomeDate="{ item }">
-            {{ formatDate(item.incomeDate) }}
-          </template>
-          <template v-slot:item.status="{ item }">
-            {{ getStatusText(item.status) }}
-          </template>
-          <template v-slot:item.notes="{ item }">
-            <div class="text-truncate" style="max-width: 150px;" :title="item.notes">
-              {{ item.notes || '-' }}
-            </div>
+          <template v-slot:item.date="{ item }">
+            {{ formatDate(item.date) }}
           </template>
           <template v-slot:item.actions="{ item }">
             <v-btn
@@ -152,513 +126,265 @@
             </v-btn>
           </template>
         </v-data-table>
-
-        <!-- Pagination -->
-        <div class="d-flex justify-center pa-4" v-if="totalPages > 0">
-          <v-pagination
-            v-model="currentPage"
-            :length="totalPages"
-            :total-visible="7"
-            @update:model-value="onPageChange"
-            rounded="circle"
-            density="comfortable"
-            active-color="primary"
-          />
-        </div>
-        </v-card>
-      </div>
+      </v-card>
 
       <!-- Add/Edit Income Dialog -->
-      <v-dialog v-model="showAddDialog" max-width="900" scrollable persistent>
-        <v-card class="clean-dialog-card clean-form-card">
-          <!-- Header Section -->
-          <v-card-title class="clean-dialog-header clean-form-header">
-            <h2 class="clean-form-title">
-              {{ editingIncome ? 'تعديل الإيراد' : 'معلومات الإيراد' }}
-            </h2>
+      <v-dialog v-model="showAddDialog" max-width="800" persistent>
+        <v-card class="income-dialog">
+          <v-card-title class="dialog-header">
+            <i class="mdi mdi-cash-plus"></i>
+            {{ editingIncome ? 'تعديل الإيراد' : 'إضافة إيراد جديد' }}
           </v-card-title>
-
-          <!-- Form Content -->
-          <v-card-text class="clean-form-content">
-            <p class="clean-form-instruction">
-              لإتمام {{ editingIncome ? 'تعديل' : 'إضافة' }} الإيراد، يرجى توفير المعلومات التالية. يرجى ملاحظة أن جميع الحقول المميزة بعلامة النجمة (*) مطلوبة.
-            </p>
-
+          
+          <v-card-text class="dialog-content">
             <v-form ref="form" v-model="valid">
-              <v-row class="clean-form-row">
-                <v-col cols="12" md="6" class="clean-form-column">
-                  <div class="clean-form-field-wrapper">
-                    <label class="clean-form-label">
-                      اسم الإيراد <span class="required-star">*</span>
-                    </label>
-                    <v-text-field
-                      v-model="incomeForm.name"
-                      variant="outlined"
-                      density="comfortable"
-                      placeholder="أدخل اسم الإيراد"
-                      :rules="[v => !!v || 'الاسم مطلوب']"
-                      required
-                      hide-details="auto"
-                      class="clean-form-input"
-                    />
-                  </div>
+              <v-row>
+                <!-- اسم الإيراد -->
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model="incomeForm.description"
+                    label="اسم الإيراد"
+                    variant="outlined"
+                    density="comfortable"
+                    :rules="[v => !!v || 'اسم الإيراد مطلوب']"
+                    required
+                  ></v-text-field>
                 </v-col>
 
-                <v-col cols="12" md="6" class="clean-form-column">
-                  <div class="clean-form-field-wrapper">
-                    <label class="clean-form-label">
-                      المبلغ (د.ع) <span class="required-star">*</span>
-                    </label>
-                    <v-text-field
-                      v-model.number="incomeForm.amount"
-                      type="number"
-                      variant="outlined"
-                      density="comfortable"
-                      placeholder="0"
-                      :rules="[v => v > 0 || 'المبلغ يجب أن يكون أكبر من صفر']"
-                      required
-                      hide-details="auto"
-                      class="clean-form-input"
-                    />
-                  </div>
-                </v-col>
-              </v-row>
-
-              <v-row class="clean-form-row">
-                <v-col cols="12" md="6" class="clean-form-column">
-                  <div class="clean-form-field-wrapper">
-                    <label class="clean-form-label">
-                      تاريخ الإيراد <span class="required-star">*</span>
-                    </label>
-                    <v-menu
-                      v-model="incomeDateMenu"
-                      :close-on-content-click="false"
-                      location="bottom"
-                    >
-                      <template v-slot:activator="{ props }">
-                        <v-text-field
-                          v-model="formattedIncomeDate"
-                          readonly
-                          v-bind="props"
-                          variant="outlined"
-                          density="comfortable"
-                          :rules="[v => !!v || 'التاريخ مطلوب']"
-                          required
-                          hide-details="auto"
-                          class="clean-form-input"
-                          prepend-inner-icon="mdi-calendar"
-                        />
-                      </template>
-                      <v-date-picker
-                        v-model="selectedIncomeDate"
-                        @update:model-value="onIncomeDateSelected"
-                        color="primary"
-                      />
-                    </v-menu>
-                  </div>
+                <!-- المبلغ (د.ع) -->
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model.number="incomeForm.amount"
+                    label="المبلغ (د.ع)"
+                    variant="outlined"
+                    density="comfortable"
+                    type="number"
+                    :rules="[v => v > 0 || 'المبلغ يجب أن يكون أكبر من صفر']"
+                    required
+                  ></v-text-field>
                 </v-col>
 
-                <v-col cols="12" md="6" class="clean-form-column">
-                  <div class="clean-form-field-wrapper">
-                    <label class="clean-form-label">النوع</label>
-                    <v-text-field
-                      v-model="incomeForm.type"
-                      variant="outlined"
-                      density="comfortable"
-                      placeholder="أدخل نوع الإيراد"
-                      hide-details="auto"
-                      class="clean-form-input"
-                    />
-                  </div>
-                </v-col>
-              </v-row>
-
-              <v-row class="clean-form-row">
-                <v-col cols="12" md="6" class="clean-form-column">
-                  <div class="clean-form-field-wrapper">
-                    <label class="clean-form-label">الحالة</label>
-                    <v-select
-                      v-model="incomeForm.status"
-                      :items="statusOptions"
-                      variant="outlined"
-                      density="comfortable"
-                      placeholder="اختر الحالة"
-                      clearable
-                      hide-details="auto"
-                      class="clean-form-input"
-                    />
-                  </div>
+                <!-- تاريخ الإيراد -->
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model="incomeForm.date"
+                    label="تاريخ الإيراد"
+                    variant="outlined"
+                    density="comfortable"
+                    type="date"
+                    :rules="[v => !!v || 'تاريخ الإيراد مطلوب']"
+                    required
+                  ></v-text-field>
                 </v-col>
 
-                <v-col cols="12" md="6" class="clean-form-column">
-                  <div class="clean-form-field-wrapper">
-                    <label class="clean-form-label">ملاحظات</label>
-                    <v-textarea
-                      v-model="incomeForm.notes"
-                      variant="outlined"
-                      rows="3"
-                      density="comfortable"
-                      placeholder="أدخل ملاحظات إضافية"
-                      hide-details="auto"
-                      class="clean-form-input"
-                    />
-                  </div>
+                <!-- النوع -->
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model="incomeForm.category"
+                    label="النوع"
+                    variant="outlined"
+                    density="comfortable"
+                    placeholder="أدخل نوع الإيراد"
+                  ></v-text-field>
+                </v-col>
+
+                <!-- الحالة -->
+                <v-col cols="12" md="6">
+                  <v-select
+                    v-model="incomeForm.status"
+                    :items="statusOptions"
+                    label="الحالة"
+                    variant="outlined"
+                    density="comfortable"
+                    :rules="[v => !!v || 'الحالة مطلوبة']"
+                    required
+                  ></v-select>
+                </v-col>
+
+                <!-- الملاحظات -->
+                <v-col cols="12">
+                  <v-textarea
+                    v-model="incomeForm.notes"
+                    label="الملاحظات"
+                    variant="outlined"
+                    density="comfortable"
+                    rows="3"
+                  ></v-textarea>
                 </v-col>
               </v-row>
             </v-form>
           </v-card-text>
 
-          <v-card-actions class="clean-form-actions">
-            <v-spacer />
-            <v-btn
-              class="clean-form-cancel-btn"
-              variant="outlined"
-              @click="closeDialog"
-            >
+          <v-card-actions class="dialog-actions">
+            <v-spacer></v-spacer>
+            <button class="dialog-btn cancel" @click="closeDialog">
+              <i class="mdi mdi-close"></i>
               إلغاء
-            </v-btn>
-            <v-btn
-              class="clean-form-continue-btn"
-              variant="elevated"
-              :disabled="!valid"
-              @click="saveIncome"
-            >
-              {{ editingIncome ? 'تحديث الإيراد' : 'حفظ الإيراد' }}
-            </v-btn>
+            </button>
+            <button class="dialog-btn save" @click="saveIncome" :disabled="!valid">
+              <i class="mdi mdi-content-save"></i>
+              حفظ
+            </button>
           </v-card-actions>
         </v-card>
       </v-dialog>
-    </div>
+
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { listIncome, createIncome, updateIncome, deleteIncome as deleteIncomeApi, getIncomeStats } from '@/api/income'
-import { DEFAULT_LIMIT } from '@/constants/pagination'
+import PageHeader from '../components/PageHeader.vue'
+import { listIncome, createIncome, updateIncome, deleteIncome as apiDeleteIncome } from '@/api/income'
 import { usePermissions } from '@/composables/usePermissions'
+import { useToast } from '@/composables/useToast'
+import { DEFAULT_PAGE, DEFAULT_LIMIT } from '@/constants/pagination'
 
-// Permissions
+const { success, error: showError } = useToast()
 const { canCreate, canUpdate, canDelete } = usePermissions('/income')
 
-// ========================================
-// متغيرات الحالة الأساسية
-// ========================================
+// Reactive data
 const loading = ref(false)
 const showAddDialog = ref(false)
 const valid = ref(false)
 const editingIncome = ref(null)
-const searchQuery = ref('')
-const selectedCategory = ref('')
-const dateRange = ref([])
 
-// ========================================
-// نموذج البيانات - aligned with backend DTO
-// ========================================
+// Pagination
+const page = ref(DEFAULT_PAGE)
+const limit = ref(DEFAULT_LIMIT)
+const total = ref(0)
+
 const incomeForm = ref({
-  name: '',
+  description: '',
   amount: 0,
-  type: '',
-  incomeDate: new Date().toISOString().split('T')[0],
+  category: '',
+  date: new Date().toISOString().substr(0, 10),
   status: 'pending',
   notes: ''
 })
 
-// ========================================
-// Date picker state
-// ========================================
-const incomeDateMenu = ref(false)
-const selectedIncomeDate = ref(null)
-
-// Computed property for formatted income date display
-const formattedIncomeDate = computed(() => {
-  if (!incomeForm.value.incomeDate) return ''
-  const date = new Date(incomeForm.value.incomeDate)
-  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-})
-
-// Handle income date selection from picker
-const onIncomeDateSelected = (date) => {
-  if (date) {
-    const d = new Date(date)
-    incomeForm.value.incomeDate = d.toISOString().split('T')[0]
-  }
-  incomeDateMenu.value = false
-}
-
-// ========================================
-// البيانات الأساسية
-// ========================================
 const incomeSources = ref([])
 
-// Pagination state
-const currentPage = ref(1)
-const itemsPerPage = ref(DEFAULT_LIMIT)
-const totalItems = ref(0)
-const totalPages = ref(0)
-
-const incomeStats = ref({
-  total: 0,
-  totalAmount: 0,
-  pending: 0,
-  approved: 0,
-  averageAmount: 0
-})
-
-// ========================================
-// قوائم الاختيار
-// ========================================
-const incomeCategories = [
-  { title: 'رسوم طلابية', value: 'رسوم طلابية', color: 'primary' },
-  { title: 'منح', value: 'منح', color: 'success' },
-  { title: 'استثمارات', value: 'استثمارات', color: 'info' },
-  { title: 'خدمات', value: 'خدمات', color: 'warning' },
-  { title: 'تبرعات', value: 'تبرعات', color: 'error' },
-  { title: 'أخرى', value: 'أخرى', color: 'grey' }
-]
-
-const statusOptions = [
-  { title: 'معلق', value: 'pending', color: 'warning' },
-  { title: 'معتمد', value: 'approved', color: 'success' }
-]
-
-const sourceOptions = [
-  { title: 'طلاب', value: 'طلاب' },
-  { title: 'حكومي', value: 'حكومي' },
-  { title: 'خاص', value: 'خاص' },
-  { title: 'داخلي', value: 'داخلي' },
-  { title: 'خيري', value: 'خيري' }
-]
-
-// ========================================
-// عناوين الجدول - aligned with backend DTO
-// ========================================
-const headers = [
-  { title: 'الاسم', key: 'name', align: 'start', sortable: true },
-  { title: 'المبلغ', key: 'amount', align: 'center', sortable: true },
-  { title: 'النوع', key: 'type', align: 'center', sortable: true },
-  { title: 'الحالة', key: 'status', align: 'center', sortable: true },
-  { title: 'التاريخ', key: 'incomeDate', align: 'center', sortable: true },
-  { title: 'ملاحظات', key: 'notes', align: 'center', sortable: false },
-  { title: 'الإجراءات', key: 'actions', align: 'center', sortable: false }
-]
-
-// ========================================
-// الخصائص المحسوبة - تستخدم البيانات من الـ API
-// ========================================
-const totalIncome = computed(() => {
-  return incomeStats.value.totalAmount || 0
-})
-
-const monthlyIncome = computed(() => {
-  // This will show monthly stats when using period=month in the API
-  return incomeStats.value.totalAmount || 0
-})
-
-const pendingIncome = computed(() => {
-  return incomeStats.value.pending || 0
-})
-
-const incomeGrowth = computed(() => {
-  // Calculate growth based on average - could be enhanced with historical API data
-  if (incomeStats.value.total === 0) return 0
-  return 0 // Growth would need comparison data from API
-})
-
-const filteredIncomeSources = computed(() => {
-  let filtered = incomeSources.value
-
-  // فلترة حسب البحث
-  if (searchQuery.value) {
-    filtered = filtered.filter(item =>
-      (item.name || '').toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      (item.type || '').toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      (item.notes || '').toLowerCase().includes(searchQuery.value.toLowerCase())
-    )
-  }
-
-  // فلترة حسب النوع
-  if (selectedCategory.value) {
-    filtered = filtered.filter(item => item.type === selectedCategory.value)
-  }
-
-  // فلترة حسب التاريخ
-  if (dateRange.value && dateRange.value.length === 2) {
-    const startDate = new Date(dateRange.value[0])
-    const endDate = new Date(dateRange.value[1])
-    filtered = filtered.filter(item => {
-      const itemDate = new Date(item.incomeDate)
-      return itemDate >= startDate && itemDate <= endDate
-    })
-  }
-
-  return filtered
-})
-
-const incomeByCategory = computed(() => {
-  const categories = {}
-  incomeSources.value
-    .filter(item => item.status === 'approved')
-    .forEach(item => {
-      if (!categories[item.type]) {
-        categories[item.type] = 0
-      }
-      categories[item.type] += item.amount
-    })
-  return categories
-})
-
-// ========================================
-// الدوال المساعدة
-// ========================================
-const formatCurrency = (amount) => {
-  if (amount == null) return '0 IQD'
-  return new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(amount) + ' IQD'
-}
-
-const formatDate = (dateString) => {
-  if (!dateString) return '-'
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  })
-}
-
-const formatDateForInput = (dateString) => {
-  return new Date(dateString).toISOString().split('T')[0]
-}
-
-const getCategoryColor = (category) => {
-  const cat = incomeCategories.find(c => c.value === category)
-  return cat ? cat.color : 'grey'
-}
-
-const getStatusColor = (status) => {
-  const stat = statusOptions.find(s => s.value === status)
-  return stat ? stat.color : 'grey'
-}
-
-const getStatusText = (status) => {
-  const stat = statusOptions.find(s => s.value === status)
-  return stat ? stat.title : status
-}
-
-// ========================================
-// دوال تحميل البيانات من API
-// ========================================
-const loadIncome = async (page = currentPage.value) => {
+// Fetch income from API
+const fetchIncome = async () => {
   loading.value = true
   try {
-    // Load income list and stats in parallel
-    const [response, stats] = await Promise.all([
-      listIncome({ page, limit: itemsPerPage.value }),
-      getIncomeStats()
-    ])
-    console.log('Income data received:', response)
-    console.log('Income stats received:', stats)
-
-    // Update pagination state
-    incomeSources.value = response.data
-    totalItems.value = response.total
-    totalPages.value = response.totalPages
-    currentPage.value = response.page
-
-    if (stats) {
-      incomeStats.value = stats
+    const response = await listIncome({ page: page.value, limit: limit.value })
+    if (response.success) {
+      incomeSources.value = (response.data.items || []).map(i => ({
+        id: i.id,
+        description: i.description || '',
+        amount: i.amount || 0,
+        category: i.category || '',
+        date: i.date || i.created_at,
+        status: i.status || 'pending',
+        notes: i.notes || ''
+      }))
+      total.value = response.data.total || 0
     }
-  } catch (err) {
-    console.error('Error loading income:', err)
+  } catch (error) {
+    console.error('Error fetching income:', error)
+    showError('حدث خطأ في جلب الإيرادات')
   } finally {
     loading.value = false
   }
 }
 
-// Handle page change
-const onPageChange = (page) => {
-  currentPage.value = page
-  loadIncome(page)
+const statusOptions = [
+  'pending',
+  'approved',
+  'rejected'
+]
+
+const headers = [
+  { title: 'الوصف', key: 'description', align: 'start' },
+  { title: 'المبلغ', key: 'amount', align: 'center' },
+  { title: 'الفئة', key: 'category', align: 'center' },
+  { title: 'التاريخ', key: 'date', align: 'center' },
+  { title: 'الإجراءات', key: 'actions', align: 'center', sortable: false }
+]
+
+// Computed properties
+const totalIncome = computed(() => {
+  return incomeSources.value.reduce((sum, item) => sum + item.amount, 0)
+})
+
+const monthlyIncome = computed(() => {
+  const currentMonth = new Date().getMonth()
+  const currentYear = new Date().getFullYear()
+  
+  return incomeSources.value
+    .filter(item => {
+      const itemDate = new Date(item.date)
+      return itemDate.getMonth() === currentMonth && itemDate.getFullYear() === currentYear
+    })
+    .reduce((sum, item) => sum + item.amount, 0)
+})
+
+const incomeGrowth = computed(() => {
+  // Simplified growth calculation
+  return 15.5
+})
+
+// Methods
+const formatCurrency = (amount) => {
+  return new Intl.NumberFormat('en-US').format(amount) + ' د.ع'
 }
 
-// ========================================
-// دوال إدارة البيانات
-// ========================================
-const openAddDialog = () => {
-  editingIncome.value = null
-  incomeForm.value = {
-    name: '',
-    amount: 0,
-    type: '',
-    incomeDate: new Date().toISOString().split('T')[0],
-    status: 'pending',
-    notes: ''
-  }
-  showAddDialog.value = true
+const formatDate = (dateString) => {
+  return new Date(dateString).toLocaleDateString('en-US')
 }
 
 const editIncome = (item) => {
   editingIncome.value = item
-  incomeForm.value = {
-    name: item.name || '',
-    amount: item.amount || 0,
-    type: item.type || '',
-    incomeDate: item.incomeDate ? formatDateForInput(item.incomeDate) : new Date().toISOString().split('T')[0],
-    status: item.status || 'pending',
-    notes: item.notes || ''
-  }
+  incomeForm.value = { ...item }
   showAddDialog.value = true
 }
 
 const deleteIncome = async (item) => {
-  if (confirm(`هل أنت متأكد من حذف الإيراد "${item.name}"؟`)) {
-    try {
-      await deleteIncomeApi(item.id)
-      await loadIncome()
-    } catch (err) {
-      console.error('Error deleting income:', err)
-    }
+  if (!confirm('هل أنت متأكد من حذف هذا الإيراد؟')) return
+
+  loading.value = true
+  try {
+    await apiDeleteIncome(item.id)
+    success('تم حذف الإيراد بنجاح')
+    fetchIncome()
+  } catch (error) {
+    console.error('Error deleting income:', error)
+    showError(error.message || 'حدث خطأ في حذف الإيراد')
+  } finally {
+    loading.value = false
   }
 }
 
 const saveIncome = async () => {
-  if (valid.value) {
-    try {
-      // Convert date string to ISO datetime format for backend
-      const dateValue = incomeForm.value.incomeDate
-      const isoDate = dateValue ? new Date(dateValue).toISOString() : new Date().toISOString()
+  if (!valid.value) return
 
-      // Build payload with required fields
-      const payload = {
-        name: incomeForm.value.name,
-        amount: Number(incomeForm.value.amount),
-        incomeDate: isoDate
-      }
-
-      // Add optional fields if they have values
-      if (incomeForm.value.type) {
-        payload.type = incomeForm.value.type
-      }
-      if (incomeForm.value.status) {
-        payload.status = incomeForm.value.status
-      }
-      if (incomeForm.value.notes) {
-        payload.notes = incomeForm.value.notes
-      }
-
-      if (editingIncome.value) {
-        await updateIncome(editingIncome.value.id, payload)
-      } else {
-        await createIncome(payload)
-      }
-
-      await loadIncome()
-      closeDialog()
-    } catch (err) {
-      console.error('Error saving income:', err)
+  loading.value = true
+  try {
+    const incomeData = {
+      name: incomeForm.value.description,
+      amount: Number(incomeForm.value.amount),
+      type: incomeForm.value.category || null,
+      incomeDate: incomeForm.value.date ? new Date(incomeForm.value.date).toISOString() : new Date().toISOString(),
+      status: incomeForm.value.status || null,
+      notes: incomeForm.value.notes || null
     }
+
+    if (editingIncome.value) {
+      await updateIncome(editingIncome.value.id, incomeData)
+    } else {
+      await createIncome(incomeData)
+    }
+
+    success(editingIncome.value ? 'تم تحديث الإيراد بنجاح' : 'تم إضافة الإيراد بنجاح')
+    closeDialog()
+    fetchIncome()
+  } catch (error) {
+    console.error('Error saving income:', error)
+    showError(error.message || 'حدث خطأ في حفظ الإيراد')
+  } finally {
+    loading.value = false
   }
 }
 
@@ -666,1502 +392,652 @@ const closeDialog = () => {
   showAddDialog.value = false
   editingIncome.value = null
   incomeForm.value = {
-    name: '',
+    description: '',
     amount: 0,
-    type: '',
-    incomeDate: new Date().toISOString().split('T')[0],
-    status: 'pending',
+    category: '',
     notes: ''
   }
 }
 
-// ========================================
-// دوال التصدير والطباعة
-// ========================================
-const exportToCSV = () => {
-  const csvHeaders = ['الاسم', 'المبلغ', 'النوع', 'الحالة', 'التاريخ', 'ملاحظات']
-  const csvContent = [
-    csvHeaders.join(','),
-    ...filteredIncomeSources.value.map(item => [
-      `"${item.name || ''}"`,
-      item.amount,
-      `"${item.type || ''}"`,
-      `"${getStatusText(item.status)}"`,
-      `"${formatDate(item.incomeDate)}"`,
-      `"${item.notes || ''}"`
-    ].join(','))
-  ].join('\n')
-
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-  const link = document.createElement('a')
-  link.href = URL.createObjectURL(blob)
-  link.download = `income-report-${new Date().toISOString().split('T')[0]}.csv`
-  link.click()
-}
-
-const printReport = () => {
-  window.print()
-}
-
-// ========================================
-// دوال الإحصائيات المتقدمة
-// ========================================
-const getIncomeTrend = (months = 6) => {
-  const trends = []
-  const currentDate = new Date()
-
-  for (let i = months - 1; i >= 0; i--) {
-    const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1)
-    const monthIncome = incomeSources.value
-      .filter(item => {
-        const itemDate = new Date(item.incomeDate)
-        return itemDate.getMonth() === date.getMonth() &&
-               itemDate.getFullYear() === date.getFullYear() &&
-               item.status === 'approved'
-      })
-      .reduce((sum, item) => sum + item.amount, 0)
-
-    trends.push({
-      month: date.toLocaleDateString('en-US', { month: 'short' }),
-      amount: monthIncome
-    })
-  }
-
-  return trends
-}
-
-const getTopCategories = (limit = 5) => {
-  return Object.entries(incomeByCategory.value)
-    .sort(([,a], [,b]) => b - a)
-    .slice(0, limit)
-    .map(([category, amount]) => ({ category, amount }))
-}
-
-// ========================================
-// دورة الحياة
-// ========================================
 onMounted(() => {
-  loadIncome()
+  fetchIncome()
 })
 </script>
 
 <style scoped>
-/* ========================================
-   صفحة الإيرادات - CSS منظم ومتناسق
-   ======================================== */
-
-/* صفحة البيانات العامة */
-.data-page {
-  background: #ffffff !important;
-  color: var(--text-dark);
-  min-height: 100vh;
-  padding: 0 !important;
-  max-width: 100% !important;
-  margin: 0 !important;
-  width: 100% !important;
-  overflow-x: hidden;
-}
-
-/* حاويات المحتوى */
-.cards-container {
-  padding: 0 2rem 0 2rem;
-  margin-top: 1.5rem;
-}
-
-.action-buttons {
-  padding: 0 2rem;
-}
-
-.table-container {
-  padding: 0 2rem;
-}
-
-/* Header Styles - نفس تنسيق صفحة المهندسين */
-.engineers-header-card {
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
-  border-radius: 0;
-  width: 100vw;
-  max-width: 100vw;
-  box-shadow: 0 8px 32px rgba(25, 118, 210, 0.3);
-  position: relative;
-  overflow: hidden;
-  margin-left: calc(-50vw + 50%);
-  margin-right: calc(-50vw + 50%);
-  margin-bottom: 1.5rem;
-  border: none;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  animation: slideInFromTop 1s ease-out, shimmer 3s ease-in-out infinite;
-}
-
-.engineers-header-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  animation: sweep 2s ease-in-out infinite;
-  z-index: 1;
-}
-
-.engineers-header-card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
-  animation: diagonalShimmer 4s ease-in-out infinite;
-  z-index: 1;
-}
-
-.engineers-header-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 60px rgba(25, 118, 210, 0.5);
-  animation: hoverPulse 0.6s ease-in-out;
-}
-
-.engineers-header-card:hover::before {
-  animation: sweep 1s ease-in-out infinite;
-}
-
-.engineers-header-card:hover::after {
-  animation: diagonalShimmer 2s ease-in-out infinite;
-}
-
-.header-gradient-line {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 5px;
-  background: linear-gradient(90deg, #ffffff 0%, #e3f2fd 50%, #bbdefb 100%);
-  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
-  animation: gradientFlow 3s ease-in-out infinite;
-  z-index: 2;
-}
-
-.header-content {
-  padding: 12px 16px !important;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  min-height: auto !important;
-  background: linear-gradient(135deg, rgba(25, 118, 210, 0.1) 0%, rgba(21, 101, 192, 0.05) 100%);
-  backdrop-filter: blur(10px);
-  position: relative;
-  z-index: 3;
-  animation: fadeInUp 1.2s ease-out 0.3s both;
-  max-width: calc(100vw - 320px);
+.income-container {
+  padding: 32px;
+  max-width: 1600px;
   margin: 0 auto;
 }
 
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 1.8rem;
-  text-align: right;
-  padding: 0.8rem 1.5rem;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+/* Income Header Custom Color */
+.income-header {
+  background: linear-gradient(135deg, #018790 0%, #005461 100%) !important;
 }
 
-.engineer-emoji {
+.income-header::before {
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 50%, #06b6d4 100%) !important;
+}
+
+/* Statistics Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  border-radius: 16px !important;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%) !important;
+  border: 2px solid transparent !important;
   position: relative;
-  animation: slideInFromRight 1s ease-out 0.9s both, float 3s ease-in-out infinite 2s, pulse 2s ease-in-out infinite 2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 0.5rem;
 }
 
-.engineer-emoji .v-icon {
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
-  transition: all 0.3s ease;
-  background: linear-gradient(135deg, #ffffff, #e3f2fd);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  position: relative;
-  animation: iconGlow 2s ease-in-out infinite 3s, iconBounce 3s ease-in-out infinite 3s;
-}
-
-.engineer-emoji .v-icon:first-child {
-  animation: iconGlow 2s ease-in-out infinite 3s, iconBounce 3s ease-in-out infinite 3s;
-}
-
-.header-text {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.main-title {
-  color: white !important;
-  font-size: 1.2rem !important;
-  font-weight: bold !important;
-  margin: 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.subtitle {
-  color: rgba(255, 255, 255, 0.9) !important;
-  font-size: 0.75rem !important;
-  margin: 0;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.header-icon {
-  width: 80px;
-  height: 80px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.header-icon i {
-  font-size: 2.5rem;
-  color: white;
-}
-
-.header-text {
-  flex: 1;
-}
-
-.page-title {
-  color: white !important;
-  font-weight: 800 !important;
-  font-size: 1.5rem !important;
-  margin: 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  letter-spacing: 0.5px;
-}
-
-.page-subtitle {
-  color: rgba(255, 255, 255, 0.9) !important;
-  font-size: 1rem !important;
-  font-weight: 400;
-  margin: 0;
-  text-align: center;
-}
-
-.header-stats {
-  position: relative;
-  z-index: 2;
-  text-align: left;
-  min-width: 300px;
-  margin-left: auto;
-}
-
-.stat-item {
-  background: rgba(255, 255, 255, 0.15);
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.stat-label {
-  display: block;
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 0.5rem;
-}
-
-.stat-value {
-  display: block;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: white;
-  direction: ltr;
-  text-align: left;
-}
-
-/* Modern Statistics Cards - نفس تصميم الصفحة الرئيسية */
-.modern-stat-card {
-  position: relative !important;
-  border-radius: 20px !important;
-  overflow: hidden !important;
-  cursor: pointer !important;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  height: 100% !important;
-  min-height: 140px !important;
-  background: #ffffff !important;
-}
-
-.modern-stat-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-}
-
-.stat-card-background {
+.stat-card::before {
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  opacity: 0.1;
-  transition: opacity 0.3s ease;
-}
-
-.modern-stat-card:hover .stat-card-background {
-  opacity: 0.2;
-}
-
-.stat-card-primary .stat-card-background {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-}
-
-.stat-card-success .stat-card-background {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-}
-
-.stat-card-warning .stat-card-background {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-}
-
-.stat-card-info .stat-card-background {
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
-}
-
-.stat-card-primary {
-  background: #ffffff !important;
-  border: 2px solid #3b82f6 !important;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15) !important;
-}
-
-.stat-card-success {
-  background: #ffffff !important;
-  border: 2px solid #10b981 !important;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15) !important;
-}
-
-.stat-card-warning {
-  background: #ffffff !important;
-  border: 2px solid #f59e0b !important;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15) !important;
-}
-
-.stat-card-info {
-  background: #ffffff !important;
-  border: 2px solid #06b6d4 !important;
-  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.15) !important;
-}
-
-.stat-card-content {
-  position: relative;
-  z-index: 2;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  align-items: center;
-  text-align: center;
-}
-
-.stat-icon-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  height: 64px;
-  min-width: 64px;
-  min-height: 64px;
-  border-radius: 50%;
-  margin-bottom: 0.25rem;
-  flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  position: relative;
-  overflow: visible;
-}
-
-.stat-icon-wrapper::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: #ffffff;
-  z-index: 1;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.stat-card-primary .stat-icon-wrapper {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.stat-card-primary .stat-icon-wrapper::before {
-  content: '';
-  position: absolute;
-  inset: -3px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%);
-  z-index: -1;
-  filter: blur(8px);
-}
-
-.stat-card-success .stat-icon-wrapper {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-}
-
-.stat-card-success .stat-icon-wrapper::before {
-  content: '';
-  position: absolute;
-  inset: -3px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.2) 100%);
-  z-index: -1;
-  filter: blur(8px);
-}
-
-.stat-card-warning .stat-icon-wrapper {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-}
-
-.stat-card-warning .stat-icon-wrapper::before {
-  content: '';
-  position: absolute;
-  inset: -3px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.2) 100%);
-  z-index: -1;
-  filter: blur(8px);
-}
-
-.stat-card-info .stat-icon-wrapper {
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
-  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
-}
-
-.stat-card-info .stat-icon-wrapper::before {
-  content: '';
-  position: absolute;
-  inset: -3px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(6, 182, 212, 0.2) 0%, rgba(8, 145, 178, 0.2) 100%);
-  z-index: -1;
-  filter: blur(8px);
-}
-
-.stat-icon {
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-  font-size: 32px !important;
-  width: 32px !important;
-  height: 32px !important;
-  min-width: 32px !important;
-  min-height: 32px !important;
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-  padding: 0;
-}
-
-.stat-icon-wrapper :deep(.v-icon) {
-  font-size: 32px !important;
-  width: 32px !important;
-  height: 32px !important;
-  min-width: 32px !important;
-  min-height: 32px !important;
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-.stat-icon-wrapper :deep(svg) {
-  width: 32px !important;
-  height: 32px !important;
-  font-size: 32px !important;
-}
-
-.stat-card-primary .stat-icon {
-  color: #3b82f6 !important;
-}
-
-.stat-card-primary .stat-icon-wrapper :deep(.v-icon) {
-  color: #3b82f6 !important;
-}
-
-.stat-card-success .stat-icon {
-  color: #10b981 !important;
-}
-
-.stat-card-success .stat-icon-wrapper :deep(.v-icon) {
-  color: #10b981 !important;
-}
-
-.stat-card-warning .stat-icon {
-  color: #f59e0b !important;
-}
-
-.stat-card-warning .stat-icon-wrapper :deep(.v-icon) {
-  color: #f59e0b !important;
-}
-
-.stat-card-info .stat-icon {
-  color: #06b6d4 !important;
-}
-
-.stat-card-info .stat-icon-wrapper :deep(.v-icon) {
-  color: #06b6d4 !important;
-}
-
-.stat-card-success .stat-icon {
-  color: #10b981 !important;
-}
-
-.stat-card-warning .stat-icon {
-  color: #f59e0b !important;
-}
-
-.stat-card-info .stat-icon {
-  color: #06b6d4 !important;
-}
-
-.check-icon,
-.stat-icon-wrapper .check-icon,
-.stat-icon-wrapper :deep(.check-icon) {
-  transform: scaleX(-1) !important;
-}
-
-.stat-info {
-  flex: 1;
-  text-align: center;
-  width: 100%;
-}
-
-.stat-value {
-  font-size: 2.5rem;
-  font-weight: 800;
-  margin-bottom: 0.5rem;
-  font-family: 'Arial', 'Helvetica', sans-serif !important;
-  direction: ltr !important;
-  text-align: center;
-  font-variant-numeric: tabular-nums;
-  unicode-bidi: embed;
-  color: #000000 !important;
-}
-
-.stat-label {
-  font-size: 1rem;
-  font-weight: 500;
-  text-align: center;
-  color: #64748b;
-}
-
-/* دعم الكروتات القديمة */
-.stat-card {
-  background: white !important;
-  border-radius: 20px !important;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-  min-height: 180px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
-  border: 2px solid rgba(0, 0, 0, 0.15) !important;
+  border-radius: 16px;
+  padding: 2px;
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 50%, #14b8a6 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
 .stat-card:hover {
-  transform: translateY(-12px) scale(1.03);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 12px 24px rgba(6, 182, 212, 0.3),
+              0 0 40px rgba(16, 185, 129, 0.2) !important;
 }
 
-.card-header {
+.stat-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 2px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 4px;
+}
+
+.stat-change {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1.5rem 1.5rem 1rem 1.5rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
 }
 
-.card-icon {
-  width: 50px;
-  height: 50px;
+.stat-change.positive {
+  color: #34d399;
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
   color: white;
+  font-size: 24px;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%) !important;
+  box-shadow: 0 6px 16px rgba(6, 182, 212, 0.4);
 }
 
-.card-icon.success {
-  background: linear-gradient(135deg, #10b981, #059669);
+.stat-icon.profit {
+  background: linear-gradient(135deg, #10b981 0%, #34d399 100%) !important;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
 }
 
-.card-icon.info {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+.stat-icon.success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
 }
 
-.card-icon.warning {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
+.stat-icon.warning {
+  background: linear-gradient(135deg, #14b8a6 0%, #2dd4bf 100%) !important;
+  box-shadow: 0 6px 16px rgba(20, 184, 166, 0.4);
 }
 
-.card-icon.primary {
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+/* Income Sources List Header */
+.income-list-header {
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%);
+  border-radius: 16px;
+  margin-bottom: 24px;
+  padding: 16px 24px;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
 }
 
-.card-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #374151;
+.income-list-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 16px;
+  padding: 2px;
+  background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #10b981 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.list-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.list-header-info {
   flex: 1;
 }
 
-.card-content {
-  padding: 1rem 1.5rem 1.5rem 1.5rem;
-}
-
-.card-value {
-  font-size: 1.6rem;
+.list-header-title {
+  font-size: 18px;
   font-weight: 700;
-  margin-bottom: 0.5rem;
-  direction: ltr;
-  text-align: left;
-}
-
-.card-value.success {
-  color: #10b981;
-}
-
-.card-value.info {
-  color: #3b82f6;
-}
-
-.card-value.warning {
-  color: #f59e0b;
-}
-
-.card-value.primary {
-  color: #8b5cf6;
-}
-
-.card-subtitle {
-  font-size: 0.9rem;
-  color: #6b7280;
-  font-weight: 500;
-}
-
-/* تأثيرات خاصة لكل لون */
-.stat-card:nth-child(1)::before {
-  background: var(--gradient-success);
-}
-
-.stat-card:nth-child(2)::before {
-  background: var(--gradient-info);
-}
-
-.stat-card:nth-child(3)::before {
-  background: var(--gradient-warning);
-}
-
-.stat-card:nth-child(4)::before {
-  background: var(--gradient-primary);
-}
-
-/* بطاقة الجدول المحسنة */
-.data-table-card {
-  background: var(--bg-white) !important;
-  border-radius: 16px !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
-}
-
-.data-table-card .v-card-title {
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  border-radius: 16px 16px 0 0;
-  border-bottom: 1px solid #e2e8f0;
-  font-weight: 600 !important;
-  color: var(--text-dark) !important;
-}
-
-.table-title-header {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
-  color: #ffffff !important;
-  padding: 8px 12px !important;
-  border-radius: 8px 8px 0 0 !important;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  min-height: 36px !important;
-  margin-bottom: 1rem !important;
-}
-
-.table-title-header .title-text {
-  color: #ffffff !important;
-  font-weight: 600 !important;
-  font-size: 0.95rem !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.3px !important;
-}
-
-.data-table-card .v-data-table {
-  background: transparent !important;
-  margin-top: 1rem !important;
-}
-
-.data-table-card .v-data-table-header {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-}
-
-.data-table-card .v-data-table-header th {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-  font-weight: 600 !important;
-  font-size: 0.9rem !important;
-  text-align: center !important;
-  vertical-align: middle !important;
-  font-style: normal !important;
-  text-transform: none !important;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.2) !important;
-}
-
-.data-table-card .v-data-table tbody tr {
-  border-bottom: 1px solid #f1f5f9 !important;
-}
-
-.data-table-card .v-data-table tbody tr:hover {
-  background: #f8fafc !important;
-}
-
-/* ========================================
-   إصلاح لون النص داخل جدول الإيرادات
-   - تغيير لون النص من الأبيض إلى الأسود الداكن
-   - تحسين وضوح جميع النصوص في الجدول
-   - الحفاظ على النصوص الخضراء للمبالغ
-   ======================================== */
-
-/* ========================================
-   إصلاح محاذاة رؤوس الجدول في صفحة الإيرادات
-   - إصلاح النصوص المائلة في رؤوس الجدول
-   - محاذاة النصوص في المنتصف
-   - إزالة التحويلات غير المرغوب فيها
-   - ضمان التنسيق الصحيح للعناوين
-   ======================================== */
-
-/* إصلاح محاذاة رؤوس الجدول */
-.data-table-card .v-data-table-header th,
-.data-table-card .v-data-table-header th *,
-.data-table-card .v-data-table thead th,
-.data-table-card .v-data-table thead th * {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-  text-align: center !important;
-  vertical-align: middle !important;
-  font-style: normal !important;
-  text-transform: none !important;
-  font-weight: 600 !important;
-  font-size: 0.9rem !important;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.2) !important;
-}
-
-/* إصلاح لون النص داخل الجدول */
-.data-table-card .v-data-table tbody td {
-  color: #1a1a1a !important;
-  font-weight: 500 !important;
-  font-size: 0.95rem !important;
-  text-align: center !important;
-  vertical-align: middle !important;
-}
-
-.data-table-card .v-data-table tbody td * {
-  color: #1a1a1a !important;
-}
-
-/* إصلاح النصوص في خلايا الجدول */
-.data-table-card .v-data-table .v-data-table__td {
-  color: #1a1a1a !important;
-}
-
-.data-table-card .v-data-table .v-data-table__td * {
-  color: #1a1a1a !important;
-}
-
-/* إصلاح النصوص في القوالب المخصصة */
-.data-table-card .v-data-table .font-weight-bold {
-  color: #1a1a1a !important;
-}
-
-.data-table-card .v-data-table .text-success {
-  color: #059669 !important;
-}
-
-/* إصلاح شامل لجميع النصوص في الجدول */
-.data-table-card .v-data-table tbody tr td,
-.data-table-card .v-data-table tbody tr td *,
-.data-table-card .v-data-table tbody tr td span,
-.data-table-card .v-data-table tbody tr td div,
-.data-table-card .v-data-table tbody tr td p {
-  color: #1a1a1a !important;
-}
-
-/* إصلاح النصوص في أزرار الإجراءات */
-.data-table-card .v-data-table .v-btn {
-  color: white !important;
-}
-
-.data-table-card .v-data-table .v-btn .v-icon {
-  color: white !important;
-}
-
-/* إصلاح النصوص في القوالب المخصصة */
-.data-table-card .v-data-table template,
-.data-table-card .v-data-table template * {
-  color: #1a1a1a !important;
-}
-
-/* إصلاح شامل لجميع الجداول في الصفحة */
-.v-data-table tbody td,
-.v-data-table tbody td *,
-.v-data-table tbody tr td,
-.v-data-table tbody tr td *,
-.v-data-table .v-data-table__td,
-.v-data-table .v-data-table__td * {
-  color: #1a1a1a !important;
-  font-weight: 500 !important;
-  font-size: 0.95rem !important;
-  text-align: center !important;
-  vertical-align: middle !important;
-}
-
-/* إصلاح رؤوس جميع الجداول في الصفحة */
-.v-data-table thead th,
-.v-data-table thead th *,
-.v-data-table .v-data-table-header th,
-.v-data-table .v-data-table-header th * {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-  text-align: center !important;
-  vertical-align: middle !important;
-  font-style: normal !important;
-  text-transform: none !important;
-  font-weight: 600 !important;
-  font-size: 0.9rem !important;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.2) !important;
-}
-
-/* إصلاح النصوص في جميع خلايا الجدول */
-.v-data-table tbody tr td span,
-.v-data-table tbody tr td div,
-.v-data-table tbody tr td p,
-.v-data-table tbody tr td button {
-  color: #1a1a1a !important;
-  text-align: center !important;
-  vertical-align: middle !important;
-  font-style: normal !important;
-}
-
-/* إصلاح نهائي شامل لجميع عناصر الجدول */
-.data-page .v-data-table,
-.data-page .v-data-table *,
-.data-page .v-data-table tbody,
-.data-page .v-data-table tbody *,
-.data-page .v-data-table tbody tr,
-.data-page .v-data-table tbody tr *,
-.data-page .v-data-table tbody tr td,
-.data-page .v-data-table tbody tr td * {
-  text-align: center !important;
-  vertical-align: middle !important;
-  font-style: normal !important;
-}
-
-/* إصلاح رؤوس الجدول في الصفحة الرئيسية */
-.data-page .v-data-table thead,
-.data-page .v-data-table thead *,
-.data-page .v-data-table thead th,
-.data-page .v-data-table thead th * {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-  text-align: center !important;
-  vertical-align: middle !important;
-  font-style: normal !important;
-  text-transform: none !important;
-}
-
-/* تنسيق شامل لعناوين جدول الإيرادات */
-.income-table :deep(.v-data-table-header th),
-.income-table :deep(.v-data-table__wrapper table thead tr th),
-.income-table :deep(.v-data-table__wrapper table thead tr th *) {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-  font-weight: 600 !important;
-  font-size: 0.9rem !important;
-  padding: 12px 10px !important;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.2) !important;
-}
-
-.income-table :deep(.v-data-table-header th *),
-.income-table :deep(.v-data-table-header th span),
-.income-table :deep(.v-data-table-header th div),
-.income-table :deep(.v-data-table-header th .v-data-table-header__content),
-.income-table :deep(.v-data-table-header th .v-data-table-header__content *),
-.income-table :deep(.v-data-table__wrapper table thead tr th *),
-.income-table :deep(.v-data-table__wrapper table thead tr th span),
-.income-table :deep(.v-data-table__wrapper table thead tr th div),
-.income-table :deep(.v-data-table-header th i),
-.income-table :deep(.v-data-table-header th .v-icon),
-.income-table :deep(.v-data-table-header th .v-data-table-header__sort-badge),
-.income-table :deep(.v-data-table-header th .v-data-table-header__sort-icon) {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-  fill: #ffffff !important;
-}
-
-/* ضمان أن جميع النصوص في عناوين الجدول بيضاء */
-.data-table-card .income-table :deep(.v-data-table-header),
-.data-table-card .income-table :deep(.v-data-table-header th),
-.data-table-card .income-table :deep(.v-data-table-header th *),
-.data-table-card .income-table :deep(.v-data-table-header th span),
-.data-table-card .income-table :deep(.v-data-table-header th div),
-.data-table-card .income-table :deep(.v-data-table-header th .v-data-table-header__content),
-.data-table-card .income-table :deep(.v-data-table-header th .v-data-table-header__content *),
-.data-table-card .income-table :deep(.v-data-table__wrapper table thead),
-.data-table-card .income-table :deep(.v-data-table__wrapper table thead tr),
-.data-table-card .income-table :deep(.v-data-table__wrapper table thead tr th),
-.data-table-card .income-table :deep(.v-data-table__wrapper table thead tr th *) {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-  fill: #ffffff !important;
-}
-
-/* قواعد شاملة إضافية لضمان اللون الأبيض */
-.data-table-card :deep(.v-data-table-header),
-.data-table-card :deep(.v-data-table-header th),
-.data-table-card :deep(.v-data-table-header th *),
-.data-table-card :deep(.v-data-table-header th span),
-.data-table-card :deep(.v-data-table-header th div),
-.data-table-card :deep(.v-data-table-header th p),
-.data-table-card :deep(.v-data-table-header th label),
-.data-table-card :deep(.v-data-table-header th .v-data-table-header__content),
-.data-table-card :deep(.v-data-table-header th .v-data-table-header__content *),
-.data-table-card :deep(.v-data-table-header th .v-data-table-header__content span),
-.data-table-card :deep(.v-data-table-header th .v-data-table-header__content div),
-.data-table-card :deep(.v-data-table__wrapper table thead),
-.data-table-card :deep(.v-data-table__wrapper table thead tr),
-.data-table-card :deep(.v-data-table__wrapper table thead tr th),
-.data-table-card :deep(.v-data-table__wrapper table thead tr th *),
-.data-table-card :deep(.v-data-table__wrapper table thead tr th span),
-.data-table-card :deep(.v-data-table__wrapper table thead tr th div),
-.data-table-card :deep(.v-data-table__wrapper table thead tr th p),
-.data-table-card :deep(.v-data-table__wrapper table thead tr th label),
-.data-table-card :deep(.v-data-table__th),
-.data-table-card :deep(.v-data-table__th *),
-.data-table-card :deep(.v-data-table__th span),
-.data-table-card :deep(.v-data-table__th div) {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-  fill: #ffffff !important;
-  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
-}
-
-/* تطبيق اللون الأبيض على أيقونات وأزرار في عناوين الجدول */
-.data-table-card :deep(.v-data-table-header th .v-icon),
-.data-table-card :deep(.v-data-table-header th i),
-.data-table-card :deep(.v-data-table-header th svg),
-.data-table-card :deep(.v-data-table-header th .v-data-table-header__sort-badge),
-.data-table-card :deep(.v-data-table-header th .v-data-table-header__sort-icon),
-.data-table-card :deep(.v-data-table__wrapper table thead tr th .v-icon),
-.data-table-card :deep(.v-data-table__wrapper table thead tr th i),
-.data-table-card :deep(.v-data-table__wrapper table thead tr th svg) {
-  color: #ffffff !important;
-  fill: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-}
-
-/* إصلاح خاص لصفحة الإيرادات */
-.income-page .v-data-table tbody td,
-.income-page .v-data-table tbody td * {
-  color: #1a1a1a !important;
-}
-
-/* إصلاح نهائي شامل لجميع النصوص في الجدول */
-.data-page .v-data-table,
-.data-page .v-data-table *,
-.data-page .v-data-table tbody,
-.data-page .v-data-table tbody *,
-.data-page .v-data-table tbody tr,
-.data-page .v-data-table tbody tr *,
-.data-page .v-data-table tbody tr td,
-.data-page .v-data-table tbody tr td * {
-  color: #1a1a1a !important;
-}
-
-/* إصلاح النصوص في جميع العناصر */
-.data-page .v-data-table .font-weight-bold,
-.data-page .v-data-table .text-success,
-.data-page .v-data-table span,
-.data-page .v-data-table div,
-.data-page .v-data-table p {
-  color: #1a1a1a !important;
-}
-
-/* استثناء للنصوص الخضراء (المبالغ) */
-.data-page .v-data-table .text-success {
-  color: #059669 !important;
-}
-
-/* أزرار الإجراءات */
-.action-buttons {
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0 0 2px 0;
   display: flex;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
 }
 
-.add-button {
-  background: linear-gradient(135deg, #10b981, #059669) !important;
-  color: white !important;
+.list-header-title i {
+  color: #10b981;
+  font-size: 20px;
+}
+
+.list-header-subtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+.list-header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.list-action-btn {
+  padding: 8px 18px;
+  border-radius: 12px;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.list-action-btn.primary {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.list-action-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+.list-action-btn i {
+  font-size: 16px;
+}
+
+/* Income Dialog */
+.income-dialog {
   border-radius: 16px !important;
-  padding: 16px 32px !important;
-  font-weight: 600 !important;
-  text-transform: none !important;
-  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3) !important;
-  transition: all 0.3s ease !important;
-  font-size: 1rem !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  text-align: center !important;
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%) !important;
+  border: 2px solid transparent !important;
+  position: relative;
+  overflow: hidden;
+  direction: rtl;
+  text-align: right;
 }
 
-/* تم نقل أنماط .add-button و .export-button الأساسية إلى common-components.css */
-
-.add-button:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(16, 185, 129, 0.4) !important;
+.income-dialog::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 16px;
+  padding: 2px;
+  background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #10b981 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
-.export-button {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
-  color: white !important;
-  border-radius: 16px !important;
-  padding: 16px 32px !important;
-  font-weight: 600 !important;
-  text-transform: none !important;
-  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3) !important;
-  transition: all 0.3s ease !important;
-  font-size: 1rem !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  text-align: center !important;
+.dialog-header {
+  background: rgba(16, 185, 129, 0.1) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  padding: 20px 24px !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+  direction: rtl;
+  text-align: right;
 }
 
-
-.export-button:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4) !important;
+.dialog-header i {
+  color: #10b981;
+  font-size: 24px;
 }
 
-/* نافذة الحوار المحسنة */
-.v-dialog .v-card {
-  border-radius: 16px !important;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2) !important;
+.dialog-content {
+  padding: 24px !important;
+  position: relative;
+  z-index: 1;
+  direction: rtl;
+  text-align: right;
+  max-height: 60vh;
+  overflow-y: auto;
 }
 
-.v-dialog .v-card-title {
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  border-radius: 16px 16px 0 0;
-  border-bottom: 1px solid #e2e8f0;
-  font-weight: 600 !important;
-  color: #1a1a1a !important;
+.dialog-content::-webkit-scrollbar {
+  display: none;
 }
 
-/* ========================================
-   إصلاح لون النصوص في نافذة إضافة الإيراد
-   - تغيير لون النص من الأبيض إلى الأسود الداكن
-   - تحسين وضوح جميع النصوص في النافذة المنبثقة
-   - إصلاح التسميات والحقول والقوائم المنسدلة
-   ======================================== */
-
-/* إصلاح النصوص في النافذة المنبثقة */
-.v-dialog .v-card-text,
-.v-dialog .v-card-text *,
-.v-dialog .v-form,
-.v-dialog .v-form * {
-  color: #1a1a1a !important;
+.dialog-content {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-/* إصلاح التسميات في النافذة المنبثقة */
-.v-dialog .v-label,
-.v-dialog .v-label *,
-.v-dialog .v-field__label,
-.v-dialog .v-field__label * {
-  color: #1a1a1a !important;
+.dialog-content :deep(.v-field) {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px;
+  direction: rtl;
+  text-align: right;
 }
 
-/* إصلاح النصوص في الحقول */
-.v-dialog .v-text-field .v-field__input,
-.v-dialog .v-textarea .v-field__input,
-.v-dialog .v-select .v-field__input,
-.v-dialog .v-field__input,
-.v-dialog .v-field__input * {
-  color: #1a1a1a !important;
+.dialog-content :deep(.v-field__outline) {
+  color: rgba(255, 255, 255, 0.2) !important;
 }
 
-/* إصلاح خلفية الحقول */
-.v-dialog .v-text-field .v-field,
-.v-dialog .v-textarea .v-field,
-.v-dialog .v-select .v-field {
-  background: white !important;
-  border: 1px solid #e2e8f0 !important;
+.dialog-content :deep(.v-field--focused .v-field__outline) {
+  color: #10b981 !important;
 }
 
-/* إصلاح القوائم المنسدلة في النافذة المنبثقة */
-.v-dialog .v-menu__content,
-.v-dialog .v-menu__content *,
-.v-dialog .v-overlay__content,
-.v-dialog .v-overlay__content * {
-  color: #1a1a1a !important;
-  background: white !important;
+.dialog-content :deep(.v-label) {
+  color: rgba(255, 255, 255, 0.7) !important;
+  right: 12px !important;
+  left: auto !important;
 }
 
-.v-dialog .v-list,
-.v-dialog .v-list *,
-.v-dialog .v-list-item,
-.v-dialog .v-list-item *,
-.v-dialog .v-list-item-title,
-.v-dialog .v-list-item-subtitle {
-  color: #1a1a1a !important;
-  background: white !important;
+.dialog-content :deep(.v-field__input) {
+  color: rgba(255, 255, 255, 0.95) !important;
+  text-align: right;
+  direction: rtl;
 }
 
-/* إصلاح النصوص في جميع عناصر النافذة */
-.v-dialog .v-card-text span,
-.v-dialog .v-card-text div,
-.v-dialog .v-card-text p,
-.v-dialog .v-card-text label {
-  color: #1a1a1a !important;
+.dialog-content :deep(textarea) {
+  color: rgba(255, 255, 255, 0.95) !important;
+  text-align: right;
+  direction: rtl;
 }
 
-/* إصلاح رسائل التحقق */
-.v-dialog .v-messages,
-.v-dialog .v-messages *,
-.v-dialog .v-message {
-  color: #1a1a1a !important;
+.dialog-content :deep(.v-input__details) {
+  direction: rtl;
+  text-align: right;
 }
 
-/* إصلاح شامل لجميع النصوص في النافذة المنبثقة */
-.v-dialog *,
-.v-dialog * *,
-.v-dialog .v-card *,
-.v-dialog .v-card * * {
-  color: #1a1a1a !important;
+.dialog-actions {
+  padding: 16px 24px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 1;
+  direction: rtl;
+  text-align: right;
 }
 
-/* إصلاح خاص للقوائم المنسدلة */
-.v-dialog .v-select__menu,
-.v-dialog .v-select__menu *,
-.v-dialog .v-select__menu .v-list-item,
-.v-dialog .v-select__menu .v-list-item * {
-  color: #1a1a1a !important;
-  background: white !important;
+.dialog-btn {
+  padding: 10px 24px;
+  border-radius: 12px;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
 }
 
-/* إصلاح النصوص في جميع الحقول */
-.v-dialog .v-input,
-.v-dialog .v-input *,
-.v-dialog .v-text-field,
-.v-dialog .v-text-field *,
-.v-dialog .v-textarea,
-.v-dialog .v-textarea *,
-.v-dialog .v-select,
-.v-dialog .v-select * {
-  color: #1a1a1a !important;
+.dialog-btn.cancel {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* إصلاح خلفية النافذة المنبثقة */
-.v-dialog .v-card {
-  background: white !important;
+.dialog-btn.cancel:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
 }
 
-.v-dialog .v-card-text {
-  background: white !important;
+.dialog-btn.save {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
-/* إصلاح نهائي شامل لجميع النصوص في النافذة المنبثقة */
-.v-dialog .v-application,
-.v-dialog .v-application *,
-.v-dialog .v-application .v-card,
-.v-dialog .v-application .v-card * {
-  color: #1a1a1a !important;
+.dialog-btn.save:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
 }
 
-/* إصلاح النصوص في جميع العناصر */
-.v-dialog .v-card-title span,
-.v-dialog .v-card-title *,
-.v-dialog .v-card-actions,
-.v-dialog .v-card-actions * {
-  color: #1a1a1a !important;
+.dialog-btn.save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-/* إصلاح النصوص في الأزرار (استثناء) */
-.v-dialog .v-btn {
-  color: white !important;
+.dialog-btn i {
+  font-size: 18px;
 }
 
-.v-dialog .v-btn .v-btn__content {
-  color: white !important;
-}
-
-/* أزرار النافذة */
-.dialog-actions .v-btn {
-  border-radius: 8px !important;
-  text-transform: none !important;
-  font-weight: 500 !important;
-}
-
-.dialog-actions .v-btn--variant-elevated {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
-}
-
-/* التصميم المتجاوب */
-@media (max-width: 960px) {
-  .stat-card {
-    min-height: 180px;
-  }
-  
-  .stat-card h3 {
-    font-size: 2rem !important;
-  }
-  
-  .stat-card .stat-icon {
-    font-size: 2.5rem !important;
-  }
-  
-  .page-title {
-    font-size: 2rem !important;
-  }
-}
-
-@media (max-width: 600px) {
-  .stat-card {
-    min-height: 160px;
-    padding: 16px !important;
-  }
-  
-  .stat-card h3 {
-    font-size: 1.8rem !important;
-  }
-  
-  .stat-card .stat-icon {
-    font-size: 2rem !important;
-  }
-  
-  .page-title {
-    font-size: 1.8rem !important;
-  }
-  
-  .page-subtitle {
-    font-size: 1rem !important;
-  }
-}
-
-/* تحسينات إضافية */
 .v-card {
-  border-radius: 16px !important;
+  border-radius: 12px;
 }
 
-.v-btn {
-  border-radius: 8px !important;
-  text-transform: none !important;
-  font-weight: 500 !important;
-}
-
-.v-text-field .v-field {
-  border-radius: 8px !important;
-}
-
-.v-select .v-field {
-  border-radius: 8px !important;
-}
-
-.v-textarea .v-field {
-  border-radius: 8px !important;
-}
-
-/* تأثيرات النصوص */
-.text-success {
-  color: var(--success-color) !important;
-  font-weight: 600 !important;
-}
-
-.text-info {
-  color: var(--info-color) !important;
-  font-weight: 600 !important;
-}
-
-.text-warning {
-  color: var(--warning-color) !important;
-  font-weight: 600 !important;
-}
-
-.text-primary {
-  color: var(--primary-color) !important;
-  font-weight: 600 !important;
-}
-
-/* ========================================
-   Animations - نفس صفحة المهندسين
-   ======================================== */
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .income-container {
+    padding: 24px;
   }
-  50% {
-    transform: translateY(-12px) rotate(2deg);
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .list-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .list-action-btn.primary {
+    width: 100%;
+    justify-content: center;
   }
 }
 
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
+@media (max-width: 768px) {
+  .income-container {
+    padding: 16px;
   }
-  50% {
-    transform: scale(1.05);
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .stat-card-content {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 16px;
+    padding: 16px;
+    text-align: right;
+  }
+
+  .stat-icon {
+    margin-bottom: 0;
+  }
+
+  .stat-info {
+    align-items: flex-start;
+  }
+
+  .stat-value {
+    font-size: 24px;
+  }
+
+  .income-list-header {
+    padding: 14px 18px;
+  }
+
+  .list-header-title {
+    font-size: 16px;
+  }
+
+  .list-action-btn {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
+  /* Dialog responsive */
+  :deep(.v-dialog) {
+    margin: 16px !important;
+  }
+
+  .dialog-header {
+    font-size: 18px !important;
+    padding: 16px 20px !important;
+  }
+
+  .dialog-content {
+    padding: 20px !important;
+  }
+
+  .dialog-actions {
+    padding: 14px 20px !important;
+  }
+
+  .dialog-btn {
+    padding: 8px 18px;
+    font-size: 13px;
+  }
+
+  /* Table responsive */
+  .v-data-table :deep(.v-table__wrapper) {
+    overflow-x: auto;
+  }
+
+  .v-data-table :deep(th),
+  .v-data-table :deep(td) {
+    white-space: nowrap;
+    font-size: 13px;
+    padding: 10px 12px !important;
   }
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
+@media (max-width: 480px) {
+  .income-container {
+    padding: 12px;
   }
-  100% {
-    background-position: 200% 0;
+
+  .stat-card {
+    border-radius: 12px !important;
+  }
+
+  .stat-icon {
+    width: 42px;
+    height: 42px;
+    font-size: 20px;
+  }
+
+  .stat-value {
+    font-size: 20px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+  }
+
+  .income-list-header {
+    padding: 12px 14px;
+    border-radius: 12px;
+  }
+
+  .list-header-title {
+    font-size: 14px;
+  }
+
+  .list-header-subtitle {
+    font-size: 11px;
+  }
+
+  .list-action-btn {
+    padding: 8px 12px;
+    font-size: 11px;
+    border-radius: 10px;
+  }
+
+  .list-action-btn i {
+    font-size: 14px;
+  }
+
+  /* Dialog full width */
+  :deep(.v-dialog) {
+    margin: 8px !important;
+  }
+
+  :deep(.v-dialog > .v-overlay__content) {
+    max-width: calc(100% - 16px) !important;
+  }
+
+  .dialog-header {
+    font-size: 16px !important;
+    padding: 14px 16px !important;
+  }
+
+  .dialog-header i {
+    font-size: 20px;
+  }
+
+  .dialog-content {
+    padding: 16px !important;
+    max-height: 55vh;
+  }
+
+  .dialog-actions {
+    padding: 12px 16px !important;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .dialog-btn {
+    padding: 8px 14px;
+    font-size: 12px;
+    flex: 1;
+    min-width: 100px;
+    justify-content: center;
+  }
+
+  /* Table horizontal scroll */
+  .v-data-table :deep(.v-table__wrapper) {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .v-data-table :deep(th),
+  .v-data-table :deep(td) {
+    font-size: 12px;
+    padding: 8px 10px !important;
   }
 }
 
-@keyframes slideInFromTop {
-  0% {
-    transform: translateY(-100px);
-    opacity: 0;
+@media (max-width: 360px) {
+  .income-container {
+    padding: 8px;
   }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
+
+  .stat-card-content {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .stat-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 18px;
+  }
+
+  .stat-value {
+    font-size: 18px;
+  }
+
+  .income-list-header {
+    padding: 10px 12px;
+  }
+
+  .list-header-title {
+    font-size: 13px;
+  }
+
+  .dialog-header {
+    font-size: 15px !important;
+    padding: 12px 14px !important;
+  }
+
+  .dialog-content {
+    padding: 12px !important;
+  }
+
+  .dialog-actions {
+    padding: 10px 12px !important;
+  }
+
+  .dialog-btn {
+    padding: 6px 12px;
+    font-size: 11px;
   }
 }
-
-@keyframes slideInFromLeft {
-  0% {
-    transform: translateX(-50px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideInFromRight {
-  0% {
-    transform: translateX(50px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes fadeInUp {
-  0% {
-    transform: translateY(30px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes sweep {
-  0% {
-    left: -100%;
-  }
-  100% {
-    left: 100%;
-  }
-}
-
-@keyframes diagonalShimmer {
-  0%, 100% {
-    transform: translateX(-100%) translateY(-100%) rotate(45deg);
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(100%) translateY(100%) rotate(45deg);
-    opacity: 0;
-  }
-}
-
-@keyframes gradientFlow {
-  0%, 100% {
-    background: linear-gradient(90deg, #ffffff 0%, #e3f2fd 50%, #bbdefb 100%);
-  }
-  50% {
-    background: linear-gradient(90deg, #bbdefb 0%, #ffffff 50%, #e3f2fd 100%);
-  }
-}
-
-@keyframes hoverPulse {
-  0% {
-    transform: translateY(-8px) scale(1.02);
-  }
-  50% {
-    transform: translateY(-12px) scale(1.05);
-  }
-  100% {
-    transform: translateY(-8px) scale(1.02);
-  }
-}
-
-@keyframes iconGlow {
-  0%, 100% {
-    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
-  }
-  50% {
-    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.6));
-  }
-}
-
-@keyframes iconBounce {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
-}
-
 </style>

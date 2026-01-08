@@ -16,7 +16,20 @@ export async function listPages(params = {}) {
   const path = queryString ? `/pages?${queryString}` : '/pages?limit=100'
 
   const result = await apiFetch(path)
-  return result?.data || { data: [], total: 0, page: 1, totalPages: 0 }
+  const paginatedData = result?.data || {}
+  if (Array.isArray(paginatedData)) {
+    return { success: true, data: { items: paginatedData, total: paginatedData.length, page: params.page || 1, totalPages: 1 } }
+  }
+  return {
+    success: true,
+    data: {
+      items: paginatedData.data || [],
+      total: paginatedData.total || 0,
+      page: paginatedData.page || params.page || 1,
+      limit: paginatedData.limit || params.limit || 100,
+      totalPages: paginatedData.totalPages || 0
+    }
+  }
 }
 
 /**
@@ -43,7 +56,7 @@ export async function createPage(pageData) {
     method: 'POST',
     body: pageData
   })
-  return result?.data || result
+  return { success: true, data: result?.data || result }
 }
 
 /**
@@ -57,7 +70,7 @@ export async function updatePage(id, pageData) {
     method: 'PUT',
     body: pageData
   })
-  return result?.data || result
+  return { success: true, data: result?.data || result }
 }
 
 /**
@@ -69,5 +82,5 @@ export async function deletePage(id) {
   const result = await apiFetch(`/pages/${id}`, {
     method: 'DELETE'
   })
-  return result?.data || result
+  return { success: true, data: result?.data || result }
 }

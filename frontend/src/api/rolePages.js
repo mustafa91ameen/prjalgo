@@ -15,8 +15,7 @@ export async function listRolePages(params = {}) {
   const queryString = queryParams.toString()
   const path = queryString ? `/rolePages?${queryString}` : '/rolePages?limit=100'
 
-  const result = await apiFetch(path)
-  return result?.data || { data: [], total: 0, page: 1, totalPages: 0 }
+  return apiFetch(path)
 }
 
 /**
@@ -36,14 +35,14 @@ export async function getRolePage(id) {
  */
 export async function getRolePagesByRoleId(roleId) {
   const result = await apiFetch(`/rolePages?roleId=${roleId}&limit=100`)
-  // Handle response - when using roleId filter, backend returns array directly
+  // Handle response - when using roleId filter, backend returns array directly in data
   const data = result?.data || []
-  const rolePages = Array.isArray(data) ? data : []
+  const rolePages = Array.isArray(data) ? data : (data?.data || [])
 
   // Parse permissions from JSON string to array
   return rolePages.map(rp => ({
     ...rp,
-    permissions: rp.permissions ? JSON.parse(rp.permissions) : []
+    permissions: rp.permissions ? (typeof rp.permissions === 'string' ? JSON.parse(rp.permissions) : rp.permissions) : []
   }))
 }
 
@@ -115,10 +114,8 @@ export async function bulkUpdateRolePages(roleId, pagePermissions) {
       permissions: JSON.stringify(pp.permissions)
     }))
 
-  const result = await apiFetch(`/rolePages/role/${roleId}`, {
+  return apiFetch(`/rolePages/role/${roleId}`, {
     method: 'PUT',
     body: { pages }
   })
-
-  return result?.data || result
 }

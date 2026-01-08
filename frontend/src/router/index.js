@@ -20,17 +20,18 @@ const router = createRouter({
 const routeToPermissionMap = {
   '/project-management': '/projects',
   '/task-management': '/projects',
+  '/tasks': '/projects',
   '/engineers': '/users',
   '/expense-types': '/expenseTypes',
   '/human-resources': '/humanResources',
   '/team-management': '/teamMembers',
-  '/working-day-details': '/workdays', // مسار بديل لنفس الصفحة
-  '/work-days': '/workdays', // أيام العمل
-  '/work-day-details': '/workdays', // تفاصيل يوم العمل
-  '/labor-details': '/workdayLabor', // تفاصيل العمالة
-  '/equipment-details': '/workdayEquipment', // تفاصيل المعدات
-  '/materials-expenses-details': '/workdayMaterials', // تفاصيل المواد
-  // Note: /categories is stored in DB as /categories, no mapping needed
+  '/working-day-details': '/workdays',
+  '/work-days': '/workdays',
+  '/work-day-details': '/workdays',
+  '/labor-details': '/workdayLabor',
+  '/equipment-details': '/workdayEquipment',
+  '/materials-expenses-details': '/workdayMaterials',
+  '/materials-expenses': '/workdayMaterials',
 }
 
 // دالة لاستخراج المسار الأساسي من المسار الكامل

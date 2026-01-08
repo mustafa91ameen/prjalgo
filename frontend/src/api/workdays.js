@@ -1,40 +1,47 @@
 import { apiFetch } from './client'
 import { DEFAULT_PAGE, DEFAULT_LIMIT } from '../constants/pagination'
 
-export async function listWorkDays({ projectId, page = DEFAULT_PAGE, limit = DEFAULT_LIMIT } = {}) {
-  if (projectId) {
+export async function listWorkDays({ projectId, project_id, page = DEFAULT_PAGE, limit = DEFAULT_LIMIT } = {}) {
+  const projId = projectId || project_id
+  if (projId) {
     const query = new URLSearchParams({ page, limit }).toString()
-    const result = await apiFetch(`/projects/${projectId}/workdays?${query}`, { method: 'GET' })
+    const result = await apiFetch(`/projects/${projId}/workdays?${query}`, { method: 'GET' })
     const paginatedData = result?.data || {}
     if (Array.isArray(paginatedData)) {
-      return { data: paginatedData, total: paginatedData.length, page, limit, totalPages: 1 }
+      return { success: true, data: { items: paginatedData, total: paginatedData.length, page, limit, totalPages: 1 } }
     }
     return {
-      data: paginatedData.data || [],
-      total: paginatedData.total || 0,
-      page: paginatedData.page || page,
-      limit: paginatedData.limit || limit,
-      totalPages: paginatedData.totalPages || 0
+      success: true,
+      data: {
+        items: paginatedData.data || [],
+        total: paginatedData.total || 0,
+        page: paginatedData.page || page,
+        limit: paginatedData.limit || limit,
+        totalPages: paginatedData.totalPages || 0
+      }
     }
   }
   const query = new URLSearchParams({ page, limit }).toString()
   const result = await apiFetch(`/workdays?${query}`, { method: 'GET' })
   const paginatedData = result?.data || {}
   if (Array.isArray(paginatedData)) {
-    return { data: paginatedData, total: paginatedData.length, page, limit, totalPages: 1 }
+    return { success: true, data: { items: paginatedData, total: paginatedData.length, page, limit, totalPages: 1 } }
   }
   return {
-    data: paginatedData.data || [],
-    total: paginatedData.total || 0,
-    page: paginatedData.page || page,
-    limit: paginatedData.limit || limit,
-    totalPages: paginatedData.totalPages || 0
+    success: true,
+    data: {
+      items: paginatedData.data || [],
+      total: paginatedData.total || 0,
+      page: paginatedData.page || page,
+      limit: paginatedData.limit || limit,
+      totalPages: paginatedData.totalPages || 0
+    }
   }
 }
 
 export async function getWorkDay(id) {
   const result = await apiFetch(`/workdays/${id}`, { method: 'GET' })
-  return result?.data || result
+  return { success: true, data: result?.data || result }
 }
 
 export async function createWorkDay(payload) {
@@ -42,7 +49,7 @@ export async function createWorkDay(payload) {
     method: 'POST',
     body: payload,
   })
-  return result?.data || result
+  return { success: true, data: result?.data || result }
 }
 
 export async function updateWorkDay(id, payload) {
@@ -50,28 +57,28 @@ export async function updateWorkDay(id, payload) {
     method: 'PUT',
     body: payload,
   })
-  return result?.data || result
+  return { success: true, data: result?.data || result }
 }
 
 export async function deleteWorkDay(id) {
   const result = await apiFetch(`/workdays/${id}`, {
     method: 'DELETE',
   })
-  return result?.data || result
+  return { success: true, data: result?.data || result }
 }
 
 export async function completeWorkDay(id) {
   const result = await apiFetch(`/workdays/${id}/complete`, {
     method: 'PATCH',
   })
-  return result?.data || result
+  return { success: true, data: result?.data || result }
 }
 
 export async function uncompleteWorkDay(id) {
   const result = await apiFetch(`/workdays/${id}/uncomplete`, {
     method: 'PATCH',
   })
-  return result?.data || result
+  return { success: true, data: result?.data || result }
 }
 
 export async function listWorkSubCategories({ page = 1, limit = 100 } = {}) {
@@ -84,3 +91,11 @@ export async function listWorkSubCategories({ page = 1, limit = 100 } = {}) {
   return []
 }
 
+// Aliases for consistency with imports
+export { listWorkDays as listWorkdays }
+export { getWorkDay as getWorkday }
+export { createWorkDay as createWorkday }
+export { updateWorkDay as updateWorkday }
+export { deleteWorkDay as deleteWorkday }
+export { completeWorkDay as completeWorkday }
+export { uncompleteWorkDay as uncompleteWorkday }

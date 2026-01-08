@@ -1,847 +1,1045 @@
 <template>
-  <div class="fill-height data-page">
-    <v-container fluid class="pa-6" style="padding: 0 20px !important;">
-      <!-- Header -->
-      <div class="engineers-header-card">
-        <div class="header-gradient-line"></div>
-        <div class="header-content">
-          <div class="header-right">
-            <div class="engineer-emoji">
-              <v-icon size="40" color="white">mdi-account-group</v-icon>
-            </div>
-            <div class="header-text">
-              <h1 class="main-title">إدارة فرق العمل</h1>
-              <p class="subtitle">إضافة وإدارة أعضاء الفريق في المشاريع</p>
+  <div class="team-container">
+    <!-- Page Header Component -->
+    <PageHeader
+      title="إدارة أعضاء الفريق"
+      subtitle="إدارة وتنظيم جميع أعضاء فريق العمل"
+      badge="أعضاء الفريق"
+      badgeType="success"
+      class="team-header"
+    >
+      <template #actions>
+        <button class="page-action-btn secondary">
+          <i class="mdi mdi-export"></i>
+          تصدير
+        </button>
+        <button class="page-icon-btn">
+          <i class="mdi mdi-dots-vertical"></i>
+        </button>
+      </template>
+    </PageHeader>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <!-- Total Members Card -->
+      <v-card class="stat-card" elevation="0">
+        <div class="stat-card-content">
+          <div class="stat-icon team">
+            <i class="mdi mdi-account-group"></i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">إجمالي الأعضاء</div>
+            <div class="stat-value">{{ totalMembers }}</div>
+            <div class="stat-change positive">
+              <i class="mdi mdi-trending-up"></i>
+              <span>+6 هذا الشهر</span>
             </div>
           </div>
+        </div>
+      </v-card>
+
+      <!-- Unique Users Card -->
+      <v-card class="stat-card" elevation="0">
+        <div class="stat-card-content">
+          <div class="stat-icon unique">
+            <i class="mdi mdi-account-star"></i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">المستخدمين الفريدين</div>
+            <div class="stat-value">{{ uniqueUsers }}</div>
+            <div class="stat-change positive">
+              <i class="mdi mdi-trending-up"></i>
+              <span>+4 هذا الشهر</span>
+            </div>
+          </div>
+        </div>
+      </v-card>
+
+      <!-- Average Members per Project Card -->
+      <v-card class="stat-card" elevation="0">
+        <div class="stat-card-content">
+          <div class="stat-icon average">
+            <i class="mdi mdi-chart-line"></i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">متوسط الأعضاء/مشروع</div>
+            <div class="stat-value">{{ averageMembersPerProject }}</div>
+            <div class="stat-change positive">
+              <i class="mdi mdi-trending-up"></i>
+              <span>+0.5 هذا الشهر</span>
+            </div>
+          </div>
+        </div>
+      </v-card>
+    </div>
+
+    <!-- Team Members List Header -->
+    <div class="team-list-header">
+      <div class="list-header-content">
+        <div class="list-header-info">
+          <h2 class="list-header-title">
+            <i class="mdi mdi-format-list-bulleted"></i>
+            قائمة أعضاء الفريق
+          </h2>
+          <p class="list-header-subtitle">عرض جميع أعضاء الفريق والمشاريع المرتبطة</p>
+        </div>
+        <div class="list-header-actions">
+          <button v-if="canCreate" class="list-action-btn primary" @click="openAddDialog">
+            <i class="mdi mdi-plus"></i>
+            إضافة عضو جديد
+          </button>
         </div>
       </div>
+    </div>
 
-      <!-- Statistics -->
-      <v-row class="mb-8">
-        <v-col cols="12" sm="6" md="3">
-          <v-card class="modern-stat-card stat-card-primary" elevation="0">
-            <div class="stat-card-background"></div>
-            <div class="stat-card-content">
-              <div class="stat-icon-wrapper">
-                <v-icon size="48" class="stat-icon">mdi-account-multiple</v-icon>
-              </div>
-              <div class="stat-info">
-                <h3 class="stat-value">{{ stats.total || 0 }}</h3>
-                <p class="stat-label">إجمالي الأعضاء</p>
-              </div>
-            </div>
-          </v-card>
-        </v-col>
-        <v-col cols="12" sm="6" md="3">
-          <v-card class="modern-stat-card stat-card-success" elevation="0">
-            <div class="stat-card-background"></div>
-            <div class="stat-card-content">
-              <div class="stat-icon-wrapper">
-                <v-icon size="48" class="stat-icon">mdi-account-check</v-icon>
-              </div>
-              <div class="stat-info">
-                <h3 class="stat-value">{{ stats.uniqueUsers || 0 }}</h3>
-                <p class="stat-label">المستخدمين الفريدين</p>
-              </div>
-            </div>
-          </v-card>
-        </v-col>
-        <v-col cols="12" sm="6" md="3">
-          <v-card class="modern-stat-card stat-card-warning" elevation="0">
-            <div class="stat-card-background"></div>
-            <div class="stat-card-content">
-              <div class="stat-icon-wrapper">
-                <v-icon size="48" class="stat-icon">mdi-folder-multiple</v-icon>
-              </div>
-              <div class="stat-info">
-                <h3 class="stat-value">{{ stats.uniqueProjects || 0 }}</h3>
-                <p class="stat-label">المشاريع النشطة</p>
-              </div>
-            </div>
-          </v-card>
-        </v-col>
-        <v-col cols="12" sm="6" md="3">
-          <v-card class="modern-stat-card stat-card-info" elevation="0">
-            <div class="stat-card-background"></div>
-            <div class="stat-card-content">
-              <div class="stat-icon-wrapper">
-                <v-icon size="48" class="stat-icon">mdi-chart-bar</v-icon>
-              </div>
-              <div class="stat-info">
-                <h3 class="stat-value">{{ (stats.avgPerProject || 0).toFixed(1) }}</h3>
-                <p class="stat-label">متوسط الأعضاء/مشروع</p>
-              </div>
-            </div>
-          </v-card>
-        </v-col>
-      </v-row>
+    <!-- Team Members Table -->
+    <v-card class="mb-6">
+      <v-data-table
+        :headers="headers"
+        :items="teamMembers"
+        :loading="loading"
+        class="elevation-1"
+      >
+        <template v-slot:item.projects="{ item }">
+          <v-chip
+            v-for="(project, index) in item.projects.slice(0, 2)"
+            :key="index"
+            size="small"
+            class="me-1"
+            color="primary"
+          >
+            {{ project }}
+          </v-chip>
+          <v-chip
+            v-if="item.projects.length > 2"
+            size="small"
+            color="grey"
+          >
+            +{{ item.projects.length - 2 }}
+          </v-chip>
+        </template>
+        <template v-slot:item.actions="{ item }">
+          <v-btn
+            v-if="canDelete"
+            size="small"
+            color="error"
+            @click="deleteMember(item)"
+          >
+            <i class="mdi mdi-delete"></i>
+          </v-btn>
+        </template>
+      </v-data-table>
+    </v-card>
 
-      <!-- Team Members Table -->
-      <v-card class="users-table" elevation="2">
-        <v-card-title class="table-title-header d-flex align-center justify-space-between">
-          <div class="d-flex align-center">
-            <v-icon class="me-2" size="18" style="color: #ffffff !important;">mdi-table</v-icon>
-            <span class="title-text">قائمة أعضاء الفرق</span>
-          </div>
-          <div class="d-flex table-header-buttons" style="gap: 0.5rem;">
-            <!-- Filter by Project -->
-            <v-select
-              v-model="filterProjectId"
-              :items="projectsForFilter"
-              item-title="name"
-              item-value="id"
-              label="تصفية حسب المشروع"
-              variant="outlined"
-              density="compact"
-              clearable
-              hide-details
-              class="filter-select"
-              style="min-width: 200px; background: white; border-radius: 8px;"
-            />
-            <v-btn
-              v-if="canCreate"
-              class="add-button add-user-btn btn-glow light-sweep smooth-transition"
-              @click="openAddDialog"
-              elevation="2"
-              color="primary"
-              size="small"
-              style="background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important; height: 36px !important; font-size: 0.875rem !important;"
-            >
-              <v-icon class="me-2 icon-glow" size="18">mdi-plus</v-icon>
-              إضافة عضو للمشروع
-            </v-btn>
-          </div>
+    <!-- Add Team Member Dialog -->
+    <v-dialog v-model="showAddDialog" max-width="700" persistent>
+      <v-card class="member-dialog">
+        <v-card-title class="dialog-header">
+          <i class="mdi mdi-account-plus"></i>
+          إضافة عضو جديد للفريق
         </v-card-title>
-        <div class="table-spacer"></div>
-        <v-data-table
-          :headers="headers"
-          :items="filteredTeamMembers"
-          :loading="loading"
-          class="elevation-0 users-data-table"
-          :items-per-page="-1"
-          hide-default-footer
-        >
-          <template v-slot:item.project="{ item }">
-            <div class="d-flex align-center">
-              <v-avatar size="36" color="primary" class="me-3">
-                <v-icon color="white" size="20">mdi-folder</v-icon>
-              </v-avatar>
-              <div>
-                <div class="font-weight-medium">{{ getProjectName(item.projectId) }}</div>
-              </div>
-            </div>
-          </template>
+        
+        <v-card-text class="dialog-content">
+          <v-form ref="memberForm" v-model="formValid">
+            <v-row>
+              <!-- المشروع -->
+              <v-col cols="12">
+                <v-select
+                  v-model="newMember.project"
+                  :items="availableProjects"
+                  label="المشروع"
+                  variant="outlined"
+                  density="comfortable"
+                  :rules="[v => !!v || 'المشروع مطلوب']"
+                  required
+                  autofocus
+                ></v-select>
+              </v-col>
 
-          <template v-slot:item.user="{ item }">
-            <div class="d-flex align-center">
-              <v-avatar size="36" color="success" class="me-3">
-                <v-icon color="white" size="20">mdi-account</v-icon>
-              </v-avatar>
-              <div>
-                <div class="font-weight-medium">{{ getUserName(item.userId) }}</div>
-                <div class="text-caption text-grey">{{ getUserJobTitle(item.userId) }}</div>
-              </div>
-            </div>
-          </template>
+              <!-- المستخدم -->
+              <v-col cols="12">
+                <v-select
+                  v-model="newMember.user"
+                  :items="availableUsers"
+                  item-title="name"
+                  item-value="id"
+                  label="المستخدم"
+                  variant="outlined"
+                  density="comfortable"
+                  :rules="[v => !!v || 'المستخدم مطلوب']"
+                  required
+                >
+                  <template v-slot:item="{ props, item }">
+                    <v-list-item v-bind="props">
+                      <template v-slot:prepend>
+                        <v-avatar color="primary" size="32">
+                          <span class="text-white">{{ item.raw.name.charAt(0) }}</span>
+                        </v-avatar>
+                      </template>
+                      <v-list-item-title>{{ item.raw.name }}</v-list-item-title>
+                      <v-list-item-subtitle>{{ item.raw.role }}</v-list-item-subtitle>
+                    </v-list-item>
+                  </template>
+                </v-select>
+              </v-col>
+            </v-row>
+          </v-form>
+        </v-card-text>
 
-          <template v-slot:item.createdAt="{ item }">
-            <span class="text-body-2">{{ formatDate(item.createdAt) }}</span>
-          </template>
-
-          <template v-slot:item.actions="{ item }">
-            <v-btn
-              icon="mdi-eye"
-              size="small"
-              variant="elevated"
-              class="view-btn me-1"
-              @click="viewMember(item)"
-            />
-            <v-btn
-              v-if="canDelete"
-              icon="mdi-delete"
-              size="small"
-              variant="elevated"
-              class="delete-btn"
-              @click="confirmDeleteMember(item)"
-            />
-          </template>
-        </v-data-table>
+        <v-card-actions class="dialog-actions">
+          <v-spacer></v-spacer>
+          <button class="dialog-btn cancel" @click="closeDialog">
+            <i class="mdi mdi-close"></i>
+            إلغاء
+          </button>
+          <button class="dialog-btn save" @click="saveMember" :disabled="!formValid">
+            <i class="mdi mdi-content-save"></i>
+            حفظ
+          </button>
+        </v-card-actions>
       </v-card>
-    </v-container>
+    </v-dialog>
   </div>
-
-  <!-- Add Member Dialog -->
-  <v-dialog v-model="showAddDialog" max-width="600px" persistent>
-    <v-card class="add-user-dialog" rounded="lg">
-      <v-card-title class="dialog-header pa-4">
-        <div class="d-flex align-center">
-          <v-avatar color="white" size="44" class="me-3">
-            <v-icon color="primary" size="26">mdi-account-plus</v-icon>
-          </v-avatar>
-          <div>
-            <h3 class="text-h5 font-weight-bold text-white mb-0">
-              إضافة عضو للمشروع
-            </h3>
-            <span class="text-body-2 text-white-darken-1">
-              اختر المشروع والمستخدم لإضافته للفريق
-            </span>
-          </div>
-        </div>
-        <v-btn
-          icon="mdi-close"
-          variant="text"
-          size="default"
-          @click="closeAddDialog"
-          class="close-btn"
-        />
-      </v-card-title>
-
-      <v-card-text class="dialog-content pa-8">
-        <v-form ref="addForm" v-model="formValid" lazy-validation>
-          <v-row>
-            <v-col cols="12">
-              <v-select
-                v-model="formData.projectId"
-                :items="projects"
-                item-title="name"
-                item-value="id"
-                label="المشروع"
-                placeholder="اختر المشروع"
-                :rules="[v => !!v || 'المشروع مطلوب']"
-                variant="outlined"
-                density="default"
-                prepend-inner-icon="mdi-folder"
-                color="primary"
-                bg-color="grey-lighten-5"
-                class="mb-2"
-              />
-            </v-col>
-            <v-col cols="12">
-              <v-select
-                v-model="formData.userId"
-                :items="availableUsers"
-                item-title="fullName"
-                item-value="id"
-                label="المستخدم"
-                placeholder="اختر المستخدم"
-                :rules="[v => !!v || 'المستخدم مطلوب']"
-                variant="outlined"
-                density="default"
-                prepend-inner-icon="mdi-account"
-                color="primary"
-                bg-color="grey-lighten-5"
-                :disabled="!formData.projectId"
-                :hint="!formData.projectId ? 'اختر المشروع أولاً' : ''"
-                persistent-hint
-              >
-                <template v-slot:item="{ item, props }">
-                  <v-list-item v-bind="props">
-                    <template v-slot:prepend>
-                      <v-avatar size="32" color="primary">
-                        <v-icon color="white" size="18">mdi-account</v-icon>
-                      </v-avatar>
-                    </template>
-                    <template v-slot:subtitle>
-                      {{ item.raw.jobTitle || 'لا يوجد مسمى وظيفي' }}
-                    </template>
-                  </v-list-item>
-                </template>
-              </v-select>
-            </v-col>
-          </v-row>
-        </v-form>
-      </v-card-text>
-
-      <v-card-actions class="dialog-actions pa-5">
-        <v-spacer />
-        <v-btn variant="outlined" size="large" @click="closeAddDialog" class="me-3 px-8">
-          إلغاء
-        </v-btn>
-        <v-btn
-          color="primary"
-          variant="elevated"
-          size="large"
-          @click="saveMember"
-          :loading="saving"
-          :disabled="!formValid"
-          class="px-8"
-          prepend-icon="mdi-check"
-        >
-          <v-icon start size="16">mdi-content-save</v-icon>
-          إضافة العضو
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
-
-  <!-- View Member Dialog -->
-  <v-dialog v-model="showViewDialog" max-width="600px">
-    <v-card class="view-user-dialog">
-      <v-card-title class="dialog-header">
-        <div class="dialog-title">
-          <v-icon size="32" color="primary" class="me-3">mdi-account-details</v-icon>
-          <h2>تفاصيل العضو</h2>
-        </div>
-        <v-btn icon="mdi-close" variant="text" @click="showViewDialog = false" class="close-btn" />
-      </v-card-title>
-
-      <v-divider />
-
-      <v-card-text v-if="selectedMember" class="pa-6">
-        <v-row>
-          <v-col cols="12" class="text-center mb-4">
-            <v-avatar size="80" color="primary">
-              <v-icon color="white" size="40">mdi-account</v-icon>
-            </v-avatar>
-            <h3 class="mt-3">{{ getUserName(selectedMember.userId) }}</h3>
-            <p class="text-caption">{{ getUserJobTitle(selectedMember.userId) }}</p>
-          </v-col>
-
-          <v-col cols="12">
-            <v-list density="compact">
-              <v-list-item>
-                <template v-slot:prepend>
-                  <v-icon color="primary">mdi-folder</v-icon>
-                </template>
-                <v-list-item-title>المشروع</v-list-item-title>
-                <v-list-item-subtitle>{{ getProjectName(selectedMember.projectId) }}</v-list-item-subtitle>
-              </v-list-item>
-              <v-list-item>
-                <template v-slot:prepend>
-                  <v-icon color="primary">mdi-calendar</v-icon>
-                </template>
-                <v-list-item-title>تاريخ الإضافة</v-list-item-title>
-                <v-list-item-subtitle>{{ formatDate(selectedMember.createdAt) }}</v-list-item-subtitle>
-              </v-list-item>
-              <v-list-item>
-                <template v-slot:prepend>
-                  <v-icon color="primary">mdi-email</v-icon>
-                </template>
-                <v-list-item-title>البريد الإلكتروني</v-list-item-title>
-                <v-list-item-subtitle>{{ getUserEmail(selectedMember.userId) }}</v-list-item-subtitle>
-              </v-list-item>
-            </v-list>
-          </v-col>
-        </v-row>
-      </v-card-text>
-
-      <v-divider />
-
-      <v-card-actions class="dialog-actions">
-        <v-spacer />
-        <v-btn color="primary" variant="elevated" @click="showViewDialog = false">
-          إغلاق
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
-
-  <!-- Delete Confirmation Dialog -->
-  <v-dialog v-model="showDeleteDialog" max-width="500px">
-    <v-card class="delete-confirm-dialog">
-      <v-card-title class="dialog-header">
-        <div class="dialog-title">
-          <v-icon size="32" color="error" class="me-3">mdi-delete-alert</v-icon>
-          <h2>تأكيد الحذف</h2>
-        </div>
-        <v-btn icon="mdi-close" variant="text" @click="showDeleteDialog = false" class="close-btn" />
-      </v-card-title>
-
-      <v-divider />
-
-      <v-card-text v-if="selectedMember" class="pa-6">
-        <div class="text-center mb-4">
-          <v-avatar size="60" color="error">
-            <v-icon color="white" size="30">mdi-account-remove</v-icon>
-          </v-avatar>
-          <h4 class="mt-2">{{ getUserName(selectedMember.userId) }}</h4>
-          <p class="text-caption">{{ getProjectName(selectedMember.projectId) }}</p>
-        </div>
-
-        <v-alert type="error" variant="tonal" class="mb-4">
-          تحذير: سيتم إزالة هذا العضو من المشروع!
-        </v-alert>
-
-        <p class="text-body-2 text-center">
-          هل أنت متأكد من إزالة هذا العضو من فريق المشروع؟
-        </p>
-      </v-card-text>
-
-      <v-divider />
-
-      <v-card-actions class="dialog-actions">
-        <v-spacer />
-        <v-btn color="grey" variant="outlined" @click="showDeleteDialog = false" class="me-2">
-          إلغاء
-        </v-btn>
-        <v-btn color="error" variant="elevated" @click="deleteMember" :loading="deleting">
-          إزالة العضو
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
-
-  <!-- Snackbar -->
-  <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="3000">
-    {{ snackbar.message }}
-  </v-snackbar>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, watch } from 'vue'
-import { listTeamMembers, getTeamMemberStats, createTeamMember, deleteTeamMember } from '@/api/teamMembers'
-import { listProjects } from '@/api/projects'
-import { listUsers } from '@/api/users'
+import { ref, computed, onMounted } from 'vue'
+import PageHeader from '../components/PageHeader.vue'
+import { listTeamMembers, createTeamMember, deleteTeamMember as apiDeleteTeamMember, getTeamMemberStats } from '@/api/teamMembers'
+import { getProjectsDropdown } from '@/api/projects'
+import { getUsersDropdown } from '@/api/users'
 import { usePermissions } from '@/composables/usePermissions'
+import { useToast } from '@/composables/useToast'
+import { DEFAULT_PAGE, DEFAULT_LIMIT } from '@/constants/pagination'
 
-// Permissions
+const { success, error: showError } = useToast()
 const { canCreate, canUpdate, canDelete } = usePermissions('/teamMembers')
 
-// Data
 const loading = ref(false)
-const teamMembers = ref([])
-const projects = ref([])
-const users = ref([])
-const stats = ref({})
-const filterProjectId = ref(null)
-
-// Dialog states
 const showAddDialog = ref(false)
-const showViewDialog = ref(false)
-const showDeleteDialog = ref(false)
-const selectedMember = ref(null)
-
-// Form data
-const addForm = ref(null)
 const formValid = ref(false)
-const saving = ref(false)
-const deleting = ref(false)
+const memberForm = ref(null)
 
-const formData = reactive({
-  projectId: null,
-  userId: null
+// Pagination
+const page = ref(DEFAULT_PAGE)
+const limit = ref(DEFAULT_LIMIT)
+const total = ref(0)
+
+// Stats
+const teamStats = ref({
+  totalMembers: 0,
+  uniqueUsers: 0,
+  avgMembersPerProject: 0
 })
 
-// Snackbar
-const snackbar = reactive({
-  show: false,
-  message: '',
-  color: 'success'
+// New member data
+const newMember = ref({
+  project: '',
+  user: null
 })
 
-// Table headers
-const headers = ref([
-  { title: 'المشروع', key: 'project', sortable: true },
-  { title: 'العضو', key: 'user', sortable: true },
-  { title: 'تاريخ الإضافة', key: 'createdAt', sortable: true },
-  { title: 'الإجراءات', key: 'actions', sortable: false }
-])
+const availableProjects = ref([])
+const availableUsers = ref([])
+const teamMembers = ref([])
 
-// Computed: Projects for filter (with "all" option)
-const projectsForFilter = computed(() => {
-  return [{ id: null, name: 'جميع المشاريع' }, ...projects.value]
-})
-
-// Computed: Filtered team members
-const filteredTeamMembers = computed(() => {
-  if (!filterProjectId.value) {
-    return teamMembers.value
-  }
-  return teamMembers.value.filter(tm => tm.projectId === filterProjectId.value)
-})
-
-// Computed: Available users (not already in selected project)
-const availableUsers = computed(() => {
-  if (!formData.projectId) return users.value
-
-  const projectMemberUserIds = teamMembers.value
-    .filter(tm => tm.projectId === formData.projectId)
-    .map(tm => tm.userId)
-
-  return users.value.filter(user => !projectMemberUserIds.includes(user.id))
-})
-
-// Fetch data
-async function fetchData() {
+// Fetch team members from API
+const fetchTeamMembers = async () => {
   loading.value = true
   try {
-    const [teamMembersData, projectsData, usersData, statsData] = await Promise.all([
-      listTeamMembers({ limit: 100 }),
-      listProjects({ limit: 100 }),
-      listUsers({ limit: 100 }),
-      getTeamMemberStats()
-    ])
-    teamMembers.value = teamMembersData?.data || []
-    projects.value = projectsData?.data || []
-    users.value = usersData?.data || []
-    stats.value = statsData || {}
+    const response = await listTeamMembers({ page: page.value, limit: limit.value })
+    if (response.success) {
+      // Group by user with their projects
+      const memberMap = new Map()
+      const items = response.data.items || []
+      items.forEach(item => {
+        const userId = item.user_id
+        if (!memberMap.has(userId)) {
+          memberMap.set(userId, {
+            id: item.id,
+            userId: userId,
+            name: item.user_name || 'مستخدم',
+            role: item.user_role || '',
+            email: item.user_email || '',
+            phone: item.user_phone || '',
+            projects: []
+          })
+        }
+        memberMap.get(userId).projects.push(item.project_name)
+      })
+      teamMembers.value = Array.from(memberMap.values())
+      total.value = response.data.total || 0
+    }
   } catch (error) {
-    console.error('Failed to fetch data:', error)
-    showSnackbar('فشل في تحميل البيانات', 'error')
+    console.error('Error fetching team members:', error)
+    showError('حدث خطأ في جلب أعضاء الفريق')
   } finally {
     loading.value = false
   }
 }
 
-// Helper functions
-function getProjectName(projectId) {
-  const project = projects.value.find(p => p.id === projectId)
-  return project?.name || 'مشروع غير معروف'
+// Fetch stats
+const fetchStats = async () => {
+  try {
+    const response = await getTeamMemberStats()
+    if (response.success) {
+      teamStats.value = {
+        totalMembers: response.data.total_members || 0,
+        uniqueUsers: response.data.unique_users || 0,
+        avgMembersPerProject: response.data.avg_members_per_project || 0
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching stats:', error)
+  }
 }
 
-function getUserName(userId) {
-  const user = users.value.find(u => u.id === userId)
-  return user?.fullName || 'مستخدم غير معروف'
+// Fetch dropdowns
+const fetchDropdowns = async () => {
+  try {
+    const [projectsRes, usersRes] = await Promise.all([
+      getProjectsDropdown(),
+      getUsersDropdown()
+    ])
+    if (projectsRes.success) {
+      availableProjects.value = (projectsRes.data || []).map(p => ({
+        title: p.name,
+        value: p.id
+      }))
+    }
+    if (usersRes.success) {
+      availableUsers.value = (usersRes.data || []).map(u => ({
+        id: u.id,
+        name: u.name,
+        role: u.role_name || ''
+      }))
+    }
+  } catch (error) {
+    console.error('Error fetching dropdowns:', error)
+  }
 }
 
-function getUserJobTitle(userId) {
-  const user = users.value.find(u => u.id === userId)
-  return user?.jobTitle || 'لا يوجد مسمى وظيفي'
-}
+const headers = [
+  { title: 'الاسم', key: 'name', align: 'start' },
+  { title: 'الدور', key: 'role', align: 'center' },
+  { title: 'البريد الإلكتروني', key: 'email', align: 'center' },
+  { title: 'الهاتف', key: 'phone', align: 'center' },
+  { title: 'المشاريع', key: 'projects', align: 'center' },
+  { title: 'الإجراءات', key: 'actions', align: 'center', sortable: false }
+]
 
-function getUserEmail(userId) {
-  const user = users.value.find(u => u.id === userId)
-  return user?.email || '-'
-}
+// Computed properties
+const totalMembers = computed(() => teamStats.value.totalMembers || total.value)
 
-function formatDate(date) {
-  if (!date) return '-'
-  return new Date(date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  })
-}
+const uniqueUsers = computed(() => teamStats.value.uniqueUsers || teamMembers.value.length)
 
-// Dialog functions
-function openAddDialog() {
-  formData.projectId = null
-  formData.userId = null
+const averageMembersPerProject = computed(() => {
+  return teamStats.value.avgMembersPerProject ? teamStats.value.avgMembersPerProject.toFixed(1) : '0'
+})
+
+// Methods
+const openAddDialog = () => {
   showAddDialog.value = true
 }
 
-function closeAddDialog() {
+const closeDialog = () => {
   showAddDialog.value = false
-  formData.projectId = null
-  formData.userId = null
+  resetForm()
 }
 
-function viewMember(member) {
-  selectedMember.value = member
-  showViewDialog.value = true
-}
-
-function confirmDeleteMember(member) {
-  selectedMember.value = member
-  showDeleteDialog.value = true
-}
-
-// Save functions
-async function saveMember() {
-  if (!addForm.value?.validate()) return
-
-  saving.value = true
-  try {
-    await createTeamMember({
-      projectId: formData.projectId,
-      userId: formData.userId
-    })
-    showSnackbar('تم إضافة العضو للمشروع بنجاح', 'success')
-    closeAddDialog()
-    await fetchData()
-  } catch (error) {
-    console.error('Failed to add team member:', error)
-    showSnackbar('فشل في إضافة العضو للمشروع', 'error')
-  } finally {
-    saving.value = false
+const resetForm = () => {
+  newMember.value = {
+    project: '',
+    user: null
+  }
+  if (memberForm.value) {
+    memberForm.value.reset()
   }
 }
 
-async function deleteMember() {
-  if (!selectedMember.value) return
+const saveMember = async () => {
+  if (!formValid.value) return
 
-  deleting.value = true
+  loading.value = true
   try {
-    await deleteTeamMember(selectedMember.value.id)
-    showSnackbar('تم إزالة العضو من المشروع بنجاح', 'success')
-    showDeleteDialog.value = false
-    selectedMember.value = null
-    await fetchData()
+    const memberData = {
+      projectId: newMember.value.project,
+      userId: newMember.value.user
+    }
+
+    const response = await createTeamMember(memberData)
+    if (response.success) {
+      success('تم إضافة العضو بنجاح')
+      closeDialog()
+      fetchTeamMembers()
+      fetchStats()
+    } else {
+      showError(response.message || 'حدث خطأ')
+    }
   } catch (error) {
-    console.error('Failed to delete team member:', error)
-    showSnackbar('فشل في إزالة العضو من المشروع', 'error')
+    console.error('Error saving member:', error)
+    showError('حدث خطأ في حفظ العضو')
   } finally {
-    deleting.value = false
+    loading.value = false
   }
 }
 
-function showSnackbar(message, color = 'success') {
-  snackbar.message = message
-  snackbar.color = color
-  snackbar.show = true
+// Delete member
+const deleteMember = async (member) => {
+  if (!confirm('هل أنت متأكد من حذف هذا العضو؟')) return
+
+  loading.value = true
+  try {
+    const response = await apiDeleteTeamMember(member.id)
+    if (response.success) {
+      success('تم حذف العضو بنجاح')
+      fetchTeamMembers()
+      fetchStats()
+    } else {
+      showError(response.message || 'حدث خطأ في الحذف')
+    }
+  } catch (error) {
+    console.error('Error deleting member:', error)
+    showError('حدث خطأ في حذف العضو')
+  } finally {
+    loading.value = false
+  }
 }
 
-// Reset userId when project changes
-watch(() => formData.projectId, () => {
-  formData.userId = null
-})
-
-// Mount
+// Initialize
 onMounted(() => {
-  fetchData()
+  fetchTeamMembers()
+  fetchStats()
+  fetchDropdowns()
 })
 </script>
 
 <style scoped>
-.data-page {
-  background: #f5f5f5;
-  min-height: 100vh;
+.team-container {
+  padding: 32px;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
-.engineers-header-card {
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
-  border-radius: 16px;
-  padding: 24px;
+/* Team Header Custom Color */
+.team-header {
+  background: linear-gradient(135deg, #018790 0%, #005461 100%) !important;
+}
+
+.team-header::before {
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 50%, #06b6d4 100%) !important;
+}
+
+/* Statistics Grid - 3 cards */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
   margin-bottom: 24px;
-  position: relative;
-  overflow: hidden;
 }
 
-.header-gradient-line {
+.stat-card {
+  border-radius: 16px !important;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%) !important;
+  border: 2px solid transparent !important;
+  position: relative;
+}
+
+.stat-card::before {
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #64b5f6, #1976d2, #64b5f6);
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.engineer-emoji {
-  width: 64px;
-  height: 64px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.main-title {
-  color: white;
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0;
-}
-
-.subtitle {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.875rem;
-  margin: 0;
-}
-
-.modern-stat-card {
+  bottom: 0;
   border-radius: 16px;
-  position: relative;
-  overflow: hidden;
+  padding: 2px;
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 50%, #14b8a6 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
-.stat-card-primary {
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
-}
-
-.stat-card-success {
-  background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);
-}
-
-.stat-card-warning {
-  background: linear-gradient(135deg, #fb8c00 0%, #f57c00 100%);
-}
-
-.stat-card-info {
-  background: linear-gradient(135deg, #00acc1 0%, #0097a7 100%);
+.stat-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 12px 24px rgba(6, 182, 212, 0.3),
+              0 0 40px rgba(16, 185, 129, 0.2) !important;
 }
 
 .stat-card-content {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  padding: 20px;
+  justify-content: center;
+  padding: 20px 16px;
+  text-align: center;
   position: relative;
   z-index: 1;
 }
 
-.stat-icon-wrapper {
-  margin-left: 16px;
-}
-
-.stat-icon {
-  color: rgba(255, 255, 255, 0.9);
-}
-
 .stat-info {
-  color: white;
-}
-
-.stat-value {
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 }
 
 .stat-label {
-  font-size: 0.875rem;
-  opacity: 0.9;
-  margin: 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 2px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
 }
 
-.table-title-header {
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
-  color: white;
-  padding: 16px 20px;
+.stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 4px;
 }
 
-.title-text {
+.stat-change {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
   font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
 }
 
-.table-spacer {
-  height: 8px;
+.stat-change.positive {
+  color: #34d399;
 }
 
-.view-btn {
-  background: #e3f2fd !important;
-  color: #1976d2 !important;
-}
-
-.delete-btn {
-  background: #ffebee !important;
-  color: #e53935 !important;
-}
-
-.dialog-header {
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: white;
+  font-size: 24px;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%) !important;
+  box-shadow: 0 6px 16px rgba(6, 182, 212, 0.4);
+}
+
+.stat-icon.team {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+.stat-icon.unique {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+}
+
+.stat-icon.average {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%) !important;
+  box-shadow: 0 6px 16px rgba(6, 182, 212, 0.4);
+}
+
+/* Team List Header */
+.team-list-header {
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%);
+  border-radius: 16px;
+  margin-bottom: 24px;
+  padding: 16px 24px;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.team-list-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 16px;
+  padding: 2px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #10b981 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.list-header-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
-.dialog-title {
+.list-header-info {
+  flex: 1;
+}
+
+.list-header-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0 0 2px 0;
   display: flex;
   align-items: center;
+  gap: 8px;
 }
 
-.close-btn {
-  color: white !important;
+.list-header-title i {
+  color: #10b981;
+  font-size: 20px;
+}
+
+.list-header-subtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+.list-header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.list-action-btn {
+  padding: 8px 18px;
+  border-radius: 12px;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.list-action-btn.primary {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.list-action-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+.list-action-btn i {
+  font-size: 16px;
+}
+
+/* Member Dialog */
+.member-dialog {
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%) !important;
+  border: 2px solid transparent !important;
+  position: relative;
+  overflow: hidden;
+  direction: rtl;
+  text-align: right;
+}
+
+.member-dialog::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 16px;
+  padding: 2px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #10b981 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.dialog-header {
+  background: rgba(16, 185, 129, 0.1) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  padding: 20px 24px !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+  direction: rtl;
+  text-align: right;
+}
+
+.dialog-header i {
+  color: #10b981;
+  font-size: 24px;
+}
+
+.dialog-content {
+  padding: 24px !important;
+  position: relative;
+  z-index: 1;
+  direction: rtl;
+  text-align: right;
+}
+
+.dialog-content :deep(.v-field) {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px;
+  direction: rtl;
+  text-align: right;
+}
+
+.dialog-content :deep(.v-field__outline) {
+  color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.dialog-content :deep(.v-field--focused .v-field__outline) {
+  color: #10b981 !important;
+}
+
+.dialog-content :deep(.v-label) {
+  color: rgba(255, 255, 255, 0.7) !important;
+  right: 12px !important;
+  left: auto !important;
+}
+
+.dialog-content :deep(.v-field__input) {
+  color: rgba(255, 255, 255, 0.95) !important;
+  text-align: right;
+  direction: rtl;
+}
+
+.dialog-content :deep(.v-input__details) {
+  direction: rtl;
+  text-align: right;
 }
 
 .dialog-actions {
-  background: #f5f5f5;
+  padding: 16px 24px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 1;
+  direction: rtl;
+  text-align: right;
 }
 
-.filter-select :deep(.v-field__input) {
-  color: #1a1a1a !important;
+.dialog-btn {
+  padding: 10px 24px;
+  border-radius: 12px;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
 }
 
-.filter-select :deep(.v-label) {
-  color: #666666 !important;
+.dialog-btn.cancel {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Table text improvements */
-.users-data-table :deep(.v-data-table__tr td) {
-  color: #1a1a1a !important;
-  font-weight: 500 !important;
+.dialog-btn.cancel:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
 }
 
-.users-data-table :deep(.font-weight-medium) {
-  color: #1a1a1a !important;
-  font-weight: 600 !important;
+.dialog-btn.save {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
-.users-data-table :deep(.text-caption) {
-  color: #555555 !important;
+.dialog-btn.save:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
 }
 
-.users-data-table :deep(.text-grey) {
-  color: #666666 !important;
+.dialog-btn.save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-.users-data-table :deep(.text-body-2) {
-  color: #333333 !important;
+.dialog-btn i {
+  font-size: 18px;
 }
 
-/* View dialog text improvements */
-.view-user-dialog h3,
-.view-user-dialog h4 {
-  color: #1a1a1a !important;
+.v-card {
+  border-radius: 12px;
 }
 
-.view-user-dialog .text-caption {
-  color: #555555 !important;
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .team-container {
+    padding: 24px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .list-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .list-action-btn.primary {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
-.view-user-dialog .v-list-item-title {
-  color: #1a1a1a !important;
-  font-weight: 600 !important;
+@media (max-width: 768px) {
+  .team-container {
+    padding: 16px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .stat-card-content {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 16px;
+    padding: 16px;
+    text-align: right;
+  }
+
+  .stat-icon {
+    margin-bottom: 0;
+  }
+
+  .stat-info {
+    align-items: flex-start;
+  }
+
+  .stat-value {
+    font-size: 24px;
+  }
+
+  .team-list-header {
+    padding: 14px 18px;
+  }
+
+  .list-header-title {
+    font-size: 16px;
+  }
+
+  .list-action-btn {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
+  /* Dialog responsive */
+  :deep(.v-dialog) {
+    margin: 16px !important;
+  }
+
+  .dialog-header {
+    font-size: 18px !important;
+    padding: 16px 20px !important;
+  }
+
+  .dialog-content {
+    padding: 20px !important;
+  }
+
+  .dialog-actions {
+    padding: 14px 20px !important;
+  }
+
+  .dialog-btn {
+    padding: 8px 18px;
+    font-size: 13px;
+  }
+
+  /* Table responsive */
+  .v-data-table :deep(.v-table__wrapper) {
+    overflow-x: auto;
+  }
+
+  .v-data-table :deep(th),
+  .v-data-table :deep(td) {
+    white-space: nowrap;
+    font-size: 13px;
+    padding: 10px 12px !important;
+  }
 }
 
-.view-user-dialog .v-list-item-subtitle {
-  color: #444444 !important;
+@media (max-width: 480px) {
+  .team-container {
+    padding: 12px;
+  }
+
+  .stat-card {
+    border-radius: 12px !important;
+  }
+
+  .stat-icon {
+    width: 42px;
+    height: 42px;
+    font-size: 20px;
+  }
+
+  .stat-value {
+    font-size: 20px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+  }
+
+  .stat-change {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+
+  .team-list-header {
+    padding: 12px 14px;
+    border-radius: 12px;
+  }
+
+  .list-header-title {
+    font-size: 14px;
+  }
+
+  .list-header-subtitle {
+    font-size: 11px;
+  }
+
+  .list-action-btn {
+    padding: 8px 12px;
+    font-size: 11px;
+    border-radius: 10px;
+  }
+
+  .list-action-btn i {
+    font-size: 14px;
+  }
+
+  /* Dialog full width */
+  :deep(.v-dialog) {
+    margin: 8px !important;
+  }
+
+  :deep(.v-dialog > .v-overlay__content) {
+    max-width: calc(100% - 16px) !important;
+  }
+
+  .dialog-header {
+    font-size: 16px !important;
+    padding: 14px 16px !important;
+  }
+
+  .dialog-header i {
+    font-size: 20px;
+  }
+
+  .dialog-content {
+    padding: 16px !important;
+  }
+
+  .dialog-actions {
+    padding: 12px 16px !important;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .dialog-btn {
+    padding: 8px 14px;
+    font-size: 12px;
+    flex: 1;
+    min-width: 100px;
+    justify-content: center;
+  }
+
+  /* Table horizontal scroll */
+  .v-data-table :deep(.v-table__wrapper) {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .v-data-table :deep(th),
+  .v-data-table :deep(td) {
+    font-size: 12px;
+    padding: 8px 10px !important;
+  }
+
+  /* Project chips */
+  .v-data-table :deep(.v-chip) {
+    font-size: 10px !important;
+    height: 22px !important;
+  }
 }
 
-/* Add dialog text improvements */
-.add-user-dialog .dialog-content {
-  background: #ffffff !important;
-}
+@media (max-width: 360px) {
+  .team-container {
+    padding: 8px;
+  }
 
-.add-user-dialog :deep(.v-field__input) {
-  color: #1a1a1a !important;
-  font-weight: 500 !important;
-}
+  .stat-card-content {
+    padding: 12px;
+    gap: 12px;
+  }
 
-.add-user-dialog :deep(.v-field input) {
-  color: #1a1a1a !important;
-}
+  .stat-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 18px;
+  }
 
-.add-user-dialog :deep(.v-label) {
-  color: #333333 !important;
-  font-weight: 600 !important;
-}
+  .stat-value {
+    font-size: 18px;
+  }
 
-.add-user-dialog :deep(.v-field--focused .v-label) {
-  color: #1976d2 !important;
-}
+  .team-list-header {
+    padding: 10px 12px;
+  }
 
-.add-user-dialog :deep(.v-select__selection-text) {
-  color: #1a1a1a !important;
-}
+  .list-header-title {
+    font-size: 13px;
+  }
 
-.add-user-dialog :deep(.v-list-item-title) {
-  color: #1a1a1a !important;
-}
+  .dialog-header {
+    font-size: 15px !important;
+    padding: 12px 14px !important;
+  }
 
-/* Delete dialog text improvements */
-.delete-confirm-dialog h4 {
-  color: #1a1a1a !important;
-}
+  .dialog-content {
+    padding: 12px !important;
+  }
 
-.delete-confirm-dialog .text-caption {
-  color: #555555 !important;
-}
+  .dialog-actions {
+    padding: 10px 12px !important;
+  }
 
-.delete-confirm-dialog .text-body-2 {
-  color: #333333 !important;
+  .dialog-btn {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
 }
 </style>

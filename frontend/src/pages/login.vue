@@ -96,7 +96,7 @@ const errorMessage = ref('')
 const showPassword = ref(false)
 
 const handleLogin = async () => {
-  // التحقق من الحقول
+  // Validate fields
   if (!formData.value.username || !formData.value.password) {
     errorMessage.value = 'يرجى إدخال اسم المستخدم وكلمة المرور'
     return
@@ -145,8 +145,9 @@ const handleLogin = async () => {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 50%, #c7d2fe 100%);
+  background: linear-gradient(135deg, #1a2332 0%, #0d1721 100%);
   padding: 20px;
+  direction: rtl;
 }
 
 .login-container {
@@ -155,14 +156,14 @@ const handleLogin = async () => {
 }
 
 .login-box {
-  border-radius: 16px;
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 10px 25px -5px rgba(67, 56, 202, 0.2), 0 8px 10px -6px rgba(67, 56, 202, 0.1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(6, 182, 212, 0.2);
 }
 
-/* Header - Indigo gradient like sidebar */
+/* Header - Matching app theme */
 .login-header {
-  background: linear-gradient(135deg, #4338ca 0%, #6366f1 100%);
+  background: linear-gradient(135deg, #018790 0%, #005461 100%);
   position: relative;
   overflow: hidden;
 }
@@ -173,11 +174,11 @@ const handleLogin = async () => {
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #a5b4fc 0%, #c7d2fe 50%, #e0e7ff 100%);
+  background: linear-gradient(90deg, #10b981 0%, #06b6d4 50%, #14b8a6 100%);
 }
 
 .header-content {
-  padding: 24px;
+  padding: 28px 24px;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -186,79 +187,114 @@ const handleLogin = async () => {
 .header-text {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .main-title {
   color: white;
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: 1.35rem;
+  font-weight: 700;
   margin: 0;
   letter-spacing: 0.3px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .subtitle {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.9rem;
   margin: 0;
+  font-weight: 500;
 }
 
-/* Form Section */
+/* Form Section - Matching app dark theme */
 .login-form-section {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  padding: 24px;
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%);
+  padding: 28px 24px;
 }
 
 /* Text field styling */
+.login-form-section :deep(.v-field) {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px !important;
+}
+
 .login-form-section :deep(.v-field__input) {
-  color: #1e293b !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  direction: rtl !important;
+  text-align: right !important;
 }
 
 .login-form-section :deep(.v-label) {
-  color: #64748b !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  right: 12px !important;
+  left: auto !important;
 }
 
 .login-form-section :deep(.v-field--focused .v-label) {
-  color: #4338ca !important;
+  color: #10b981 !important;
 }
 
 .login-form-section :deep(.v-field__outline) {
-  color: #c7d2fe !important;
+  color: rgba(6, 182, 212, 0.3) !important;
 }
 
 .login-form-section :deep(.v-field--focused .v-field__outline) {
-  color: #4338ca !important;
+  color: #10b981 !important;
+}
+
+.login-form-section :deep(.v-field:hover .v-field__outline) {
+  color: rgba(6, 182, 212, 0.5) !important;
 }
 
 .login-form-section :deep(.v-icon) {
-  color: #64748b !important;
+  color: rgba(255, 255, 255, 0.6) !important;
 }
 
 .login-form-section :deep(.v-field--focused .v-icon) {
-  color: #4338ca !important;
+  color: #10b981 !important;
 }
 
-/* Login Button - Indigo gradient */
+/* RTL field adjustments */
+.login-form-section :deep(.v-field__prepend-inner) {
+  padding-right: 0 !important;
+  padding-left: 8px !important;
+}
+
+.login-form-section :deep(.v-field__append-inner) {
+  padding-left: 0 !important;
+  padding-right: 8px !important;
+}
+
+/* Login Button - Matching app green gradient */
 .login-btn {
-  background: linear-gradient(135deg, #4338ca 0%, #6366f1 100%) !important;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
   color: white !important;
   font-weight: 600 !important;
   letter-spacing: 0.5px;
-  box-shadow: 0 4px 6px -1px rgba(67, 56, 202, 0.3) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3) !important;
+  transition: all 0.3s ease !important;
 }
 
 .login-btn:hover {
-  background: linear-gradient(135deg, #3730a3 0%, #4338ca 100%) !important;
-  box-shadow: 0 6px 12px rgba(67, 56, 202, 0.4) !important;
+  background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4) !important;
+  transform: translateY(-2px);
 }
 
 .login-btn :deep(.v-icon) {
   color: white !important;
 }
 
-/* Responsive - Only responsive improvements, no theme/logic changes */
+/* Error alert styling */
+.login-form-section :deep(.v-alert) {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+  border-radius: 12px !important;
+  direction: rtl !important;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
   .login-page {
     padding: 16px;
@@ -269,20 +305,20 @@ const handleLogin = async () => {
   }
 
   .header-content {
-    padding: 20px;
+    padding: 24px 20px;
     gap: 12px;
   }
 
   .main-title {
-    font-size: 1.15rem;
+    font-size: 1.2rem;
   }
 
   .subtitle {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
   }
 
   .login-form-section {
-    padding: 20px;
+    padding: 24px 20px;
   }
 }
 
@@ -295,31 +331,36 @@ const handleLogin = async () => {
     max-width: 100%;
   }
 
+  .login-box {
+    border-radius: 16px;
+  }
+
   .header-content {
-    padding: 16px;
+    padding: 20px 16px;
     gap: 10px;
     flex-direction: column;
     text-align: center;
   }
 
   .header-content .v-icon {
-    font-size: 32px !important;
+    font-size: 36px !important;
   }
 
   .main-title {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
   }
 
   .subtitle {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
   }
 
   .login-form-section {
-    padding: 16px;
+    padding: 20px 16px;
   }
 
   .login-btn {
-    font-size: 0.9rem !important;
+    font-size: 0.95rem !important;
+    border-radius: 10px !important;
   }
 }
 
@@ -329,15 +370,15 @@ const handleLogin = async () => {
   }
 
   .header-content {
-    padding: 12px;
+    padding: 16px 12px;
   }
 
   .main-title {
-    font-size: 1rem;
+    font-size: 1.05rem;
   }
 
   .login-form-section {
-    padding: 12px;
+    padding: 16px 12px;
   }
 }
 </style>

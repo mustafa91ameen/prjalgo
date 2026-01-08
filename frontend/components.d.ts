@@ -10,18 +10,12 @@ declare module 'vue' {
   export interface GlobalComponents {
     AppFooter: typeof import('./src/components/AppFooter.vue')['default']
     AppLayout: typeof import('./src/components/AppLayout.vue')['default']
-    DataTable: typeof import('./src/components/DataTable.vue')['default']
-    EquipmentForm: typeof import('./src/components/EquipmentForm.vue')['default']
-    ExpenseForm: typeof import('./src/components/ExpenseForm.vue')['default']
+    GlobalToast: typeof import('./src/components/GlobalToast.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     IconFallback: typeof import('./src/components/IconFallback.vue')['default']
-    LaborForm: typeof import('./src/components/LaborForm.vue')['default']
-    MaterialForm: typeof import('./src/components/MaterialForm.vue')['default']
-    ModernDialog: typeof import('./src/components/ModernDialog.vue')['default']
     PageHeader: typeof import('./src/components/PageHeader.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    SimpleDialog: typeof import('./src/components/SimpleDialog.vue')['default']
     SmartIcon: typeof import('./src/components/SmartIcon.vue')['default']
   }
 }

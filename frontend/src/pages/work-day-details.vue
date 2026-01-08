@@ -1,1368 +1,871 @@
 <template>
-  <div class="work-day-details-page">
-    <!-- Header Section -->
-    <div class="page-header glass-effect gradient-animation">
-      <div class="header-content">
-        <div class="header-text">
-          <h1 class="page-title text-glow fade-in">تفاصيل يوم العمل</h1>
-          <p class="page-subtitle fade-in">معلومات مفصلة عن يوم العمل المحدد</p>
+  <div class="work-day-details-container">
+    <!-- Page Header -->
+    <PageHeader
+      title="تفاصيل يوم العمل"
+      subtitle="عرض تفاصيل يوم العمل الكاملة"
+      badge="تفاصيل"
+      badgeType="info"
+      class="details-header"
+    >
+      <template #actions>
+        <button class="page-action-btn secondary" @click="$router.back()">
+          <i class="mdi mdi-arrow-right"></i>
+          رجوع
+        </button>
+        <button class="page-action-btn primary">
+          <i class="mdi mdi-pencil"></i>
+          تعديل
+        </button>
+      </template>
+    </PageHeader>
+
+    <!-- Management Sections Cards -->
+    <div class="management-sections-grid">
+      <!-- المواد والمصاريف اليومية -->
+      <div class="section-card materials-card" :class="{ 'card-disabled': !materialsEnabled }">
+        <div class="card-toggle">
+          <label class="toggle-switch">
+            <input type="checkbox" v-model="materialsEnabled">
+            <span class="toggle-slider"></span>
+          </label>
         </div>
-        <v-btn 
-          icon="mdi-arrow-right" 
-          @click="goBack" 
-          class="back-btn"
-          size="small"
-        >
-          <v-icon size="20" color="white">mdi-arrow-right</v-icon>
-        </v-btn>
+        <div class="section-card-content">
+          <div class="section-icon">
+            <i class="mdi mdi-package-variant"></i>
+          </div>
+          <div class="section-info">
+            <h3 class="section-title">المواد والمصاريف اليومية</h3>
+            <p class="section-subtitle">إدارة المواد والمصروفات اليومية للمشروع</p>
+          </div>
+          <div class="section-stats">
+            <div class="stat-item">
+              <span class="stat-number">{{ materials.length }}</span>
+              <span class="stat-label">مادة</span>
+            </div>
+          </div>
+          <button class="section-btn" @click="goToMaterialsExpenses" :disabled="!materialsEnabled">
+            <i class="mdi mdi-eye"></i>
+            عرض التفاصيل
+          </button>
+        </div>
+      </div>
+
+      <!-- الأيدي العاملة -->
+      <div class="section-card labor-card" :class="{ 'card-disabled': !laborEnabled }">
+        <div class="card-toggle">
+          <label class="toggle-switch">
+            <input type="checkbox" v-model="laborEnabled">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="section-card-content">
+          <div class="section-icon">
+            <i class="mdi mdi-account-hard-hat"></i>
+          </div>
+          <div class="section-info">
+            <h3 class="section-title">الأيدي العاملة</h3>
+            <p class="section-subtitle">إدارة العمال والأجور اليومية</p>
+          </div>
+          <div class="section-stats">
+            <div class="stat-item">
+              <span class="stat-number">{{ labor.length }}</span>
+              <span class="stat-label">عامل</span>
+            </div>
+          </div>
+          <button class="section-btn" @click="goToLaborDetails" :disabled="!laborEnabled">
+            <i class="mdi mdi-eye"></i>
+            عرض التفاصيل
+          </button>
+        </div>
+      </div>
+
+      <!-- الآليات -->
+      <div class="section-card equipment-card" :class="{ 'card-disabled': !equipmentEnabled }">
+        <div class="card-toggle">
+          <label class="toggle-switch">
+            <input type="checkbox" v-model="equipmentEnabled">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="section-card-content">
+          <div class="section-icon">
+            <i class="mdi mdi-excavator"></i>
+          </div>
+          <div class="section-info">
+            <h3 class="section-title">الآليات</h3>
+            <p class="section-subtitle">إدارة المعدات والآليات المستخدمة</p>
+          </div>
+          <div class="section-stats">
+            <div class="stat-item">
+              <span class="stat-number">{{ equipment.length }}</span>
+              <span class="stat-label">آلية</span>
+            </div>
+          </div>
+          <button class="section-btn" @click="goToEquipmentDetails" :disabled="!equipmentEnabled">
+            <i class="mdi mdi-eye"></i>
+            عرض التفاصيل
+          </button>
+        </div>
       </div>
     </div>
 
-    <!-- Content Container -->
-    <div class="content-container">
+    <!-- Sections Title Bar -->
+    <div class="sections-title-bar">
+      <div class="sections-title-content">
+        <i class="mdi mdi-view-grid-outline"></i>
+        <span>أقسام إدارة يوم العمل</span>
+      </div>
+    </div>
+
     <!-- Work Day Info Card -->
-    <v-card class="info-card mb-4" elevation="2">
-      <v-card-title class="info-card-title">
-        <v-icon class="me-2" color="primary">mdi-information</v-icon>
+    <v-card class="details-card">
+      <v-card-title class="card-header">
+        <i class="mdi mdi-information"></i>
         معلومات يوم العمل
       </v-card-title>
-      <v-card-text>
-        <v-row>
-          <v-col cols="12" md="6">
-            <div class="info-item">
-              <label>الوصف:</label>
-              <span>{{ workDayInfo.description || 'غير محدد' }}</span>
+      <v-card-text class="card-body">
+        <div class="details-grid">
+          <!-- مكان العمل -->
+          <div class="detail-item">
+            <div class="detail-label">
+              <i class="mdi mdi-map-marker"></i>
+              مكان العمل
             </div>
-          </v-col>
-          <v-col cols="12" md="6">
-            <div class="info-item">
-              <label>التاريخ:</label>
-              <span dir="ltr">{{ workDayInfo.date || '-' }}</span>
+            <div class="detail-value">{{ workdayDetails.location || '-' }}</div>
+          </div>
+
+          <!-- رقم الاستمارة -->
+          <div class="detail-item">
+            <div class="detail-label">
+              <i class="mdi mdi-file-document"></i>
+              رقم الاستمارة
             </div>
-          </v-col>
-          <v-col cols="12" md="6">
-            <div class="info-item">
-              <label>اليوم:</label>
-              <span>{{ workDayInfo.day || '-' }}</span>
+            <div class="detail-value">{{ workdayDetails.formNumber || '-' }}</div>
+          </div>
+
+          <!-- التاريخ -->
+          <div class="detail-item">
+            <div class="detail-label">
+              <i class="mdi mdi-calendar-today"></i>
+              التاريخ
             </div>
-          </v-col>
-          <v-col cols="12" md="6">
-            <div class="info-item">
-              <label>الحالة:</label>
-              <span>{{ workDayInfo.status || '-' }}</span>
+            <div class="detail-value">{{ workdayDetails.date || '-' }}</div>
+          </div>
+
+          <!-- اليوم -->
+          <div class="detail-item">
+            <div class="detail-label">
+              <i class="mdi mdi-calendar"></i>
+              اليوم
             </div>
-          </v-col>
-          <v-col cols="12" md="6">
-            <div class="info-item">
-              <label>التكلفة الإجمالية:</label>
-              <span dir="ltr">{{ workDayInfo.totalCost || '0' }}</span>
+            <div class="detail-value">{{ workdayDetails.day || '-' }}</div>
+          </div>
+
+          <!-- فترة العمل من -->
+          <div class="detail-item">
+            <div class="detail-label">
+              <i class="mdi mdi-clock-start"></i>
+              فترة العمل من
             </div>
-          </v-col>
-          <v-col cols="12" md="6">
-            <div class="info-item">
-              <label>ملاحظات:</label>
-              <span>{{ workDayInfo.notes || 'لا توجد ملاحظات' }}</span>
+            <div class="detail-value">{{ workdayDetails.workPeriodFrom || '-' }}</div>
+          </div>
+
+          <!-- فترة العمل إلى -->
+          <div class="detail-item">
+            <div class="detail-label">
+              <i class="mdi mdi-clock-end"></i>
+              فترة العمل إلى
             </div>
-          </v-col>
-        </v-row>
+            <div class="detail-value">{{ workdayDetails.workPeriodTo || '-' }}</div>
+          </div>
+
+          <!-- عدد العمال -->
+          <div class="detail-item">
+            <div class="detail-label">
+              <i class="mdi mdi-account-group"></i>
+              عدد العمال
+            </div>
+            <div class="detail-value">{{ labor.length }} عامل</div>
+          </div>
+
+          <!-- التكلفة الإجمالية -->
+          <div class="detail-item">
+            <div class="detail-label">
+              <i class="mdi mdi-cash"></i>
+              التكلفة الإجمالية
+            </div>
+            <div class="detail-value">{{ formatCurrency(workdayDetails.totalCost) }}</div>
+          </div>
+
+          <!-- الحالة -->
+          <div class="detail-item">
+            <div class="detail-label">
+              <i class="mdi mdi-check-circle"></i>
+              الحالة
+            </div>
+            <div class="detail-value">
+              <v-chip :color="getStatusColor(workdayDetails.status)" size="small">{{ getStatusText(workdayDetails.status) }}</v-chip>
+            </div>
+          </div>
+
+          <!-- الوصف -->
+          <div class="detail-item full-width">
+            <div class="detail-label">
+              <i class="mdi mdi-text"></i>
+              الوصف
+            </div>
+            <div class="detail-value">{{ workdayDetails.description || '-' }}</div>
+          </div>
+        </div>
       </v-card-text>
     </v-card>
 
-    <!-- Categories Section -->
-    <v-card class="categories-card mb-4" elevation="2">
-      <v-card-title class="categories-title">
-        <v-icon class="me-2" color="success">mdi-view-grid</v-icon>
-        أقسام إدارة يوم العمل
-        <v-spacer />
-        <v-chip 
-          :color="getOverallStatus().color" 
-          variant="elevated"
-          class="status-chip"
-        >
-          <v-icon :icon="getOverallStatus().icon" class="me-1" />
-          {{ getOverallStatus().text }}
-        </v-chip>
+    <!-- Workers List Card -->
+    <v-card class="workers-card mt-6">
+      <v-card-title class="card-header">
+        <i class="mdi mdi-account-multiple"></i>
+        قائمة العمال
       </v-card-title>
-      <v-card-text>
-        <v-row>
-          <!-- Materials & Expenses Combined -->
-          <v-col cols="12" md="4" v-if="canReadMaterials">
-            <v-card
-              class="category-card materials-expenses"
-              :class="{ 'disabled-card': !categoriesEnabled.materialsExpenses }"
-              elevation="3"
-              @click="categoriesEnabled.materialsExpenses ? showCategoryDetails('materials-expenses') : null"
-            >
-              <v-card-text class="text-center">
-                <!-- Toggle Switch -->
-                <div class="toggle-container">
-                  <v-switch
-                    v-model="categoriesEnabled.materialsExpenses"
-                    color="success"
-                    hide-details
-                    @click.stop
-                    class="toggle-switch"
-                  />
-                  <span class="toggle-label">{{ categoriesEnabled.materialsExpenses ? 'مفعل' : 'معطل' }}</span>
-                </div>
-                
-                <div class="category-icon" :class="{ 'disabled-icon': !categoriesEnabled.materialsExpenses }">🔨💰</div>
-                <h4 class="category-title" :class="{ 'disabled-text': !categoriesEnabled.materialsExpenses }">المواد والمصاريف اليومية</h4>
-                <p class="category-description" :class="{ 'disabled-text': !categoriesEnabled.materialsExpenses }">مواد البناء والنفقات اليومية</p>
-                <div class="category-actions-row">
-                  <v-chip 
-                    class="count-chip" 
-                    :color="categoriesEnabled.materialsExpenses ? 'white' : 'grey'" 
-                    size="small"
-                  >
-                    5 مواد + 3 مصاريف
-                  </v-chip>
-                </div>
-                <v-btn 
-                  class="details-btn mt-2" 
-                  :color="categoriesEnabled.materialsExpenses ? 'white' : 'grey'" 
-                  variant="elevated"
-                  :disabled="!categoriesEnabled.materialsExpenses"
-                  @click.stop="showCategoryDetails('materials-expenses')"
-                  size="small"
-                  block
-                >
-                  التفاصيل
-                </v-btn>
-              </v-card-text>
-            </v-card>
-          </v-col>
-
-          <!-- Labor -->
-          <v-col cols="12" md="4" v-if="canReadLabor">
-            <v-card
-              class="category-card labor"
-              :class="{ 'disabled-card': !categoriesEnabled.labor }"
-              elevation="3"
-              @click="categoriesEnabled.labor ? showCategoryDetails('labor') : null"
-            >
-              <v-card-text class="text-center">
-                <!-- Toggle Switch -->
-                <div class="toggle-container">
-                  <v-switch
-                    v-model="categoriesEnabled.labor"
-                    color="success"
-                    hide-details
-                    @click.stop
-                    class="toggle-switch"
-                  />
-                  <span class="toggle-label">{{ categoriesEnabled.labor ? 'مفعل' : 'معطل' }}</span>
-                </div>
-                
-                <div class="category-icon" :class="{ 'disabled-icon': !categoriesEnabled.labor }">👷</div>
-                <h4 class="category-title" :class="{ 'disabled-text': !categoriesEnabled.labor }">الأيدي العاملة</h4>
-                <p class="category-description" :class="{ 'disabled-text': !categoriesEnabled.labor }">العمال والموظفين</p>
-                <div class="category-actions-row">
-                  <v-chip 
-                    class="count-chip" 
-                    :color="categoriesEnabled.labor ? 'white' : 'grey'" 
-                    size="small"
-                  >
-                    8 عامل
-                  </v-chip>
-                </div>
-                <v-btn 
-                  class="details-btn mt-2" 
-                  :color="categoriesEnabled.labor ? 'white' : 'grey'" 
-                  variant="elevated"
-                  :disabled="!categoriesEnabled.labor"
-                  @click.stop="showCategoryDetails('labor')"
-                  size="small"
-                  block
-                >
-                  التفاصيل
-                </v-btn>
-              </v-card-text>
-            </v-card>
-          </v-col>
-
-          <!-- Equipment -->
-          <v-col cols="12" md="4" v-if="canReadEquipment">
-            <v-card
-              class="category-card equipment"
-              :class="{ 'disabled-card': !categoriesEnabled.equipment }"
-              elevation="3"
-              @click="categoriesEnabled.equipment ? showCategoryDetails('equipment') : null"
-            >
-              <v-card-text class="text-center">
-                <!-- Toggle Switch -->
-                <div class="toggle-container">
-                  <v-switch
-                    v-model="categoriesEnabled.equipment"
-                    color="success"
-                    hide-details
-                    @click.stop
-                    class="toggle-switch"
-                  />
-                  <span class="toggle-label">{{ categoriesEnabled.equipment ? 'مفعل' : 'معطل' }}</span>
-                </div>
-                
-                <div class="category-icon" :class="{ 'disabled-icon': !categoriesEnabled.equipment }">🚜</div>
-                <h4 class="category-title" :class="{ 'disabled-text': !categoriesEnabled.equipment }">الآليات</h4>
-                <p class="category-description" :class="{ 'disabled-text': !categoriesEnabled.equipment }">المعدات والآلات</p>
-                <div class="category-actions-row">
-                  <v-chip 
-                    class="count-chip" 
-                    :color="categoriesEnabled.equipment ? 'white' : 'grey'" 
-                    size="small"
-                  >
-                    4 آلة
-                  </v-chip>
-                </div>
-                <v-btn 
-                  class="details-btn mt-2" 
-                  :color="categoriesEnabled.equipment ? 'white' : 'grey'" 
-                  variant="elevated"
-                  :disabled="!categoriesEnabled.equipment"
-                  @click.stop="showCategoryDetails('equipment')"
-                  size="small"
-                  block
-                >
-                  التفاصيل
-                </v-btn>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
+      <v-card-text class="card-body">
+        <v-data-table
+          :headers="laborHeaders"
+          :items="labor"
+          class="elevation-0"
+        >
+          <template v-slot:item.index="{ index }">
+            {{ index + 1 }}
+          </template>
+          <template v-slot:item.salary="{ item }">
+            {{ formatCurrency(item.salary) }}
+          </template>
+        </v-data-table>
       </v-card-text>
     </v-card>
-
-    <!-- Actions Section -->
-    <v-card class="actions-card" elevation="2">
-      <v-card-text class="text-center">
-        <v-btn
-          v-if="canUpdate"
-          color="primary"
-          size="small"
-          class="me-2 action-button"
-          @click="editWorkDay"
-        >
-          <v-icon class="me-2" size="18">mdi-pencil</v-icon>
-          تعديل يوم العمل
-        </v-btn>
-        <v-btn
-          v-if="canDelete"
-          color="error"
-          size="small"
-          class="ms-2 action-button"
-          @click="deleteWorkDay"
-        >
-          <v-icon class="me-2" size="18">mdi-delete</v-icon>
-          حذف يوم العمل
-        </v-btn>
-      </v-card-text>
-    </v-card>
-
-    <!-- Category Details Dialog -->
-    <v-dialog v-model="showCategoryDialog" max-width="800" persistent scrollable>
-      <v-card class="dialog-card">
-        <v-card-title class="dialog-title">
-          <v-icon class="me-2" color="primary">{{ selectedCategory.icon }}</v-icon>
-          {{ selectedCategory.title }}
-        </v-card-title>
-        <v-card-text class="dialog-content">
-          <p class="dialog-description">{{ selectedCategory.description }}</p>
-          <v-alert type="info" variant="tonal" class="mt-4">
-            <v-icon class="me-2">mdi-information</v-icon>
-            هنا ستظهر التفاصيل الكاملة لهذا القسم
-          </v-alert>
-          
-          <!-- تفاصيل إضافية حسب النوع -->
-          <div v-if="selectedCategory.title === 'المواد والمصاريف اليومية'" class="mt-4">
-            <h4>قائمة المواد:</h4>
-            <v-list>
-              <v-list-item>أسمنت - 50 كيس</v-list-item>
-              <v-list-item>رمل - 10 متر مكعب</v-list-item>
-              <v-list-item>حصى - 8 متر مكعب</v-list-item>
-              <v-list-item>حديد - 2 طن</v-list-item>
-              <v-list-item>طوب - 1000 قطعة</v-list-item>
-            </v-list>
-          </div>
-          
-          <div v-else-if="selectedCategory.title === 'الأيدي العاملة'" class="mt-4">
-            <h4>قائمة العمال:</h4>
-            <v-list>
-              <v-list-item>أحمد محمد - مهندس</v-list-item>
-              <v-list-item>محمد علي - عامل بناء</v-list-item>
-              <v-list-item>علي حسن - عامل بناء</v-list-item>
-              <v-list-item>حسن أحمد - عامل بناء</v-list-item>
-              <v-list-item>أحمد علي - عامل بناء</v-list-item>
-            </v-list>
-          </div>
-          
-          <div v-else-if="selectedCategory.title === 'الآليات'" class="mt-4">
-            <h4>قائمة الآليات:</h4>
-            <v-list>
-              <v-list-item>حفار - 1 آلة</v-list-item>
-              <v-list-item>رافعة - 1 آلة</v-list-item>
-              <v-list-item>خلاطة - 1 آلة</v-list-item>
-              <v-list-item>شاحنة - 1 آلة</v-list-item>
-            </v-list>
-          </div>
-        </v-card-text>
-        <v-card-actions class="dialog-actions">
-          <v-spacer></v-spacer>
-          <v-btn @click="showCategoryDialog = false" color="primary" variant="elevated">
-            <v-icon class="me-2">mdi-close</v-icon>
-            إغلاق
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { getWorkDay } from '../api/workdays'
-import { usePermissions } from '@/composables/usePermissions'
+import PageHeader from '../components/PageHeader.vue'
+import { getWorkday } from '@/api/workdays'
+import { listMaterialsByWorkDay, listLaborByWorkDay, listEquipmentByWorkDay } from '@/api/materials'
+import { useToast } from '@/composables/useToast'
 
+const { error: showError } = useToast()
 const router = useRouter()
 const route = useRoute()
-
-// Permissions for workdays
-const { canCreate, canUpdate, canDelete } = usePermissions('/workdays')
-
-// Permissions for sub-pages
-const { canRead: canReadMaterials } = usePermissions('/workdayMaterials')
-const { canRead: canReadLabor } = usePermissions('/workdayLabor')
-const { canRead: canReadEquipment } = usePermissions('/workdayEquipment')
-
-// Get workDayId and projectId from query params
-const workDayId = ref(route.query.id || null)
-const projectId = ref(route.query.projectId || null)
-
-// Debug: log the route query params
-console.log('[work-day-details] Route query:', route.query)
-console.log('[work-day-details] workDayId:', workDayId.value, 'projectId:', projectId.value)
-
-// Reactive data for categories toggle
-const categoriesEnabled = ref({
-  materialsExpenses: true,
-  labor: true,
-  equipment: true
-})
-
-// حفظ حالة الكروت في localStorage
-const saveCategoriesState = () => {
-  localStorage.setItem('categoriesEnabled', JSON.stringify(categoriesEnabled.value))
-}
-
-// تحميل حالة الكروت من localStorage
-const loadCategoriesState = () => {
-  const saved = localStorage.getItem('categoriesEnabled')
-  if (saved) {
-    try {
-      categoriesEnabled.value = JSON.parse(saved)
-    } catch (error) {
-      console.error('خطأ في تحميل حالة الكروت:', error)
-    }
-  }
-}
-
-// Reactive data
-const showCategoryDialog = ref(false)
-const selectedCategory = ref({})
-
-const workDayInfo = ref({
-  location: '',
-  description: '',
-  date: '',
-  day: '',
-  status: '',
-  totalCost: 0,
-  notes: ''
-})
 const loading = ref(false)
 
-// Fetch work day data from backend
-const loadWorkDayInfo = async () => {
-  if (!workDayId.value) return
+// Work day ID from route
+const workdayId = ref(route.query.id || null)
+
+// Work day details
+const workdayDetails = ref({
+  location: '',
+  formNumber: '',
+  date: '',
+  day: '',
+  workPeriodFrom: '',
+  workPeriodTo: '',
+  workers: 0,
+  totalCost: 0,
+  status: 'pending',
+  description: ''
+})
+
+// Fetch work day details
+const fetchWorkdayDetails = async () => {
+  if (!workdayId.value) return
 
   loading.value = true
   try {
-    const data = await getWorkDay(workDayId.value)
-    if (data) {
-      // Format the date
-      const workDate = new Date(data.workDate)
-      const dayNames = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']
+    const response = await getWorkday(workdayId.value)
+    if (response.success && response.data) {
+      const w = response.data
+      // Format date for display in English
+      const workDate = w.workDate ? new Date(w.workDate) : null
+      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
-      const year = workDate.getFullYear()
-      const month = String(workDate.getMonth() + 1).padStart(2, '0')
-      const dayNum = String(workDate.getDate()).padStart(2, '0')
-
-      workDayInfo.value = {
-        description: data.description || 'غير محدد',
-        date: `${year}/${month}/${dayNum}`,
-        day: dayNames[workDate.getDay()],
-        status: data.status === 'completed' ? 'مكتمل' : 'قيد التنفيذ',
-        totalCost: data.totalCost || 0,
-        notes: data.notes || 'لا توجد ملاحظات'
+      workdayDetails.value = {
+        location: w.notes || '',
+        formNumber: w.id?.toString() || '',
+        date: workDate ? workDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) : '',
+        day: workDate ? dayNames[workDate.getDay()] : '',
+        workPeriodFrom: '',
+        workPeriodTo: '',
+        workers: labor.value.length,
+        totalCost: w.totalCost || 0,
+        status: w.status || 'pending',
+        description: w.description || ''
       }
     }
-  } catch (err) {
-    console.error('Failed to load work day info:', err)
+  } catch (error) {
+    console.error('Error fetching workday details:', error)
+    showError('حدث خطأ في جلب تفاصيل يوم العمل')
   } finally {
     loading.value = false
   }
 }
 
-// Methods
-const goBack = () => {
-  if (projectId.value) {
-    router.push({ path: '/work-days', query: { projectId: projectId.value } })
-  } else {
-    router.push('/work-days')
+// Fetch materials for this workday
+const fetchMaterials = async () => {
+  if (!workdayId.value) return
+  try {
+    const data = await listMaterialsByWorkDay(workdayId.value)
+    materials.value = (data || []).map(m => ({
+      id: m.id,
+      name: m.materialName,
+      quantity: m.quantity,
+      cost: m.cost || 0
+    }))
+  } catch (error) {
+    console.error('Error fetching materials:', error)
   }
 }
 
-// دالة للحصول على الحالة العامة للكروت
-const getOverallStatus = () => {
-  const enabledCount = Object.values(categoriesEnabled.value).filter(Boolean).length
-  const totalCount = Object.keys(categoriesEnabled.value).length
-  
-  if (enabledCount === totalCount) {
-    return {
-      text: 'جميع الأقسام مفعلة',
-      color: 'success',
-      icon: 'mdi-check-circle'
-    }
-  } else if (enabledCount === 0) {
-    return {
-      text: 'جميع الأقسام معطلة',
-      color: 'error',
-      icon: 'mdi-close-circle'
-    }
-  } else {
-    return {
-      text: `${enabledCount} من ${totalCount} مفعلة`,
-      color: 'warning',
-      icon: 'mdi-alert-circle'
-    }
+// Fetch labor for this workday
+const fetchLabor = async () => {
+  if (!workdayId.value) return
+  try {
+    const data = await listLaborByWorkDay(workdayId.value)
+    labor.value = (data || []).map(l => ({
+      id: l.id,
+      name: l.workerName,
+      role: l.jobTitle || '',
+      salary: l.cost || 0
+    }))
+  } catch (error) {
+    console.error('Error fetching labor:', error)
   }
 }
 
-const showCategoryDetails = (category) => {
-  console.log('تم الضغط على:', category) // للتأكد من أن الدالة تعمل
-  
-  if (category === 'materials-expenses') {
-    // الانتقال إلى صفحة المواد والمصاريف
-    router.push({ path: '/materials-expenses-details', query: { workDayId: workDayId.value, projectId: projectId.value } })
-    return
-  }
-
-  if (category === 'labor') {
-    // الانتقال إلى صفحة الأيدي العاملة
-    router.push({ path: '/labor-details', query: { workDayId: workDayId.value, projectId: projectId.value } })
-    return
-  }
-
-  if (category === 'equipment') {
-    // الانتقال إلى صفحة الآليات
-    router.push({ path: '/equipment-details', query: { workDayId: workDayId.value, projectId: projectId.value } })
-    return
-  }
-  
-  const categories = {}
-  
-  selectedCategory.value = categories[category] || {}
-  
-  // إضافة تأخير صغير للتأكد من التحديث
-  setTimeout(() => {
-    showCategoryDialog.value = true
-    console.log('النافذة المنبثقة:', showCategoryDialog.value) // للتأكد من التحديث
-  }, 100)
-}
-
-const editWorkDay = () => {
-  alert('تم الضغط على: تعديل يوم العمل')
-}
-
-const deleteWorkDay = () => {
-  if (confirm('هل أنت متأكد من حذف يوم العمل؟')) {
-    alert('تم الضغط على: حذف يوم العمل')
+// Fetch equipment for this workday
+const fetchEquipment = async () => {
+  if (!workdayId.value) return
+  try {
+    const data = await listEquipmentByWorkDay(workdayId.value)
+    equipment.value = (data || []).map(e => ({
+      id: e.id,
+      name: e.equipmentName,
+      hours: e.quantity || 0,
+      cost: e.cost || 0
+    }))
+  } catch (error) {
+    console.error('Error fetching equipment:', error)
   }
 }
 
-// Lifecycle
-// مراقبة تغييرات حالة الكروت وحفظها تلقائياً
-watch(categoriesEnabled, () => {
-  saveCategoriesState()
-}, { deep: true })
-
+// Initialize
 onMounted(() => {
-  // تحميل حالة الكروت المحفوظة
-  loadCategoriesState()
-
-  // تحميل بيانات يوم العمل من الباكند
-  loadWorkDayInfo()
-
-  console.log('✅ صفحة تفاصيل يوم العمل تم تحميلها بنجاح!')
-  console.log('جميع العناصر ظاهرة ومتاحة للاستخدام')
+  fetchWorkdayDetails()
+  fetchMaterials()
+  fetchLabor()
+  fetchEquipment()
 })
+
+// Toggle states for cards
+const materialsEnabled = ref(true)
+const laborEnabled = ref(true)
+const equipmentEnabled = ref(true)
+
+const goToMaterialsExpenses = () => {
+  router.push({ path: '/materials-expenses', query: { workday_id: workdayId.value } })
+}
+
+const goToLaborDetails = () => {
+  router.push({ path: '/labor-details', query: { workday_id: workdayId.value } })
+}
+
+const goToEquipmentDetails = () => {
+  router.push({ path: '/equipment-details', query: { workday_id: workdayId.value } })
+}
+
+// Materials data (fetched from API)
+const materials = ref([])
+
+// Labor data (fetched from API)
+const labor = ref([])
+
+const laborHeaders = [
+  { title: '#', key: 'index', align: 'center' },
+  { title: 'الاسم', key: 'name', align: 'start' },
+  { title: 'الدور', key: 'role', align: 'center' },
+  { title: 'الأجر اليومي', key: 'salary', align: 'center' }
+]
+
+// Equipment data (fetched from API)
+const equipment = ref([])
+
+// Helper functions
+const formatCurrency = (amount) => {
+  return new Intl.NumberFormat('en-US').format(amount || 0) + ' د.ع'
+}
+
+const getStatusColor = (status) => {
+  const colors = {
+    completed: 'success',
+    in_progress: 'warning',
+    pending: 'info'
+  }
+  return colors[status] || 'grey'
+}
+
+const getStatusText = (status) => {
+  const texts = {
+    completed: 'مكتمل',
+    in_progress: 'قيد التنفيذ',
+    pending: 'معلق'
+  }
+  return texts[status] || status
+}
+
 </script>
 
 <style scoped>
-.work-day-details-page {
-  min-height: 100vh;
-  background: #f5f5f5;
-  padding: 0 !important;
-  padding-top: 0 !important;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
+.work-day-details-container {
+  padding: 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Details Header Custom Color */
+.details-header {
+  background: linear-gradient(135deg, #018790 0%, #005461 100%) !important;
+}
+
+.details-header::before {
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 50%, #06b6d4 100%) !important;
+}
+
+/* Details Card */
+.details-card,
+.workers-card {
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%) !important;
+  border: 2px solid transparent !important;
   position: relative;
-  overflow-x: hidden;
-  direction: rtl;
 }
 
-.page-header {
-  background: linear-gradient(135deg, #1976d2 0%, #1e88e5 25%, #2196f3 50%, #42a5f5 75%, #64b5f6 100%);
-  background-size: 400% 400%;
-  animation: gradientShift 8s ease infinite;
-  color: white;
-  padding: 0.75rem 1.5rem !important;
-  border-radius: 0 !important;
-  margin: 0 !important;
-  margin-bottom: 1.5rem !important;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.2);
-  border: none !important;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.3) !important;
-  backdrop-filter: blur(15px);
-  z-index: 1;
-  width: 100% !important;
-  max-width: 100% !important;
-}
-
-.content-container {
-  padding: 0 2rem 2rem 2rem !important;
-  max-width: 100%;
-}
-
-.header-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  max-width: 100%;
-}
-
-.back-btn {
-  background: rgba(255, 255, 255, 0.25) !important;
-  backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  font-weight: 600;
-  font-size: 0.875rem;
-  letter-spacing: 0.3px;
-  line-height: 1.2;
-  min-width: 36px !important;
-  height: 36px !important;
-}
-
-.back-btn :deep(.v-icon) {
-  color: #ffffff !important;
-}
-
-.back-btn :deep(.v-btn__overlay) {
-  color: #ffffff !important;
-}
-
-.back-btn:hover {
-  background: rgba(255, 255, 255, 0.35) !important;
-  transform: translateX(2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-}
-
-.page-title {
-  font-size: 1.1rem !important;
-  font-weight: 600 !important;
-  margin: 0 !important;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.1);
-  color: #ffffff !important;
-  letter-spacing: 0.3px !important;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  line-height: 1.3 !important;
-  padding: 0.2rem 0.6rem !important;
-  border-radius: 6px !important;
-  display: inline-block;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 2px 8px rgba(26, 35, 126, 0.3);
-}
-
-.page-subtitle {
-  font-size: 0.875rem !important;
-  opacity: 0.9 !important;
-  margin: 0.25rem 0 0 0 !important;
-  color: #ffffff !important;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-  font-weight: 500 !important;
-  letter-spacing: 0.3px !important;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  line-height: 1.3 !important;
-}
-
-.info-card, .categories-card, .actions-card {
-  border-radius: 12px !important;
-  overflow: hidden;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  background: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 4px 16px rgba(25, 118, 210, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(20px);
-  position: relative;
-  z-index: 1;
-  margin-top: 1.5rem !important;
-}
-
-.info-card :deep(.v-card-text) {
-  padding: 0.75rem 1rem !important;
-}
-
-.info-card-title, .categories-title {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
-  background-size: 200% 200%;
-  animation: gradientShift 3s ease infinite;
-  color: #ffffff !important;
-  font-weight: 600 !important;
-  font-size: 0.95rem !important;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 12px rgba(255, 255, 255, 0.2);
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  letter-spacing: 0.3px !important;
-  line-height: 1.3 !important;
-  margin-bottom: 0.75rem !important;
-  padding: 0.5rem 0.875rem !important;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.25);
-}
-
-.categories-title :deep(.v-icon) {
-  font-size: 18px !important;
-}
-
-.categories-title :deep(.v-chip) {
-  font-size: 0.75rem !important;
-  height: 24px !important;
-  padding: 0 8px !important;
-}
-
-.categories-title :deep(.v-chip .v-icon) {
-  font-size: 14px !important;
-}
-
-.categories-title::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  animation: shimmer 3s ease-in-out infinite;
-  pointer-events: none;
-}
-
-.categories-title::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
-  animation: pulse 4s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes shimmer {
-  0% { left: -100%; }
-  100% { left: 100%; }
-}
-
-@keyframes pulse {
-  0%, 100% { 
-    opacity: 0.3; 
-    transform: scale(0.8); 
-  }
-  50% { 
-    opacity: 0.6; 
-    transform: scale(1.2); 
-  }
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.info-item {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem !important;
-  background: rgba(255, 255, 255, 0.7);
-  border-radius: 6px !important;
-  margin-bottom: 0.4rem !important;
-  border-right: 3px solid #3c41d1 !important;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  box-shadow: 0 1px 6px rgba(25, 118, 210, 0.1);
-  backdrop-filter: blur(10px);
-}
-
-.info-item label {
-  font-weight: 600 !important;
-  color: #2c3e50 !important;
-  font-size: 0.875rem !important;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  letter-spacing: 0.3px !important;
-  line-height: 1.3 !important;
-  white-space: nowrap;
-}
-
-.info-item span {
-  color: #34495e !important;
-  font-size: 0.875rem !important;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  font-weight: 500 !important;
-  letter-spacing: 0.2px !important;
-  line-height: 1.3 !important;
-}
-
-.category-card {
-  cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  height: 100%;
-  min-height: 360px !important;
-  border-radius: 20px;
-  overflow: hidden;
-  position: relative;
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  animation: float 4s ease-in-out infinite;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  margin-bottom: 2rem;
-  margin-top: 1rem;
-}
-
-.category-card:hover {
-  transform: translateY(-15px) scale(1.03);
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.4) !important;
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
-.materials-expenses {
-  background: linear-gradient(135deg, #1976d2 0%, #1e88e5 25%, #2196f3 50%, #42a5f5 75%, #64b5f6 100%) !important;
-  background-size: 400% 400%;
-  animation: gradientShift 5s ease infinite;
-  color: white;
-  position: relative;
-  overflow: hidden;
-}
-
-.materials-expenses::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  animation: shimmer 3s infinite;
-  border-radius: 20px;
-  z-index: 1;
-}
-
-.materials-expenses .category-icon {
-  animation: bounce 2s ease-in-out infinite, pulse 3s ease-in-out infinite;
-}
-
-.materials-expenses .category-icon:hover {
-  transform: scale(1.3) rotate(180deg);
-  animation-play-state: paused;
-}
-
-.materials-expenses::after {
+.details-card::before,
+.workers-card::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
-  animation: shimmerDiagonal 4s infinite;
-  border-radius: 20px;
-  z-index: 2;
-}
-
-.labor {
-  background: linear-gradient(135deg, #1976d2 0%, #1e88e5 25%, #2196f3 50%, #42a5f5 75%, #64b5f6 100%) !important;
-  background-size: 400% 400%;
-  animation: gradientShift 6s ease infinite;
-  color: white;
-  position: relative;
-  overflow: hidden;
-}
-
-.labor::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  animation: shimmer 3.5s infinite;
-  border-radius: 20px;
-  z-index: 1;
-}
-
-.labor .category-icon {
-  animation: float 3s ease-in-out infinite, wiggle 2s ease-in-out infinite;
-}
-
-.labor .category-icon:hover {
-  transform: scale(1.2) rotate(360deg);
-  animation-play-state: paused;
-}
-
-.labor::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
-  animation: shimmerDiagonal 4.5s infinite;
-  border-radius: 20px;
-  z-index: 2;
-}
-
-.equipment {
-  background: linear-gradient(135deg, #1976d2 0%, #1e88e5 25%, #2196f3 50%, #42a5f5 75%, #64b5f6 100%) !important;
-  background-size: 400% 400%;
-  animation: gradientShift 7s ease infinite;
-  color: white;
-  position: relative;
-  overflow: hidden;
-}
-
-.equipment::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  animation: shimmer 4s infinite;
-  border-radius: 20px;
-  z-index: 1;
-}
-
-.equipment .category-icon {
-  animation: rotate 4s linear infinite, bounce 2.5s ease-in-out infinite;
-}
-
-.equipment .category-icon:hover {
-  transform: scale(1.25) rotate(720deg);
-  animation-play-state: paused;
-}
-
-.equipment::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
-  animation: shimmerDiagonal 5s infinite;
-  border-radius: 20px;
-  z-index: 2;
-}
-
-.category-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  animation: bounce 2s ease-in-out infinite, rotate 4s linear infinite;
-  transition: all 0.3s ease;
-  display: inline-block;
-}
-
-.category-icon:hover {
-  transform: scale(1.2) rotate(360deg);
-  animation-play-state: paused;
-}
-
-.category-actions-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-  width: 100%;
-}
-
-.category-title {
-  font-size: 1.1rem !important;
-  font-weight: 600 !important;
-  margin: 0 0 0.4rem 0 !important;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.15);
-  color: #ffffff !important;
-  text-stroke: 0.3px rgba(255, 255, 255, 0.2);
-  -webkit-text-stroke: 0.3px rgba(255, 255, 255, 0.2);
-  letter-spacing: 0.3px !important;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  line-height: 1.2 !important;
-  text-align: center;
-}
-
-.category-description {
-  opacity: 1 !important;
-  margin-bottom: 0.75rem !important;
-  margin-top: 0.25rem !important;
-  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-  color: #ffffff !important;
-  font-weight: 500 !important;
-  font-size: 0.85rem !important;
-  text-stroke: 0.2px rgba(255, 255, 255, 0.15);
-  -webkit-text-stroke: 0.2px rgba(255, 255, 255, 0.15);
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  line-height: 1.3 !important;
-  letter-spacing: 0.2px !important;
-}
-
-.count-chip {
-  font-weight: 600 !important;
-  font-size: 0.875rem !important;
-  color: #1a1a1a !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-  background: rgba(255, 255, 255, 0.95) !important;
-  border: 1px solid rgba(0, 0, 0, 0.1) !important;
-  backdrop-filter: blur(10px);
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  letter-spacing: 0.2px !important;
-  line-height: 1.2 !important;
-  padding: 4px 10px !important;
-}
-
-.details-btn {
-  font-weight: 600 !important;
-  font-size: 0.875rem !important;
-  color: #1a1a1a !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-  background: rgba(255, 255, 255, 0.95) !important;
-  border: 1px solid rgba(0, 0, 0, 0.1) !important;
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  letter-spacing: 0.2px !important;
-  line-height: 1.2 !important;
-  padding: 6px 16px !important;
-}
-
-.details-btn:hover {
-  background: rgba(255, 255, 255, 1) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.actions-card {
-  background: white;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-}
-
-.action-button {
-  font-size: 0.875rem !important;
-  padding: 8px 20px !important;
-  min-height: 36px !important;
-  height: 36px !important;
-}
-
-/* Animations */
-.glass-effect {
-  backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.1);
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-}
-
-.gradient-animation {
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.text-glow {
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-}
-
-.fade-in {
-  animation: fadeIn 1s ease-in;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
-    transform: translateY(0);
-  }
-  40% {
-    transform: translateY(-10px);
-  }
-  60% {
-    transform: translateY(-5px);
-  }
-}
-
-@keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes wiggle {
-  0%, 7% { transform: rotate(0deg); }
-  15% { transform: rotate(-5deg); }
-  20% { transform: rotate(3deg); }
-  25% { transform: rotate(-3deg); }
-  30% { transform: rotate(2deg); }
-  35% { transform: rotate(-1deg); }
-  40%, 100% { transform: rotate(0deg); }
-}
-
-@keyframes shimmerDiagonal {
-  0% { transform: translateX(-100%) translateY(-100%); }
-  100% { transform: translateX(100%) translateY(100%); }
-}
-
-@keyframes gradientShift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-/* Dialog Styles */
-.dialog-card {
   border-radius: 16px;
-  overflow: hidden;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  background: rgba(255, 255, 255, 0.85);
-  box-shadow: 0 12px 30px rgba(25, 118, 210, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(25px);
+  padding: 2px;
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 50%, #14b8a6 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.card-header {
+  background: rgba(6, 182, 212, 0.15) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  padding: 20px 24px !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
   position: relative;
   z-index: 1;
 }
 
-.dialog-title {
-  background: linear-gradient(135deg, #3f51b5 0%, #5c6bc0 100%);
-  color: white;
+.card-header i {
+  color: #06b6d4;
+  font-size: 28px;
+}
+
+.card-body {
+  padding: 32px !important;
+  position: relative;
+  z-index: 1;
+}
+
+/* Details Grid */
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detail-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.detail-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
   font-weight: 600;
-  font-size: 1.4rem;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
+  text-transform: uppercase;
   letter-spacing: 0.5px;
-  line-height: 1.3;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.dialog-content {
-  padding: 2rem;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
+.detail-label i {
+  color: #06b6d4;
+  font-size: 18px;
 }
 
-.dialog-description {
-  font-size: 1.2rem;
-  color: #34495e;
-  margin-bottom: 1rem;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
+.detail-value {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.95);
   font-weight: 500;
-  letter-spacing: 0.3px;
-  line-height: 1.4;
-}
-
-.dialog-actions {
-  padding: 1rem 2rem;
-  background: rgba(248, 249, 250, 0.7);
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  backdrop-filter: blur(10px);
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+  .details-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
-  .work-day-details-page {
-    padding: 1rem;
-    font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
+  .details-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Sections Title Bar */
+.sections-title-bar {
+  margin-top: 32px;
+  margin-bottom: 24px;
+  padding: 20px 32px;
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%);
+  border-radius: 16px;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.sections-title-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 16px;
+  padding: 2px;
+  background: linear-gradient(135deg, #f59e0b 0%, #f97316 50%, #ef4444 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.sections-title-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.sections-title-content i {
+  font-size: 32px;
+  color: #f59e0b;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(249, 115, 22, 0.2) 100%);
+  padding: 12px;
+  border-radius: 12px;
+}
+
+.sections-title-content span {
+  font-size: 22px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  letter-spacing: 0.5px;
+}
+
+/* Management Sections Grid */
+.management-sections-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.section-card {
+  border-radius: 20px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.section-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 150px;
+  height: 150px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  transform: translate(30%, -30%);
+}
+
+.section-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  transform: translate(-30%, 30%);
+}
+
+.section-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Materials Card */
+.materials-card {
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%);
+  border: 2px solid rgba(6, 182, 212, 0.4);
+}
+
+.materials-card .section-icon {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+}
+
+/* Labor Card */
+.labor-card {
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%);
+  border: 2px solid rgba(16, 185, 129, 0.4);
+}
+
+.labor-card .section-icon {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+/* Equipment Card */
+.equipment-card {
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%);
+  border: 2px solid rgba(20, 184, 166, 0.4);
+}
+
+.equipment-card .section-icon {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+}
+
+.section-card-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.section-icon {
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.section-icon i {
+  font-size: 40px;
+  color: white;
+}
+
+.section-info {
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0 0 8px 0;
+}
+
+.section-subtitle {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.section-stats {
+  margin-bottom: 20px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-number {
+  font-size: 36px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+.section-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+}
+
+.section-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
+}
+
+.section-btn i {
+  font-size: 18px;
+}
+
+/* Responsive for sections */
+@media (max-width: 1024px) {
+  .management-sections-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .management-sections-grid {
+    grid-template-columns: 1fr;
   }
   
-  .page-title {
-    font-size: 2rem;
-    font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  }
-  
-  .header-content {
-    flex-direction: column;
-    text-align: center;
-    font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  }
-  
-  .info-item {
-    flex-direction: column;
-    text-align: center;
-    gap: 0.5rem;
-    font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  }
-  
-  .dialog-content {
-    padding: 1rem;
-    font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
+  .section-card {
+    padding: 20px;
   }
 }
 
 /* Toggle Switch Styles */
-.toggle-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 1rem;
-  gap: 0.5rem;
+.card-toggle {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
 }
 
 .toggle-switch {
-  transform: scale(1.2);
-}
-
-.toggle-label {
-  font-size: 0.75rem !important;
-  font-weight: 700 !important;
-  color: #1b5e20 !important;
-  text-shadow: 
-    0 1px 3px rgba(0, 0, 0, 0.25),
-    0 1px 2px rgba(0, 0, 0, 0.15),
-    0 0 6px rgba(27, 94, 32, 0.3) !important;
-  letter-spacing: 0.2px !important;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  display: inline-block;
-  padding: 2px 8px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-  backdrop-filter: blur(5px);
-}
-
-/* Disabled Card Styles */
-.disabled-card {
-  opacity: 0.6;
-  background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%) !important;
-  cursor: not-allowed !important;
-}
-
-.disabled-card:hover {
-  transform: none !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-}
-
-.disabled-icon {
-  opacity: 0.5;
-  filter: grayscale(100%);
-}
-
-.disabled-text {
-  color: #9e9e9e !important;
-  opacity: 0.7;
-}
-
-/* Enhanced Category Card Styles */
-.category-card {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  overflow: hidden;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
 }
 
-.category-card:hover:not(.disabled-card) {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 
-.category-card::before {
-  content: '';
+.toggle-slider {
   position: absolute;
+  cursor: pointer;
   top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.6s ease;
-}
-
-.category-card:hover:not(.disabled-card)::before {
-  left: 100%;
-}
-
-/* Materials & Expenses Card */
-.materials-expenses {
-  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
-  color: white;
-}
-
-.materials-expenses .category-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-/* Labor Card */
-.labor {
-  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
-  color: white;
-}
-
-.labor .category-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-/* Equipment Card */
-.equipment {
-  background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
-  color: white;
-}
-
-.equipment .category-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-/* Enhanced Button Styles */
-.details-btn {
-  font-weight: 600;
-  text-transform: none;
-  border-radius: 12px;
-  padding: 8px 20px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border-radius: 26px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
-.details-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 2px;
+  bottom: 2px;
+  background: white;
+  transition: all 0.3s ease;
+  border-radius: 50%;
 }
 
-.details-btn:disabled {
+.toggle-switch input:checked + .toggle-slider {
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  border-color: transparent;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+  transform: translateX(24px);
+}
+
+/* Disabled Card State */
+.section-card {
+  position: relative;
+}
+
+.section-card.card-disabled {
+  opacity: 0.5;
+  filter: grayscale(50%);
+}
+
+.section-card.card-disabled .section-card-content {
+  pointer-events: none;
+}
+
+.section-card.card-disabled .card-toggle {
+  pointer-events: auto;
+}
+
+.section-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none !important;
 }
 
-/* Count Chip Enhancement */
-.count-chip {
-  font-weight: 700;
-  font-size: 1.1rem;
-  padding: 8px 16px;
-  border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+.section-btn:disabled:hover {
+  transform: none !important;
+  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
 }
-
-/* Category Title Enhancement */
-.category-title {
-  font-size: 1.4rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  line-height: 1.3;
-}
-
-.category-description {
-  font-size: 1rem;
-  opacity: 0.9;
-  margin-bottom: 1rem;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-/* Status Chip Styles */
-.status-chip {
-  font-weight: 600 !important;
-  font-size: 0.75rem !important;
-  padding: 4px 12px !important;
-  border-radius: 12px !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
-  transition: all 0.3s ease;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  height: 24px !important;
-}
-
-.status-chip.v-chip--color-success {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4) !important;
-}
-
-.status-chip.v-chip--color-success:hover {
-  background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(16, 185, 129, 0.5) !important;
-}
-
-.status-chip:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-}
-
-/* Enhanced Categories Title - تم التنسيق في الأعلى */
 </style>

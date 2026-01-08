@@ -56,5 +56,11 @@ export async function deleteDebtor(id) {
 // Get active debtors with remaining debt (for expense form dropdown)
 export async function getActiveDebtorsWithRemaining() {
   const result = await apiFetch('/debtors/activeWithRemaining', { method: 'GET' })
-  return result?.data || []
+  // The API returns { success: true, data: [...] }
+  // Make sure we return an array
+  const data = result?.data
+  if (Array.isArray(data)) {
+    return data
+  }
+  return []
 }

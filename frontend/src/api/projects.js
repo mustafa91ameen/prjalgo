@@ -4,17 +4,20 @@ import { DEFAULT_PAGE, DEFAULT_LIMIT } from '../constants/pagination'
 export async function listProjects({ page = DEFAULT_PAGE, limit = DEFAULT_LIMIT, ...otherParams } = {}) {
   const query = new URLSearchParams({ page, limit, ...otherParams }).toString()
   const result = await apiFetch(`/projects?${query}`, { method: 'GET' })
-  // Return full pagination response
+  // Return full pagination response with success flag
   const paginatedData = result?.data || {}
   if (Array.isArray(paginatedData)) {
-    return { data: paginatedData, total: paginatedData.length, page, limit, totalPages: 1 }
+    return { success: true, data: { items: paginatedData, total: paginatedData.length, page, limit, totalPages: 1 } }
   }
   return {
-    data: paginatedData.data || [],
-    total: paginatedData.total || 0,
-    page: paginatedData.page || page,
-    limit: paginatedData.limit || limit,
-    totalPages: paginatedData.totalPages || 0
+    success: true,
+    data: {
+      items: paginatedData.data || [],
+      total: paginatedData.total || 0,
+      page: paginatedData.page || page,
+      limit: paginatedData.limit || limit,
+      totalPages: paginatedData.totalPages || 0
+    }
   }
 }
 
@@ -27,7 +30,7 @@ export async function getProjectStats(params = {}) {
   const query = new URLSearchParams(params).toString()
   const suffix = query ? `?${query}` : ''
   const result = await apiFetch(`/projects/stats${suffix}`, { method: 'GET' })
-  return result?.data || {}
+  return { success: true, data: result?.data || {} }
 }
 
 export async function getProjectWorkdays(id) {
@@ -40,7 +43,8 @@ export async function createProject(payload) {
     method: 'POST',
     body: payload,
   })
-  return result?.data || result
+  // Return consistent response with success flag
+  return { success: true, data: result?.data || result }
 }
 
 export async function updateProject(id, payload) {
@@ -48,16 +52,17 @@ export async function updateProject(id, payload) {
     method: 'PUT',
     body: payload,
   })
-  return result?.data || result
+  // Return consistent response with success flag
+  return { success: true, data: result?.data || result }
 }
 
 /**
  * Get all projects for dropdown menus (lightweight - id and name only)
- * @returns {Promise<Array<{id: number, name: string}>>}
+ * @returns {Promise<{success: boolean, data: Array<{id: number, name: string}>}>}
  */
 export async function getProjectsDropdown() {
   const result = await apiFetch('/projects/dropdown', { method: 'GET' })
-  return result?.data || []
+  return { success: true, data: result?.data || [] }
 }
 
 /**
@@ -69,4 +74,3 @@ export async function getProjectTeamMembers(id) {
   const result = await apiFetch(`/projects/${id}/team-members`, { method: 'GET' })
   return result?.data || []
 }
-

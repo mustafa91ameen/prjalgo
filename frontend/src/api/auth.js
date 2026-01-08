@@ -41,4 +41,3 @@ export async function getMyPages() {
   const result = await apiFetch('/auth/pages', { method: 'GET', auth: true })
   return result?.data || []
 }
-

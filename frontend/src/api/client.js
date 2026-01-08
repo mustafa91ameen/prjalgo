@@ -1,5 +1,5 @@
-// API base URL - defaults to '/api' for Docker (nginx proxy) or uses VITE_API_URL for local dev
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api'
+// API base URL - defaults to '/api/v1' for Docker (nginx proxy) or uses VITE_API_URL for local dev
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1'
 
 const defaultHeaders = {
   'Content-Type': 'application/json',

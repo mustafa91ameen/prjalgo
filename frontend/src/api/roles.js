@@ -1,13 +1,18 @@
 import { apiFetch } from './client'
 
 /**
- * List all roles
- * @returns {Promise<Array>} Array of roles
+ * List all roles with pagination
+ * @param {Object} params - Query parameters
+ * @param {number} params.page - Page number
+ * @param {number} params.limit - Items per page
+ * @returns {Promise<Object>} Paginated response
  */
-export async function listRoles() {
-  const result = await apiFetch('/roles?limit=100')
-  // API returns { data: { data: [...], total, page, ... } }
-  return result?.data?.data || result?.data || []
+export async function listRoles(params = {}) {
+  const query = new URLSearchParams()
+  if (params.page) query.append('page', params.page.toString())
+  if (params.limit) query.append('limit', params.limit.toString())
+  const queryString = query.toString()
+  return apiFetch(`/roles${queryString ? `?${queryString}` : '?limit=100'}`)
 }
 
 /**
@@ -85,4 +90,13 @@ export async function removeRoleFromUser(userRoleId) {
     method: 'DELETE'
   })
   return result?.data || result
+}
+
+/**
+ * Get role pages (permissions) by role ID
+ * @param {number|string} roleId - Role ID
+ * @returns {Promise<Object>} Response with role pages
+ */
+export async function getRolePages(roleId) {
+  return apiFetch(`/rolePages/role/${roleId}`)
 }

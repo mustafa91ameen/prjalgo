@@ -1,21 +1,8 @@
-/* ========================================
-   نظام CSS الشامل - نظام إدارة المشاريع
-   Comprehensive CSS System - Project Management System
-   ======================================== */
-
-/* استيراد نظام التصميم الموحد أولاً */
-@import './design-system.css';
-
-/* استيراد ملفات النظام */
-@import './colors.css';
-@import './typography.css';
-@import './spacing.css';
-@import './common-components.css';
-@import './clean-form.css';
-@import './global-components.css';
-
 /* Material Design Icons - Working solution */
 @import url('https://cdn.jsdelivr.net/npm/@mdi/font@7.x/css/materialdesignicons.min.css');
+
+/* Sidebar Styles */
+@import './sidebar.css';
 
 /* MDI Icon base styles */
 .mdi {
@@ -44,487 +31,141 @@
   font-display: swap;
 }
 
-/* ========================================
-   إعدادات النظام العامة
-   ======================================== */
-
-/* إعدادات CSS العامة */
-* {
-  box-sizing: border-box;
+/* Global RTL Support */
+html,
+body {
+  direction: rtl;
+  text-align: right;
 }
 
-html {
-  scroll-behavior: smooth;
+/* Vuetify RTL adjustments */
+.v-application {
+  direction: rtl !important;
+}
+
+/* Global page styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  font-family: var(--font-primary);
-  direction: rtl;
-  text-align: right;
-  background-color: var(--background-primary);
-  color: var(--text-primary);
-  line-height: var(--line-height-normal);
+  font-family: 'Roboto', sans-serif;
+  background: #1a2332;
 }
 
-/* ========================================
-   تحسينات Vuetify
-   ======================================== */
-
-/* تحسين الخطوط في Vuetify */
-.v-application {
-  font-family: var(--font-primary) !important;
-  direction: rtl !important;
-}
-
-/* تحسين النصوص */
-.v-application .text-h1,
-.v-application .text-h2,
-.v-application .text-h3,
-.v-application .text-h4,
-.v-application .text-h5,
-.v-application .text-h6 {
-  font-family: var(--font-display) !important;
-  font-weight: var(--font-weight-semibold) !important;
-}
-
-/* تحسين الأزرار */
-.v-btn {
-  font-family: var(--font-primary) !important;
-  font-weight: var(--font-weight-medium) !important;
-  text-transform: none !important;
-  border-radius: var(--radius-lg) !important;
-}
-
-/* تحسين البطاقات */
-.v-card {
-  border-radius: var(--radius-xl) !important;
-  box-shadow: var(--shadow-md) !important;
-  transition: all 0.3s ease !important;
-}
-
-.v-card:hover {
-  box-shadow: var(--shadow-lg) !important;
-  transform: translateY(-2px) !important;
-}
-
-/* تحسين الجداول */
-.v-data-table {
-  border-radius: var(--radius-lg) !important;
-  overflow: hidden !important;
-}
-
-.v-data-table-header {
-  background-color: var(--background-tertiary) !important;
-}
-
-.v-data-table__tr:hover {
-  background-color: var(--background-secondary) !important;
-}
-
-/* تحسين النماذج */
-.v-field {
-  border-radius: var(--radius-lg) !important;
-}
-
-.v-field--focused {
-  box-shadow: 0 0 0 2px var(--shadow-primary) !important;
-}
-
-/* تحسين القوائم */
-.v-list {
-  border-radius: var(--radius-lg) !important;
-}
-
-.v-list-item {
-  border-radius: var(--radius-md) !important;
-  margin: var(--space-1) !important;
-}
-
-/* تحسين التنقل */
-.v-navigation-drawer {
-  border-radius: 0 var(--radius-2xl) var(--radius-2xl) 0 !important;
-}
-
-.v-app-bar {
-  border-radius: 0 0 var(--radius-xl) var(--radius-xl) !important;
-}
-
-/* ========================================
-   فئات مساعدة مخصصة
-   ======================================== */
-
-/* فئة للنصوص العربية المحسنة */
-.arabic-text {
-  font-family: var(--font-primary) !important;
-  direction: rtl !important;
-  text-align: right !important;
-  font-feature-settings: 'liga', 'kern', 'calt' !important;
-  text-rendering: optimizeLegibility !important;
-}
-
-/* فئة للبطاقات المحسنة */
-.enhanced-card {
-  background: var(--card-background) !important;
-  border: 1px solid var(--card-border) !important;
-  border-radius: var(--radius-2xl) !important;
-  box-shadow: var(--card-shadow) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-.enhanced-card:hover {
-  box-shadow: var(--card-hover-shadow) !important;
-  transform: translateY(-4px) !important;
-}
-
-/* فئة للأزرار المحسنة */
-.enhanced-btn {
-  border-radius: var(--radius-lg) !important;
-  font-weight: var(--font-weight-medium) !important;
-  text-transform: none !important;
-  transition: all 0.3s ease !important;
-  box-shadow: var(--shadow-sm) !important;
-}
-
-.enhanced-btn:hover {
-  transform: translateY(-1px) !important;
-  box-shadow: var(--shadow-md) !important;
-}
-
-/* فئة للإحصائيات */
-.stat-card {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
-  border: 1px solid var(--border-light) !important;
-  border-radius: var(--radius-2xl) !important;
-  box-shadow: var(--shadow-md) !important;
-  transition: all 0.3s ease !important;
-  position: relative !important;
-  overflow: hidden !important;
-}
-
-.stat-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: var(--gradient-primary);
-}
-
-.stat-card:hover {
-  transform: translateY(-4px) !important;
-  box-shadow: var(--shadow-xl) !important;
-}
-
-/* فئة للعناوين المحسنة */
-.enhanced-title {
-  font-family: var(--font-display) !important;
-  font-weight: var(--font-weight-bold) !important;
-  background: var(--gradient-primary) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
-  text-shadow: 0 2px 4px var(--shadow-light) !important;
-}
-
-/* فئة للشعارات المحسنة */
-.enhanced-logo {
-  filter: drop-shadow(0 4px 8px var(--shadow-medium)) !important;
-  border-radius: var(--radius-full) !important;
-  background: rgba(255, 255, 255, 0.1) !important;
-  padding: var(--space-2) !important;
-  backdrop-filter: blur(10px) !important;
-}
-
-/* ========================================
-   تحسينات الاستجابة - دعم جميع الأجهزة
-   ======================================== */
-
-/* الهواتف الصغيرة (320px - 480px) */
-@media (max-width: 480px) {
-  .v-card {
-    border-radius: var(--radius-lg) !important;
-    margin-bottom: 12px !important;
-  }
-
-  .enhanced-card {
-    border-radius: var(--radius-xl) !important;
-  }
-
-  .stat-card {
-    border-radius: var(--radius-xl) !important;
-    padding: 12px !important;
-  }
-
-  .v-btn {
-    min-height: 40px !important;
-    padding: 8px 16px !important;
-    font-size: 0.85rem !important;
-  }
-
-  .v-text-field {
-    font-size: 0.9rem !important;
-  }
-
-  .v-data-table {
-    font-size: 0.8rem !important;
-  }
-
-  .v-data-table table thead tr th {
-    font-size: 0.85rem !important;
-    padding: 8px 6px !important;
-  }
-
-  .v-data-table table tbody tr td {
-    font-size: 0.75rem !important;
-    padding: 6px 4px !important;
-  }
-}
-
-/* الهواتف الكبيرة (481px - 767px) */
-@media (min-width: 481px) and (max-width: 767px) {
-  .v-card {
-    border-radius: var(--radius-lg) !important;
-    margin-bottom: 16px !important;
-  }
-
-  .v-btn {
-    min-height: 44px !important;
-    padding: 10px 20px !important;
-  }
-
-  .v-data-table table thead tr th {
-    font-size: 0.9rem !important;
-    padding: 10px 8px !important;
-  }
-
-  .v-data-table table tbody tr td {
-    font-size: 0.85rem !important;
-    padding: 8px 6px !important;
-  }
-}
-
-/* iPad عمودي (768px - 1024px) */
-@media (min-width: 768px) and (max-width: 1024px) {
-  .v-card {
-    border-radius: var(--radius-xl) !important;
-    margin-bottom: 20px !important;
-  }
-
-  .v-btn {
-    min-height: 48px !important;
-    padding: 12px 24px !important;
-  }
-
-  .v-data-table {
-    font-size: 0.9rem !important;
-  }
-
-  .v-data-table table thead tr th {
-    font-size: 0.95rem !important;
-    padding: 12px 10px !important;
-  }
-
-  .v-data-table table tbody tr td {
-    font-size: 0.85rem !important;
-    padding: 10px 8px !important;
-  }
-
-  /* تحسين الجداول - تفعيل التمرير الأفقي عند الحاجة */
-  .v-data-table__wrapper {
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-  }
-}
-
-/* iPad أفقي والشاشات المتوسطة (1025px - 1366px) */
-@media (min-width: 1025px) and (max-width: 1366px) {
-  .v-card {
-    border-radius: var(--radius-xl) !important;
-  }
-}
-
-/* الشاشات الكبيرة (1367px+) */
-@media (min-width: 1367px) {
-  .v-card {
-    border-radius: var(--radius-2xl) !important;
-  }
-}
-
-/* تحسينات عامة للشاشات الصغيرة والمتوسطة */
-@media (max-width: 1024px) {
-
-  /* تحسين المسافات */
-  .v-container {
-    padding: 12px !important;
-  }
-
-  .v-row {
-    margin: -6px !important;
-  }
-
-  .v-col {
-    padding: 6px !important;
-  }
-
-  /* تحسين البطاقات */
-  .v-card-title {
-    font-size: 1.1rem !important;
-    padding: 14px 18px !important;
-  }
-
-  .v-card-text {
-    padding: 14px 18px !important;
-    font-size: 0.95rem !important;
-  }
-
-  /* تحسين الحقول */
-  .v-text-field .v-field {
-    font-size: 0.95rem !important;
-  }
-
-  /* تحسين القوائم */
-  .v-list-item {
-    min-height: 48px !important;
-    padding: 8px 16px !important;
-  }
-}
-
-/* دعم اللمس على الأجهزة اللوحية */
-@media (hover: none) and (pointer: coarse) {
-
-  /* زيادة حجم مناطق اللمس */
-  .v-btn {
-    min-height: 48px !important;
-    min-width: 48px !important;
-    padding: 12px 24px !important;
-  }
-
-  .v-list-item {
-    min-height: 48px !important;
-    padding: 12px 16px !important;
-  }
-
-  .v-chip {
-    min-height: 32px !important;
-    padding: 6px 12px !important;
-  }
-
-  /* تحسين الأيقونات */
-  .v-icon {
-    font-size: 24px !important;
-  }
-
-  /* تحسين الروابط */
-  a {
-    min-height: 44px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-  }
-}
-
-/* تحسينات خاصة للهواتف */
-@media (max-width: 767px) {
-
-  /* تحسين الجداول - تفعيل التمرير الأفقي */
-  .v-data-table__wrapper {
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-    scrollbar-width: thin !important;
-  }
-
-  .v-data-table table {
-    min-width: 600px !important;
-  }
-
-  /* تحسين النماذج */
-  .v-form {
-    padding: 12px !important;
-  }
-
-  .v-text-field,
-  .v-select,
-  .v-textarea {
-    margin-bottom: 16px !important;
-  }
-
-  /* تحسين الحوارات */
-  .v-dialog {
-    margin: 8px !important;
-    max-width: calc(100% - 16px) !important;
-  }
-
-  .v-dialog .v-card {
-    margin: 0 !important;
-  }
-}
-
-/* ========================================
-   تحسينات الأداء
-   ======================================== */
-
-/* تحسين التمرير */
-/* Removed v-main padding overrides to fix sidebar responsiveness */
+/* Main content area background */
 .v-main {
-  scroll-behavior: smooth !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  /* Let Vuetify handle padding for layout */
+  background: linear-gradient(135deg, #1a2332 0%, #0d1721 100%) !important;
+  min-height: 100vh;
 }
 
-/* تحسين الرسوم المتحركة */
-.v-ripple__container {
-  animation-duration: 0.3s !important;
+/* Dark theme for all page containers */
+.projects-container,
+.debtors-container,
+.expenses-container,
+.income-container,
+.pages-container,
+.categories-container,
+.users-container,
+.roles-container,
+.team-members-container,
+.work-days-container,
+.dashboard-container {
+  background: transparent !important;
 }
 
-/* تحسين الذاكرة */
-.v-fade-transition-enter-active,
-.v-fade-transition-leave-active {
-  transition: opacity 0.3s ease !important;
+/* Dark theme for Vuetify data tables */
+.v-data-table {
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%) !important;
+  border-radius: 16px !important;
+  overflow: hidden;
 }
 
-/* ========================================
-   تحسينات إضافية
-   ======================================== */
-
-/* تحسين التركيز */
-.v-btn:focus,
-.v-field:focus,
-.v-list-item:focus {
-  outline: 2px solid var(--color-primary) !important;
-  outline-offset: 2px !important;
+.v-data-table .v-table__wrapper {
+  background: transparent !important;
 }
 
-/* تحسين التحديد */
-::selection {
-  background-color: var(--color-primary) !important;
-  color: var(--text-white) !important;
+.v-data-table th {
+  background: rgba(6, 182, 212, 0.1) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 600 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
-::-moz-selection {
-  background-color: var(--color-primary) !important;
-  color: var(--text-white) !important;
+.v-data-table td {
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
-/* تحسين التمرير */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+.v-data-table tr:hover td {
+  background: rgba(6, 182, 212, 0.05) !important;
 }
 
-::-webkit-scrollbar-track {
-  background: var(--background-secondary);
-  border-radius: var(--radius-full);
+/* Dark theme for v-cards */
+.v-card:not(.stat-card):not(.project-card):not(.project-dialog):not(.page-dialog):not(.category-dialog):not(.debtor-dialog):not(.expense-dialog):not(.income-dialog):not(.user-dialog):not(.role-dialog) {
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%) !important;
+  border: 1px solid rgba(6, 182, 212, 0.2) !important;
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--color-primary);
-  border-radius: var(--radius-full);
+/* Force English/Western Numerals */
+* {
+  font-variant-numeric: lining-nums tabular-nums;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary-dark);
+/* Additional number formatting */
+.stat-number,
+.summary-value,
+.header-stat-value,
+.cost-value,
+.salary-value,
+.v-data-table,
+input[type="number"],
+.v-chip {
+  font-feature-settings: "tnum" on, "lnum" on;
+  unicode-bidi: plaintext;
+}
+
+/* RTL Pagination Arrow Fix - Swap arrows for RTL direction */
+.v-data-table-footer__pagination .v-btn .mdi-chevron-left::before {
+  content: "\F0142"; /* mdi-chevron-right */
+}
+
+.v-data-table-footer__pagination .v-btn .mdi-chevron-right::before {
+  content: "\F0141"; /* mdi-chevron-left */
+}
+
+.v-data-table-footer__pagination .v-btn .mdi-page-first::before {
+  content: "\F0601"; /* mdi-page-last */
+}
+
+.v-data-table-footer__pagination .v-btn .mdi-page-last::before {
+  content: "\F0600"; /* mdi-page-first */
+}
+
+/* Also fix v-pagination arrows for RTL */
+.v-pagination .v-btn .mdi-chevron-left::before {
+  content: "\F0142"; /* mdi-chevron-right */
+}
+
+.v-pagination .v-btn .mdi-chevron-right::before {
+  content: "\F0141"; /* mdi-chevron-left */
+}
+
+/* Hide items-per-page selector from all data tables */
+.v-data-table-footer__items-per-page {
+  display: none !important;
+}
+
+/* Style the data table footer for RTL */
+.v-data-table-footer {
+  direction: rtl;
+  justify-content: flex-start !important;
+}
+
+.v-data-table-footer__info {
+  margin-left: 0 !important;
+  margin-right: auto !important;
 }

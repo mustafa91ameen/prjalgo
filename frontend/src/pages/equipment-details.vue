@@ -1,1534 +1,589 @@
 <template>
-  <div class="equipment-details-page">
-    <!-- Header Section -->
-    <div class="page-header glass-effect gradient-animation">
-      <div class="header-content">
-        <div class="header-text">
-          <h1 class="page-title text-glow fade-in">تفاصيل الآليات</h1>
-          <p class="page-subtitle fade-in">إدارة المعدات والآلات المستخدمة في المشروع</p>
+  <div class="equipment-details-container">
+    <!-- Page Header -->
+    <PageHeader
+      title="تفاصيل الآليات"
+      subtitle="إدارة المعدات والآليات المستخدمة"
+      badge="الآليات"
+      badgeType="warning"
+      class="equipment-details-header"
+    >
+      <template #actions>
+        <button class="page-action-btn secondary" @click="$router.back()">
+          <i class="mdi mdi-arrow-right"></i>
+          رجوع
+        </button>
+        <button v-if="canCreate" class="page-action-btn primary" @click="showAddEquipmentModal = true">
+          <i class="mdi mdi-plus"></i>
+          إضافة آلية
+        </button>
+      </template>
+    </PageHeader>
+
+    <!-- Summary Cards -->
+    <div class="summary-section">
+      <div class="summary-card equipment-count-summary">
+        <div class="summary-icon">
+          <i class="mdi mdi-excavator"></i>
         </div>
-        <v-btn 
-          icon="mdi-arrow-right" 
-          @click="goBack" 
-          class="back-btn"
-          size="small"
-        >
-          <v-icon size="20" color="white">mdi-arrow-right</v-icon>
-        </v-btn>
+        <div class="summary-info">
+          <span class="summary-label">إجمالي الآليات</span>
+          <span class="summary-value">{{ equipment.length }}</span>
+        </div>
+      </div>
+
+      <div class="summary-card quantity-summary">
+        <div class="summary-icon">
+          <i class="mdi mdi-counter"></i>
+        </div>
+        <div class="summary-info">
+          <span class="summary-label">إجمالي الكمية</span>
+          <span class="summary-value">{{ totalQuantity }}</span>
+        </div>
+      </div>
+
+      <div class="summary-card cost-summary">
+        <div class="summary-icon">
+          <i class="mdi mdi-cash"></i>
+        </div>
+        <div class="summary-info">
+          <span class="summary-label">إجمالي تكلفة التشغيل</span>
+          <span class="summary-value">{{ formatCurrency(totalCost) }}</span>
+        </div>
       </div>
     </div>
 
-    <!-- Content Container -->
-    <div class="content-container">
-
-    <!-- Equipment Section -->
-    <v-card class="section-card mb-4" elevation="2">
-      <v-card-title class="section-title">
-        <v-icon class="me-2" color="white">mdi-truck</v-icon>
-        الآليات والمعدات
-      </v-card-title>
-      
-      <!-- Search Bar and Add Button -->
-      <v-card-text class="pb-0">
-        <div class="search-container">
-          <div class="search-box">
-            <v-text-field
-              v-model="equipmentSearch"
-              label="البحث في الآليات..."
-              prepend-inner-icon="mdi-magnify"
-              variant="outlined"
-              density="comfortable"
-              clearable
-              hide-details
-              class="search-field"
-              @keyup.enter="searchEquipment"
-            />
-            <v-btn 
-              color="primary" 
-              variant="elevated" 
-              class="search-btn"
-              @click="searchEquipment"
-              size="large"
-            >
-              <v-icon class="me-2">mdi-magnify</v-icon>
-              بحث
-            </v-btn>
-            <v-btn
-              v-if="canCreate"
-              color="indigo"
-              variant="elevated"
-              class="add-btn"
-              @click="openAddDialog"
-              size="large"
-            >
-              <v-icon class="me-2">mdi-plus</v-icon>
-              إضافة آلة
-            </v-btn>
-          </div>
+    <!-- Equipment Section Header -->
+    <div class="section-header">
+      <div class="section-header-content">
+        <i class="mdi mdi-excavator"></i>
+        <span>جدول الآليات والمعدات</span>
+      </div>
+      <div class="section-header-stats">
+        <div class="header-stat">
+          <span class="header-stat-value">{{ equipment.length }}</span>
+          <span class="header-stat-label">آلية</span>
         </div>
-      </v-card-text>
+        <div class="header-stat">
+          <span class="header-stat-value">{{ formatCurrency(totalCost) }}</span>
+          <span class="header-stat-label">إجمالي التكلفة</span>
+        </div>
+      </div>
+    </div>
 
-    </v-card>
-
-    <!-- Equipment Table Card -->
-    <v-card class="data-table-card" elevation="2">
-      <v-card-title class="table-title indigo-title">
-        <span class="title-text">قائمة الآليات</span>
-      </v-card-title>
-
+    <!-- Equipment Table -->
+    <v-card class="data-card">
       <v-data-table
-        v-model:page="currentPage"
         :headers="equipmentHeaders"
-        :items="equipmentData"
-        :search="equipmentSearch"
-        :items-per-page="DEFAULT_LIMIT"
-        class="data-table equipment-table"
-        no-data-text="لا توجد بيانات متاحة"
-        loading-text="جاري التحميل..."
-        density="comfortable"
-        hide-default-footer
+        :items="equipment"
+        class="elevation-0"
       >
-        <!-- Serial Number Column -->
-        <template #item.id="{ index }">
-          <span class="serial-number">{{ index + 1 }}</span>
+        <template v-slot:item.index="{ index }">
+          {{ index + 1 }}
         </template>
-
-        <!-- Equipment Name Column -->
-        <template #item.equipmentName="{ item }">
-          <span class="project-name">{{ item.equipmentName }}</span>
+        <template v-slot:item.cost="{ item }">
+          <span class="cost-value">{{ formatCurrency(item.cost) }}</span>
         </template>
-
-        <!-- Quantity Column -->
-        <template #item.quantity="{ item }">
-          <span class="date-text">{{ item.quantity }}</span>
+        <template v-slot:item.notes="{ item }">
+          <v-tooltip v-if="item.notes" location="top" max-width="300">
+            <template v-slot:activator="{ props }">
+              <span v-bind="props" class="notes-cell text-truncate">{{ item.notes }}</span>
+            </template>
+            <span>{{ item.notes }}</span>
+          </v-tooltip>
+          <span v-else class="notes-empty">-</span>
         </template>
-
-        <!-- Cost Column -->
-        <template #item.cost="{ item }">
-          <span class="cost-text">{{ formatCurrency(item.cost) }}</span>
-        </template>
-
-        <!-- Total Column -->
-        <template #item.total="{ item }">
-          <span class="cost-text">{{ formatCurrency(item.total) }}</span>
-        </template>
-
-        <!-- Notes Column -->
-        <template #item.notes="{ item }">
-          <span class="project-name">{{ item.notes || '-' }}</span>
-        </template>
-
-        <!-- Actions Column -->
-        <template #item.actions="{ item }">
-          <div class="action-buttons">
-            <v-btn
-              v-if="canUpdate"
-              icon="mdi-pencil"
-              size="small"
-              color="primary"
-              variant="text"
-              @click="openEditDialog(item)"
-              title="تعديل الآلة"
-              class="action-btn"
-            />
-            <v-btn
-              v-if="canDelete"
-              icon="mdi-delete"
-              size="small"
-              color="error"
-              variant="text"
-              @click="deleteEquipment(item)"
-              title="حذف الآلة"
-              class="action-btn"
-            />
-          </div>
+        <template v-slot:item.actions="{ item }">
+          <v-btn v-if="canUpdate" size="small" color="primary" class="me-2">
+            <i class="mdi mdi-pencil"></i>
+          </v-btn>
+          <v-btn v-if="canDelete" size="small" color="error" @click="deleteEquipment(item)">
+            <i class="mdi mdi-delete"></i>
+          </v-btn>
         </template>
       </v-data-table>
-
-      <!-- Pagination -->
-      <div class="d-flex justify-center pa-4" v-if="totalPages > 0">
-        <v-pagination
-          v-model="currentPage"
-          :length="totalPages"
-          :total-visible="7"
-          rounded="circle"
-          density="comfortable"
-          active-color="primary"
-        />
-      </div>
     </v-card>
 
-    <!-- Add New Equipment Dialog - Clean Form Style -->
-    <v-dialog v-model="showAddDialog" max-width="900" scrollable persistent>
-      <v-card class="clean-dialog-card clean-form-card">
-        <!-- Header Section -->
-        <v-card-title class="clean-dialog-header clean-form-header">
-          <h2 class="clean-form-title">معلومات الآلة</h2>
-        </v-card-title>
+    <!-- Add Equipment Modal -->
+    <div v-if="showAddEquipmentModal" class="modal-overlay" @click.self="showAddEquipmentModal = false">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h3>
+            <i class="mdi mdi-excavator"></i>
+            إضافة آلية جديدة
+          </h3>
+          <button class="modal-close" @click="showAddEquipmentModal = false">
+            <i class="mdi mdi-close"></i>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="form-group">
+            <label>اسم الآلية</label>
+            <input type="text" v-model="newEquipment.name" placeholder="أدخل اسم الآلية" />
+          </div>
+          <div class="form-group">
+            <label>الكمية</label>
+            <input type="number" v-model="newEquipment.quantity" placeholder="أدخل الكمية" />
+          </div>
+          <div class="form-group">
+            <label>التكلفة (د.ع)</label>
+            <input type="number" v-model="newEquipment.cost" placeholder="أدخل التكلفة" />
+          </div>
+          <div class="form-group">
+            <label>ملاحظات</label>
+            <textarea v-model="newEquipment.notes" placeholder="ملاحظات إضافية" rows="2"></textarea>
+          </div>
+        </div>
 
-        <!-- Form Content -->
-        <v-card-text class="clean-form-content">
-          <p class="clean-form-instruction">
-            لإتمام إضافة الآلة، يرجى توفير المعلومات التالية. يرجى ملاحظة أن جميع الحقول المميزة بعلامة النجمة (*) مطلوبة.
-          </p>
-
-          <v-form ref="form" v-model="formValid">
-            <!-- الصف الأول: اسم الآلة -->
-            <v-row class="clean-form-row">
-              <v-col cols="12" md="6" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    اسم الآلة <span class="required-star">*</span>
-                  </label>
-                  <v-text-field
-                    v-model="newEquipment.equipmentName"
-                    variant="outlined"
-                    density="comfortable"
-                    placeholder="أدخل اسم الآلة"
-                    :rules="[v => !!v || 'اسم الآلة مطلوب']"
-                    required
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-            </v-row>
-
-            <!-- الصف الثاني: العدد، التكلفة -->
-            <v-row class="clean-form-row">
-              <v-col cols="12" md="6" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    العدد <span class="required-star">*</span>
-                  </label>
-                  <v-text-field
-                    v-model.number="newEquipment.quantity"
-                    variant="outlined"
-                    density="comfortable"
-                    type="number"
-                    placeholder="0"
-                    :rules="[v => (v > 0) || 'العدد يجب أن يكون أكبر من صفر']"
-                    required
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-              <v-col cols="12" md="6" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    التكلفة (د.ع) <span class="required-star">*</span>
-                  </label>
-                  <v-text-field
-                    v-model.number="newEquipment.cost"
-                    variant="outlined"
-                    density="comfortable"
-                    type="number"
-                    placeholder="0"
-                    :rules="[v => (v > 0) || 'التكلفة يجب أن تكون أكبر من صفر']"
-                    required
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-            </v-row>
-
-            <!-- الصف الثالث: المجموع -->
-            <v-row class="clean-form-row">
-              <v-col cols="12" md="6" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    المجموع (د.ع)
-                  </label>
-                  <v-text-field
-                    :value="(newEquipment.quantity * newEquipment.cost) || 0"
-                    variant="outlined"
-                    density="comfortable"
-                    type="number"
-                    placeholder="0"
-                    readonly
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-            </v-row>
-
-            <!-- الصف الرابع: الملاحظات -->
-            <v-row class="clean-form-row">
-              <v-col cols="12" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">ملاحظات</label>
-                  <v-textarea
-                    v-model="newEquipment.notes"
-                    variant="outlined"
-                    rows="4"
-                    density="comfortable"
-                    placeholder="أدخل ملاحظات إضافية"
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-            </v-row>
-          </v-form>
-        </v-card-text>
-
-        <v-card-actions class="clean-form-actions">
-          <v-spacer />
-          <v-btn
-            class="clean-form-cancel-btn"
-            variant="outlined"
-            @click="closeAddDialog"
-          >
-            إلغاء
-          </v-btn>
-          <v-btn
-            class="clean-form-continue-btn"
-            variant="elevated"
-            :disabled="!formValid"
-            @click="saveEquipment"
-          >
-            حفظ الآلة
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <!-- Edit Equipment Dialog -->
-    <v-dialog v-model="showEditDialog" max-width="900" scrollable persistent>
-      <v-card class="clean-dialog-card clean-form-card">
-        <!-- Header Section -->
-        <v-card-title class="clean-dialog-header clean-form-header">
-          <h2 class="clean-form-title">تعديل معلومات الآلة</h2>
-        </v-card-title>
-
-        <!-- Form Content -->
-        <v-card-text class="clean-form-content">
-          <p class="clean-form-instruction">
-            قم بتعديل المعلومات المطلوبة. جميع الحقول المميزة بعلامة النجمة (*) مطلوبة.
-          </p>
-
-          <v-form ref="editForm" v-model="editFormValid">
-            <!-- الصف الأول: اسم الآلة -->
-            <v-row class="clean-form-row">
-              <v-col cols="12" md="6" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    اسم الآلة <span class="required-star">*</span>
-                  </label>
-                  <v-text-field
-                    v-model="editEquipment.equipmentName"
-                    variant="outlined"
-                    density="comfortable"
-                    placeholder="أدخل اسم الآلة"
-                    :rules="[v => !!v || 'اسم الآلة مطلوب']"
-                    required
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-            </v-row>
-
-            <!-- الصف الثاني: العدد، التكلفة -->
-            <v-row class="clean-form-row">
-              <v-col cols="12" md="6" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    العدد <span class="required-star">*</span>
-                  </label>
-                  <v-text-field
-                    v-model.number="editEquipment.quantity"
-                    variant="outlined"
-                    density="comfortable"
-                    type="number"
-                    placeholder="0"
-                    :rules="[v => (v > 0) || 'العدد يجب أن يكون أكبر من صفر']"
-                    required
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-              <v-col cols="12" md="6" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    التكلفة (د.ع) <span class="required-star">*</span>
-                  </label>
-                  <v-text-field
-                    v-model.number="editEquipment.cost"
-                    variant="outlined"
-                    density="comfortable"
-                    type="number"
-                    placeholder="0"
-                    :rules="[v => (v > 0) || 'التكلفة يجب أن تكون أكبر من صفر']"
-                    required
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-            </v-row>
-
-            <!-- الصف الثالث: المجموع -->
-            <v-row class="clean-form-row">
-              <v-col cols="12" md="6" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    المجموع (د.ع)
-                  </label>
-                  <v-text-field
-                    :value="(editEquipment.quantity * editEquipment.cost) || 0"
-                    variant="outlined"
-                    density="comfortable"
-                    type="number"
-                    placeholder="0"
-                    readonly
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-            </v-row>
-
-            <!-- الصف الرابع: الملاحظات -->
-            <v-row class="clean-form-row">
-              <v-col cols="12" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">ملاحظات</label>
-                  <v-textarea
-                    v-model="editEquipment.notes"
-                    variant="outlined"
-                    rows="4"
-                    density="comfortable"
-                    placeholder="أدخل ملاحظات إضافية"
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-            </v-row>
-          </v-form>
-        </v-card-text>
-
-        <v-card-actions class="clean-form-actions">
-          <v-spacer />
-          <v-btn
-            class="clean-form-cancel-btn"
-            variant="outlined"
-            @click="closeEditDialog"
-          >
-            إلغاء
-          </v-btn>
-          <v-btn
-            class="clean-form-continue-btn"
-            variant="elevated"
-            :disabled="!editFormValid"
-            @click="saveEditEquipment"
-          >
-            حفظ التعديلات
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
+        <div class="modal-footer">
+          <button class="btn-cancel" @click="showAddEquipmentModal = false">إلغاء</button>
+          <button class="btn-save" @click="addEquipment">حفظ الآلية</button>
+        </div>
+      </div>
     </div>
+
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { listEquipmentByWorkDay, createEquipment, updateEquipment, deleteEquipment as deleteEquipmentApi } from '@/api/materials'
-import { DEFAULT_LIMIT } from '@/constants/pagination'
+import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import PageHeader from '../components/PageHeader.vue'
+import { listEquipmentByWorkDay, createEquipment, deleteEquipment as apiDeleteEquipment } from '@/api/materials'
 import { usePermissions } from '@/composables/usePermissions'
+import { useToast } from '@/composables/useToast'
 
-const router = useRouter()
 const route = useRoute()
-
-// Permissions for workdayEquipment
+const { success, error: showError } = useToast()
 const { canCreate, canUpdate, canDelete } = usePermissions('/workdayEquipment')
 
-// Get workDayId and projectId from route query
-const workDayId = computed(() => route.query.workDayId || null)
-const projectId = computed(() => route.query.projectId || null)
-
-// Reactive data
-const equipmentSearch = ref('')
-const showAddDialog = ref(false)
-const formValid = ref(false)
 const loading = ref(false)
-const form = ref(null)
+const showAddEquipmentModal = ref(false)
 
-// Edit dialog state
-const showEditDialog = ref(false)
-const editFormValid = ref(false)
-const editForm = ref(null)
-const editingEquipmentId = ref(null)
-const editEquipment = ref({
-  equipmentName: '',
-  quantity: 0,
-  cost: 0,
-  notes: ''
-})
+// Workday ID from route
+const workdayId = ref(route.query.workday_id || null)
 
-// Pagination state
-const currentPage = ref(1)
+// Equipment data
+const equipment = ref([])
 
-// Form data - aligned with backend DTO
-const newEquipment = ref({
-  equipmentName: '',
-  quantity: 0,
-  cost: 0,
-  notes: ''
-})
+// Fetch equipment from API
+const fetchEquipment = async () => {
+  if (!workdayId.value) return
 
-// Table headers - aligned with backend fields
-const equipmentHeaders = [
-  { title: 'التسلسل', key: 'id', sortable: false },
-  { title: 'اسم الآلة', key: 'equipmentName', sortable: true },
-  { title: 'العدد', key: 'quantity', sortable: true },
-  { title: 'التكلفة', key: 'cost', sortable: true },
-  { title: 'المجموع', key: 'total', sortable: true },
-  { title: 'الملاحظات', key: 'notes', sortable: false },
-  { title: 'الإجراءات', key: 'actions', sortable: false }
-]
-
-// Data from backend
-const equipmentData = ref([])
-
-// Computed total pages for pagination
-const totalPages = computed(() => Math.ceil(equipmentData.value.length / DEFAULT_LIMIT))
-
-// Methods
-const goBack = () => {
-  const query = {}
-  if (workDayId.value) query.id = workDayId.value
-  if (projectId.value) query.projectId = projectId.value
-  router.push({ path: '/work-day-details', query })
-}
-
-// Load data from backend
-const loadEquipment = async () => {
-  if (!workDayId.value) return
   loading.value = true
   try {
-    const data = await listEquipmentByWorkDay(workDayId.value)
-    equipmentData.value = data.map(item => ({
-      ...item,
-      total: item.quantity * item.cost
+    const data = await listEquipmentByWorkDay(workdayId.value)
+    equipment.value = (data || []).map(e => ({
+      id: e.id,
+      name: e.equipmentName,
+      quantity: e.quantity || 0,
+      cost: e.cost || 0,
+      notes: e.notes || ''
     }))
-  } catch (err) {
-    console.error('Error loading equipment:', err)
+  } catch (error) {
+    console.error('Error fetching equipment:', error)
+    showError('حدث خطأ في جلب بيانات الآليات')
   } finally {
     loading.value = false
   }
 }
 
-const searchEquipment = () => {
-  console.log('البحث في الآليات:', equipmentSearch.value)
+const equipmentHeaders = [
+  { title: '#', key: 'index', align: 'center' },
+  { title: 'اسم الآلية', key: 'name', align: 'start' },
+  { title: 'الكمية', key: 'quantity', align: 'center' },
+  { title: 'التكلفة', key: 'cost', align: 'center' },
+  { title: 'ملاحظات', key: 'notes', align: 'center' },
+  { title: 'الإجراءات', key: 'actions', align: 'center', sortable: false }
+]
+
+// New equipment form
+const newEquipment = ref({
+  name: '',
+  quantity: '',
+  cost: '',
+  notes: ''
+})
+
+// Computed totals
+const totalCost = computed(() => {
+  return equipment.value.reduce((sum, item) => sum + item.cost, 0)
+})
+
+const totalQuantity = computed(() => {
+  return equipment.value.reduce((sum, item) => sum + item.quantity, 0)
+})
+
+// Methods
+const formatCurrency = (amount) => {
+  return new Intl.NumberFormat('en-US').format(amount) + ' د.ع'
 }
 
-const openAddDialog = () => {
-  newEquipment.value = {
-    equipmentName: '',
-    quantity: 0,
-    cost: 0,
-    notes: ''
-  }
-  showAddDialog.value = true
-}
-
-const closeAddDialog = () => {
-  showAddDialog.value = false
-  if (form.value) {
-    form.value.reset()
-  }
-  newEquipment.value = {
-    equipmentName: '',
-    quantity: 0,
-    cost: 0,
-    notes: ''
-  }
-}
-
-const saveEquipment = async () => {
-  const { valid } = await form.value.validate()
-  if (valid) {
-    try {
-      const wdId = parseInt(workDayId.value)
-      if (!wdId || isNaN(wdId)) {
-        console.error('Invalid workDayId:', workDayId.value)
-        return
-      }
-
-      const payload = {
-        workDayId: wdId,
-        equipmentName: newEquipment.value.equipmentName,
-        quantity: Number(newEquipment.value.quantity),
-        cost: Number(newEquipment.value.cost)
-      }
-      // Optional field
-      if (newEquipment.value.notes && newEquipment.value.notes.trim()) {
-        payload.notes = newEquipment.value.notes.trim()
-      }
-
-      await createEquipment(payload)
-      await loadEquipment()
-
-      // Reset form
-      form.value.reset()
-      newEquipment.value = {
-        equipmentName: '',
-        quantity: 0,
-        cost: 0,
-        notes: ''
-      }
-
-      showAddDialog.value = false
-    } catch (err) {
-      console.error('Error creating equipment:', err)
+const addEquipment = async () => {
+  if (!newEquipment.value.name || !newEquipment.value.cost || !workdayId.value) return
+  loading.value = true
+  try {
+    const equipmentData = {
+      workDayId: Number(workdayId.value),
+      equipmentName: newEquipment.value.name,
+      quantity: Number(newEquipment.value.quantity) || 1,
+      cost: Number(newEquipment.value.cost),
+      notes: newEquipment.value.notes || null
     }
+
+    await createEquipment(equipmentData)
+    success('تم إضافة الآلية بنجاح')
+    newEquipment.value = { name: '', quantity: '', cost: '', notes: '' }
+    showAddEquipmentModal.value = false
+    await fetchEquipment()
+  } catch (error) {
+    console.error('Error adding equipment:', error)
+    showError('حدث خطأ في إضافة الآلية')
+  } finally {
+    loading.value = false
   }
 }
 
 const deleteEquipment = async (item) => {
-  if (confirm('هل أنت متأكد من حذف هذه الآلة؟')) {
-    try {
-      await deleteEquipmentApi(item.id)
-      await loadEquipment()
-    } catch (err) {
-      console.error('Error deleting equipment:', err)
-    }
+  if (!confirm('هل أنت متأكد من حذف هذه الآلية؟')) return
+  loading.value = true
+  try {
+    await apiDeleteEquipment(item.id)
+    success('تم حذف الآلية بنجاح')
+    await fetchEquipment()
+  } catch (error) {
+    console.error('Error deleting equipment:', error)
+    showError('حدث خطأ في حذف الآلية')
+  } finally {
+    loading.value = false
   }
 }
 
-// Edit functions
-const openEditDialog = (item) => {
-  editingEquipmentId.value = item.id
-  editEquipment.value = {
-    equipmentName: item.equipmentName,
-    quantity: item.quantity,
-    cost: item.cost,
-    notes: item.notes || ''
-  }
-  showEditDialog.value = true
-}
-
-const closeEditDialog = () => {
-  showEditDialog.value = false
-  if (editForm.value) {
-    editForm.value.reset()
-  }
-  editingEquipmentId.value = null
-  editEquipment.value = {
-    equipmentName: '',
-    quantity: 0,
-    cost: 0,
-    notes: ''
-  }
-}
-
-const saveEditEquipment = async () => {
-  const { valid } = await editForm.value.validate()
-  if (valid) {
-    try {
-      const payload = {
-        equipmentName: editEquipment.value.equipmentName,
-        quantity: Number(editEquipment.value.quantity),
-        cost: Number(editEquipment.value.cost)
-      }
-      if (editEquipment.value.notes && editEquipment.value.notes.trim()) {
-        payload.notes = editEquipment.value.notes.trim()
-      }
-
-      await updateEquipment(editingEquipmentId.value, payload)
-      await loadEquipment()
-      closeEditDialog()
-    } catch (err) {
-      console.error('Error updating equipment:', err)
-    }
-  }
-}
-
-// Format currency
-const formatCurrency = (value) => {
-  if (!value) return '0 IQD'
-  return new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(value) + ' IQD'
-}
-
-// Lifecycle - watch workDayId and load data when available
-watch(workDayId, (newId) => {
-  if (newId) {
-    loadEquipment()
-  }
-}, { immediate: true })
+// Fetch data on mount
+onMounted(() => {
+  fetchEquipment()
+})
 </script>
 
 <style scoped>
-.equipment-details-page {
-  min-height: 100vh;
-  background: #f5f5f5;
-  padding: 0 !important;
-  padding-top: 0 !important;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  position: relative;
-  overflow-x: hidden;
-  direction: rtl;
-  margin: 0;
-  width: 100%;
-}
-
-.content-container {
-  padding: 0 2rem 2rem 2rem !important;
-  max-width: 100%;
-}
-
-.page-header {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
-  color: white;
-  padding: 0.4rem 0.75rem !important;
-  border-radius: 0 !important;
-  margin: 0 !important;
-  margin-bottom: 1rem !important;
-  margin-top: 0 !important;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.15);
-  border: none !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3) !important;
-  backdrop-filter: blur(15px);
-  z-index: 1;
-  width: 100% !important;
-  max-width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-.header-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  position: relative;
-  z-index: 1;
-}
-
-.header-text {
-  flex: 1;
-  position: relative;
-  z-index: 1;
-}
-
-.back-btn {
-  background: rgba(255, 255, 255, 0.15) !important;
-  backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  position: relative;
-  z-index: 1;
-  min-width: 36px !important;
-  height: 36px !important;
-}
-
-.back-btn:hover {
-  background: rgba(255, 255, 255, 0.25) !important;
-  transform: translateX(2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.page-title {
-  font-size: 1.4rem !important;
-  font-weight: 700 !important;
-  margin: 0;
-  padding: 0.4rem 0.8rem !important;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
-  letter-spacing: 0.3px !important;
-  color: #ffffff !important;
-  border-radius: 6px !important;
-}
-
-.page-subtitle {
-  font-size: 0.9rem !important;
-  opacity: 0.95;
-  margin: 0.3rem 0 0 0 !important;
-  font-weight: 400;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  letter-spacing: 0.3px !important;
-  color: rgba(255, 255, 255, 0.95);
-}
-
-.section-card {
-  border-radius: 16px;
-  overflow: hidden;
-  background: #ffffff !important;
-}
-
-.section-card :deep(.v-card-text) {
-  background: #ffffff !important;
-}
-
-.section-card :deep(.v-data-table) {
-  background: #ffffff !important;
-}
-
-/* Pagination area white background */
-.section-card .d-flex.justify-center {
-  background: #ffffff !important;
-}
-
-.section-card :deep(.v-pagination) {
-  background: #ffffff !important;
-}
-
-.section-card :deep(.v-pagination .v-btn) {
-  color: #1a1a1a !important;
-}
-
-.section-title {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-  color: white;
-  font-weight: 600 !important;
-  font-size: 1rem !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  padding: 0.6rem 1rem !important;
-}
-
-.section-title :deep(.v-icon) {
-  font-size: 18px !important;
-  color: #ffffff !important;
-}
-
-/* تحسين تصميم شريط البحث */
-.search-container {
-  padding: 0.75rem 1rem !important;
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #bfdbfe 100%);
-  border-radius: 8px !important;
-  margin-bottom: 0.75rem !important;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
-  border: 1px solid #93c5fd !important;
-  position: relative;
-}
-
-.search-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px !important;
-  background: linear-gradient(90deg, #60a5fa, #3b82f6, #2563eb);
-  border-radius: 8px 8px 0 0;
-}
-
-.search-box {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem !important;
-  max-width: 600px;
+.equipment-details-container {
+  padding: 32px;
+  max-width: 1600px;
   margin: 0 auto;
 }
 
-.search-field {
-  flex: 1;
-  margin-bottom: 0;
+/* Header */
+.equipment-details-header {
+  background: linear-gradient(135deg, #018790 0%, #005461 100%) !important;
 }
 
-.search-field :deep(.v-field) {
-  background-color: #ffffff !important;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
-  border: 2px solid #3b82f6 !important;
-  transition: all 0.3s ease;
-  min-height: 36px !important;
+.equipment-details-header::before {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 50%, #14b8a6 100%) !important;
 }
 
-.search-field :deep(.v-field__input) {
-  background-color: #ffffff !important;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
-  border: 2px solid #3b82f6 !important;
-  transition: all 0.3s ease;
-}
-
-.search-field :deep(.v-field__outline) {
-  border-color: #3b82f6 !important;
-  border-width: 2px !important;
-}
-
-.search-field :deep(.v-field--focused .v-field__outline) {
-  border-color: #2563eb !important;
-  border-width: 3px !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
-}
-
-.search-field :deep(.v-field__input):focus {
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4) !important;
-  border-color: #2563eb !important;
-  transform: translateY(-1px);
-}
-
-.search-field :deep(.v-label) {
-  color: #1e40af !important;
-  font-weight: 600 !important;
-  font-size: 0.875rem !important;
-  opacity: 1 !important;
-}
-
-.search-field :deep(.v-label--active),
-.search-field :deep(.v-field__label--active) {
-  color: #1e40af !important;
-  font-weight: 700 !important;
-  opacity: 1 !important;
-}
-
-.search-field :deep(.v-field__input input) {
-  color: #111827 !important;
-  font-weight: 500 !important;
-  font-size: 0.875rem !important;
-}
-
-.search-field :deep(.v-field__prepend-inner) {
-  color: #3b82f6 !important;
-}
-
-.search-field :deep(.v-field__prepend-inner .v-icon) {
-  color: #3b82f6 !important;
-  font-size: 18px !important;
-}
-
-.search-field :deep(.v-field__prepend-inner i) {
-  color: #3b82f6 !important;
-}
-
-.search-btn {
-  height: 36px !important;
-  min-width: 80px !important;
-  border-radius: 8px;
-  font-weight: 600 !important;
-  font-size: 0.875rem !important;
-  text-transform: none;
-  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.25);
-  transition: all 0.3s ease;
-}
-
-.search-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(25, 118, 210, 0.4);
-}
-
-/* أنماط أزرار الإضافة */
-.add-btn {
-  height: 36px !important;
-  min-width: 100px !important;
-  border-radius: 8px;
-  font-weight: 600 !important;
-  font-size: 0.875rem !important;
-  text-transform: none;
-  transition: all 0.3s ease;
-  background: linear-gradient(135deg, #3f51b5 0%, #303f9f 100%) !important;
-  box-shadow: 0 2px 8px rgba(63, 81, 181, 0.25);
-}
-
-.add-btn :deep(.v-icon) {
-  font-size: 18px !important;
-}
-
-.add-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(63, 81, 181, 0.4);
-  background: linear-gradient(135deg, #303f9f 0%, #283593 100%) !important;
-}
-
-.data-table {
-  margin-top: 1rem;
-}
-
-/* تحسين ألوان النصوص في الجداول */
-.data-table :deep(.v-data-table__td) {
-  color: #1a1a1a !important;
-  font-weight: 500 !important;
-  font-size: 0.65rem !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  padding: 5px 6px !important;
-}
-
-.data-table :deep(.v-data-table__th) {
-  color: #ffffff !important;
-  font-weight: 500 !important;
-  font-size: 0.6rem !important;
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-  padding: 3px 5px !important;
-  min-height: 24px !important;
-}
-
-/* Force white background and dark text for ALL tables */
-.data-table,
-.equipment-table {
-  background: #ffffff !important;
-}
-
-.data-table :deep(table),
-.equipment-table :deep(table) {
-  background: #ffffff !important;
-}
-
-.data-table :deep(tbody),
-.equipment-table :deep(tbody) {
-  background: #ffffff !important;
-}
-
-.data-table :deep(tbody tr),
-.equipment-table :deep(tbody tr) {
-  background: #ffffff !important;
-}
-
-.data-table :deep(tbody tr:nth-child(even)),
-.equipment-table :deep(tbody tr:nth-child(even)) {
-  background: #f8fafc !important;
-}
-
-.data-table :deep(tbody tr td),
-.equipment-table :deep(tbody tr td) {
-  background: inherit !important;
-  color: #1a1a1a !important;
-}
-
-.data-table :deep(tbody tr td *),
-.equipment-table :deep(tbody tr td *) {
-  color: #1a1a1a !important;
-}
-
-.data-table :deep(.v-data-table__tr),
-.equipment-table :deep(.v-data-table__tr) {
-  background-color: #ffffff !important;
-}
-
-.data-table :deep(.v-data-table__tr .v-data-table__td),
-.equipment-table :deep(.v-data-table__tr .v-data-table__td) {
-  color: #1a1a1a !important;
-  background: #ffffff !important;
-}
-
-.data-table :deep(.v-data-table__tr .v-data-table__td *),
-.equipment-table :deep(.v-data-table__tr .v-data-table__td *) {
-  color: #1a1a1a !important;
-}
-
-/* تحسين ألوان النصوص في الجداول الفرعية */
-.data-table :deep(.v-data-table__wrapper),
-.equipment-table :deep(.v-data-table__wrapper) {
-  background-color: #ffffff !important;
-  border: 2px solid #e3f2fd;
+/* Section Header */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 32px;
+  margin-bottom: 16px;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%);
   border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.1);
+  border: 2px solid rgba(20, 184, 166, 0.3);
 }
 
-.data-table :deep(.v-data-table__wrapper table),
-.equipment-table :deep(.v-data-table__wrapper table) {
-  background-color: #ffffff !important;
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-.data-table :deep(.v-data-table__wrapper table td),
-.equipment-table :deep(.v-data-table__wrapper table td) {
-  color: #1a1a1a !important;
-  border-color: #e0e0e0 !important;
-  background: #ffffff !important;
-  border-right: 1px solid #f0f0f0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.data-table :deep(.v-data-table__wrapper table th),
-.equipment-table :deep(.v-data-table__wrapper table th) {
-  color: #ffffff !important;
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
-  border-color: #0d47a1 !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
-  border-bottom: 2px solid #0d47a1;
-}
-
-.data-table :deep(.v-data-table__wrapper table th:last-child),
-.equipment-table :deep(.v-data-table__wrapper table th:last-child) {
-  border-right: none;
-}
-
-.data-table :deep(.v-data-table__wrapper table td:last-child),
-.equipment-table :deep(.v-data-table__wrapper table td:last-child) {
-  border-right: none;
-}
-
-.data-table :deep(.v-data-table__wrapper table tr:nth-child(even)),
-.equipment-table :deep(.v-data-table__wrapper table tr:nth-child(even)) {
-  background-color: #fafafa !important;
-}
-
-.data-table :deep(.v-data-table__wrapper table tr:nth-child(odd)),
-.equipment-table :deep(.v-data-table__wrapper table tr:nth-child(odd)) {
-  background-color: #ffffff !important;
-}
-
-.data-table :deep(.v-data-table__wrapper table tr:hover),
-.equipment-table :deep(.v-data-table__wrapper table tr:hover) {
-  background-color: #e3f2fd !important;
-}
-
-.data-table :deep(.v-data-table__wrapper table tr:hover td),
-.equipment-table :deep(.v-data-table__wrapper table tr:hover td) {
-  color: #000 !important;
+.section-header-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 18px;
   font-weight: 700;
 }
 
-/* أنماط مخصصة لجداول الآليات */
-.equipment-table :deep(.v-data-table__td) {
-  color: #1a1a1a !important;
-  font-weight: 500 !important;
-  font-size: 0.65rem !important;
-  padding: 5px 6px !important;
-  background: #ffffff !important;
+.section-header-content i {
+  font-size: 24px;
+  color: #14b8a6;
 }
 
-.equipment-table :deep(.v-data-table__th) {
-  color: #ffffff !important;
-  font-weight: 500 !important;
-  font-size: 0.6rem !important;
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-  padding: 3px 5px !important;
-  min-height: 24px !important;
-  border-bottom: 1px solid #0d47a1 !important;
-  position: relative;
+.section-header-stats {
+  display: flex;
+  gap: 32px;
 }
 
-/* تحسين ألوان الأزرار في الجداول */
-.data-table :deep(.v-btn) {
-  color: #dc3545 !important;
-  transition: all 0.3s ease;
+.header-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 }
 
-.data-table :deep(.v-btn:hover) {
-  background-color: #f8d7da !important;
-  color: #721c24 !important;
-  transform: scale(1.1);
-  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+.header-stat-value {
+  font-size: 20px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-/* تحسينات إضافية لرؤوس الجداول */
-.equipment-table :deep(.v-data-table__th:hover) {
-  background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%) !important;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+.header-stat-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
 }
 
-/* تحسين ألوان الأيقونات في الرؤوس */
-.equipment-table :deep(.v-data-table__th .v-icon) {
-  color: #ffffff !important;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
-}
-
-/* تحسين ألوان النصوص المحددة للفرز */
-.equipment-table :deep(.v-data-table__th.v-data-table__th--sorted) {
-  background: linear-gradient(135deg, #0d47a1 0%, #1976d2 100%) !important;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-/* تحسين ألوان النصوص في حالة عدم وجود بيانات */
-.data-table :deep(.v-data-table__empty) {
-  color: #666 !important;
-  font-weight: 500;
-  font-size: 1.1rem;
-}
-
-/* تحسين ألوان النصوص في حالة التحميل */
-.data-table :deep(.v-data-table__loading) {
-  color: #1976d2 !important;
-  font-weight: 500;
-  font-size: 1.1rem;
-}
-
-.dialog-card {
-  border-radius: 16px;
+/* Data Card */
+.data-card {
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%) !important;
+  border: 2px solid rgba(20, 184, 166, 0.3) !important;
   overflow: hidden;
 }
 
-.dialog-title {
-  background: linear-gradient(135deg, #3f51b5 0%, #303f9f 100%);
-  color: white;
-  font-weight: bold;
-  font-size: 1.3rem;
+.cost-value {
+  font-weight: 700;
+  color: #14b8a6;
 }
 
-.dialog-content {
-  padding: 2rem;
-}
-
-.dialog-actions {
-  padding: 1rem 2rem;
-  background: #f8f9fa;
-}
-
-/* Animations */
-.glass-effect {
-  backdrop-filter: blur(15px);
-}
-
-.page-header.glass-effect {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
-}
-
-.gradient-animation {
-  background-size: 400% 400%;
-  animation: gradientShift 20s ease infinite;
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.text-glow {
-  text-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
-}
-
-.fade-in {
-  animation: fadeIn 1.2s ease-out;
-}
-
-@keyframes fadeIn {
-  from { 
-    opacity: 0; 
-    transform: translateY(30px) scale(0.95); 
-  }
-  to { 
-    opacity: 1; 
-    transform: translateY(0) scale(1); 
-  }
-}
-
-/* تأثيرات إضافية للرأس */
-.page-header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.15) 50%, transparent 70%);
-  animation: shimmer 3s ease-in-out infinite;
-  pointer-events: none;
-  border-radius: 20px;
-}
-
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-.page-header::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(66, 165, 245, 0.1) 50%, transparent 70%);
-  animation: pulse 4s ease-in-out infinite;
-  pointer-events: none;
-  border-radius: 50%;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 0.3; transform: scale(0.8); }
-  50% { opacity: 0.6; transform: scale(1.2); }
-}
-
-/* ========================================
-   Table Card Styles - Same as Materials
-   ======================================== */
-.data-table-card {
-  background: #ffffff !important;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+/* Notes cell with truncation */
+.notes-cell {
+  display: inline-block;
+  max-width: 200px;
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.notes-cell:hover {
+  color: #14b8a6;
+}
+
+.notes-empty {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Summary Section */
+.summary-section {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
   margin-top: 24px;
 }
 
-/* Pagination area white background */
-.data-table-card .d-flex.justify-center {
-  background: #ffffff !important;
-}
-
-.data-table-card :deep(.v-pagination) {
-  background: #ffffff !important;
-}
-
-.data-table-card :deep(.v-pagination .v-btn) {
-  color: #1a1a1a !important;
-}
-
-.table-title {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
-  color: #ffffff !important;
-  padding: 8px 12px !important;
-  border-radius: 8px 8px 0 0 !important;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25) !important;
-  margin: 0 !important;
-  font-weight: 600 !important;
-  font-size: 0.95rem !important;
-  text-align: right !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  min-height: 36px !important;
-}
-
-.indigo-title {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
-  color: #ffffff !important;
-  font-weight: 600 !important;
-}
-
-.title-text {
-  color: #ffffff !important;
-  font-weight: 600 !important;
-  font-size: 0.95rem !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25) !important;
-}
-
-.serial-number {
-  color: #1a1a1a !important;
-  font-weight: 700 !important;
-  font-size: 0.7rem !important;
-  background: rgba(25, 118, 210, 0.1) !important;
-  padding: 3px 6px !important;
-  border-radius: 6px !important;
-  display: inline-block !important;
-  min-width: 30px !important;
-  text-align: center !important;
-  border: 1px solid rgba(25, 118, 210, 0.2) !important;
-}
-
-.project-name {
-  color: #000000 !important;
-  font-weight: 500 !important;
-  font-size: 0.65rem !important;
-  text-align: right !important;
-  padding: 2px 4px !important;
-  border-radius: 4px !important;
-  display: inline-block !important;
-  max-width: 200px !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
-}
-
-.date-text {
-  color: #000000 !important;
-  font-weight: 500 !important;
-  font-size: 0.65rem !important;
-  font-family: 'Arial', 'Helvetica', sans-serif !important;
-}
-
-.cost-text {
-  color: #000000 !important;
-  font-weight: 600 !important;
-  font-size: 0.65rem !important;
-  font-family: 'Arial', 'Helvetica', sans-serif !important;
-  direction: ltr !important;
-  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%) !important;
-  padding: 3px 6px !important;
-  border-radius: 6px !important;
-  display: inline-block !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
-  border: 1px solid #d1d5db !important;
-  white-space: nowrap !important;
-  min-width: 80px !important;
-  text-align: center !important;
-}
-
-.action-buttons {
+.summary-card {
   display: flex;
-  gap: 4px;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%);
+  border-radius: 16px;
+  border: 2px solid rgba(20, 184, 166, 0.3);
+}
+
+.summary-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.action-btn {
-  min-width: 28px !important;
-  height: 28px !important;
-  border-radius: 4px !important;
-  transition: all 0.3s ease !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
+.summary-icon i {
+  font-size: 28px;
+  color: white;
 }
 
-.action-btn .v-icon {
-  font-size: 16px !important;
+.equipment-count-summary .summary-icon {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
 }
 
-.action-btn:hover {
-  transform: translateY(-2px) scale(1.05) !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+.quantity-summary .summary-icon {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
 }
 
-/* ========================================
-   Clean Form Styles - Same as Materials/Labor
-   ======================================== */
-.clean-form-card {
-  background: #ffffff !important;
+.cost-summary .summary-icon {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
 }
 
-.clean-dialog-header,
-.clean-form-header {
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
-  color: #ffffff !important;
-  padding: 1rem 1.5rem !important;
+.summary-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.clean-form-title {
-  font-size: 1.25rem !important;
-  font-weight: 600 !important;
-  margin: 0 !important;
-  color: #ffffff !important;
+.summary-label {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
 }
 
-.clean-form-content {
-  padding: 1.5rem !important;
-  background: #ffffff !important;
+.summary-value {
+  font-size: 24px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.clean-form-instruction {
-  color: #666666 !important;
-  font-size: 0.9rem !important;
-  margin-bottom: 1.5rem !important;
-  line-height: 1.6 !important;
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
-.clean-form-row {
-  margin-bottom: 0.5rem !important;
+.modal-container {
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%);
+  border-radius: 20px;
+  border: 2px solid rgba(20, 184, 166, 0.4);
+  width: 90%;
+  max-width: 550px;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
-.clean-form-column {
-  padding: 0.5rem !important;
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(20, 184, 166, 0.2);
 }
 
-.clean-form-field-wrapper {
-  margin-bottom: 0.5rem;
+.modal-header h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.clean-form-label {
-  display: block;
-  font-size: 0.875rem !important;
-  font-weight: 600 !important;
-  color: #333333 !important;
-  margin-bottom: 0.5rem !important;
+.modal-header h3 i {
+  color: #14b8a6;
 }
 
-.required-star {
-  color: #d32f2f !important;
+.modal-close {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
 }
 
-.clean-form-input :deep(.v-field) {
-  background-color: #f5f5f5 !important;
-  border-radius: 8px !important;
+.modal-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.clean-form-input :deep(.v-field__input) {
-  color: #333333 !important;
-  font-size: 0.95rem !important;
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 }
 
-.clean-form-input :deep(.v-field__outline) {
-  border-color: #e0e0e0 !important;
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.clean-form-input :deep(.v-field--focused .v-field__outline) {
-  border-color: #1976d2 !important;
-  border-width: 2px !important;
+.form-group label {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 500;
 }
 
-.clean-form-input :deep(.v-label) {
-  color: #666666 !important;
+.form-group input,
+.form-group select,
+.form-group textarea {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(20, 184, 166, 0.3);
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: #fff;
+  font-size: 14px;
+  outline: none;
 }
 
-.clean-form-input :deep(input::placeholder),
-.clean-form-input :deep(textarea::placeholder) {
-  color: #999999 !important;
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #14b8a6;
 }
 
-.clean-form-actions {
-  padding: 1rem 1.5rem !important;
-  background: #f5f5f5 !important;
-  border-top: 1px solid #e0e0e0 !important;
+.form-group select option {
+  background: #0a3d42;
+  color: #fff;
 }
 
-.clean-form-cancel-btn {
-  color: #666666 !important;
-  border-color: #cccccc !important;
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px 24px;
+  border-top: 1px solid rgba(20, 184, 166, 0.2);
 }
 
-.clean-form-cancel-btn:hover {
-  background: #eeeeee !important;
+.btn-cancel,
+.btn-save {
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
 }
 
-.clean-form-continue-btn {
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
-  color: #ffffff !important;
+.btn-cancel {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
 }
 
-.clean-form-continue-btn:hover {
-  background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%) !important;
-}
-
-.clean-form-continue-btn:disabled {
-  background: #cccccc !important;
-  color: #999999 !important;
+.btn-save {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(20, 184, 166, 0.3);
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-  .equipment-details-page {
-    padding: 1rem;
+@media (max-width: 1024px) {
+  .summary-section {
+    grid-template-columns: 1fr;
   }
-
-  .page-title {
-    font-size: 2rem;
-  }
-
-  .header-content {
+  
+  .section-header {
     flex-direction: column;
-    text-align: center;
+    gap: 16px;
   }
-
-  .dialog-content {
-    padding: 1rem;
-  }
-
-  .search-box {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .search-btn, .add-btn {
+  
+  .section-header-stats {
     width: 100%;
-    min-width: auto;
+    justify-content: space-around;
   }
+}
 
-  .search-container {
-    padding: 0.75rem;
-  }
-
-  .search-field {
-    margin-bottom: 0.5rem;
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
   }
 }
 </style>

@@ -5,9 +5,9 @@
  */
 
 // Plugins
-import { createPinia } from 'pinia'
 import vuetify from './vuetify'
 import router from '@/router'
+import { createPinia } from 'pinia'
 
 const pinia = createPinia()
 

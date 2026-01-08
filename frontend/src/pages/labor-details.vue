@@ -1,1920 +1,734 @@
 <template>
-  <div class="labor-details-page">
-    <!-- Header Section -->
-    <div class="page-header glass-effect gradient-animation">
-      <div class="header-content">
-        <div class="header-text">
-          <h1 class="page-title text-glow fade-in">تفاصيل الأيدي العاملة</h1>
-          <p class="page-subtitle fade-in">إدارة العمال والموظفين المشاركين في المشروع</p>
+  <div class="labor-details-container">
+    <!-- Page Header -->
+    <PageHeader
+      title="تفاصيل الأيدي العاملة"
+      subtitle="إدارة العمال والأجور اليومية"
+      badge="العمال"
+      badgeType="success"
+      class="labor-details-header"
+    >
+      <template #actions>
+        <button class="page-action-btn secondary" @click="$router.back()">
+          <i class="mdi mdi-arrow-right"></i>
+          رجوع
+        </button>
+        <button class="page-action-btn primary" @click="showAddLaborModal = true">
+          <i class="mdi mdi-plus"></i>
+          إضافة عامل
+        </button>
+      </template>
+    </PageHeader>
+
+    <!-- Summary Cards -->
+    <div class="summary-section">
+      <div class="summary-card workers-summary">
+        <div class="summary-icon">
+          <i class="mdi mdi-account-group"></i>
         </div>
-        <v-btn 
-          icon="mdi-arrow-right" 
-          @click="goBack" 
-          class="back-btn"
-          size="small"
-        >
-          <v-icon size="20" color="white">mdi-arrow-right</v-icon>
-        </v-btn>
+        <div class="summary-info">
+          <span class="summary-label">إجمالي العمال</span>
+          <span class="summary-value">{{ labor.length }}</span>
+        </div>
+      </div>
+
+      <div class="summary-card hours-summary">
+        <div class="summary-icon">
+          <i class="mdi mdi-clock-outline"></i>
+        </div>
+        <div class="summary-info">
+          <span class="summary-label">إجمالي ساعات العمل</span>
+          <span class="summary-value">{{ totalHours }} ساعة</span>
+        </div>
+      </div>
+
+      <div class="summary-card salary-summary">
+        <div class="summary-icon">
+          <i class="mdi mdi-cash"></i>
+        </div>
+        <div class="summary-info">
+          <span class="summary-label">إجمالي الأجور اليومية</span>
+          <span class="summary-value">{{ formatCurrency(totalSalaries) }}</span>
+        </div>
       </div>
     </div>
 
-    <!-- Content Container -->
-    <div class="content-container">
-
-    <!-- Labor Section -->
-    <v-card class="section-card mb-4" elevation="2">
-      <v-card-title class="section-title">
-        <v-icon class="me-2" color="success">mdi-account-group</v-icon>
-        الأيدي العاملة
-      </v-card-title>
-      
-      <!-- Search Bar and Add Button -->
-      <v-card-text class="pb-0">
-        <div class="search-container">
-          <div class="search-box">
-            <v-text-field
-              v-model="laborSearch"
-              label="البحث في العمال..."
-              prepend-inner-icon="mdi-magnify"
-              variant="outlined"
-              density="comfortable"
-              clearable
-              hide-details
-              class="search-field"
-              @keyup.enter="searchLabor"
-            />
-            <v-btn 
-              color="primary" 
-              variant="elevated" 
-              class="search-btn"
-              @click="searchLabor"
-              size="large"
-            >
-              <v-icon class="me-2">mdi-magnify</v-icon>
-              بحث
-            </v-btn>
-            <v-btn
-              v-if="canCreate"
-              color="success"
-              variant="elevated"
-              class="add-btn"
-              @click="openAddDialog"
-              size="large"
-            >
-              <v-icon class="me-2">mdi-plus</v-icon>
-              إضافة عامل
-            </v-btn>
-          </div>
+    <!-- Labor Section Header -->
+    <div class="section-header">
+      <div class="section-header-content">
+        <i class="mdi mdi-account-hard-hat"></i>
+        <span>جدول الأيدي العاملة</span>
+      </div>
+      <div class="section-header-stats">
+        <div class="header-stat">
+          <span class="header-stat-value">{{ labor.length }}</span>
+          <span class="header-stat-label">عامل</span>
         </div>
-      </v-card-text>
-    </v-card>
+        <div class="header-stat">
+          <span class="header-stat-value">{{ formatCurrency(totalSalaries) }}</span>
+          <span class="header-stat-label">إجمالي الأجور</span>
+        </div>
+      </div>
+    </div>
 
-    <!-- Labor Table Card -->
-    <v-card class="data-table-card" elevation="2">
-      <v-card-title class="table-title indigo-title">
-        <span class="title-text">قائمة العمال</span>
-      </v-card-title>
-
+    <!-- Labor Table -->
+    <v-card class="data-card">
       <v-data-table
-        v-model:page="currentPage"
         :headers="laborHeaders"
-        :items="laborData"
-        :search="laborSearch"
-        :items-per-page="DEFAULT_LIMIT"
-        class="data-table labor-table"
-        no-data-text="لا توجد بيانات متاحة"
-        loading-text="جاري التحميل..."
-        density="comfortable"
-        hide-default-footer
+        :items="labor"
+        class="elevation-0"
       >
-        <!-- Serial Number Column -->
-        <template #item.id="{ index }">
-          <span class="serial-number">{{ index + 1 }}</span>
+        <template v-slot:item.index="{ index }">
+          {{ index + 1 }}
         </template>
-
-        <!-- Worker Name Column -->
-        <template #item.workerName="{ item }">
-          <span class="project-name">{{ item.workerName }}</span>
+        <template v-slot:item.salary="{ item }">
+          <span class="salary-value">{{ formatCurrency(item.salary) }}</span>
         </template>
-
-        <!-- Job Title Column -->
-        <template #item.jobTitle="{ item }">
-          <span class="project-name">{{ item.jobTitle || '-' }}</span>
+        <template v-slot:item.notes="{ item }">
+          <v-tooltip v-if="item.notes" location="top" max-width="300">
+            <template v-slot:activator="{ props }">
+              <span v-bind="props" class="notes-cell text-truncate">{{ item.notes }}</span>
+            </template>
+            <span>{{ item.notes }}</span>
+          </v-tooltip>
+          <span v-else class="notes-empty">-</span>
         </template>
-
-        <!-- Quantity Column -->
-        <template #item.quantity="{ item }">
-          <span class="date-text">{{ item.quantity }}</span>
-        </template>
-
-        <!-- Cost Column -->
-        <template #item.cost="{ item }">
-          <span class="cost-text">{{ formatCurrency(item.cost) }}</span>
-        </template>
-
-        <!-- Total Column -->
-        <template #item.total="{ item }">
-          <span class="cost-text">{{ formatCurrency(item.total) }}</span>
-        </template>
-
-        <!-- Phone Column -->
-        <template #item.phone="{ item }">
-          <span class="date-text">{{ item.phone || '-' }}</span>
-        </template>
-
-        <!-- Address Column -->
-        <template #item.address="{ item }">
-          <span class="project-name">{{ item.address || '-' }}</span>
-        </template>
-
-        <!-- Actions Column -->
-        <template #item.actions="{ item }">
-          <div class="action-buttons">
-            <v-btn
-              v-if="canUpdate"
-              icon="mdi-pencil"
-              size="small"
-              color="primary"
-              variant="text"
-              @click="openEditDialog(item)"
-              title="تعديل العامل"
-              class="action-btn"
-            />
-            <v-btn
-              v-if="canDelete"
-              icon="mdi-delete"
-              size="small"
-              color="error"
-              variant="text"
-              @click="deleteLabor(item)"
-              title="حذف العامل"
-              class="action-btn"
-            />
-          </div>
+        <template v-slot:item.actions="{ item }">
+          <v-btn v-if="canUpdate" size="small" color="primary" class="me-2" @click="editLabor(item)">
+            <i class="mdi mdi-pencil"></i>
+          </v-btn>
+          <v-btn v-if="canDelete" size="small" color="error" @click="deleteLabor(item)">
+            <i class="mdi mdi-delete"></i>
+          </v-btn>
         </template>
       </v-data-table>
-
-      <!-- Pagination -->
-      <div class="d-flex justify-center pa-4" v-if="totalPages > 0">
-        <v-pagination
-          v-model="currentPage"
-          :length="totalPages"
-          :total-visible="7"
-          rounded="circle"
-          density="comfortable"
-          active-color="primary"
-        />
-      </div>
     </v-card>
 
-    <!-- Add New Labor Dialog - Clean Form Style -->
-    <v-dialog v-model="showAddDialog" max-width="900" scrollable persistent>
-      <v-card class="clean-dialog-card clean-form-card">
-        <!-- Header Section -->
-        <v-card-title class="clean-dialog-header clean-form-header">
-          <h2 class="clean-form-title">معلومات العامل</h2>
-        </v-card-title>
+    <!-- Add Labor Modal -->
+    <div v-if="showAddLaborModal" class="modal-overlay" @click.self="showAddLaborModal = false">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h3>
+            <i class="mdi mdi-account-plus"></i>
+            إضافة عامل جديد
+          </h3>
+          <button class="modal-close" @click="showAddLaborModal = false">
+            <i class="mdi mdi-close"></i>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="form-group">
+            <label>اسم العامل</label>
+            <input type="text" v-model="newLabor.name" placeholder="أدخل اسم العامل" />
+          </div>
+          <div class="form-group">
+            <label>الدور / المهنة</label>
+            <input type="text" v-model="newLabor.role" placeholder="أدخل المهنة" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>رقم الهاتف</label>
+              <input type="text" v-model="newLabor.phone" placeholder="رقم الهاتف" />
+            </div>
+            <div class="form-group">
+              <label>العنوان</label>
+              <input type="text" v-model="newLabor.address" placeholder="العنوان" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>الكمية</label>
+              <input type="number" v-model="newLabor.hours" placeholder="الكمية" />
+            </div>
+            <div class="form-group">
+              <label>الأجر اليومي (د.ع)</label>
+              <input type="number" v-model="newLabor.salary" placeholder="الأجر" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>ملاحظات</label>
+            <textarea v-model="newLabor.notes" placeholder="ملاحظات إضافية" rows="2"></textarea>
+          </div>
+        </div>
 
-        <!-- Form Content -->
-        <v-card-text class="clean-form-content">
-          <p class="clean-form-instruction">
-            لإتمام إضافة العامل، يرجى توفير المعلومات التالية. يرجى ملاحظة أن جميع الحقول المميزة بعلامة النجمة (*) مطلوبة.
-          </p>
-
-          <v-form ref="form" v-model="formValid">
-            <!-- الصف الأول: اسم العامل، المهنة -->
-            <v-row class="clean-form-row">
-              <v-col cols="12" md="6" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    اسم العامل <span class="required-star">*</span>
-                  </label>
-                  <v-text-field
-                    v-model="newLabor.workerName"
-                    variant="outlined"
-                    density="comfortable"
-                    placeholder="أدخل اسم العامل"
-                    :rules="[v => !!v || 'اسم العامل مطلوب']"
-                    required
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-              <v-col cols="12" md="6" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    المهنة
-                  </label>
-                  <v-text-field
-                    v-model="newLabor.jobTitle"
-                    variant="outlined"
-                    density="comfortable"
-                    placeholder="أدخل المهنة"
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-            </v-row>
-
-            <!-- الصف الثاني: العدد، الأجرة اليومية -->
-            <v-row class="clean-form-row">
-              <v-col cols="12" md="6" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    عدد الأيام <span class="required-star">*</span>
-                  </label>
-                  <v-text-field
-                    v-model.number="newLabor.quantity"
-                    variant="outlined"
-                    density="comfortable"
-                    type="number"
-                    placeholder="0"
-                    :rules="[v => (v > 0) || 'عدد الأيام يجب أن يكون أكبر من صفر']"
-                    required
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-              <v-col cols="12" md="6" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    الأجرة اليومية (د.ع) <span class="required-star">*</span>
-                  </label>
-                  <v-text-field
-                    v-model.number="newLabor.cost"
-                    variant="outlined"
-                    density="comfortable"
-                    type="number"
-                    placeholder="0"
-                    :rules="[v => (v > 0) || 'الأجرة يجب أن تكون أكبر من صفر']"
-                    required
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-            </v-row>
-
-            <!-- الصف الثالث: المجموع، رقم الهاتف -->
-            <v-row class="clean-form-row">
-              <v-col cols="12" md="6" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    المجموع (د.ع)
-                  </label>
-                  <v-text-field
-                    :value="(newLabor.quantity * newLabor.cost) || 0"
-                    variant="outlined"
-                    density="comfortable"
-                    type="number"
-                    placeholder="0"
-                    readonly
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-              <v-col cols="12" md="6" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    رقم الهاتف
-                  </label>
-                  <v-text-field
-                    v-model="newLabor.phone"
-                    variant="outlined"
-                    density="comfortable"
-                    placeholder="07XX XXX XXXX"
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-            </v-row>
-
-            <!-- الصف الرابع: العنوان -->
-            <v-row class="clean-form-row">
-              <v-col cols="12" md="6" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    العنوان
-                  </label>
-                  <v-text-field
-                    v-model="newLabor.address"
-                    variant="outlined"
-                    density="comfortable"
-                    placeholder="أدخل العنوان"
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-            </v-row>
-
-            <!-- الصف الخامس: الملاحظات -->
-            <v-row class="clean-form-row">
-              <v-col cols="12" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">ملاحظات</label>
-                  <v-textarea
-                    v-model="newLabor.notes"
-                    variant="outlined"
-                    rows="4"
-                    density="comfortable"
-                    placeholder="أدخل ملاحظات إضافية"
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-            </v-row>
-          </v-form>
-        </v-card-text>
-
-        <v-card-actions class="clean-form-actions">
-          <v-spacer />
-          <v-btn
-            class="clean-form-cancel-btn"
-            variant="outlined"
-            @click="closeAddDialog"
-          >
-            إلغاء
-          </v-btn>
-          <v-btn
-            class="clean-form-continue-btn"
-            variant="elevated"
-            :disabled="!formValid"
-            @click="saveLabor"
-          >
-            حفظ العامل
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <!-- Edit Labor Dialog -->
-    <v-dialog v-model="showEditDialog" max-width="900" scrollable persistent>
-      <v-card class="clean-dialog-card clean-form-card">
-        <!-- Header Section -->
-        <v-card-title class="clean-dialog-header clean-form-header">
-          <h2 class="clean-form-title">تعديل معلومات العامل</h2>
-        </v-card-title>
-
-        <!-- Form Content -->
-        <v-card-text class="clean-form-content">
-          <p class="clean-form-instruction">
-            قم بتعديل المعلومات المطلوبة. جميع الحقول المميزة بعلامة النجمة (*) مطلوبة.
-          </p>
-
-          <v-form ref="editForm" v-model="editFormValid">
-            <!-- الصف الأول: اسم العامل، المهنة -->
-            <v-row class="clean-form-row">
-              <v-col cols="12" md="6" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    اسم العامل <span class="required-star">*</span>
-                  </label>
-                  <v-text-field
-                    v-model="editLabor.workerName"
-                    variant="outlined"
-                    density="comfortable"
-                    placeholder="أدخل اسم العامل"
-                    :rules="[v => !!v || 'اسم العامل مطلوب']"
-                    required
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-              <v-col cols="12" md="6" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    المهنة
-                  </label>
-                  <v-text-field
-                    v-model="editLabor.jobTitle"
-                    variant="outlined"
-                    density="comfortable"
-                    placeholder="أدخل المهنة"
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-            </v-row>
-
-            <!-- الصف الثاني: العدد، الأجرة اليومية -->
-            <v-row class="clean-form-row">
-              <v-col cols="12" md="6" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    عدد الأيام <span class="required-star">*</span>
-                  </label>
-                  <v-text-field
-                    v-model.number="editLabor.quantity"
-                    variant="outlined"
-                    density="comfortable"
-                    type="number"
-                    placeholder="0"
-                    :rules="[v => (v > 0) || 'عدد الأيام يجب أن يكون أكبر من صفر']"
-                    required
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-              <v-col cols="12" md="6" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    الأجرة اليومية (د.ع) <span class="required-star">*</span>
-                  </label>
-                  <v-text-field
-                    v-model.number="editLabor.cost"
-                    variant="outlined"
-                    density="comfortable"
-                    type="number"
-                    placeholder="0"
-                    :rules="[v => (v > 0) || 'الأجرة يجب أن تكون أكبر من صفر']"
-                    required
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-            </v-row>
-
-            <!-- الصف الثالث: المجموع، رقم الهاتف -->
-            <v-row class="clean-form-row">
-              <v-col cols="12" md="6" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    المجموع (د.ع)
-                  </label>
-                  <v-text-field
-                    :value="(editLabor.quantity * editLabor.cost) || 0"
-                    variant="outlined"
-                    density="comfortable"
-                    type="number"
-                    placeholder="0"
-                    readonly
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-              <v-col cols="12" md="6" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    رقم الهاتف
-                  </label>
-                  <v-text-field
-                    v-model="editLabor.phone"
-                    variant="outlined"
-                    density="comfortable"
-                    placeholder="07XX XXX XXXX"
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-            </v-row>
-
-            <!-- الصف الرابع: العنوان -->
-            <v-row class="clean-form-row">
-              <v-col cols="12" md="6" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">
-                    العنوان
-                  </label>
-                  <v-text-field
-                    v-model="editLabor.address"
-                    variant="outlined"
-                    density="comfortable"
-                    placeholder="أدخل العنوان"
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-            </v-row>
-
-            <!-- الصف الخامس: الملاحظات -->
-            <v-row class="clean-form-row">
-              <v-col cols="12" class="clean-form-column">
-                <div class="clean-form-field-wrapper">
-                  <label class="clean-form-label">ملاحظات</label>
-                  <v-textarea
-                    v-model="editLabor.notes"
-                    variant="outlined"
-                    rows="4"
-                    density="comfortable"
-                    placeholder="أدخل ملاحظات إضافية"
-                    hide-details="auto"
-                    class="clean-form-input"
-                  />
-                </div>
-              </v-col>
-            </v-row>
-          </v-form>
-        </v-card-text>
-
-        <v-card-actions class="clean-form-actions">
-          <v-spacer />
-          <v-btn
-            class="clean-form-cancel-btn"
-            variant="outlined"
-            @click="closeEditDialog"
-          >
-            إلغاء
-          </v-btn>
-          <v-btn
-            class="clean-form-continue-btn"
-            variant="elevated"
-            :disabled="!editFormValid"
-            @click="saveEditLabor"
-          >
-            حفظ التعديلات
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
+        <div class="modal-footer">
+          <button class="btn-cancel" @click="showAddLaborModal = false">إلغاء</button>
+          <button class="btn-save" @click="addLabor">حفظ العامل</button>
+        </div>
+      </div>
     </div>
+
+    <!-- Edit Labor Modal -->
+    <div v-if="showEditLaborModal" class="modal-overlay" @click.self="closeEditLaborModal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h3>
+            <i class="mdi mdi-pencil"></i>
+            تعديل بيانات العامل
+          </h3>
+          <button class="modal-close" @click="closeEditLaborModal">
+            <i class="mdi mdi-close"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="form-group">
+            <label>اسم العامل</label>
+            <input type="text" v-model="editLaborForm.name" placeholder="أدخل اسم العامل" />
+          </div>
+          <div class="form-group">
+            <label>الدور / المهنة</label>
+            <input type="text" v-model="editLaborForm.role" placeholder="أدخل المهنة" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>رقم الهاتف</label>
+              <input type="text" v-model="editLaborForm.phone" placeholder="رقم الهاتف" />
+            </div>
+            <div class="form-group">
+              <label>العنوان</label>
+              <input type="text" v-model="editLaborForm.address" placeholder="العنوان" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>الكمية</label>
+              <input type="number" v-model="editLaborForm.hours" placeholder="الكمية" />
+            </div>
+            <div class="form-group">
+              <label>الأجر اليومي (د.ع)</label>
+              <input type="number" v-model="editLaborForm.salary" placeholder="الأجر" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>ملاحظات</label>
+            <textarea v-model="editLaborForm.notes" placeholder="ملاحظات إضافية" rows="2"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-cancel" @click="closeEditLaborModal">إلغاء</button>
+          <button class="btn-save" @click="saveEditedLabor">حفظ التعديلات</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { listLaborByWorkDay, createLabor, updateLabor, deleteLabor as deleteLaborApi } from '@/api/materials'
-import { DEFAULT_LIMIT } from '@/constants/pagination'
+import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import PageHeader from '../components/PageHeader.vue'
+import { listLaborByWorkDay, createLabor, updateLabor, deleteLabor as apiDeleteLabor } from '@/api/materials'
 import { usePermissions } from '@/composables/usePermissions'
+import { useToast } from '@/composables/useToast'
 
-const router = useRouter()
 const route = useRoute()
-
-// Permissions for workdayLabor
+const { success, error: showError } = useToast()
 const { canCreate, canUpdate, canDelete } = usePermissions('/workdayLabor')
 
-// Get workDayId and projectId from route query
-const workDayId = computed(() => route.query.workDayId || null)
-const projectId = computed(() => route.query.projectId || null)
-
-// Reactive data
-const laborSearch = ref('')
-const showAddDialog = ref(false)
-const showEditDialog = ref(false)
-const formValid = ref(false)
-const editFormValid = ref(false)
 const loading = ref(false)
-const form = ref(null)
-const editForm = ref(null)
-const editingLaborId = ref(null)
+const showAddLaborModal = ref(false)
+const showEditLaborModal = ref(false)
+const editingLabor = ref(null)
 
-// Form data - aligned with backend DTO
-const newLabor = ref({
-  workerName: '',
-  jobTitle: '',
-  quantity: 0,
-  cost: 0,
-  phone: '',
-  address: '',
-  notes: ''
-})
+// Workday ID from route
+const workdayId = ref(route.query.workday_id || null)
 
-// Edit form data
-const editLabor = ref({
-  workerName: '',
-  jobTitle: '',
-  quantity: 0,
-  cost: 0,
-  phone: '',
-  address: '',
-  notes: ''
-})
+// Labor data
+const labor = ref([])
 
-// Table headers - aligned with backend fields
-const laborHeaders = [
-  { title: 'التسلسل', key: 'id', sortable: false },
-  { title: 'اسم العامل', key: 'workerName', sortable: true },
-  { title: 'المهنة', key: 'jobTitle', sortable: true },
-  { title: 'عدد الأيام', key: 'quantity', sortable: true },
-  { title: 'الأجرة اليومية', key: 'cost', sortable: true },
-  { title: 'المجموع', key: 'total', sortable: true },
-  { title: 'رقم الهاتف', key: 'phone', sortable: true },
-  { title: 'العنوان', key: 'address', sortable: true },
-  { title: 'الإجراءات', key: 'actions', sortable: false }
-]
+// Fetch labor from API
+const fetchLabor = async () => {
+  if (!workdayId.value) return
 
-// Data from backend
-const laborData = ref([])
-
-// Pagination state
-const currentPage = ref(1)
-
-// Computed total pages for pagination
-const totalPages = computed(() => Math.ceil(laborData.value.length / DEFAULT_LIMIT))
-
-// Methods
-const goBack = () => {
-  const query = {}
-  if (workDayId.value) query.id = workDayId.value
-  if (projectId.value) query.projectId = projectId.value
-  router.push({ path: '/work-day-details', query })
-}
-
-// Load data from backend
-const loadLabor = async () => {
-  if (!workDayId.value) return
   loading.value = true
   try {
-    const data = await listLaborByWorkDay(workDayId.value)
-    laborData.value = data.map(item => ({
-      ...item,
-      total: item.quantity * item.cost
+    const data = await listLaborByWorkDay(workdayId.value)
+    labor.value = (data || []).map(l => ({
+      id: l.id,
+      name: l.workerName || '',
+      role: l.jobTitle || '',
+      phone: l.phone || '',
+      address: l.address || '',
+      hours: l.quantity || 0,
+      salary: l.cost || 0,
+      notes: l.notes || ''
     }))
-  } catch (err) {
-    console.error('Error loading labor:', err)
+  } catch (error) {
+    console.error('Error fetching labor:', error)
+    showError('حدث خطأ في جلب بيانات العمال')
   } finally {
     loading.value = false
   }
 }
 
-const searchLabor = () => {
-  console.log('البحث في العمال:', laborSearch.value)
+const laborHeaders = [
+  { title: '#', key: 'index', align: 'center' },
+  { title: 'الاسم', key: 'name', align: 'start' },
+  { title: 'الدور', key: 'role', align: 'center' },
+  { title: 'الكمية', key: 'hours', align: 'center' },
+  { title: 'الأجر اليومي', key: 'salary', align: 'center' },
+  { title: 'ملاحظات', key: 'notes', align: 'center' },
+  { title: 'الإجراءات', key: 'actions', align: 'center', sortable: false }
+]
+
+// New labor form
+const newLabor = ref({
+  name: '',
+  role: '',
+  phone: '',
+  address: '',
+  hours: 8,
+  salary: '',
+  notes: ''
+})
+
+// Edit labor form
+const editLaborForm = ref({
+  name: '',
+  role: '',
+  phone: '',
+  address: '',
+  hours: 8,
+  salary: '',
+  notes: ''
+})
+
+// Computed totals
+const totalSalaries = computed(() => {
+  return labor.value.reduce((sum, item) => sum + item.salary, 0)
+})
+
+const totalHours = computed(() => {
+  return labor.value.reduce((sum, item) => sum + item.hours, 0)
+})
+
+// Methods
+const formatCurrency = (amount) => {
+  return new Intl.NumberFormat('en-US').format(amount) + ' د.ع'
 }
 
-const openAddDialog = () => {
-  newLabor.value = {
-    workerName: '',
-    jobTitle: '',
-    quantity: 0,
-    cost: 0,
-    phone: '',
-    address: '',
-    notes: ''
-  }
-  showAddDialog.value = true
-}
+const addLabor = async () => {
+  if (!newLabor.value.name || !newLabor.value.salary || !workdayId.value) return
 
-const closeAddDialog = () => {
-  showAddDialog.value = false
-  if (form.value) {
-    form.value.reset()
-  }
-  newLabor.value = {
-    workerName: '',
-    jobTitle: '',
-    quantity: 0,
-    cost: 0,
-    phone: '',
-    address: '',
-    notes: ''
-  }
-}
-
-const saveLabor = async () => {
-  const { valid } = await form.value.validate()
-  if (valid) {
-    try {
-      const wdId = parseInt(workDayId.value)
-      if (!wdId || isNaN(wdId)) {
-        console.error('Invalid workDayId:', workDayId.value)
-        return
-      }
-
-      const payload = {
-        workDayId: wdId,
-        workerName: newLabor.value.workerName,
-        quantity: Number(newLabor.value.quantity),
-        cost: Number(newLabor.value.cost)
-      }
-      // Optional fields
-      if (newLabor.value.jobTitle && newLabor.value.jobTitle.trim()) {
-        payload.jobTitle = newLabor.value.jobTitle.trim()
-      }
-      if (newLabor.value.phone && newLabor.value.phone.trim()) {
-        payload.phone = newLabor.value.phone.trim()
-      }
-      if (newLabor.value.address && newLabor.value.address.trim()) {
-        payload.address = newLabor.value.address.trim()
-      }
-      if (newLabor.value.notes && newLabor.value.notes.trim()) {
-        payload.notes = newLabor.value.notes.trim()
-      }
-
-      await createLabor(payload)
-      await loadLabor()
-
-      // Reset form
-      form.value.reset()
-      newLabor.value = {
-        workerName: '',
-        jobTitle: '',
-        quantity: 0,
-        cost: 0,
-        phone: '',
-        address: '',
-        notes: ''
-      }
-
-      showAddDialog.value = false
-    } catch (err) {
-      console.error('Error creating labor:', err)
+  loading.value = true
+  try {
+    const laborData = {
+      workDayId: Number(workdayId.value),
+      workerName: newLabor.value.name,
+      jobTitle: newLabor.value.role || null,
+      phone: newLabor.value.phone || null,
+      address: newLabor.value.address || null,
+      quantity: Number(newLabor.value.hours) || 1,
+      cost: Number(newLabor.value.salary),
+      notes: newLabor.value.notes || null
     }
+
+    await createLabor(laborData)
+    success('تم إضافة العامل بنجاح')
+    newLabor.value = { name: '', role: '', phone: '', address: '', hours: 8, salary: '', notes: '' }
+    showAddLaborModal.value = false
+    fetchLabor()
+  } catch (error) {
+    console.error('Error adding labor:', error)
+    showError('حدث خطأ في إضافة العامل')
+  } finally {
+    loading.value = false
   }
 }
 
 const deleteLabor = async (item) => {
-  if (confirm('هل أنت متأكد من حذف هذا العامل؟')) {
-    try {
-      await deleteLaborApi(item.id)
-      await loadLabor()
-    } catch (err) {
-      console.error('Error deleting labor:', err)
-    }
+  if (!confirm('هل أنت متأكد من حذف هذا العامل؟')) return
+
+  loading.value = true
+  try {
+    await apiDeleteLabor(item.id)
+    success('تم حذف العامل بنجاح')
+    fetchLabor()
+  } catch (error) {
+    console.error('Error deleting labor:', error)
+    showError('حدث خطأ في حذف العامل')
+  } finally {
+    loading.value = false
   }
 }
 
-// Edit functions
-const openEditDialog = (item) => {
-  editingLaborId.value = item.id
-  editLabor.value = {
-    workerName: item.workerName || '',
-    jobTitle: item.jobTitle || '',
-    quantity: item.quantity || 0,
-    cost: item.cost || 0,
+// Edit labor
+const editLabor = (item) => {
+  editingLabor.value = item
+  editLaborForm.value = {
+    name: item.name || '',
+    role: item.role || '',
     phone: item.phone || '',
     address: item.address || '',
+    hours: item.hours || 8,
+    salary: item.salary || 0,
     notes: item.notes || ''
   }
-  showEditDialog.value = true
+  showEditLaborModal.value = true
 }
 
-const closeEditDialog = () => {
-  showEditDialog.value = false
-  editingLaborId.value = null
-  if (editForm.value) {
-    editForm.value.reset()
-  }
-  editLabor.value = {
-    workerName: '',
-    jobTitle: '',
-    quantity: 0,
-    cost: 0,
-    phone: '',
-    address: '',
-    notes: ''
-  }
-}
+const saveEditedLabor = async () => {
+  if (!editLaborForm.value.name || !editLaborForm.value.salary || !editingLabor.value) return
 
-const saveEditLabor = async () => {
-  const { valid } = await editForm.value.validate()
-  if (valid && editingLaborId.value) {
-    try {
-      const payload = {
-        workerName: editLabor.value.workerName,
-        quantity: Number(editLabor.value.quantity),
-        cost: Number(editLabor.value.cost)
-      }
-      // Optional fields
-      if (editLabor.value.jobTitle && editLabor.value.jobTitle.trim()) {
-        payload.jobTitle = editLabor.value.jobTitle.trim()
-      }
-      if (editLabor.value.phone && editLabor.value.phone.trim()) {
-        payload.phone = editLabor.value.phone.trim()
-      }
-      if (editLabor.value.address && editLabor.value.address.trim()) {
-        payload.address = editLabor.value.address.trim()
-      }
-      if (editLabor.value.notes && editLabor.value.notes.trim()) {
-        payload.notes = editLabor.value.notes.trim()
-      }
-
-      await updateLabor(editingLaborId.value, payload)
-      await loadLabor()
-      closeEditDialog()
-    } catch (err) {
-      console.error('Error updating labor:', err)
+  loading.value = true
+  try {
+    const laborData = {
+      workDayId: Number(workdayId.value),
+      workerName: editLaborForm.value.name,
+      jobTitle: editLaborForm.value.role || null,
+      phone: editLaborForm.value.phone || null,
+      address: editLaborForm.value.address || null,
+      quantity: Number(editLaborForm.value.hours) || 1,
+      cost: Number(editLaborForm.value.salary),
+      notes: editLaborForm.value.notes || null
     }
+
+    await updateLabor(editingLabor.value.id, laborData)
+    success('تم تحديث بيانات العامل بنجاح')
+    closeEditLaborModal()
+    fetchLabor()
+  } catch (error) {
+    console.error('Error updating labor:', error)
+    showError('حدث خطأ في تحديث بيانات العامل')
+  } finally {
+    loading.value = false
   }
 }
 
-// Format currency
-const formatCurrency = (value) => {
-  if (!value) return '0 IQD'
-  return new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(value) + ' IQD'
+const closeEditLaborModal = () => {
+  showEditLaborModal.value = false
+  editingLabor.value = null
+  editLaborForm.value = { name: '', role: '', phone: '', address: '', hours: 8, salary: '', notes: '' }
 }
 
-// Lifecycle - watch workDayId and load data when available
-watch(workDayId, (newId) => {
-  if (newId) {
-    loadLabor()
-  }
-}, { immediate: true })
+// Initialize
+onMounted(() => {
+  fetchLabor()
+})
 </script>
 
 <style scoped>
-.labor-details-page {
-  min-height: 100vh;
-  background: #f5f5f5;
-  padding: 0 !important;
-  padding-top: 0 !important;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  position: relative;
-  overflow-x: hidden;
-  direction: rtl;
-  margin: 0;
-  width: 100%;
-}
-
-.page-header {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
-  color: white;
-  padding: 0.4rem 0.75rem !important;
-  border-radius: 0 !important;
-  margin: 0 !important;
-  margin-bottom: 1rem !important;
-  margin-top: 0 !important;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.15);
-  border: none !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3) !important;
-  backdrop-filter: blur(15px);
-  z-index: 1;
-  width: 100% !important;
-  max-width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-.content-container {
-  padding: 0 2rem 2rem 2rem !important;
-  max-width: 100%;
-}
-
-.header-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  max-width: 100%;
-}
-
-.back-btn {
-  background: rgba(255, 255, 255, 0.25) !important;
-  backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  font-weight: 600;
-  font-size: 0.875rem;
-  letter-spacing: 0.3px;
-  line-height: 1.2;
-  min-width: 36px !important;
-  height: 36px !important;
-}
-
-.back-btn :deep(.v-icon) {
-  color: #ffffff !important;
-}
-
-.back-btn :deep(.v-btn__overlay) {
-  color: #ffffff !important;
-}
-
-.back-btn:hover {
-  background: rgba(255, 255, 255, 0.35) !important;
-  transform: translateX(2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-}
-
-.page-title {
-  font-size: 1.1rem !important;
-  font-weight: 600 !important;
-  margin: 0 !important;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.1);
-  color: #ffffff !important;
-  letter-spacing: 0.3px !important;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  line-height: 1.3 !important;
-  padding: 0.2rem 0.6rem !important;
-  border-radius: 6px !important;
-  display: inline-block;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 2px 8px rgba(26, 35, 126, 0.3);
-}
-
-.page-subtitle {
-  font-size: 0.875rem !important;
-  opacity: 0.9 !important;
-  margin: 0.25rem 0 0 0 !important;
-  color: #ffffff !important;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-  font-weight: 500 !important;
-  letter-spacing: 0.3px !important;
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  line-height: 1.3 !important;
-}
-
-.section-card {
-  border-radius: 16px;
-  overflow: hidden;
-  background: #ffffff !important;
-}
-
-.section-card :deep(.v-card-text) {
-  background: #ffffff !important;
-}
-
-.section-card :deep(.v-data-table) {
-  background: #ffffff !important;
-}
-
-/* Pagination area white background */
-.section-card .d-flex.justify-center {
-  background: #ffffff !important;
-}
-
-.section-card :deep(.v-pagination) {
-  background: #ffffff !important;
-}
-
-.section-card :deep(.v-pagination .v-btn) {
-  color: #1a1a1a !important;
-}
-
-.section-title {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
-  background-size: 200% 200%;
-  animation: gradientShift 3s ease infinite;
-  color: #ffffff !important;
-  font-weight: 600 !important;
-  font-size: 0.95rem !important;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 12px rgba(255, 255, 255, 0.2);
-  font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
-  letter-spacing: 0.3px !important;
-  line-height: 1.3 !important;
-  margin-bottom: 0.75rem !important;
-  padding: 0.5rem 0.875rem !important;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.25);
-}
-
-.section-title :deep(.v-icon) {
-  font-size: 18px !important;
-}
-
-.section-title::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  animation: shimmer 3s ease-in-out infinite;
-  pointer-events: none;
-}
-
-.section-title::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
-  animation: pulse 4s ease-in-out infinite;
-  pointer-events: none;
-}
-
-.section-title:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 30px rgba(59, 130, 246, 0.5), 0 0 60px rgba(96, 165, 250, 0.3);
-}
-
-@keyframes shimmer {
-  0% { left: -100%; }
-  100% { left: 100%; }
-}
-
-@keyframes pulse {
-  0%, 100% { 
-    opacity: 0.3; 
-    transform: scale(0.8); 
-  }
-  50% { 
-    opacity: 0.6; 
-    transform: scale(1.2); 
-  }
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* تحسين تصميم شريط البحث */
-.search-container {
-  padding: 0.75rem 1rem !important;
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #bfdbfe 100%);
-  border-radius: 8px !important;
-  margin-bottom: 0.75rem !important;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
-  border: 1px solid #93c5fd !important;
-  position: relative;
-}
-
-.search-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px !important;
-  background: linear-gradient(90deg, #60a5fa, #3b82f6, #2563eb);
-  border-radius: 8px 8px 0 0;
-}
-
-.search-box {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem !important;
-  max-width: 600px;
+.labor-details-container {
+  padding: 32px;
+  max-width: 1600px;
   margin: 0 auto;
 }
 
-.search-field {
-  flex: 1;
-  margin-bottom: 0;
+/* Header */
+.labor-details-header {
+  background: linear-gradient(135deg, #018790 0%, #005461 100%) !important;
 }
 
-.search-field :deep(.v-field) {
-  background-color: #ffffff !important;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
-  border: 2px solid #3b82f6 !important;
-  transition: all 0.3s ease;
-  min-height: 36px !important;
+.labor-details-header::before {
+  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #10b981 100%) !important;
 }
 
-.search-field :deep(.v-field__input) {
-  background-color: #ffffff !important;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
-  border: 2px solid #3b82f6 !important;
-  transition: all 0.3s ease;
-}
-
-.search-field :deep(.v-field__outline) {
-  border-color: #3b82f6 !important;
-  border-width: 2px !important;
-}
-
-.search-field :deep(.v-field--focused .v-field__outline) {
-  border-color: #2563eb !important;
-  border-width: 3px !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
-}
-
-.search-field :deep(.v-field__input):focus {
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4) !important;
-  border-color: #2563eb !important;
-  transform: translateY(-1px);
-}
-
-.search-field :deep(.v-label) {
-  color: #1e40af !important;
-  font-weight: 600 !important;
-  font-size: 0.875rem !important;
-  opacity: 1 !important;
-}
-
-.search-field :deep(.v-label--active),
-.search-field :deep(.v-field__label--active) {
-  color: #1e40af !important;
-  font-weight: 700 !important;
-  opacity: 1 !important;
-}
-
-.search-field :deep(.v-field__input input) {
-  color: #111827 !important;
-  font-weight: 500 !important;
-  font-size: 0.875rem !important;
-}
-
-.search-field :deep(.v-field__prepend-inner) {
-  color: #3b82f6 !important;
-}
-
-.search-field :deep(.v-field__prepend-inner .v-icon) {
-  color: #3b82f6 !important;
-  font-size: 18px !important;
-}
-
-.search-field :deep(.v-field__prepend-inner i) {
-  color: #3b82f6 !important;
-}
-
-.search-btn {
-  height: 36px !important;
-  min-width: 80px !important;
-  border-radius: 8px;
-  font-weight: 600 !important;
-  font-size: 0.875rem !important;
-  text-transform: none;
-  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.25);
-  transition: all 0.3s ease;
-}
-
-.search-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(25, 118, 210, 0.4);
-}
-
-/* أنماط أزرار الإضافة */
-.add-btn {
-  height: 36px !important;
-  min-width: 100px !important;
-  border-radius: 8px;
-  font-weight: 600 !important;
-  font-size: 0.875rem !important;
-  text-transform: none;
-  transition: all 0.3s ease;
-  background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%) !important;
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.25);
-}
-
-.add-btn :deep(.v-icon) {
-  font-size: 18px !important;
-}
-
-.add-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
-  background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%) !important;
-}
-
-.data-table {
-  margin-top: 1rem;
-}
-
-/* ========================================
-   تنسيقات الجدول - نفس تنسيقات المواد والمصاريف
-   ======================================== */
-
-.data-table-card {
-  background: #ffffff !important;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  margin-top: 24px;
-}
-
-/* Pagination area white background */
-.data-table-card .d-flex.justify-center {
-  background: #ffffff !important;
-}
-
-.data-table-card :deep(.v-pagination) {
-  background: #ffffff !important;
-}
-
-.data-table-card :deep(.v-pagination .v-btn) {
-  color: #1a1a1a !important;
-}
-
-.table-title {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
-  color: #ffffff !important;
-  padding: 8px 12px !important;
-  border-radius: 8px 8px 0 0 !important;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25) !important;
-  margin: 0 !important;
-  font-weight: 600 !important;
-  font-size: 0.95rem !important;
-  text-align: right !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  min-height: 36px !important;
-}
-
-.indigo-title {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
-  color: #ffffff !important;
-  font-weight: 600 !important;
-}
-
-.title-text {
-  color: #ffffff !important;
-  font-weight: 600 !important;
-  font-size: 0.95rem !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25) !important;
-}
-
-/* تحسين ألوان النصوص في الجداول */
-.data-table :deep(.v-data-table__td) {
-  color: #1a1a1a !important;
-  font-weight: 500 !important;
-  font-size: 0.65rem !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  padding: 5px 6px !important;
-}
-
-.data-table :deep(.v-data-table__th) {
-  color: #ffffff !important;
-  font-weight: 500 !important;
-  font-size: 0.6rem !important;
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-  padding: 3px 5px !important;
-  min-height: 24px !important;
-}
-
-/* Force white background and dark text for ALL tables */
-.data-table,
-.labor-table {
-  background: #ffffff !important;
-}
-
-.data-table :deep(table),
-.labor-table :deep(table) {
-  background: #ffffff !important;
-}
-
-.data-table :deep(tbody),
-.labor-table :deep(tbody) {
-  background: #ffffff !important;
-}
-
-.data-table :deep(tbody tr),
-.labor-table :deep(tbody tr) {
-  background: #ffffff !important;
-}
-
-.data-table :deep(tbody tr:nth-child(even)),
-.labor-table :deep(tbody tr:nth-child(even)) {
-  background: #f8fafc !important;
-}
-
-.data-table :deep(tbody tr td),
-.labor-table :deep(tbody tr td) {
-  background: inherit !important;
-  color: #1a1a1a !important;
-}
-
-.data-table :deep(tbody tr td *),
-.labor-table :deep(tbody tr td *) {
-  color: #1a1a1a !important;
-}
-
-.data-table :deep(.v-data-table__tr),
-.labor-table :deep(.v-data-table__tr) {
-  background-color: #ffffff !important;
-}
-
-.data-table :deep(.v-data-table__tr .v-data-table__td),
-.labor-table :deep(.v-data-table__tr .v-data-table__td) {
-  color: #1a1a1a !important;
-  background: #ffffff !important;
-}
-
-.data-table :deep(.v-data-table__tr .v-data-table__td *),
-.labor-table :deep(.v-data-table__tr .v-data-table__td *) {
-  color: #1a1a1a !important;
-}
-
-/* تحسين ألوان النصوص في الجداول الفرعية */
-.data-table :deep(.v-data-table__wrapper),
-.labor-table :deep(.v-data-table__wrapper) {
-  background-color: #ffffff !important;
-  border: 2px solid #e3f2fd;
+/* Section Header */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 32px;
+  margin-bottom: 16px;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%);
   border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.1);
+  border: 2px solid rgba(16, 185, 129, 0.3);
 }
 
-.data-table :deep(.v-data-table__wrapper table),
-.labor-table :deep(.v-data-table__wrapper table) {
-  background-color: #ffffff !important;
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-.data-table :deep(.v-data-table__wrapper table td),
-.labor-table :deep(.v-data-table__wrapper table td) {
-  color: #1a1a1a !important;
-  border-color: #e0e0e0 !important;
-  background: #ffffff !important;
-  border-right: 1px solid #f0f0f0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.data-table :deep(.v-data-table__wrapper table th),
-.labor-table :deep(.v-data-table__wrapper table th) {
-  color: #ffffff !important;
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
-  border-color: #0d47a1 !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
-  border-bottom: 2px solid #0d47a1;
-}
-
-.data-table :deep(.v-data-table__wrapper table th:last-child),
-.labor-table :deep(.v-data-table__wrapper table th:last-child) {
-  border-right: none;
-}
-
-.data-table :deep(.v-data-table__wrapper table td:last-child),
-.labor-table :deep(.v-data-table__wrapper table td:last-child) {
-  border-right: none;
-}
-
-.data-table :deep(.v-data-table__wrapper table tr:nth-child(even)),
-.labor-table :deep(.v-data-table__wrapper table tr:nth-child(even)) {
-  background-color: #fafafa !important;
-}
-
-.data-table :deep(.v-data-table__wrapper table tr:nth-child(odd)),
-.labor-table :deep(.v-data-table__wrapper table tr:nth-child(odd)) {
-  background-color: #ffffff !important;
-}
-
-.data-table :deep(.v-data-table__wrapper table tr:hover),
-.labor-table :deep(.v-data-table__wrapper table tr:hover) {
-  background-color: #e3f2fd !important;
-}
-
-.data-table :deep(.v-data-table__wrapper table tr:hover td),
-.labor-table :deep(.v-data-table__wrapper table tr:hover td) {
-  color: #000 !important;
+.section-header-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 18px;
   font-weight: 700;
 }
 
-/* أنماط مخصصة لجداول العمال */
-.labor-table :deep(.v-data-table__td) {
-  color: #1a1a1a !important;
-  font-weight: 500 !important;
-  font-size: 0.65rem !important;
-  padding: 5px 6px !important;
-  background: #ffffff !important;
+.section-header-content i {
+  font-size: 24px;
+  color: #10b981;
 }
 
-.labor-table :deep(.v-data-table__th) {
-  color: #ffffff !important;
-  font-weight: 500 !important;
-  font-size: 0.6rem !important;
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-  padding: 3px 5px !important;
-  min-height: 24px !important;
-  border-bottom: 1px solid #0d47a1 !important;
-  position: relative;
-}
-
-/* تحسين ألوان الأزرار في الجداول */
-.data-table :deep(.v-btn) {
-  color: #dc3545 !important;
-  transition: all 0.3s ease;
-}
-
-.data-table :deep(.v-btn:hover) {
-  background-color: #f8d7da !important;
-  color: #721c24 !important;
-  transform: scale(1.1);
-  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
-}
-
-/* تحسينات إضافية لرؤوس الجداول */
-.labor-table :deep(.v-data-table__th:hover) {
-  background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%) !important;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* تحسين ألوان الأيقونات في الرؤوس */
-.labor-table :deep(.v-data-table__th .v-icon) {
-  color: #ffffff !important;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
-}
-
-/* تحسين ألوان النصوص المحددة للفرز */
-.labor-table :deep(.v-data-table__th.v-data-table__th--sorted) {
-  background: linear-gradient(135deg, #0d47a1 0%, #1976d2 100%) !important;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-/* تحسين ألوان النصوص في حالة عدم وجود بيانات */
-.data-table :deep(.v-data-table__empty) {
-  color: #666 !important;
-  font-weight: 500;
-  font-size: 1.1rem;
-}
-
-/* تحسين ألوان النصوص في حالة التحميل */
-.data-table :deep(.v-data-table__loading) {
-  color: #1976d2 !important;
-  font-weight: 500;
-  font-size: 1.1rem;
-}
-
-.serial-number {
-  color: #1a1a1a !important;
-  font-weight: 700 !important;
-  font-size: 0.7rem !important;
-  background: rgba(25, 118, 210, 0.1) !important;
-  padding: 3px 6px !important;
-  border-radius: 6px !important;
-  display: inline-block !important;
-  min-width: 30px !important;
-  text-align: center !important;
-  border: 1px solid rgba(25, 118, 210, 0.2) !important;
-}
-
-.project-name {
-  color: #000000 !important;
-  font-weight: 500 !important;
-  font-size: 0.65rem !important;
-  text-align: right !important;
-  padding: 2px 4px !important;
-  border-radius: 4px !important;
-  display: inline-block !important;
-  max-width: 200px !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
-}
-
-.date-text {
-  color: #000000 !important;
-  font-weight: 500 !important;
-  font-size: 0.65rem !important;
-  font-family: 'Arial', 'Helvetica', sans-serif !important;
-}
-
-.cost-text {
-  color: #000000 !important;
-  font-weight: 600 !important;
-  font-size: 0.65rem !important;
-  font-family: 'Arial', 'Helvetica', sans-serif !important;
-  direction: ltr !important;
-  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%) !important;
-  padding: 3px 6px !important;
-  border-radius: 6px !important;
-  display: inline-block !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
-  border: 1px solid #d1d5db !important;
-  white-space: nowrap !important;
-  min-width: 80px !important;
-  text-align: center !important;
-}
-
-.action-buttons {
+.section-header-stats {
   display: flex;
+  gap: 32px;
+}
+
+.header-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 4px;
+}
+
+.header-stat-value {
+  font-size: 20px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header-stat-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Data Card */
+.data-card {
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%) !important;
+  border: 2px solid rgba(16, 185, 129, 0.3) !important;
+  overflow: hidden;
+}
+
+.salary-value {
+  font-weight: 700;
+  color: #10b981;
+}
+
+/* Notes cell with truncation */
+.notes-cell {
+  display: inline-block;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.notes-cell:hover {
+  color: #10b981;
+}
+
+.notes-empty {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Summary Section */
+.summary-section {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.summary-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%);
+  border-radius: 16px;
+  border: 2px solid rgba(16, 185, 129, 0.3);
+}
+
+.summary-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.action-btn {
-  min-width: 28px !important;
-  height: 28px !important;
-  border-radius: 4px !important;
-  transition: all 0.3s ease !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
-}
-
-.action-btn .v-icon {
-  font-size: 16px !important;
-}
-
-.action-btn:hover {
-  transform: translateY(-2px) scale(1.05) !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
-}
-
-.dialog-card {
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-.dialog-title {
-  background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+.summary-icon i {
+  font-size: 28px;
   color: white;
-  font-weight: bold;
-  font-size: 1.3rem;
 }
 
-.dialog-content {
-  padding: 2rem;
+.workers-summary .summary-icon {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
 }
 
-.dialog-actions {
-  padding: 1rem 2rem;
-  background: #f8f9fa;
+.hours-summary .summary-icon {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
 }
 
-/* Modal Styles - تطبيق تصميم إضافة يوم عمل */
-.modal-card {
-  border-radius: 12px !important;
-  overflow: hidden;
+.salary-summary .summary-icon {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
 }
 
-.modal-header {
-  background: #007bff !important;
-  color: white !important;
-  padding: 1rem 1.5rem !important;
+.summary-info {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.modal-title {
-  font-size: 1.4rem;
+.summary-label {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.summary-value {
+  font-size: 24px;
   font-weight: 800;
-  color: white;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.close-btn {
-  color: white !important;
-  min-width: 32px !important;
-  height: 32px !important;
-}
-
-.modal-content {
-  padding: 2rem !important;
-  background: white;
-}
-
-.modal-content :deep(.v-field) {
-  border-radius: 8px !important;
-  background: #fafafa !important;
-  transition: all 0.3s ease !important;
-}
-
-.modal-content :deep(.v-field:hover) {
-  background: #f5f5f5 !important;
-  border-color: #666 !important;
-}
-
-.modal-content :deep(.v-field__input) {
-  color: #1e3a8a !important;
-  font-weight: 600 !important;
-  font-size: 1rem !important;
-  text-shadow: none !important;
-}
-
-.modal-content :deep(.v-label),
-.modal-content :deep(.v-field__label),
-.modal-content :deep(.v-label--active),
-.modal-content :deep(.v-field__label--active),
-.modal-content :deep(.v-label--floating),
-.modal-content :deep(.v-field__label--floating) {
-  color: #000 !important;
-  font-weight: 700 !important;
-  font-size: 1rem !important;
-  text-shadow: none !important;
-  opacity: 1 !important;
-  background: white !important;
-  padding: 0 8px !important;
-}
-
-.modal-content :deep(.v-field--focused .v-label),
-.modal-content :deep(.v-field--focused .v-field__label) {
-  color: #000 !important;
-  font-weight: 700 !important;
-}
-
-.modal-content :deep(.v-field__outline) {
-  border-color: #333 !important;
-  border-width: 2px !important;
-  border-style: solid !important;
-  box-shadow: 0 0 0 1px rgba(51, 51, 51, 0.2) !important;
-}
-
-.modal-content :deep(.v-field--focused .v-field__outline) {
-  border-color: #007bff !important;
-  border-width: 3px !important;
-  border-style: solid !important;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3) !important;
-  outline: none !important;
-}
-
-.modal-content :deep(.v-field__input::placeholder) {
-  color: #1e3a8a !important;
-  opacity: 0.7 !important;
-  font-weight: 500 !important;
-}
-
-/* Dropdown Menu Styling */
-.modal-content :deep(.v-list),
-.modal-content :deep(.v-menu__content),
-.modal-content :deep(.v-overlay__content) {
-  background: white !important;
-  border: 2px solid #333 !important;
-  border-radius: 8px !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-  max-height: 300px !important;
-  overflow-y: auto !important;
-}
-
-.modal-content :deep(.v-list .v-list-item__content),
-.modal-content :deep(.v-menu__content .v-list-item__content),
-.modal-content :deep(.v-overlay__content .v-list-item__content) {
-  color: #1e3a8a !important;
-}
-
-.modal-content :deep(.v-list .v-list-item-title),
-.modal-content :deep(.v-menu__content .v-list-item-title),
-.modal-content :deep(.v-overlay__content .v-list-item-title) {
-  color: #1e3a8a !important;
-  font-weight: 600 !important;
-}
-
-.modal-content :deep(.v-list-item),
-.modal-content :deep(.v-menu__content .v-list-item),
-.modal-content :deep(.v-overlay__content .v-list-item) {
-  color: #1e3a8a !important;
-  font-weight: 600 !important;
-  font-size: 1rem !important;
-  padding: 0.75rem 1rem !important;
-  border-bottom: 1px solid #e9ecef !important;
-  transition: all 0.2s ease !important;
-}
-
-.modal-content :deep(.v-list-item:hover),
-.modal-content :deep(.v-menu__content .v-list-item:hover),
-.modal-content :deep(.v-overlay__content .v-list-item:hover) {
-  background: #f8f9fa !important;
-  color: #007bff !important;
-  font-weight: 700 !important;
-}
-
-.modal-content :deep(.v-list-item--active),
-.modal-content :deep(.v-menu__content .v-list-item--active),
-.modal-content :deep(.v-overlay__content .v-list-item--active) {
-  background: #007bff !important;
-  color: white !important;
-  font-weight: 700 !important;
-}
-
-.modal-content :deep(.v-list-item--active:hover),
-.modal-content :deep(.v-menu__content .v-list-item--active:hover),
-.modal-content :deep(.v-overlay__content .v-list-item--active:hover) {
-  background: #0056b3 !important;
-  color: white !important;
-}
-
-.modal-footer {
-  padding: 1rem 1.5rem !important;
-  background: #f8f9fa !important;
-  border-top: 1px solid #dee2e6 !important;
-}
-
-.save-btn {
-  background: #007bff !important;
-  color: white !important;
-  font-weight: 600;
-  padding: 0.75rem 2rem !important;
-}
-
-/* Animations */
-.glass-effect {
-  backdrop-filter: blur(15px);
-}
-
-.page-header.glass-effect {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
-}
-
-.gradient-animation {
-  background-size: 400% 400%;
-  animation: gradientShift 20s ease infinite;
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.text-glow {
-  text-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
-}
-
-.fade-in {
-  animation: fadeIn 1.2s ease-out;
-}
-
-@keyframes fadeIn {
-  from { 
-    opacity: 0; 
-    transform: translateY(30px) scale(0.95); 
-  }
-  to { 
-    opacity: 1; 
-    transform: translateY(0) scale(1); 
-  }
-}
-
-/* تأثيرات إضافية للرأس */
-.page-header::before {
-  content: '';
-  position: absolute;
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
-  animation: shimmer 3s ease-in-out infinite;
-  pointer-events: none;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+.modal-container {
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%);
+  border-radius: 20px;
+  border: 2px solid rgba(16, 185, 129, 0.4);
+  width: 90%;
+  max-width: 550px;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
-.page-header::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-  animation: pulse 4s ease-in-out infinite;
-  pointer-events: none;
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(16, 185, 129, 0.2);
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 0.3; transform: scale(0.8); }
-  50% { opacity: 0.6; transform: scale(1.2); }
+.modal-header h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-header h3 i {
+  color: #10b981;
+}
+
+.modal-close {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #10b981;
+}
+
+.form-group select option {
+  background: #0a3d42;
+  color: #fff;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px 24px;
+  border-top: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.btn-cancel,
+.btn-save {
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-cancel {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.btn-save {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-  .labor-details-page {
-    padding: 1rem;
+@media (max-width: 1024px) {
+  .summary-section {
+    grid-template-columns: 1fr;
   }
   
-  .page-title {
-    font-size: 2rem;
-  }
-  
-  .header-content {
+  .section-header {
     flex-direction: column;
-    text-align: center;
+    gap: 16px;
   }
   
-  .dialog-content {
-    padding: 1rem;
-  }
-  
-  .search-box {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
-  .search-btn, .add-btn {
+  .section-header-stats {
     width: 100%;
-    min-width: auto;
-  }
-
-  .search-container {
-    padding: 0.75rem;
-  }
-
-  .search-field {
-    margin-bottom: 0.5rem;
+    justify-content: space-around;
   }
 }
 
-/* ========================================
-   Clean Form Styles - Same as Materials
-   ======================================== */
-.clean-form-card {
-  background: #ffffff !important;
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
 }
-
-.clean-dialog-header,
-.clean-form-header {
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
-  color: #ffffff !important;
-  padding: 1rem 1.5rem !important;
-}
-
-.clean-form-title {
-  font-size: 1.25rem !important;
-  font-weight: 600 !important;
-  margin: 0 !important;
-  color: #ffffff !important;
-}
-
-.clean-form-content {
-  padding: 1.5rem !important;
-  background: #ffffff !important;
-}
-
-.clean-form-instruction {
-  color: #666666 !important;
-  font-size: 0.9rem !important;
-  margin-bottom: 1.5rem !important;
-  line-height: 1.6 !important;
-}
-
-.clean-form-row {
-  margin-bottom: 0.5rem !important;
-}
-
-.clean-form-column {
-  padding: 0.5rem !important;
-}
-
-.clean-form-field-wrapper {
-  margin-bottom: 0.5rem;
-}
-
-.clean-form-label {
-  display: block;
-  font-size: 0.875rem !important;
-  font-weight: 600 !important;
-  color: #333333 !important;
-  margin-bottom: 0.5rem !important;
-}
-
-.required-star {
-  color: #d32f2f !important;
-}
-
-.clean-form-input :deep(.v-field) {
-  background-color: #f5f5f5 !important;
-  border-radius: 8px !important;
-}
-
-.clean-form-input :deep(.v-field__input) {
-  color: #333333 !important;
-  font-size: 0.95rem !important;
-}
-
-.clean-form-input :deep(.v-field__outline) {
-  border-color: #e0e0e0 !important;
-}
-
-.clean-form-input :deep(.v-field--focused .v-field__outline) {
-  border-color: #1976d2 !important;
-  border-width: 2px !important;
-}
-
-.clean-form-input :deep(.v-label) {
-  color: #666666 !important;
-}
-
-.clean-form-input :deep(input::placeholder),
-.clean-form-input :deep(textarea::placeholder) {
-  color: #999999 !important;
-}
-
-.clean-form-actions {
-  padding: 1rem 1.5rem !important;
-  background: #f5f5f5 !important;
-  border-top: 1px solid #e0e0e0 !important;
-}
-
-.clean-form-cancel-btn {
-  color: #666666 !important;
-  border-color: #cccccc !important;
-}
-
-.clean-form-cancel-btn:hover {
-  background: #eeeeee !important;
-}
-
-.clean-form-continue-btn {
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
-  color: #ffffff !important;
-}
-
-.clean-form-continue-btn:hover {
-  background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%) !important;
-}
-
-.clean-form-continue-btn:disabled {
-  background: #cccccc !important;
-  color: #999999 !important;
-}
-
 </style>

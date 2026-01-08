@@ -1,868 +1,971 @@
 <template>
-  <div class="fill-height data-page">
-    <v-container fluid class="pa-6" style="padding: 0 20px !important;">
-      <!-- Header -->
-      <div class="engineers-header-card">
-        <div class="header-gradient-line"></div>
-        <div class="header-content">
-          <div class="header-right">
-            <div class="engineer-emoji">
-              <v-icon size="40" color="white">mdi-file-document-multiple</v-icon>
-            </div>
-            <div class="header-text">
-              <h1 class="main-title">إدارة الصفحات</h1>
-              <p class="subtitle">إنشاء وتعديل صفحات النظام</p>
-            </div>
+  <div class="pages-container">
+    <!-- Page Header Component -->
+    <PageHeader
+      title="إدارة الصفحات"
+      subtitle="إدارة وتنظيم جميع صفحات النظام"
+      badge="الصفحات"
+      badgeType="info"
+      class="pages-header"
+    >
+      <template #actions>
+        <button class="page-action-btn secondary">
+          <i class="mdi mdi-export"></i>
+          تصدير
+        </button>
+        <button class="page-icon-btn">
+          <i class="mdi mdi-dots-vertical"></i>
+        </button>
+      </template>
+    </PageHeader>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <!-- Total Pages Card -->
+      <v-card class="stat-card" elevation="0">
+        <div class="stat-card-content">
+          <div class="stat-icon pages">
+            <i class="mdi mdi-file-document-multiple"></i>
           </div>
+          <div class="stat-info">
+            <div class="stat-label">إجمالي الصفحات</div>
+            <div class="stat-value">{{ totalPages }}</div>
+          </div>
+        </div>
+      </v-card>
+
+      <!-- Active Pages Card -->
+      <v-card class="stat-card" elevation="0">
+        <div class="stat-card-content">
+          <div class="stat-icon success">
+            <i class="mdi mdi-check-circle"></i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">صفحات نشطة</div>
+            <div class="stat-value">{{ activePages }}</div>
+          </div>
+        </div>
+      </v-card>
+
+      <!-- Inactive Pages Card -->
+      <v-card class="stat-card" elevation="0">
+        <div class="stat-card-content">
+          <div class="stat-icon warning">
+            <i class="mdi mdi-cancel"></i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">صفحات غير نشطة</div>
+            <div class="stat-value">{{ inactivePages }}</div>
+          </div>
+        </div>
+      </v-card>
+    </div>
+
+    <!-- Pages List Header -->
+    <div class="pages-list-header">
+      <div class="list-header-content">
+        <div class="list-header-info">
+          <h2 class="list-header-title">
+            <i class="mdi mdi-format-list-bulleted"></i>
+            قائمة الصفحات
+          </h2>
+          <p class="list-header-subtitle">عرض جميع صفحات النظام</p>
+        </div>
+        <div class="list-header-actions">
+          <button v-if="canCreate" class="list-action-btn primary" @click="openAddDialog">
+            <i class="mdi mdi-plus"></i>
+            إضافة صفحة جديدة
+          </button>
         </div>
       </div>
+    </div>
 
-      <!-- Statistics -->
-      <v-row class="mb-8">
-        <v-col cols="12" sm="6" md="3">
-          <v-card class="modern-stat-card stat-card-primary" elevation="0">
-            <div class="stat-card-background"></div>
-            <div class="stat-card-content">
-              <div class="stat-icon-wrapper">
-                <v-icon size="48" class="stat-icon">mdi-file-document-multiple</v-icon>
-              </div>
-              <div class="stat-info">
-                <h3 class="stat-value">{{ pages.length }}</h3>
-                <p class="stat-label">إجمالي الصفحات</p>
-              </div>
-            </div>
-          </v-card>
-        </v-col>
-        <v-col cols="12" sm="6" md="3">
-          <v-card class="modern-stat-card stat-card-success" elevation="0">
-            <div class="stat-card-background"></div>
-            <div class="stat-card-content">
-              <div class="stat-icon-wrapper">
-                <v-icon size="48" class="stat-icon check-icon">mdi-check-circle</v-icon>
-              </div>
-              <div class="stat-info">
-                <h3 class="stat-value">{{ activePages }}</h3>
-                <p class="stat-label">صفحات نشطة</p>
-              </div>
-            </div>
-          </v-card>
-        </v-col>
-        <v-col cols="12" sm="6" md="3">
-          <v-card class="modern-stat-card stat-card-warning" elevation="0">
-            <div class="stat-card-background"></div>
-            <div class="stat-card-content">
-              <div class="stat-icon-wrapper">
-                <v-icon size="48" class="stat-icon">mdi-pause-circle</v-icon>
-              </div>
-              <div class="stat-info">
-                <h3 class="stat-value">{{ inactivePages }}</h3>
-                <p class="stat-label">صفحات غير نشطة</p>
-              </div>
-            </div>
-          </v-card>
-        </v-col>
-      </v-row>
+    <!-- Pages Table -->
+    <v-card class="mb-6">
+      <v-data-table
+        :headers="headers"
+        :items="pages"
+        :loading="loading"
+        class="elevation-1"
+      >
+        <template v-slot:item.icon="{ item }">
+          <i :class="`mdi ${item.icon}`" style="font-size: 24px;"></i>
+        </template>
+        <template v-slot:item.status="{ item }">
+          <v-chip
+            :color="getStatusColor(item.status)"
+            size="small"
+          >
+            {{ getStatusText(item.status) }}
+          </v-chip>
+        </template>
+        <template v-slot:item.actions="{ item }">
+          <v-btn
+            v-if="canUpdate"
+            size="small"
+            color="primary"
+            class="me-2"
+            @click="editPageItem(item)"
+          >
+            <i class="mdi mdi-pencil"></i>
+          </v-btn>
+          <v-btn
+            v-if="canDelete"
+            size="small"
+            color="error"
+            @click="deletePageItem(item)"
+          >
+            <i class="mdi mdi-delete"></i>
+          </v-btn>
+        </template>
+      </v-data-table>
+    </v-card>
 
-      <!-- Pages Table -->
-      <v-card class="users-table" elevation="2">
-        <v-card-title class="table-title-header d-flex align-center justify-space-between">
-          <div class="d-flex align-center">
-            <v-icon class="me-2" size="18" style="color: #ffffff !important;">mdi-table</v-icon>
-            <span class="title-text">قائمة الصفحات</span>
-          </div>
-          <div class="d-flex table-header-buttons" style="gap: 0.5rem;">
-            <v-btn
-              v-if="canCreate"
-              class="add-button add-user-btn btn-glow light-sweep smooth-transition"
-              @click="openAddPageDialog"
-              elevation="2"
-              color="primary"
-              size="small"
-              style="background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important; height: 36px !important; font-size: 0.875rem !important;"
-            >
-              <v-icon class="me-2 icon-glow" size="18">mdi-plus</v-icon>
-              إضافة صفحة جديدة
-            </v-btn>
-          </div>
+    <!-- Add Page Dialog -->
+    <v-dialog v-model="showAddDialog" max-width="800" persistent>
+      <v-card class="page-dialog">
+        <v-card-title class="dialog-header">
+          <i class="mdi mdi-file-document-plus"></i>
+          إضافة صفحة جديدة
         </v-card-title>
-        <div class="table-spacer"></div>
-        <v-data-table
-          :headers="headers"
-          :items="pages"
-          :loading="loading"
-          class="elevation-0 users-data-table"
-          :items-per-page="-1"
-          hide-default-footer
-        >
-          <template v-slot:item.name="{ item }">
-            <div class="d-flex align-center">
-              <v-avatar size="36" color="primary" class="me-3">
-                <v-icon color="white" size="20">{{ item.icon || 'mdi-file' }}</v-icon>
-              </v-avatar>
-              <div>
-                <div class="font-weight-medium">{{ item.name }}</div>
-                <div class="text-caption text-grey">{{ item.route }}</div>
-              </div>
-            </div>
-          </template>
+        
+        <v-card-text class="dialog-content">
+          <v-form ref="pageForm" v-model="formValid">
+            <v-row>
+              <!-- اسم الصفحة -->
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="newPage.name"
+                  label="اسم الصفحة"
+                  variant="outlined"
+                  density="comfortable"
+                  :rules="[v => !!v || 'اسم الصفحة مطلوب']"
+                  required
+                  autofocus
+                ></v-text-field>
+              </v-col>
 
-          <template v-slot:item.icon="{ item }">
-            <v-icon>{{ item.icon || 'mdi-file' }}</v-icon>
-            <span class="text-caption text-grey ms-2">{{ item.icon }}</span>
-          </template>
+              <!-- مسار الصفحة -->
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="newPage.route"
+                  label="مسار الصفحة"
+                  variant="outlined"
+                  density="comfortable"
+                  placeholder="/example"
+                  :rules="[
+                    v => !!v || 'مسار الصفحة مطلوب',
+                    v => v.startsWith('/') || 'المسار يجب أن يبدأ بـ /'
+                  ]"
+                  required
+                ></v-text-field>
+              </v-col>
 
-          <template v-slot:item.status="{ item }">
-            <v-chip
-              :color="item.status === 'active' ? 'success' : 'warning'"
-              size="small"
-              variant="flat"
-            >
-              {{ item.status === 'active' ? 'نشط' : 'غير نشط' }}
-            </v-chip>
-          </template>
+              <!-- أيقونة الصفحة -->
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="newPage.icon"
+                  label="أيقونة الصفحة"
+                  variant="outlined"
+                  density="comfortable"
+                  placeholder="mdi-home"
+                  :rules="[v => !!v || 'أيقونة الصفحة مطلوبة']"
+                  required
+                >
+                  <template #prepend-inner>
+                    <i :class="`mdi ${newPage.icon}`" v-if="newPage.icon"></i>
+                  </template>
+                </v-text-field>
+              </v-col>
 
-          <template v-slot:item.createdAt="{ item }">
-            <span class="text-body-2">{{ formatDate(item.createdAt) }}</span>
-          </template>
+              <!-- حالة الصفحة -->
+              <v-col cols="12" md="6">
+                <v-select
+                  v-model="newPage.status"
+                  :items="statusOptions"
+                  label="حالة الصفحة"
+                  variant="outlined"
+                  density="comfortable"
+                  :rules="[v => !!v || 'حالة الصفحة مطلوبة']"
+                  required
+                ></v-select>
+              </v-col>
+            </v-row>
+          </v-form>
+        </v-card-text>
 
-          <template v-slot:item.actions="{ item }">
-            <v-btn
-              icon="mdi-eye"
-              size="small"
-              variant="elevated"
-              class="view-btn me-1"
-              @click="viewPage(item)"
-            />
-            <v-btn
-              v-if="canUpdate"
-              icon="mdi-pencil"
-              size="small"
-              variant="elevated"
-              class="edit-btn me-1"
-              @click="editPage(item)"
-            />
-            <v-btn
-              v-if="canDelete"
-              icon="mdi-delete"
-              size="small"
-              variant="elevated"
-              class="delete-btn"
-              @click="confirmDeletePage(item)"
-            />
-          </template>
-        </v-data-table>
+        <v-card-actions class="dialog-actions">
+          <v-spacer></v-spacer>
+          <button class="dialog-btn cancel" @click="closeDialog">
+            <i class="mdi mdi-close"></i>
+            إلغاء
+          </button>
+          <button class="dialog-btn save" @click="savePage" :disabled="!formValid">
+            <i class="mdi mdi-content-save"></i>
+            حفظ
+          </button>
+        </v-card-actions>
       </v-card>
-    </v-container>
+    </v-dialog>
   </div>
-
-  <!-- Add/Edit Page Dialog -->
-  <v-dialog v-model="showPageDialog" max-width="700px" persistent>
-    <v-card class="add-user-dialog" rounded="lg">
-      <v-card-title class="dialog-header pa-4">
-        <div class="d-flex align-center">
-          <v-avatar color="white" size="44" class="me-3">
-            <v-icon color="primary" size="26">{{ isEditing ? 'mdi-pencil' : 'mdi-plus' }}</v-icon>
-          </v-avatar>
-          <div>
-            <h3 class="text-h5 font-weight-bold text-white mb-0">
-              {{ isEditing ? 'تعديل الصفحة' : 'إضافة صفحة جديدة' }}
-            </h3>
-            <span class="text-body-2 text-white-darken-1">
-              {{ isEditing ? 'تعديل بيانات الصفحة' : 'أدخل بيانات الصفحة الجديدة' }}
-            </span>
-          </div>
-        </div>
-        <v-btn
-          icon="mdi-close"
-          variant="text"
-          size="default"
-          @click="closePageDialog"
-          class="close-btn"
-        />
-      </v-card-title>
-
-      <v-card-text class="dialog-content pa-8">
-        <v-form ref="pageForm" v-model="formValid" lazy-validation>
-          <v-row>
-            <v-col cols="12" md="6">
-              <v-text-field
-                v-model="pageData.name"
-                label="اسم الصفحة"
-                placeholder="مثال: المشاريع"
-                :rules="[v => !!v || 'اسم الصفحة مطلوب']"
-                variant="outlined"
-                density="default"
-                prepend-inner-icon="mdi-file-document"
-                color="primary"
-                bg-color="grey-lighten-5"
-                class="mb-2"
-              />
-            </v-col>
-            <v-col cols="12" md="6">
-              <v-text-field
-                v-model="pageData.route"
-                label="مسار الصفحة"
-                placeholder="مثال: /projects"
-                :rules="routeRules"
-                variant="outlined"
-                density="default"
-                prepend-inner-icon="mdi-link"
-                color="primary"
-                bg-color="grey-lighten-5"
-                class="mb-2"
-                dir="ltr"
-              />
-            </v-col>
-            <v-col cols="12" md="6">
-              <v-combobox
-                v-model="pageData.icon"
-                :items="iconOptions"
-                label="أيقونة الصفحة"
-                placeholder="اختر أو اكتب اسم الأيقونة"
-                variant="outlined"
-                density="default"
-                prepend-inner-icon="mdi-emoticon"
-                color="primary"
-                bg-color="grey-lighten-5"
-                class="mb-2"
-              >
-                <template v-slot:prepend-inner>
-                  <v-icon>{{ pageData.icon || 'mdi-file' }}</v-icon>
-                </template>
-                <template v-slot:item="{ item, props }">
-                  <v-list-item v-bind="props">
-                    <template v-slot:prepend>
-                      <v-icon>{{ item.value }}</v-icon>
-                    </template>
-                  </v-list-item>
-                </template>
-              </v-combobox>
-            </v-col>
-            <v-col cols="12" md="6">
-              <v-select
-                v-model="pageData.status"
-                :items="statusOptions"
-                label="حالة الصفحة"
-                variant="outlined"
-                density="default"
-                prepend-inner-icon="mdi-toggle-switch"
-                color="primary"
-                bg-color="grey-lighten-5"
-                class="mb-2"
-              />
-            </v-col>
-          </v-row>
-        </v-form>
-      </v-card-text>
-
-      <v-card-actions class="dialog-actions pa-5">
-        <v-spacer />
-        <v-btn variant="outlined" size="large" @click="closePageDialog" class="me-3 px-8">
-          إلغاء
-        </v-btn>
-        <v-btn
-          color="primary"
-          variant="elevated"
-          size="large"
-          @click="savePage"
-          :loading="saving"
-          :disabled="!formValid"
-          class="px-8"
-          prepend-icon="mdi-check"
-        >
-          <v-icon start size="16">mdi-content-save</v-icon>
-          {{ isEditing ? 'حفظ التعديلات' : 'حفظ الصفحة' }}
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
-
-  <!-- View Page Dialog -->
-  <v-dialog v-model="showViewDialog" max-width="600px">
-    <v-card class="view-user-dialog">
-      <v-card-title class="dialog-header">
-        <div class="dialog-title">
-          <v-icon size="32" color="primary" class="me-3">mdi-file-document</v-icon>
-          <h2>تفاصيل الصفحة</h2>
-        </div>
-        <v-btn icon="mdi-close" variant="text" @click="showViewDialog = false" class="close-btn" />
-      </v-card-title>
-
-      <v-divider />
-
-      <v-card-text v-if="selectedPage" class="pa-6">
-        <v-row>
-          <v-col cols="12" class="text-center mb-4">
-            <v-avatar size="80" color="primary">
-              <v-icon color="white" size="40">{{ selectedPage.icon || 'mdi-file' }}</v-icon>
-            </v-avatar>
-            <h3 class="mt-3">{{ selectedPage.name }}</h3>
-            <v-chip
-              :color="selectedPage.status === 'active' ? 'success' : 'warning'"
-              size="small"
-              class="mt-2"
-            >
-              {{ selectedPage.status === 'active' ? 'نشط' : 'غير نشط' }}
-            </v-chip>
-          </v-col>
-
-          <v-col cols="12">
-            <v-list density="compact">
-              <v-list-item>
-                <template v-slot:prepend>
-                  <v-icon color="primary">mdi-link</v-icon>
-                </template>
-                <v-list-item-title>المسار</v-list-item-title>
-                <v-list-item-subtitle dir="ltr" class="text-left">{{ selectedPage.route }}</v-list-item-subtitle>
-              </v-list-item>
-
-              <v-list-item>
-                <template v-slot:prepend>
-                  <v-icon color="success">mdi-emoticon</v-icon>
-                </template>
-                <v-list-item-title>الأيقونة</v-list-item-title>
-                <v-list-item-subtitle>{{ selectedPage.icon || 'غير محدد' }}</v-list-item-subtitle>
-              </v-list-item>
-
-              <v-list-item>
-                <template v-slot:prepend>
-                  <v-icon color="info">mdi-calendar</v-icon>
-                </template>
-                <v-list-item-title>تاريخ الإنشاء</v-list-item-title>
-                <v-list-item-subtitle>{{ formatDate(selectedPage.createdAt) }}</v-list-item-subtitle>
-              </v-list-item>
-            </v-list>
-          </v-col>
-        </v-row>
-      </v-card-text>
-
-      <v-divider />
-
-      <v-card-actions class="dialog-actions">
-        <v-spacer />
-        <v-btn color="primary" variant="elevated" @click="showViewDialog = false">
-          إغلاق
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
-
-  <!-- Delete Confirmation Dialog -->
-  <v-dialog v-model="showDeleteDialog" max-width="500px">
-    <v-card class="delete-confirm-dialog">
-      <v-card-title class="dialog-header">
-        <div class="dialog-title">
-          <v-icon size="32" color="error" class="me-3">mdi-delete-alert</v-icon>
-          <h2>تأكيد الحذف</h2>
-        </div>
-        <v-btn icon="mdi-close" variant="text" @click="showDeleteDialog = false" class="close-btn" />
-      </v-card-title>
-
-      <v-divider />
-
-      <v-card-text v-if="selectedPage" class="pa-6">
-        <div class="text-center mb-4">
-          <v-avatar size="60" color="error">
-            <v-icon color="white" size="30">{{ selectedPage.icon || 'mdi-file' }}</v-icon>
-          </v-avatar>
-          <h4 class="mt-2">{{ selectedPage.name }}</h4>
-          <p class="text-caption">{{ selectedPage.route }}</p>
-        </div>
-
-        <v-alert type="error" variant="tonal" class="mb-4">
-          تحذير: هذا الإجراء لا يمكن التراجع عنه! سيتم إزالة هذه الصفحة من جميع الأدوار.
-        </v-alert>
-
-        <p class="text-body-2 text-center">
-          هل أنت متأكد من حذف هذه الصفحة نهائياً؟
-        </p>
-      </v-card-text>
-
-      <v-divider />
-
-      <v-card-actions class="dialog-actions">
-        <v-spacer />
-        <v-btn color="grey" variant="outlined" @click="showDeleteDialog = false" class="me-2">
-          إلغاء
-        </v-btn>
-        <v-btn color="error" variant="elevated" @click="deletePage" :loading="deleting">
-          حذف نهائي
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
-
-  <!-- Snackbar -->
-  <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="3000">
-    {{ snackbar.message }}
-  </v-snackbar>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
-import { listPages, createPage, updatePage, deletePage as deletePageApi } from '@/api/pages'
+import { ref, computed, onMounted } from 'vue'
+import PageHeader from '../components/PageHeader.vue'
+import { listPages, createPage, updatePage, deletePage as apiDeletePage } from '@/api/pages'
 import { usePermissions } from '@/composables/usePermissions'
+import { useToast } from '@/composables/useToast'
+import { DEFAULT_PAGE, DEFAULT_LIMIT } from '@/constants/pagination'
 
-// Permissions
+const { success, error: showError } = useToast()
 const { canCreate, canUpdate, canDelete } = usePermissions('/pages')
 
-// Data
 const loading = ref(false)
-const pages = ref([])
-
-// Dialog states
-const showPageDialog = ref(false)
-const showViewDialog = ref(false)
-const showDeleteDialog = ref(false)
-const isEditing = ref(false)
-const selectedPage = ref(null)
-
-// Form data
-const pageForm = ref(null)
+const showAddDialog = ref(false)
 const formValid = ref(false)
-const saving = ref(false)
-const deleting = ref(false)
+const pageForm = ref(null)
+const editingPage = ref(null)
 
-const pageData = reactive({
+// Pagination
+const page = ref(DEFAULT_PAGE)
+const limit = ref(DEFAULT_LIMIT)
+const total = ref(0)
+
+// New page data
+const newPage = ref({
   name: '',
   route: '',
   icon: '',
   status: 'active'
 })
 
-// Snackbar
-const snackbar = reactive({
-  show: false,
-  message: '',
-  color: 'success'
-})
-
-// Options
 const statusOptions = [
   { title: 'نشط', value: 'active' },
   { title: 'غير نشط', value: 'inactive' }
 ]
 
-const iconOptions = [
-  'mdi-view-dashboard',
-  'mdi-folder-multiple',
-  'mdi-clipboard-list',
-  'mdi-account-hard-hat',
-  'mdi-tag-multiple',
-  'mdi-chart-line',
-  'mdi-format-list-bulleted-type',
-  'mdi-trending-up',
-  'mdi-credit-card',
-  'mdi-account-multiple',
-  'mdi-account-group',
-  'mdi-fingerprint',
-  'mdi-shield-account',
-  'mdi-file-document-multiple',
-  'mdi-cog',
-  'mdi-bell',
-  'mdi-calendar',
-  'mdi-chart-bar',
-  'mdi-home',
-  'mdi-email'
-]
+const pages = ref([])
 
-// Validation rules
-const routeRules = [
-  v => !!v || 'مسار الصفحة مطلوب',
-  v => /^\//.test(v) || 'المسار يجب أن يبدأ بـ /'
-]
-
-// Table headers
-const headers = ref([
-  { title: 'الصفحة', key: 'name', sortable: true },
-  { title: 'الأيقونة', key: 'icon', sortable: false },
-  { title: 'الحالة', key: 'status', sortable: true },
-  { title: 'تاريخ الإنشاء', key: 'createdAt', sortable: true },
-  { title: 'الإجراءات', key: 'actions', sortable: false }
-])
-
-// Computed
-const activePages = computed(() => pages.value.filter(p => p.status === 'active').length)
-const inactivePages = computed(() => pages.value.filter(p => p.status !== 'active').length)
-
-// Fetch data
-async function fetchData() {
+// Fetch pages from API
+const fetchPages = async () => {
   loading.value = true
   try {
-    const result = await listPages()
-    pages.value = Array.isArray(result) ? result : result?.data || []
+    const response = await listPages({ page: page.value, limit: limit.value })
+    if (response.success) {
+      pages.value = (response.data.items || []).map(p => ({
+        id: p.id,
+        name: p.name,
+        route: p.route,
+        icon: p.icon || 'mdi-file-document',
+        status: p.status || 'active',
+        order: p.order || 0
+      }))
+      total.value = response.data.total || 0
+    }
   } catch (error) {
-    console.error('Failed to fetch pages:', error)
-    showSnackbar('فشل في تحميل البيانات', 'error')
+    console.error('Error fetching pages:', error)
+    showError('حدث خطأ في جلب الصفحات')
   } finally {
     loading.value = false
   }
 }
 
-// Format date
-function formatDate(date) {
-  if (!date) return '-'
-  return new Date(date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  })
-}
+const headers = [
+  { title: 'الأيقونة', key: 'icon', align: 'center' },
+  { title: 'اسم الصفحة', key: 'name', align: 'start' },
+  { title: 'المسار', key: 'route', align: 'center' },
+  { title: 'الترتيب', key: 'order', align: 'center' },
+  { title: 'الحالة', key: 'status', align: 'center' },
+  { title: 'الإجراءات', key: 'actions', align: 'center', sortable: false }
+]
 
-// Dialog functions
-function openAddPageDialog() {
-  isEditing.value = false
-  pageData.name = ''
-  pageData.route = ''
-  pageData.icon = ''
-  pageData.status = 'active'
-  showPageDialog.value = true
-}
+// Computed properties
+const totalPages = computed(() => total.value || pages.value.length)
 
-function editPage(page) {
-  isEditing.value = true
-  selectedPage.value = page
-  pageData.name = page.name
-  pageData.route = page.route
-  pageData.icon = page.icon || ''
-  pageData.status = page.status || 'active'
-  showPageDialog.value = true
-}
-
-function closePageDialog() {
-  showPageDialog.value = false
-  pageData.name = ''
-  pageData.route = ''
-  pageData.icon = ''
-  pageData.status = 'active'
-  selectedPage.value = null
-}
-
-function viewPage(page) {
-  selectedPage.value = page
-  showViewDialog.value = true
-}
-
-function confirmDeletePage(page) {
-  selectedPage.value = page
-  showDeleteDialog.value = true
-}
-
-// Save functions
-async function savePage() {
-  if (!pageForm.value?.validate()) return
-
-  saving.value = true
-  try {
-    if (isEditing.value) {
-      await updatePage(selectedPage.value.id, pageData)
-      showSnackbar('تم تحديث الصفحة بنجاح', 'success')
-    } else {
-      await createPage(pageData)
-      showSnackbar('تم إنشاء الصفحة بنجاح', 'success')
-    }
-    closePageDialog()
-    await fetchData()
-  } catch (error) {
-    console.error('Failed to save page:', error)
-    showSnackbar('فشل في حفظ الصفحة', 'error')
-  } finally {
-    saving.value = false
-  }
-}
-
-async function deletePage() {
-  if (!selectedPage.value) return
-
-  deleting.value = true
-  try {
-    await deletePageApi(selectedPage.value.id)
-    showSnackbar('تم حذف الصفحة بنجاح', 'success')
-    showDeleteDialog.value = false
-    selectedPage.value = null
-    await fetchData()
-  } catch (error) {
-    console.error('Failed to delete page:', error)
-    showSnackbar('فشل في حذف الصفحة', 'error')
-  } finally {
-    deleting.value = false
-  }
-}
-
-function showSnackbar(message, color = 'success') {
-  snackbar.message = message
-  snackbar.color = color
-  snackbar.show = true
-}
-
-// Mount
-onMounted(() => {
-  fetchData()
+const activePages = computed(() => {
+  return pages.value.filter(p => p.status === 'active').length
 })
+
+const inactivePages = computed(() => {
+  return pages.value.filter(p => p.status === 'inactive').length
+})
+
+// Methods
+const openAddDialog = () => {
+  showAddDialog.value = true
+}
+
+const closeDialog = () => {
+  showAddDialog.value = false
+  editingPage.value = null
+  resetForm()
+}
+
+const resetForm = () => {
+  newPage.value = {
+    name: '',
+    route: '',
+    icon: '',
+    status: 'active'
+  }
+  if (pageForm.value) {
+    pageForm.value.reset()
+  }
+}
+
+const savePage = async () => {
+  if (!formValid.value) return
+
+  loading.value = true
+  try {
+    const pageData = {
+      name: newPage.value.name,
+      route: newPage.value.route,
+      icon: newPage.value.icon,
+      status: newPage.value.status
+    }
+
+    let response
+    if (editingPage.value) {
+      response = await updatePage(editingPage.value.id, pageData)
+    } else {
+      response = await createPage(pageData)
+    }
+
+    if (response.success) {
+      success(editingPage.value ? 'تم تحديث الصفحة بنجاح' : 'تم إضافة الصفحة بنجاح')
+      closeDialog()
+      fetchPages()
+    } else {
+      showError(response.message || 'حدث خطأ')
+    }
+  } catch (error) {
+    console.error('Error saving page:', error)
+    showError('حدث خطأ في حفظ الصفحة')
+  } finally {
+    loading.value = false
+  }
+}
+
+// Edit page
+const editPageItem = (pageItem) => {
+  editingPage.value = pageItem
+  newPage.value = {
+    name: pageItem.name,
+    route: pageItem.route,
+    icon: pageItem.icon,
+    status: pageItem.status
+  }
+  showAddDialog.value = true
+}
+
+// Delete page
+const deletePageItem = async (pageItem) => {
+  if (!confirm('هل أنت متأكد من حذف هذه الصفحة؟')) return
+
+  loading.value = true
+  try {
+    const response = await apiDeletePage(pageItem.id)
+    if (response.success) {
+      success('تم حذف الصفحة بنجاح')
+      fetchPages()
+    } else {
+      showError(response.message || 'حدث خطأ في الحذف')
+    }
+  } catch (error) {
+    console.error('Error deleting page:', error)
+    showError('حدث خطأ في حذف الصفحة')
+  } finally {
+    loading.value = false
+  }
+}
+
+// Initialize
+onMounted(() => {
+  fetchPages()
+})
+
+const getStatusColor = (status) => {
+  const colors = {
+    active: 'success',
+    inactive: 'warning'
+  }
+  return colors[status] || 'grey'
+}
+
+const getStatusText = (status) => {
+  const texts = {
+    active: 'نشط',
+    inactive: 'غير نشط'
+  }
+  return texts[status] || status
+}
 </script>
 
 <style scoped>
-.data-page {
-  background: #f5f5f5;
-  min-height: 100vh;
+.pages-container {
+  padding: 32px;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
-.engineers-header-card {
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
-  border-radius: 16px;
-  padding: 24px;
+/* Pages Header Custom Color */
+.pages-header {
+  background: linear-gradient(135deg, #018790 0%, #005461 100%) !important;
+}
+
+.pages-header::before {
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 50%, #06b6d4 100%) !important;
+}
+
+/* Statistics Grid - 3 cards */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
   margin-bottom: 24px;
-  position: relative;
-  overflow: hidden;
 }
 
-.header-gradient-line {
+.stat-card {
+  border-radius: 16px !important;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%) !important;
+  border: 2px solid transparent !important;
+  position: relative;
+}
+
+.stat-card::before {
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #64b5f6, #1976d2, #64b5f6);
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.engineer-emoji {
-  width: 64px;
-  height: 64px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.main-title {
-  color: white;
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0;
-}
-
-.subtitle {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.875rem;
-  margin: 0;
-}
-
-.modern-stat-card {
+  bottom: 0;
   border-radius: 16px;
-  position: relative;
-  overflow: hidden;
+  padding: 2px;
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 50%, #14b8a6 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
-.stat-card-primary {
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
-}
-
-.stat-card-success {
-  background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);
-}
-
-.stat-card-warning {
-  background: linear-gradient(135deg, #fb8c00 0%, #f57c00 100%);
+.stat-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 12px 24px rgba(6, 182, 212, 0.3),
+              0 0 40px rgba(16, 185, 129, 0.2) !important;
 }
 
 .stat-card-content {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  padding: 20px;
+  justify-content: center;
+  padding: 20px 16px;
+  text-align: center;
   position: relative;
   z-index: 1;
 }
 
-.stat-icon-wrapper {
-  margin-left: 16px;
-}
-
-.stat-icon {
-  color: rgba(255, 255, 255, 0.9);
-}
-
 .stat-info {
-  color: white;
-}
-
-.stat-value {
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 }
 
 .stat-label {
-  font-size: 0.875rem;
-  opacity: 0.9;
-  margin: 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 2px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
 }
 
-.table-title-header {
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
-  color: white;
-  padding: 16px 20px;
+.stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 4px;
 }
 
-.title-text {
+.stat-change {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
   font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
 }
 
-.table-spacer {
-  height: 8px;
+.stat-change.positive {
+  color: #34d399;
 }
 
-.view-btn {
-  background: #e3f2fd !important;
-  color: #1976d2 !important;
+.stat-change.negative {
+  color: #f87171;
 }
 
-.edit-btn {
-  background: #e8f5e9 !important;
-  color: #43a047 !important;
-}
-
-.delete-btn {
-  background: #ffebee !important;
-  color: #e53935 !important;
-}
-
-.dialog-header {
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: white;
+  font-size: 24px;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%) !important;
+  box-shadow: 0 6px 16px rgba(6, 182, 212, 0.4);
+}
+
+.stat-icon.pages {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%) !important;
+  box-shadow: 0 6px 16px rgba(6, 182, 212, 0.4);
+}
+
+.stat-icon.success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+.stat-icon.warning {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+}
+
+/* Pages List Header */
+.pages-list-header {
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%);
+  border-radius: 16px;
+  margin-bottom: 24px;
+  padding: 16px 24px;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.pages-list-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 16px;
+  padding: 2px;
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 50%, #06b6d4 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.list-header-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
-.dialog-title {
+.list-header-info {
+  flex: 1;
+}
+
+.list-header-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0 0 2px 0;
   display: flex;
   align-items: center;
+  gap: 8px;
 }
 
-.close-btn {
-  color: white !important;
+.list-header-title i {
+  color: #06b6d4;
+  font-size: 20px;
+}
+
+.list-header-subtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+.list-header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.list-action-btn {
+  padding: 8px 18px;
+  border-radius: 12px;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.list-action-btn.primary {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+}
+
+.list-action-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(6, 182, 212, 0.4);
+}
+
+.list-action-btn i {
+  font-size: 16px;
+}
+
+/* Page Dialog */
+.page-dialog {
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%) !important;
+  border: 2px solid transparent !important;
+  position: relative;
+  overflow: hidden;
+  direction: rtl;
+  text-align: right;
+}
+
+.page-dialog::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 16px;
+  padding: 2px;
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 50%, #06b6d4 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.dialog-header {
+  background: rgba(6, 182, 212, 0.1) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  padding: 20px 24px !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+  direction: rtl;
+  text-align: right;
+}
+
+.dialog-header i {
+  color: #06b6d4;
+  font-size: 24px;
+}
+
+.dialog-content {
+  padding: 24px !important;
+  position: relative;
+  z-index: 1;
+  direction: rtl;
+  text-align: right;
+}
+
+.dialog-content :deep(.v-field) {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px;
+  direction: rtl;
+  text-align: right;
+}
+
+.dialog-content :deep(.v-field__outline) {
+  color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.dialog-content :deep(.v-field--focused .v-field__outline) {
+  color: #06b6d4 !important;
+}
+
+.dialog-content :deep(.v-label) {
+  color: rgba(255, 255, 255, 0.7) !important;
+  right: 12px !important;
+  left: auto !important;
+}
+
+.dialog-content :deep(.v-field__input) {
+  color: rgba(255, 255, 255, 0.95) !important;
+  text-align: right;
+  direction: rtl;
+}
+
+.dialog-content :deep(.v-input__details) {
+  direction: rtl;
+  text-align: right;
 }
 
 .dialog-actions {
-  background: #f5f5f5;
+  padding: 16px 24px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 1;
+  direction: rtl;
+  text-align: right;
 }
 
-/* تحسين قراءة النصوص في الجدول */
-.users-data-table :deep(.v-data-table__tr td) {
-  color: #1a1a1a !important;
-  font-weight: 500 !important;
+.dialog-btn {
+  padding: 10px 24px;
+  border-radius: 12px;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
 }
 
-.users-data-table :deep(.font-weight-medium) {
-  color: #1a1a1a !important;
-  font-weight: 600 !important;
+.dialog-btn.cancel {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.users-data-table :deep(.text-caption) {
-  color: #555555 !important;
+.dialog-btn.cancel:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
 }
 
-.users-data-table :deep(.text-grey) {
-  color: #666666 !important;
+.dialog-btn.save {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
 }
 
-.users-data-table :deep(.text-body-2) {
-  color: #333333 !important;
+.dialog-btn.save:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(6, 182, 212, 0.4);
 }
 
-/* View Page Dialog - Light Theme Fix */
-.view-user-dialog {
-  background: #ffffff !important;
+.dialog-btn.save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-.view-user-dialog .v-card-text {
-  background: #ffffff !important;
+.dialog-btn i {
+  font-size: 18px;
 }
 
-.view-user-dialog .v-list {
-  background: #ffffff !important;
+.v-card {
+  border-radius: 12px;
 }
 
-.view-user-dialog .v-list-item {
-  background: #ffffff !important;
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .pages-container {
+    padding: 24px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .list-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .list-header-actions {
+    width: 100%;
+  }
+
+  .list-action-btn.primary {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
-.view-user-dialog h2,
-.view-user-dialog h3,
-.view-user-dialog h4 {
-  color: #1a1a1a !important;
+@media (max-width: 768px) {
+  .pages-container {
+    padding: 16px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .stat-card-content {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 16px;
+    padding: 16px;
+    text-align: right;
+  }
+
+  .stat-icon {
+    margin-bottom: 0;
+  }
+
+  .stat-info {
+    align-items: flex-start;
+  }
+
+  .pages-list-header {
+    padding: 12px 16px;
+  }
+
+  .list-header-title {
+    font-size: 16px;
+  }
+
+  .list-action-btn {
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+
+  /* Dialog responsive */
+  .page-dialog .dialog-header {
+    padding: 16px !important;
+    font-size: 18px !important;
+  }
+
+  .page-dialog .dialog-content {
+    padding: 16px !important;
+  }
+
+  .page-dialog .dialog-actions {
+    padding: 12px 16px !important;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .dialog-btn {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  /* Table responsive */
+  .v-data-table {
+    font-size: 13px;
+  }
+
+  .v-data-table :deep(th),
+  .v-data-table :deep(td) {
+    padding: 8px 12px !important;
+  }
 }
 
-.view-user-dialog p {
-  color: #333333 !important;
-}
+@media (max-width: 480px) {
+  .pages-container {
+    padding: 12px;
+  }
 
-.view-user-dialog .text-caption {
-  color: #555555 !important;
-}
+  .stat-value {
+    font-size: 24px;
+  }
 
-.view-user-dialog .v-list-item-title {
-  color: #1a1a1a !important;
-  font-weight: 600 !important;
-}
+  .stat-label {
+    font-size: 12px;
+  }
 
-.view-user-dialog .v-list-item-subtitle {
-  color: #444444 !important;
-}
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
 
-/* تحسين قراءة النصوص في نموذج الإضافة/التعديل */
-.add-user-dialog .dialog-content {
-  background: #ffffff !important;
-}
+  .pages-list-header {
+    padding: 12px;
+    border-radius: 12px;
+  }
 
-.add-user-dialog :deep(.v-field__input) {
-  color: #1a1a1a !important;
-  font-weight: 500 !important;
-}
+  .list-header-title {
+    font-size: 14px;
+  }
 
-.add-user-dialog :deep(.v-field input) {
-  color: #1a1a1a !important;
-}
+  .list-header-subtitle {
+    font-size: 11px;
+  }
 
-.add-user-dialog :deep(.v-field textarea) {
-  color: #1a1a1a !important;
-}
+  .list-action-btn {
+    padding: 8px 12px;
+    font-size: 11px;
+    border-radius: 10px;
+  }
 
-.add-user-dialog :deep(.v-label) {
-  color: #333333 !important;
-  font-weight: 600 !important;
-}
+  /* Dialog responsive - full width on mobile */
+  :deep(.v-dialog) {
+    margin: 8px !important;
+  }
 
-.add-user-dialog :deep(.v-field--focused .v-label) {
-  color: #1976d2 !important;
-}
+  .page-dialog {
+    border-radius: 12px !important;
+  }
 
-.add-user-dialog :deep(.v-select__selection-text) {
-  color: #1a1a1a !important;
-}
+  .page-dialog .dialog-header {
+    padding: 12px 16px !important;
+    font-size: 16px !important;
+    gap: 8px;
+  }
 
-.add-user-dialog :deep(.v-field__input input::placeholder) {
-  color: #888888 !important;
-}
+  .page-dialog .dialog-header i {
+    font-size: 20px;
+  }
 
-.add-user-dialog :deep(.v-combobox .v-field__input) {
-  color: #1a1a1a !important;
-}
+  .page-dialog .dialog-content {
+    padding: 12px !important;
+    max-height: 50vh;
+  }
 
-.add-user-dialog :deep(.v-list-item-title) {
-  color: #1a1a1a !important;
+  .dialog-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+    flex: 1;
+  }
+
+  /* Table overflow handling */
+  .v-card.mb-6 {
+    overflow-x: auto;
+  }
+
+  .v-data-table :deep(.v-table__wrapper) {
+    overflow-x: auto;
+  }
+
+  .v-data-table :deep(th),
+  .v-data-table :deep(td) {
+    padding: 6px 8px !important;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .v-btn.me-2 {
+    margin-inline-end: 4px !important;
+  }
 }
 </style>

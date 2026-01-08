@@ -1,0 +1,494 @@
+<template>
+  <div class="work-days-container">
+    <!-- Page Header Component -->
+    <PageHeader
+      title="أيام العمل"
+      subtitle="عرض وإدارة أيام العمل للمشروع"
+      badge="أيام العمل"
+      badgeType="info"
+      class="work-days-header"
+    >
+      <template #actions>
+        <button class="page-action-btn secondary" @click="$router.back()">
+          <i class="mdi mdi-arrow-right"></i>
+          رجوع
+        </button>
+      </template>
+    </PageHeader>
+
+    <!-- Project Info Card -->
+    <v-card class="project-info-card mb-6">
+      <v-card-text>
+        <h3 class="project-name">اسم المشروع</h3>
+        <p class="project-details">تفاصيل المشروع هنا</p>
+      </v-card-text>
+    </v-card>
+
+    <!-- Work Days List Header -->
+    <div class="work-days-list-header">
+      <div class="list-header-content">
+        <div class="list-header-info">
+          <h2 class="list-header-title">
+            <i class="mdi mdi-calendar-clock"></i>
+            قائمة أيام العمل
+          </h2>
+          <p class="list-header-subtitle">عرض وإدارة جميع أيام العمل في المشروع</p>
+        </div>
+        <div class="list-header-actions">
+          <button class="list-action-btn primary" @click="openDialog">
+            <i class="mdi mdi-plus"></i>
+            إضافة يوم عمل جديد
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Work Days Table -->
+    <v-card>
+      <v-data-table
+        :headers="headers"
+        :items="workDays"
+        :loading="loading"
+        class="elevation-1"
+      >
+        <template v-slot:item.date="{ item }">
+          {{ formatDate(item.date) }}
+        </template>
+        <template v-slot:item.status="{ item }">
+          <v-chip
+            :color="getStatusColor(item.status)"
+            size="small"
+          >
+            {{ getStatusText(item.status) }}
+          </v-chip>
+        </template>
+        <template v-slot:item.actions="{ item }">
+          <v-btn
+            size="small"
+            color="primary"
+            class="me-2"
+          >
+            <i class="mdi mdi-pencil"></i>
+          </v-btn>
+          <v-btn
+            size="small"
+            color="error"
+          >
+            <i class="mdi mdi-delete"></i>
+          </v-btn>
+        </template>
+      </v-data-table>
+    </v-card>
+
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import PageHeader from '../components/PageHeader.vue'
+
+const loading = ref(false)
+
+const workDays = ref([
+  {
+    id: 1,
+    date: '2024/01/15',
+    workers: 12,
+    hours: 8,
+    description: 'أعمال البناء الأساسية',
+    status: 'completed'
+  },
+  {
+    id: 2,
+    date: '2024/01/16',
+    workers: 10,
+    hours: 8,
+    description: 'أعمال الكهرباء',
+    status: 'completed'
+  },
+  {
+    id: 3,
+    date: '2024/01/17',
+    workers: 15,
+    hours: 6,
+    description: 'أعمال السباكة',
+    status: 'inprogress'
+  }
+])
+
+const headers = [
+  { title: 'التاريخ', key: 'date', align: 'start' },
+  { title: 'عدد العمال', key: 'workers', align: 'center' },
+  { title: 'ساعات العمل', key: 'hours', align: 'center' },
+  { title: 'الوصف', key: 'description', align: 'center' },
+  { title: 'الحالة', key: 'status', align: 'center' },
+  { title: 'الإجراءات', key: 'actions', align: 'center', sortable: false }
+]
+
+const formatDate = (date) => {
+  return new Date(date).toLocaleDateString('ar-SA')
+}
+
+const getStatusColor = (status) => {
+  const colors = {
+    completed: 'success',
+    inprogress: 'warning',
+    pending: 'info'
+  }
+  return colors[status] || 'grey'
+}
+
+const getStatusText = (status) => {
+  const texts = {
+    completed: 'مكتمل',
+    inprogress: 'قيد التنفيذ',
+    pending: 'معلق'
+  }
+  return texts[status] || status
+}
+
+// Dialog state
+const showAddDialog = ref(false)
+const valid = ref(false)
+const form = ref(null)
+
+// Work day form data
+const workDayForm = ref({
+  location: '',
+  formNumber: '',
+  workPeriodFrom: '',
+  workPeriodTo: '',
+  day: '',
+  workers: '',
+  date: '',
+  description: ''
+})
+
+// Days list
+const days = ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة']
+
+// Open dialog
+const openDialog = () => {
+  showAddDialog.value = true
+}
+
+// Close dialog
+const closeDialog = () => {
+  showAddDialog.value = false
+  resetForm()
+}
+
+// Reset form
+const resetForm = () => {
+  workDayForm.value = {
+    location: '',
+    formNumber: '',
+    workPeriodFrom: '',
+    workPeriodTo: '',
+    day: '',
+    workers: '',
+    date: '',
+    description: ''
+  }
+  if (form.value) {
+    form.value.reset()
+  }
+}
+
+// Save work day
+const saveWorkDay = () => {
+  console.log('Saving work day:', workDayForm.value)
+  closeDialog()
+}
+</script>
+
+<style scoped>
+.work-days-container {
+  padding: 32px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* Work Days Header Custom Color */
+.work-days-header {
+  background: linear-gradient(135deg, #018790 0%, #005461 100%) !important;
+}
+
+.work-days-header::before {
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 50%, #06b6d4 100%) !important;
+}
+
+/* Project Info Card */
+.project-info-card {
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%) !important;
+  border: 2px solid transparent !important;
+  position: relative;
+}
+
+.project-info-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 16px;
+  padding: 2px;
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 50%, #14b8a6 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.project-name {
+  font-size: 24px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 8px;
+}
+
+.project-details {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+/* Work Days List Header */
+.work-days-list-header {
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%);
+  border-radius: 16px;
+  margin-bottom: 24px;
+  padding: 16px 24px;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.work-days-list-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 16px;
+  padding: 2px;
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 50%, #14b8a6 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.list-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.list-header-info {
+  flex: 1;
+}
+
+.list-header-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0 0 2px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.list-header-title i {
+  color: #06b6d4;
+  font-size: 20px;
+}
+
+.list-header-subtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+.list-header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.list-action-btn {
+  padding: 8px 18px;
+  border-radius: 12px;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.list-action-btn.primary {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+}
+
+.list-action-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(6, 182, 212, 0.4);
+}
+
+.list-action-btn i {
+  font-size: 16px;
+}
+
+/* Table Header */
+.table-header {
+  background: rgba(6, 182, 212, 0.1);
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.table-header i {
+  color: #06b6d4;
+  font-size: 24px;
+}
+
+.v-card {
+  border-radius: 12px;
+}
+</style>
+
+    <!-- Add Work Day Dialog -->
+    <v-dialog v-model="showAddDialog" max-width="700" persistent>
+      <v-card class="add-work-day-dialog">
+        <v-card-title class="dialog-header">
+          <i class="mdi mdi-calendar-plus"></i>
+          <span>إضافة يوم عمل جديد</span>
+          <v-spacer></v-spacer>
+          <v-btn icon size="small" @click="closeDialog">
+            <i class="mdi mdi-close"></i>
+          </v-btn>
+        </v-card-title>
+
+        <v-card-text class="dialog-body">
+          <v-form ref="form" v-model="valid">
+            <div class="form-grid">
+              <v-text-field v-model="workDayForm.location" label="مكان العمل" prepend-inner-icon="mdi-map-marker" variant="outlined" :rules="[v => !!v || 'مكان العمل مطلوب']" required></v-text-field>
+              <v-text-field v-model="workDayForm.formNumber" label="رقم الاستمارة" prepend-inner-icon="mdi-file-document" variant="outlined" type="number" :rules="[v => !!v || 'رقم الاستمارة مطلوب']" required></v-text-field>
+              <v-text-field v-model="workDayForm.workPeriodFrom" label="فترة العمل من" prepend-inner-icon="mdi-clock-start" variant="outlined" type="time" :rules="[v => !!v || 'فترة العمل من مطلوبة']" required></v-text-field>
+              <v-text-field v-model="workDayForm.workPeriodTo" label="فترة العمل إلى" prepend-inner-icon="mdi-clock-end" variant="outlined" type="time" :rules="[v => !!v || 'فترة العمل إلى مطلوبة']" required></v-text-field>
+              <v-select v-model="workDayForm.day" label="اليوم" prepend-inner-icon="mdi-calendar" variant="outlined" :items="days" :rules="[v => !!v || 'اليوم مطلوب']" required></v-select>
+              <v-text-field v-model="workDayForm.workers" label="عدد العمال" prepend-inner-icon="mdi-account-group" variant="outlined" type="number" :rules="[v => !!v || 'عدد العمال مطلوب']" required></v-text-field>
+              <v-text-field v-model="workDayForm.date" label="التاريخ" prepend-inner-icon="mdi-calendar-today" variant="outlined" type="date" :rules="[v => !!v || 'التاريخ مطلوب']" required class="full-width"></v-text-field>
+              <v-textarea v-model="workDayForm.description" label="الوصف" prepend-inner-icon="mdi-text" variant="outlined" rows="3" class="full-width"></v-textarea>
+            </div>
+          </v-form>
+        </v-card-text>
+
+        <v-card-actions class="dialog-actions">
+          <v-btn color="grey" variant="outlined" @click="closeDialog">إلغاء</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" variant="elevated" @click="saveWorkDay" :disabled="!valid">حفظ</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+/* Add Work Day Dialog */
+.add-work-day-dialog {
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%) !important;
+  border-radius: 20px !important;
+  border: 2px solid transparent !important;
+  position: relative;
+}
+
+.add-work-day-dialog::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 20px;
+  padding: 2px;
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 50%, #14b8a6 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.dialog-header {
+  background: rgba(6, 182, 212, 0.15) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  padding: 20px 24px !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  position: relative;
+  z-index: 1;
+}
+
+.dialog-header i {
+  color: #06b6d4;
+  font-size: 28px;
+}
+
+.dialog-body {
+  padding: 24px !important;
+  position: relative;
+  z-index: 1;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.form-grid .full-width {
+  grid-column: 1 / -1;
+}
+
+.dialog-actions {
+  padding: 16px 24px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  position: relative;
+  z-index: 1;
+}
+
+:deep(.v-field) {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-radius: 12px !important;
+}
+
+:deep(.v-field--focused) {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+:deep(.v-label) {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+:deep(.v-field__input) {
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+:deep(.v-icon) {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
