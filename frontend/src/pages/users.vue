@@ -98,7 +98,7 @@
         </template>
         <template v-slot:item.actions="{ item }">
           <v-btn
-            v-if="canUpdate"
+            v-if="canUpdate && canEditUser(item)"
             size="small"
             color="primary"
             class="me-2"
@@ -107,7 +107,16 @@
             <i class="mdi mdi-pencil"></i>
           </v-btn>
           <v-btn
-            v-if="canUpdateStatus"
+            v-if="canUpdatePassword && canEditUser(item)"
+            size="small"
+            color="purple"
+            class="me-2"
+            @click="openPasswordDialog(item)"
+          >
+            <i class="mdi mdi-lock-reset"></i>
+          </v-btn>
+          <v-btn
+            v-if="canUpdateStatus && canEditUser(item)"
             size="small"
             :color="item.status === 'active' ? 'warning' : 'success'"
             class="me-2"
@@ -116,7 +125,7 @@
             <i :class="item.status === 'active' ? 'mdi mdi-account-off' : 'mdi mdi-account-check'"></i>
           </v-btn>
           <v-btn
-            v-if="canDelete"
+            v-if="canDelete && canEditUser(item)"
             size="small"
             color="error"
             @click="confirmDeleteUser(item)"
@@ -264,28 +273,98 @@
       </v-card>
     </v-dialog>
 
+    <!-- Password Change Dialog -->
+    <v-dialog v-model="showPasswordDialog" max-width="500" persistent>
+      <v-card class="user-dialog">
+        <v-card-title class="dialog-header">
+          <i class="mdi mdi-lock-reset"></i>
+          تغيير كلمة المرور
+        </v-card-title>
+        <v-card-text class="dialog-content">
+          <p class="mb-4" style="color: rgba(255,255,255,0.7);">
+            تغيير كلمة المرور للمستخدم: <strong style="color: #06b6d4;">{{ userToChangePassword?.fullName }}</strong>
+          </p>
+          <v-form ref="passwordForm" v-model="passwordFormValid">
+            <v-text-field
+              v-model="newPassword"
+              label="كلمة المرور الجديدة"
+              variant="outlined"
+              density="comfortable"
+              type="password"
+              :rules="[
+                v => !!v || 'كلمة المرور مطلوبة',
+                v => v.length >= 8 || 'كلمة المرور يجب أن تكون 8 أحرف على الأقل'
+              ]"
+              required
+            ></v-text-field>
+            <v-text-field
+              v-model="confirmPassword"
+              label="تأكيد كلمة المرور"
+              variant="outlined"
+              density="comfortable"
+              type="password"
+              :rules="[
+                v => !!v || 'تأكيد كلمة المرور مطلوب',
+                v => v === newPassword || 'كلمتا المرور غير متطابقتين'
+              ]"
+              required
+            ></v-text-field>
+          </v-form>
+        </v-card-text>
+        <v-card-actions class="dialog-actions">
+          <v-spacer></v-spacer>
+          <button class="dialog-btn cancel" @click="closePasswordDialog">
+            <i class="mdi mdi-close"></i>
+            إلغاء
+          </button>
+          <button class="dialog-btn save" style="background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%) !important;" @click="changePassword" :disabled="!passwordFormValid || savingPassword">
+            <i class="mdi mdi-lock-check"></i>
+            {{ savingPassword ? 'جاري الحفظ...' : 'تغيير' }}
+          </button>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import PageHeader from '../components/PageHeader.vue'
-import { listUsers, createUser, updateUser, updateUserStatus, deleteUser as apiDeleteUser } from '@/api/users'
+import { listUsers, createUser, updateUser, updateUserStatus, updateUserPassword, deleteUser as apiDeleteUser } from '@/api/users'
 import { usePermissions } from '@/composables/usePermissions'
 import { useToast } from '@/composables/useToast'
 import { DEFAULT_PAGE, DEFAULT_LIMIT } from '@/constants/pagination'
 
 const { success, error: showError } = useToast()
-const { canCreate, canUpdate, canDelete, canUpdateStatus } = usePermissions('/users')
+const { canCreate, canUpdate, canDelete, canUpdateStatus, canUpdatePassword } = usePermissions('/users')
+import { useAuthStore } from '@/stores/auth'
+
+const authStore = useAuthStore()
+const currentUserId = computed(() => authStore.user?.id)
+
+// Check if user can be edited (not self, not super admin)
+const canEditUser = (user) => {
+  // Can't edit yourself
+  if (user.id === currentUserId.value) return false
+  return true
+}
 
 const loading = ref(false)
 const saving = ref(false)
+const savingPassword = ref(false)
 const showAddDialog = ref(false)
 const showDeleteDialog = ref(false)
+const showPasswordDialog = ref(false)
 const formValid = ref(false)
+const passwordFormValid = ref(false)
 const userForm = ref(null)
+const passwordForm = ref(null)
 const editingUser = ref(null)
 const userToDelete = ref(null)
+const userToChangePassword = ref(null)
+const newPassword = ref('')
+const confirmPassword = ref('')
 const currentPage = ref(DEFAULT_PAGE)
 
 // Pagination
@@ -449,6 +528,40 @@ const deleteUser = async () => {
   } catch (error) {
     console.error('Error deleting user:', error)
     showError(error.message || 'حدث خطأ أثناء حذف المستخدم')
+  }
+}
+
+// Password change functions
+const openPasswordDialog = (user) => {
+  userToChangePassword.value = user
+  newPassword.value = ''
+  confirmPassword.value = ''
+  showPasswordDialog.value = true
+}
+
+const closePasswordDialog = () => {
+  showPasswordDialog.value = false
+  userToChangePassword.value = null
+  newPassword.value = ''
+  confirmPassword.value = ''
+  if (passwordForm.value) {
+    passwordForm.value.reset()
+  }
+}
+
+const changePassword = async () => {
+  if (!passwordFormValid.value || !userToChangePassword.value) return
+
+  savingPassword.value = true
+  try {
+    await updateUserPassword(userToChangePassword.value.id, newPassword.value)
+    success('تم تغيير كلمة المرور بنجاح')
+    closePasswordDialog()
+  } catch (error) {
+    console.error('Error changing password:', error)
+    showError(error.message || 'حدث خطأ أثناء تغيير كلمة المرور')
+  } finally {
+    savingPassword.value = false
   }
 }
 
