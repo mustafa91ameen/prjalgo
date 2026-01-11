@@ -299,7 +299,7 @@ const editLaborForm = ref({
 
 // Computed totals
 const totalSalaries = computed(() => {
-  return labor.value.reduce((sum, item) => sum + item.salary, 0)
+  return labor.value.reduce((sum, item) => sum + (item.salary * item.hours), 0)
 })
 
 const totalHours = computed(() => {

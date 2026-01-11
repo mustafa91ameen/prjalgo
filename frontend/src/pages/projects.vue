@@ -118,6 +118,10 @@
           <div class="project-status-badge" :class="project.statusClass">
             {{ project.status }}
           </div>
+          <div v-if="project.isOverBudget" class="project-warning-badge">
+            <i class="mdi mdi-alert"></i>
+            تجاوز الميزانية
+          </div>
         </div>
         
         <v-card-text class="project-card-body">
@@ -149,13 +153,13 @@
           </div>
 
           <div class="project-footer">
-            <div class="project-team">
-              <i class="mdi mdi-account-group"></i>
-              <span>{{ project.teamSize }} أعضاء</span>
+            <div class="project-spending" :class="{ 'over-budget': project.isOverBudget }">
+              <i class="mdi mdi-cash-minus"></i>
+              <span>المصروف: {{ formatCurrency(project.currentSpending) }}</span>
             </div>
             <div class="project-budget">
               <i class="mdi mdi-cash"></i>
-              <span>{{ formatCurrency(project.budget) }}</span>
+              <span>الميزانية: {{ formatCurrency(project.budget) }}</span>
             </div>
           </div>
         </v-card-text>
@@ -493,7 +497,9 @@ const fetchProjects = async () => {
         statusClass: getStatusClass(p.status),
         teamSize: p.teamSize || 0,
         budget: p.totalCost || 0,
-        alertLimit: p.warningCost,
+        currentSpending: p.currentSpending || 0,
+        alertLimit: p.warningCost || 0,
+        isOverBudget: (p.currentSpending || 0) > (p.warningCost || 0),
         duration: p.duration,
         clientNumber: p.clientPhone
       }))
@@ -1025,6 +1031,54 @@ const formatCurrency = (amount) => {
 
 .status-pending {
   background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+}
+
+.project-warning-badge {
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  animation: pulse-warning 2s infinite;
+}
+
+.project-warning-badge i {
+  font-size: 14px;
+}
+
+@keyframes pulse-warning {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+  }
+  50% {
+    box-shadow: 0 2px 16px rgba(239, 68, 68, 0.8);
+  }
+}
+
+.project-spending {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.project-spending.over-budget {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.project-spending.over-budget i {
+  color: #ef4444;
 }
 
 .project-card-body {

@@ -369,7 +369,7 @@ const editExpenseForm = ref({
 
 // Computed totals
 const totalMaterialsCost = computed(() => {
-  return materials.value.reduce((sum, item) => sum + item.cost, 0)
+  return materials.value.reduce((sum, item) => sum + (item.cost * item.quantity), 0)
 })
 
 // Only count approved expenses in the total

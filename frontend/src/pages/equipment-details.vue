@@ -208,7 +208,7 @@ const newEquipment = ref({
 
 // Computed totals
 const totalCost = computed(() => {
-  return equipment.value.reduce((sum, item) => sum + item.cost, 0)
+  return equipment.value.reduce((sum, item) => sum + (item.cost * item.quantity), 0)
 })
 
 const totalQuantity = computed(() => {
