@@ -599,7 +599,8 @@ const fetchDebtors = async () => {
       phone: d.phone || '',
       totalDebt: d.totalDebt || d.amount || 0,
       paidAmount: d.paidAmount || 0,
-      remainingAmount: d.remainingAmount || (d.totalDebt - (d.paidAmount || 0)) || 0,
+      // Backend returns remainingDebt (not remainingAmount)
+      remainingAmount: d.remainingDebt ?? d.remainingAmount ?? ((d.totalDebt || 0) - (d.paidAmount || 0)),
       dueDate: d.dueDate,
       status: d.status || 'pending',
       notes: d.notes || ''

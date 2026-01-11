@@ -107,6 +107,14 @@
           <template v-slot:item.date="{ item }">
             {{ formatDate(item.date) }}
           </template>
+          <template v-slot:item.status="{ item }">
+            <v-chip
+              :color="getStatusColor(item.status)"
+              size="small"
+            >
+              {{ getStatusText(item.status) }}
+            </v-chip>
+          </template>
           <template v-slot:item.actions="{ item }">
             <v-btn
               v-if="canUpdate"
@@ -258,7 +266,7 @@ const incomeForm = ref({
   description: '',
   amount: 0,
   category: '',
-  date: new Date().toISOString().substr(0, 10),
+  date: new Date().toISOString().slice(0, 10),
   status: 'pending',
   notes: ''
 })
@@ -270,18 +278,19 @@ const fetchIncome = async () => {
   loading.value = true
   try {
     const response = await listIncome({ page: page.value, limit: limit.value })
-    if (response.success) {
-      incomeSources.value = (response.data.items || []).map(i => ({
-        id: i.id,
-        description: i.description || '',
-        amount: i.amount || 0,
-        category: i.category || '',
-        date: i.date || i.created_at,
-        status: i.status || 'pending',
-        notes: i.notes || ''
-      }))
-      total.value = response.data.total || 0
-    }
+    console.log('Income API response:', response)
+    // Response structure: { data: { data: [...], total, page, limit, totalPages }, success: true }
+    const items = response.data?.data || response.data?.items || []
+    incomeSources.value = items.map(i => ({
+      id: i.id,
+      description: i.name || '',
+      amount: i.amount || 0,
+      category: i.type || '',
+      date: i.incomeDate || i.created_at,
+      status: i.status || 'pending',
+      notes: i.notes || ''
+    }))
+    total.value = response.data?.total || 0
   } catch (error) {
     console.error('Error fetching income:', error)
     showError('حدث خطأ في جلب الإيرادات')
@@ -291,9 +300,9 @@ const fetchIncome = async () => {
 }
 
 const statusOptions = [
-  'pending',
-  'approved',
-  'rejected'
+  { title: 'معلق', value: 'pending' },
+  { title: 'موافق عليه', value: 'approved' },
+  { title: 'مرفوض', value: 'rejected' }
 ]
 
 const headers = [
@@ -301,8 +310,29 @@ const headers = [
   { title: 'المبلغ', key: 'amount', align: 'center' },
   { title: 'الفئة', key: 'category', align: 'center' },
   { title: 'التاريخ', key: 'date', align: 'center' },
+  { title: 'الحالة', key: 'status', align: 'center' },
   { title: 'الإجراءات', key: 'actions', align: 'center', sortable: false }
 ]
+
+// Get status text in Arabic
+const getStatusText = (status) => {
+  const texts = {
+    pending: 'معلق',
+    approved: 'موافق عليه',
+    rejected: 'مرفوض'
+  }
+  return texts[status] || status
+}
+
+// Get status color
+const getStatusColor = (status) => {
+  const colors = {
+    pending: 'warning',
+    approved: 'success',
+    rejected: 'error'
+  }
+  return colors[status] || 'grey'
+}
 
 // Computed properties
 const totalIncome = computed(() => {
@@ -395,6 +425,8 @@ const closeDialog = () => {
     description: '',
     amount: 0,
     category: '',
+    date: new Date().toISOString().slice(0, 10),
+    status: 'pending',
     notes: ''
   }
 }

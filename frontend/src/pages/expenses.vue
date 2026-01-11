@@ -205,8 +205,8 @@
           <!-- المشروع -->
           <div class="form-group">
             <label for="projectId">المشروع (اختياري)</label>
-            <select id="projectId" v-model="newExpense.projectId">
-              <option :value="null">بدون مشروع</option>
+            <select id="projectId" v-model="newExpense.projectId" :disabled="isDebtPayment">
+              <option :value="null">{{ isDebtPayment ? 'غير متاح - تسديد دين' : 'بدون مشروع' }}</option>
               <option v-for="project in availableProjects" :key="project.id" :value="project.id">
                 {{ project.name }}
               </option>
@@ -563,10 +563,15 @@ const projectItems = computed(() => {
 
 // Handle debt payment checkbox change
 const onDebtPaymentChange = async () => {
-  if (isDebtPayment.value && activeDebtors.value.length === 0) {
-    await loadActiveDebtors()
-  }
-  if (!isDebtPayment.value) {
+  if (isDebtPayment.value) {
+    // Load debtors if needed
+    if (activeDebtors.value.length === 0) {
+      await loadActiveDebtors()
+    }
+    // Clear project selection when debt payment is checked
+    newExpense.value.projectId = null
+  } else {
+    // Clear debtor selection when unchecked
     selectedDebtorId.value = null
   }
 }
@@ -1216,6 +1221,13 @@ onMounted(() => {
 
 .form-group select {
   cursor: pointer;
+}
+
+.form-group select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .form-group select option {
