@@ -579,8 +579,7 @@ const newDebtor = ref({
 
 const currencies = [
   'IQD',
-  'USD',
-  'EUR'
+  'USD'
 ]
 
 const debtors = ref([])
@@ -683,13 +682,16 @@ const saveDebtor = async () => {
 
   loading.value = true
   try {
+    // Convert date to RFC3339 format
+    const dueDateRFC3339 = newDebtor.value.dueDate ? new Date(newDebtor.value.dueDate).toISOString() : null
+
     const debtorData = {
       name: newDebtor.value.fullName,
       email: newDebtor.value.email,
       phone: newDebtor.value.phone,
       totalDebt: newDebtor.value.amount,
       currency: newDebtor.value.currency,
-      dueDate: newDebtor.value.dueDate,
+      dueDate: dueDateRFC3339,
       notes: newDebtor.value.notes
     }
 
@@ -1802,5 +1804,31 @@ const confirmDelete = async () => {
     padding: 6px 12px;
     font-size: 11px;
   }
+}
+</style>
+
+<!-- Global styles for v-select dropdown menu -->
+<style>
+.v-overlay__content .v-list {
+  background: linear-gradient(135deg, #0a3d42 0%, #052428 100%) !important;
+  border: 1px solid rgba(6, 182, 212, 0.3) !important;
+  border-radius: 12px !important;
+}
+
+.v-overlay__content .v-list-item {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.v-overlay__content .v-list-item:hover {
+  background: rgba(6, 182, 212, 0.2) !important;
+}
+
+.v-overlay__content .v-list-item--active {
+  background: rgba(6, 182, 212, 0.3) !important;
+  color: #06b6d4 !important;
+}
+
+.v-overlay__content .v-list-item-title {
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 </style>
